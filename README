@@ -1,0 +1,21 @@
+Linfo - PHP server health/information script
+
+Goals: 
+ - Provide info such as disk space, temperatures, cpu, ram, etc
+ - Use very, very few external programs (like df/load/uptime/etc), if any. (parse the file system for info)
+
+System requirements: 
+ - A somewhat modern Linux system with /proc and /sys mounted
+ - Probably at least PHP 5
+ - To display temps/voltages: mbmon and/or hddtemp must be running as a daemon
+
+Installation:
+ - Extract tarball contents to somewhere under your web root
+ - Optionally change settings in config.php
+
+Known issues:
+ - Getting device names is very, very slow on older machines
+
+License: GNU General Public License
+Primary Author: Joseph Robert Gillotti <joe@u13.net>
+URL: http://linfo.sourceforge.net/
