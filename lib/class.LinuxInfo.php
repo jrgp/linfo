@@ -349,7 +349,6 @@ class LinuxInfo {
 				// Only hddtemp is support as of now
 				case 'hddtemp':
 
-
 					switch ($this->settings['hddtemp']['mode']) {
 
 						case 'daemon':
@@ -644,7 +643,7 @@ class LinuxInfo {
 	}
 
 	// Get mdadm raid
-	// TODO - finish
+	// TODO - finish. And maybe support other Linux software raids?
 	public function getRaid() {
 
 		// Firstly, are we allowed?
