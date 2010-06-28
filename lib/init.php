@@ -21,14 +21,30 @@
 
 defined('IN_INFO') or exit;
 
+// Set up class auto loading
+function __autoload($class) {
+	
+	// Path to where it should be
+	$file = LOCAL_PATH . 'lib/class.'.$class.'.php';
 
-// Exception for above
+	// Load it if it does
+	if (is_file($file)) 
+		require_once $file;
+	else
+		exit('File for '.$class.' not found');
+	
+	// Ensure we have it
+	if (class_exists($class))
+		return;
+	else
+		exit('Class '.$class.' not found');
+}
+
+
+// Exception for info classes 
 class GetInfoException extends Exception{}
 
-/*
- * Try determining OS
- * So far Linux is the only one supported
- */
+// Determine OS. So far, and possibly forever, Linux is supported exclusively
 function determineOS($os = null) {
 
 	// List of known/supported Os's
@@ -49,16 +65,14 @@ function determineOS($os = null) {
 		return $uname;
 	}
 
-	// Otherwise no. Winfux support coming later'ish
+	// Otherwise no. Winfux support might be coming later'ish
 	else {
 		return false;
 	}
 
 }
 
-/*
- * Start up class based on result of above
- */
+// Start up class based on result of above
 function parseSystem($type, $settings) {
 	$type = ucfirst($type) . 'Info';
 	if (!class_exists($type))

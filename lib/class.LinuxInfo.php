@@ -48,40 +48,31 @@ class LinuxInfo {
 
 	// All
 	public function getAll() {
+
+		// Return everything, whilst obeying display permissions
 		return array(
-			'OS' => $this->getOS(),
-			'Kernel' => $this->getKernel(),
-			'RAM' => $this->getRam(),
-			'HD' => $this->getHD(),
-			'Mounts' => $this->getMounts(),
-			'Load' => $this->getLoad(),
-			'HostName' => $this->getHostName(),
-			'UpTime' => $this->getUpTime(),
-			'CPU' => $this->getCPU(),
-			'Network Devices' => $this->getNet(),
-			'Devices' => $this->getDevs(),
-			'Temps' => $this->getTemps()
+			'OS' => !(bool) $this->settings['show']['os'] ? '' : $this->getOS(),
+			'Kernel' => !(bool) $this->settings['show']['kernel'] ? '' : $this->getKernel(),
+			'RAM' => !(bool) $this->settings['show']['ram'] ? array() : $this->getRam(),
+			'HD' => !(bool) $this->settings['show']['hd'] ? '' : $this->getHD(),
+			'Mounts' => !(bool) $this->settings['show']['mounts'] ? array() : $this->getMounts(),
+			'Load' => !(bool) $this->settings['show']['load'] ? array() : $this->getLoad(),
+			'HostName' => !(bool) $this->settings['show']['hostname'] ? '' : $this->getHostName(),
+			'UpTime' => !(bool) $this->settings['show']['uptime'] ? '' : $this->getUpTime(),
+			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(),
+			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(),
+			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(),
+			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps()
 		);
 	}
 
 	// Return OS version
-	// DONE
 	public function getOS() {
-
-		// Firstly, are we allowed?
-		if (in_array('os', $this->settings['show']) && !(bool) $this->settings['show']['os'])
-			return array();
-
 		return 'Linux';
 	}
 
 	// Get linux kernel version
-	// DONE
 	public function getKernel(){
-
-		// Firstly, are we allowed?
-		if (in_array('kernel', $this->settings['show']) && !(bool) $this->settings['show']['kernel'])
-			return array();
 
 		// File containing info
 		$file = '/proc/version';
@@ -100,19 +91,14 @@ class LinuxInfo {
 	}
 
 	// Get host name
-	// DONE
 	public function getHostName() {
-
-		// Firstly, are we allowed?
-		if (in_array('hostname', $this->settings['show']) && !(bool) $this->settings['show']['hostname'])
-			return array();
 
 		// File containing info
 		$file = '/proc/sys/kernel/hostname';
 
 		// Make sure we can use it
 		if (!is_file($file) || !is_readable($file))
-			return array();
+			return '';
 
 		// Get it
 		$contents = trim(@file_get_contents($file));
@@ -122,12 +108,7 @@ class LinuxInfo {
 	}
 
 	// Get ram usage/amount/types
-	// DONE
 	public function getRam(){
-
-		// Firstly, are we allowed?
-		if (in_array('ram', $this->settings['show']) && !(bool) $this->settings['show']['ram'])
-			return array();
 
 		// We'll return the contents of this
 		$tmpInfo = array();
@@ -179,12 +160,7 @@ class LinuxInfo {
 	}
 
 	// Get processor info
-	// DONE
 	public function getCPU() {
-
-		// Firstly, are we allowed?
-		if (in_array('cpu', $this->settings['show']) && !(bool) $this->settings['show']['cpu'])
-			return array();
 
 		// File that has it
 		$file = '/proc/cpuinfo';
@@ -283,12 +259,7 @@ class LinuxInfo {
 	}
 
 	// Famously interesting uptime
-	// DONE
 	public function getUpTime () {
-
-		// Firstly, are we allowed?
-		if (in_array('uptime', $this->settings['show']) && !(bool) $this->settings['show']['uptime'])
-			return array();
 
 		// File that has it
 		$file = '/proc/uptime';
@@ -313,12 +284,8 @@ class LinuxInfo {
 	// Get hard drives
 	// DONE
 	// Retrieving more info on the hard drives would be good, though.
-	// TODO: Somehow make this ignore optical drives. 
+	// TODO: Somehow make this ignore optical drives (or list that as a feature :P)
 	public function getHD(){
-
-		// Firstly, are we allowed?
-		if (in_array('hd', $this->settings['show']) && !(bool) $this->settings['show']['hd'])
-			return array();
 
 		$return = array();
 
@@ -335,12 +302,7 @@ class LinuxInfo {
 	}
 
 	// Get temps/voltages
-	// DONE. 
 	public function getTemps(){
-
-		// Firstly, are we allowed?
-		if (in_array('temps', $this->settings['show']) && !(bool) $this->settings['show']['temps'])
-			return array();
 
 		// Method of getting temps
 		if (is_string($this->settings['options']['temps'])) {
@@ -487,20 +449,14 @@ class LinuxInfo {
 			return $return;
 
 		}
-		// Lolwhat?
+		// Lolwhut?
 		else {
 				return array();
 		}
 	}
 
 	// Get mounts
-	// DONE
-	// TODO: Find out why certain file systems occasionally break php's disk space functions
 	public function getMounts(){
-
-		// Firstly, are we allowed?
-		if (in_array('mounts', $this->settings['show']) && !(bool) $this->settings['show']['mounts'])
-			return array();
 
 		// File that has it
 		$file = '/proc/mounts';
@@ -554,10 +510,6 @@ class LinuxInfo {
 	// DONE.
 	// TODO optimization
 	public function getDevs(){
-
-		// Firstly, are we allowed?
-		if (in_array('devices', $this->settings['show']) && !(bool) $this->settings['show']['devices'])
-			return array();
 
 		// Return array
 		$return = array();
@@ -691,12 +643,7 @@ class LinuxInfo {
 	}
 
 	// Get load
-	// DONE
 	public function getLoad(){
-
-		// Firstly, are we allowed?
-		if (in_array('load', $this->settings['show']) && !(bool) $this->settings['show']['load'])
-			return array();
 
 		// File that has it
 		$file = '/proc/loadavg';
@@ -720,12 +667,7 @@ class LinuxInfo {
 	}
 
 	// Get network devices
-	// DONE
 	public function getNet() {
-
-		// Firstly, are we allowed?
-		if (in_array('load', $this->settings['show']) && !(bool) $this->settings['show']['load'])
-			return array();
 
 		// Hold our return values
 		$return = array();

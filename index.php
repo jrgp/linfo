@@ -33,6 +33,10 @@ define('IN_INFO', true);
 define('LOCAL_PATH', dirname(__FILE__) . '/');
 
 // Load conf file
+if (!is_file(LOCAL_PATH . 'config.inc.php') && is_file(LOCAL_PATH . 'sample.config.inc.php'))
+	exit('Make changes to sample.config.inc.php then rename as config.inc.php');
+elseif(!is_file(LOCAL_PATH . 'config.inc.php'))
+	exit('Config file not found.');
 require_once LOCAL_PATH . 'config.inc.php';
 
 // Fix some things
@@ -45,29 +49,12 @@ require_once LOCAL_PATH . 'lib/init.php';
 require_once LOCAL_PATH . 'lib/misc.php';
 require_once LOCAL_PATH . 'lib/display.php';
 
-// Need hddtemp?
-if (in_array('hddtemp', (array) $settings['options']['temps']))
-	require_once LOCAL_PATH . 'lib/class.GetHddTemp.php';
-
-// Need mbmon?
-if (in_array('mbmon', (array) $settings['options']['temps']))
-	require_once LOCAL_PATH . 'lib/class.Getmbmon.php';
-
 // Determine our OS
 $os = determineOS($setting_os);
 
 // Cannot?
 if ($os == false)
 	exit('Unknown operating system');
-
-// Load it
-if ($os == 'linux') {
-	require_once LOCAL_PATH . 'lib/class.LinuxInfo.php';
-	if ($settings['cache'])
-		require_once LOCAL_PATH . 'lib/class.LinuxDevCache.php';
-}
-elseif ($os == 'FreeBSD')
-	require_once LOCAL_PATH . 'lib/class.FreeBSDInfo.php';
 
 // Get info
 $getter = parseSystem($os, $settings);
