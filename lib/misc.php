@@ -36,26 +36,12 @@ function get_int_from_file($file) {
 
 // Convert bytes to stuff like KB MB GB TB etc
 function byte_convert($size, $precision = 2) {
-	$size = (int) $size;
-	if ($size < 1048576)
-		return round($size / 1024, $precision) . 'KB';
-	elseif ($size < 1073741824)
-		return round($size / 1048576, $precision) . 'MB';
-	elseif ($size < 1099511627776)
-		return round($size / 1073741824, $precision) . 'GB';
-	elseif ($size < 1.12589990684262e+15)
-		return round($size / 1099511627776, $precision) . 'TB';
-	else
-		return $size . ' bytes';
 
-
-	// http://us.php.net/manual/en/function.disk-total-space.php#75967
-    /*$i=0;
-    $iec = array("B", "Kb", "Mb", "Gb", "Tb");
-    while (($size/1024)>1) {
-        $size=$size/1024;
-        $i++;}
-    return(round($size, $precision)." ".$iec[$i]);*/
+	// Fixes large disk size overflow issue
+	// Found at http://www.php.net/manual/en/function.disk-free-space.php#81207
+	$types = array( 'B', 'KB', 'MB', 'GB', 'TB' );
+	for( $i = 0; $size >= 1024 && $i < ( count( $types ) -1 ); $size /= 1024, $i++ );
+	return( round( $size, $precision ) . ' ' . $types[$i] );
 }
 
 // Like above, but for seconds
