@@ -11,7 +11,7 @@ System requirements:
 
 Installation:
  - Extract tarball contents to somewhere under your web root
- - Optionally change settings in config.php
+ - Optionally change settings in sample.config.inc.php, then rename it to config.inc.php
 
 Known issues:
  - Getting device names is very, very slow on older machines
