@@ -24,7 +24,7 @@ define('TIME_START', microtime(true));
 
 // Version
 define('AppName', 'Linfo');
-define('VERSION', sprintf('%s %s', AppName, '1.0b'));
+define('VERSION', sprintf('%s %s', AppName, '(svn)'));
 
 // Anti hack
 define('IN_INFO', true);
