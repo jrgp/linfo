@@ -34,6 +34,7 @@ function showInfo($info, $settings) {
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Linfo - '.$info['HostName'].'</title>
+	<link href="./favicon.ico" type="image/x-icon" rel="shortcut icon" />
 	<style type="text/css">
 		body {
 			font-family: verdana;
