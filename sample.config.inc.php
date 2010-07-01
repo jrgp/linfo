@@ -27,6 +27,7 @@ $settings['show']['raid'] = true;
 $settings['show']['hostname'] = true;
 $settings['show']['devices'] = true;
 $settings['show']['temps'] = true;
+$settings['show']['battery'] = true;
 
 
 // Hide certain file systems / devices

@@ -62,7 +62,8 @@ class LinuxInfo {
 			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(),
 			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(),
 			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(),
-			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps()
+			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps(),
+			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery()
 		);
 	}
 
@@ -694,6 +695,34 @@ class LinuxInfo {
 		}
 
 		// Return array of info
+		return $return;
+	}
+
+	// Useful for things like laptops. I think this might also work for UPS's, but I'm not sure.
+	public function getBattery() {
+		
+		// Return values
+		$return = array();
+
+		// Here they should be
+		$bats = (array) @glob('/sys/class/power_supply/BAT*');
+	
+		#print_r($bats);exit;
+
+		// Get vals for each battery
+		foreach ($bats as $b) {
+			$charge_full = get_int_from_file($b.'/charge_full');
+			$charge_now = get_int_from_file($b.'/charge_now');
+			$return[end(explode('/', $v))] = array(
+				'charge_full' => $charge_full,
+				'charge_now' => $charge_now,
+				'percentage' => round($charge_now / $charge_full, 4) * 100,
+				'device' => trim(@file_get_contents($b.'/manufacturer')) . ' ' . trim(file_get_contents($b.'/model_name')),
+				'state' => trim(@file_get_contents($b.'/status'))
+			);
+		}
+
+		// Give it
 		return $return;
 	}
 }

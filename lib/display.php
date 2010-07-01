@@ -202,6 +202,23 @@ function showInfo($info, $settings) {
 				echo '
 			</table>
 		</div>
+		<div class="infoTable">
+			<h2>Batteries</h2>
+			<table>
+				<tr><th>Device</th><th>State</th><th>Charge %</th></tr>
+				';
+				foreach ($info['Battery'] as $bat) {
+					echo '
+					<tr>
+						<td>'.$bat['device'].'</td>
+						<td>'.$bat['state'].'</td>
+						<td>'.$bat['percentage'].'%</td>
+					</tr>
+					';
+				}
+				echo '
+			</table>
+		</div>
 	</div>
 	<div class="col">
 		<div class="infoTable">
