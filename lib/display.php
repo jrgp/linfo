@@ -56,7 +56,7 @@ function showInfo($info, $settings) {
 			border: 1px solid #999;
 			padding: 4px;
 		}
-		th {
+		th, .alt {
 			background-color: #ccc;
 		}
 		.infoTable {
@@ -224,7 +224,7 @@ function showInfo($info, $settings) {
 			</table>
 		</div>
 		<div class="infoTable">
-			<h2>Hard Drives</h2>
+			<h2>Drives</h2>
 			<table>
 				<tr>
 					<th>Device Path</th>
@@ -278,7 +278,7 @@ function showInfo($info, $settings) {
 
 		// Show totals and finish table
 		echo '
-		<tr>
+		<tr class="alt">
 			<td colspan="3">Totals: </td>
 			<td>'.byte_convert($total_size).'</td>
 			<td>'.byte_convert($total_used).'</td>
