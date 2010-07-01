@@ -597,7 +597,7 @@ class LinuxInfo {
 
 	// Get mdadm raid
 	// TODO - finish. And maybe support other Linux software raids?
-	public function getRaid() {
+	public function getRAID() {
 
 		// Firstly, are we allowed?
 		if (in_array('raid', $this->settings['show']) && !(bool) $this->settings['show']['raid'])
@@ -607,36 +607,32 @@ class LinuxInfo {
 		$raidinfo = array();
 
 		// Decide what
-		switch ($this->settings['raid_type']) {
+		if (in_array('mdadm', $this->settings['linux']['raid_type'])) {
 
-			case 'mdadm':
+			// File needed
+			$file = '/proc/mdstat';
 
-				// File needed
-				$file = '/proc/mdstat';
+			// Is it ok?
+			if (!is_file($file) || !is_readable($file))
+				return false;
 
-				// Is it ok?
-				if (!is_file($file) || !is_readable($file))
-					return false;
+			// Get contents
+			$contents = trim(@file_get_contents($file));
 
-				// Get contents
-				$contents = trim(@file_get_contents($file));
+			// Regex for parsing
+			@preg_match_all(
+				'/(?<name>md\d+)\s+\:\s+(?<state>\w+)\s+(?<personality>raid\d+)\s+(?<devices>\w+\[.+\].*)+\n'.
+				'\s+(?<blocks>\d+)\s+blocks\s+(level (?<level>\d+)\, (?<chunk>\w+) chunk, algorithm '.
+				'(?<algorithm>\d+)\s+)?\[(?<active>\d+\/\d+)\]\s+\[(?<drives>\w+)\]/i'
+				, $contents, $matches, PREG_SET_ORDER);
 
-				// Regex for parsing
-				@preg_match_all(
-					'/(?<name>md\d+)\s+\:\s+(?<state>\w+)\s+(?<personality>raid\d+)\s+(?<devices>\w+\[.+\].*)+\n'.
-					'\s+(?<blocks>\d+)\s+blocks\s+(level (?<level>\d+)\, (?<chunk>\w+) chunk, algorithm '.
-					'(?<algorithm>\d+)\s+)?\[(?<active>\d+\/\d+)\]\s+\[(?<drives>\w+)\]/i'
-					, $contents, $matches, PREG_SET_ORDER);
+			// Well?
+			//print_r($matches);
 
-				// Well?
-				//print_r($matches);
+			// Debug
+			//exit;
 
-				// Debug
-				//exit;
-
-				$raidinfo = $matches;
-
-			break;
+			$raidinfo = $matches;
 		}
 
 		// Return info

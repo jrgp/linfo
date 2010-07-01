@@ -28,7 +28,7 @@ $settings['show']['hostname'] = true;
 $settings['show']['devices'] = true;
 $settings['show']['temps'] = true;
 $settings['show']['battery'] = true;
-
+$settings['show']['raid'] = true;
 
 // Hide certain file systems / devices
 $settings['hide']['filesystems'] = array(
@@ -36,8 +36,9 @@ $settings['hide']['filesystems'] = array(
 	'usbfs', 'devpts', 'fusectl', 'securityfs');
 $settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none');
 
-// Softraid on linux
-$settings['raid_type'] = 'mdadm'; // TODO
+// Softraid settings
+$settings['linux']['raid_type'][] = 'mdadm'; // mdadm going to be supported
+$settings['freebsd']['raid_type'][] = 'gmirror'; // gmirror is supported
 
 // Getting temps...how? Can either be false, 'hddtemp', 'mbmon', or both: array('hddtemp', 'mbmon')
 $settings['options']['temps'] = false;

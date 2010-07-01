@@ -60,7 +60,8 @@ class FreeBSDInfo {
 			'RAM' => !(bool) $this->settings['show']['ram'] ? array() : $this->getRam(), 			# done
 			'Load' => !(bool) $this->settings['show']['load'] ? array() : $this->getLoad(), 		# done
 			'UpTime' => !(bool) $this->settings['show']['uptime'] ? '' : $this->getUpTime(), 		# done
-			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(), 			# LAME
+			'RAID' => !(bool) $this->settings['show']['raid'] ? '' : $this->getRAID(),	 		# done (gmirror only)
+			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(), 			# ugh
 			'HD' => !(bool) $this->settings['show']['hd'] ? '' : $this->getHD(), 				# tbd
 			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(), 	# tbd
 			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(), 		# tbd
@@ -249,8 +250,62 @@ class FreeBSDInfo {
 		// Get it textual, as in days/minutes/hours/etc
 		return seconds_convert($seconds);
 	}
-	
+
+	// RAID Stats
+	public function getRAID() {
+		
+		// Store raid arrays here
+		$return = array();
+
+		// Counter for each raid array
+		$i = 0;
+		
+		// Gmirror?
+		if (in_array('gmirror', $this->settings['linux']['raid_type'])) {
+			
+			try {
+				// Run gmirror status program to get raid array status
+				$res = $this->exec->exec('gmirror', 'status');
+
+				// Divide that into lines
+				$lines = explode("\n", $res);
+
+				// First is worthless
+				unset ($lines[0]);
+
+				// Parse the remaining ones
+				foreach ($lines as $line => $content) {
+					
+					// Hitting a new raid definition
+					if (preg_match('/^(\w+)\/(\w+)\s+(\w+)\s+(\w+)$/', $content, $m)) {
+						$i++;
+						$return[$i] = array(
+							'name' => $m[2],
+							'type' => $m[1],
+							'status' => $m[3],
+							'devices' => array($m[4])
+						);
+					}
+
+					// Hitting a new device in a raid definition
+					elseif (preg_match('/^                      (\w+)$/', $content, $m)) {
+						if (array_key_exists($i, $info))
+							$return[$i]['devices'][] = $m[1];
+					}
+				}
+			}
+			catch (CallExtException $e) {
+				// Don't jump out; allow potential more raid array
+				// mechanisms to be gathered and outputted
+			}
+		}
+		
+		// Give off raid info
+		return $return;
+	}
+
 	// Get CPU's
+	// I don't really like how this is done
 	public function getCPU() {
 
 		// Use sysctl to get CPU info
@@ -287,8 +342,8 @@ class FreeBSDInfo {
 		// Get output ready
 		for ($i = 1; $i <= $num; $i++)
 			$cpus[] = array(
-				'Vendor' => '',	# ugh
-				'MHz' => '',	# ugh
+				'Vendor' => '?',# ugh
+				'MHz' => '?',	# ugh
 				'Model' => $model
 			);
 		
