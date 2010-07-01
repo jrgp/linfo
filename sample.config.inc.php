@@ -39,7 +39,7 @@ $settings['hide']['storage_devices'] = array('gvfs-fuse-daemon');
 $settings['raid_type'] = 'mdadm'; // TODO
 
 // Getting temps...how? Can either be false, 'hddtemp', 'mbmon', or both: array('hddtemp', 'mbmon')
-$settings['options']['temps'] = array('hddtemp', 'mbmon');
+$settings['options']['temps'] = false;
 
 // Configuration for getting temps with hddtemp
 $settings['hddtemp']['mode'] = 'daemon'; // Either daemon or syslog
