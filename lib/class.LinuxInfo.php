@@ -21,7 +21,6 @@
 
 defined('IN_INFO') or exit;
 
-
 /*
  * Get info on a usual linux system
  * Works by totally looking around /proc and /sys
@@ -141,7 +140,7 @@ class LinuxInfo {
 		// Get swapContents
 		@preg_match_all('/([^\s]+)\s+(\w+)\s+(\d+)\s(\d+)/i', $swapContents, $matches);
 		foreach ((array)$matches[0] as $k => $v)
-			$swapVals[] = array(
+			$swapVals[] = array (
 				'device' => $matches[1][$k],
 				'type' => $matches[2][$k],
 				'size' => $matches[3][$k],
@@ -284,8 +283,7 @@ class LinuxInfo {
 	}
 
 	// Get hard drives
-	// Retrieving more info on the hard drives would be good, though.
-	// TODO: Somehow make this ignore optical drives (or list that as a feature :P)
+	// TODO: Possibly more information?
 	public function getHD(){
 
 		$return = array();
@@ -482,9 +480,7 @@ class LinuxInfo {
 			$parts = explode(' ', trim($line));
 
 			// Should we not show this?
-			if ($parts[0] == 'none' || in_array($parts[2], $this->settings['hide']['filesystems']))
-				continue;
-			if (in_array($parts[0], $this->settings['hide']['storage_devices']))
+			if (in_array($parts[0], $this->settings['hide']['storage_devices']) || in_array($parts[2], $this->settings['hide']['filesystems']))
 				continue;
 
 			// Get these

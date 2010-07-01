@@ -45,7 +45,6 @@ function byte_convert($size, $precision = 2) {
 }
 
 // Like above, but for seconds
-// TODO: Fix getting remainder minutes/hours
 function seconds_convert($seconds) {
 	if ($seconds < 60)
 		return $seconds .' seconds';

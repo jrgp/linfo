@@ -25,11 +25,17 @@ defined('IN_INFO') or exit;
  * Incomplete FreeBSD info class
  * So I decided to bite the bullet and use external programs for 
  * BSD/Mac/Win parsing functionality
+ *
+ * As I don't have access to a FreeBSD machine with php I'm not sure
+ * how well this works, if at all.
  */
 
 class FreeBSDInfo {
-
-	protected $settings, $have = array(), $exec;
+	
+	// Encapsulate these
+	protected
+		$settings,
+		$exec;
 
 	// Start us off
 	public function __construct($settings) {
@@ -52,10 +58,10 @@ class FreeBSDInfo {
 			'HostName' => !(bool) $this->settings['show']['hostname'] ? '' : $this->getHostName(), 		# done
 			'Mounts' => !(bool) $this->settings['show']['mounts'] ? array() : $this->getMounts(), 		# done
 			'RAM' => !(bool) $this->settings['show']['ram'] ? array() : $this->getRam(), 			# done
+			'Load' => !(bool) $this->settings['show']['load'] ? array() : $this->getLoad(), 		# done
+			'UpTime' => !(bool) $this->settings['show']['uptime'] ? '' : $this->getUpTime(), 		# done
+			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(), 			# LAME
 			'HD' => !(bool) $this->settings['show']['hd'] ? '' : $this->getHD(), 				# tbd
-			'Load' => !(bool) $this->settings['show']['load'] ? array() : $this->getLoad(), 		# tbd
-			'UpTime' => !(bool) $this->settings['show']['uptime'] ? '' : $this->getUpTime(), 		# tbd
-			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(), 			# tbd
 			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(), 	# tbd
 			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(), 		# tbd
 			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps(), 		# tbd
@@ -70,14 +76,16 @@ class FreeBSDInfo {
 	
 	// Get kernel version
 	public function getKernel() {
-
+		
+		// Try getting uname result
 		try {
 			$res = $this->exec->exec('uname', '-a');
 		}
 		catch (CallExtException $e) {
 			return 'Unknown';
 		}
-
+		
+		// Try parsing it
 		if (preg_match('/^FreeBSD [\w\.]+ (\w+) FreeBSD$/', $res, $m) == 0)
 			return 'Unknown';
 		else
@@ -87,13 +95,16 @@ class FreeBSDInfo {
 	// Get host name
 	public function getHostName() {
 		
+		// We need uname again; it should use the result above
+		// instead of calling it again
 		try {
 			$res = $this->exec->exec('uname', '-a');
 		}
 		catch (CallExtException $e) {
 			return 'Unknown';
 		}
-
+		
+		// Try parsing it
 		if (preg_match('/^FreeBSD ([\w\.]+) \w+ FreeBSD$/', $res, $m) == 0)
 			return 'Unknown';
 		else
@@ -103,25 +114,27 @@ class FreeBSDInfo {
 
 	// Get mounted file systems
 	public function getMounts() {
-
+		
+		// Get result of mount command
 		try {
 			$res = $this->exec->exec('mount');
 		}
 		catch (CallExtException $e) {
 			return array();
 		}
-
+		
+		// Parse it
 		if (preg_match_all('/(.+)\s+on\s+(.+)\s+\((\w+)\, .+\)\n/i', $res, $m, PREG_SET_ORDER) == 0)
 			return array();
-
+		
+		// Store them here
 		$mounts = array();
-
+		
+		// Deal with each entry
 		foreach ($m as $mount) {
-			// Should we not show this?
-			if ($mount[1] == 'none' || in_array($mount[3], $this->settings['hide']['filesystems']))
-				continue;
 
-			if (in_array($mount[1], $this->settings['hide']['storage_devices']))
+			// Should we not show this?
+			if (in_array($mount[1], $this->settings['hide']['storage_devices']) || in_array($mount[3], $this->settings['hide']['filesystems']))
 				continue;
 			
 			// Get these
@@ -137,17 +150,18 @@ class FreeBSDInfo {
 				'used' => $size - $free,
 				'free' => $free
 			);
-
 		}
 
+		// Give it
 		return $mounts;
 	}
 
 	// Get ram usage
 	public function getRam(){
-
+		
+		// Use sysctl to get ram usage
 		try {
-			$res = $this->exec->exec('sysctl','vm.vmtotal');
+			$res = $this->exec->exec('sysctl', 'vm.vmtotal');
 		}
 		catch (CallExtException $e) {
 			return array();
@@ -183,13 +197,108 @@ class FreeBSDInfo {
 		// Return it
 		return $tmpInfo;
 	}
+	
+	// Get system load
+	public function getLoad() {
+		
+		// Use uptime, since it also has load values and we'll use the rest of it later
+		try {
+			$res = $this->exec->exec('uptime');
+		}
+		catch (CallExtException $e) {
+			return array();
+		}
+
+		// Parse it
+		if (preg_match('/^.+load averages: ([\d\.]+), ([\d\.]+), ([\d\.]+)$/', $res, $m) == 0)
+			return array();
+		
+		// Give
+		return array(
+			'now' => $m[1],
+			'5min' => $m[2],
+			'15min' => $m[3]
+		);
+	
+	}
+	
+	// Get uptime
+	public function getUpTime() {
+		
+		// Use uptime
+		try {
+			$res = $this->exec->exec('uptime');
+		}
+		catch (CallExtException $e) {
+			return '';
+		}
+
+		// Parse it
+		if (preg_match('/^\d+:\d+\w{2}\s+up\s+(\d+)\s+days,\s+(\d+):(\d+).+$/', $res, $m) == 0)
+			return '';
+
+		// Get what
+		list(, $days, $hours, $minutes) = $m;
+		
+		// Convert to seconds
+		$seconds = 0;
+		$seconds += $days*24*60*60;
+		$seconds += $hours*60*60;
+		$seconds += $minutes*60;
+		
+		// Get it textual, as in days/minutes/hours/etc
+		return seconds_convert($seconds);
+	}
+	
+	// Get CPU's
+	public function getCPU() {
+
+		// Use sysctl to get CPU info
+		try {
+			$res = $this->exec->exec('sysctl', 'hw.model hw.ncpu');
+		}
+		catch (CallExtException $e) {
+			return array();
+		}
+
+		// Parse result
+		if (preg_match_all('/([\w\.]+): (.+)/', $res, $m, PREG_SET_ORDER) == 0)
+			return array();
+
+		// Get
+		foreach ($m as $cpstat) {
+			switch ($cpstat[1]) {
+				case 'hw.model':
+					$model = $cpstat[2];
+				break;
+				case 'hw.ncpu':
+					$num = $cpstat[2];
+				break;
+			}
+		}
+
+		// Ugh
+		if (!$num || !$model)
+			return array();
+		
+		// Return this
+		$cpus = array();
+
+		// Get output ready
+		for ($i = 1; $i <= $num; $i++)
+			$cpus[] = array(
+				'Vendor' => '',	# ugh
+				'MHz' => '',	# ugh
+				'Model' => $model
+			);
+		
+		// Return
+		return $cpus;
+	}
 
 	public function getHD(){}
 	public function getTemps(){}
 	public function getDevs(){}
-	public function getLoad(){}
 	public function getNet(){}
-	public function getCPU(){}
-	public function getUpTime(){}
 	public function getBattery() {}
 }

@@ -34,7 +34,7 @@ $settings['show']['battery'] = true;
 $settings['hide']['filesystems'] = array(
 	'tmpfs', 'ecryptfs', 'nfsd', 'rpc_pipefs',
 	'usbfs', 'devpts', 'fusectl', 'securityfs');
-$settings['hide']['storage_devices'] = array('gvfs-fuse-daemon');
+$settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none');
 
 // Softraid on linux
 $settings['raid_type'] = 'mdadm'; // TODO

@@ -41,6 +41,7 @@ require_once LOCAL_PATH . 'config.inc.php';
 
 // Fix some things
 $settings['hide']['filesystems'] = is_array($settings['hide']['filesystems']) ? $settings['hide']['filesystems'] : array();
+$settings['hide']['devices'] = is_array($settings['hide']['devices']) ? $settings['hide']['devices'] : array();
 $settings['hide']['filesystems'][] = 'rootfs';
 $settings['hide']['filesystems'][] = 'binfmt_misc';
 
