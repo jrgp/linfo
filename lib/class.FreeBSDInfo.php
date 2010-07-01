@@ -350,10 +350,19 @@ class FreeBSDInfo {
 		// Return
 		return $cpus;
 	}
-
+	
+	// idk
 	public function getHD(){}
+	
+	// idk
 	public function getTemps(){}
+	
+	// idk
 	public function getDevs(){}
+	
+	// idk
 	public function getNet(){}
+	
+	// idk
 	public function getBattery() {}
 }
