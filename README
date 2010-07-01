@@ -4,10 +4,16 @@ Goals:
  - Provide info such as disk space, temperatures, cpu, ram, etc
  - Use very, very few external programs (like df/load/uptime/etc), if any. (parse the file system for info)
 
-System requirements: 
- - A somewhat modern Linux system with /proc and /sys mounted
+Global System requirements: 
  - Probably at least PHP 5
  - To display temps/voltages: mbmon and/or hddtemp must be running as a daemon
+
+Linux system requirements:
+ - /proc and /sys mounted appropriately
+ - Somewhat recent kernel version
+
+FreeBSD system requirements:
+ - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, etc
 
 Installation:
  - Extract tarball contents to somewhere under your web root
@@ -15,6 +21,7 @@ Installation:
 
 Known issues:
  - Getting device names is very, very slow on older machines
+ - Linux support is mostly done; FreeBSD support is extremely alpha
 
 License: GNU General Public License
 Primary Author: Joseph Robert Gillotti <joe@u13.net>

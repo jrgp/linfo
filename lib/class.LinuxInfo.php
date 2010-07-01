@@ -24,13 +24,14 @@ defined('IN_INFO') or exit;
 
 /*
  * Get info on a usual linux system
- * Works by totally looking around /proc, mostly
+ * Works by totally looking around /proc and /sys
+ * Totally ignores CallExt class, very deliberately
  */
+
 class LinuxInfo {
 
 	// Keep these tucked away
 	protected
-		$have = array(),
 		$settings;
 
 	// Start us off
@@ -283,7 +284,6 @@ class LinuxInfo {
 	}
 
 	// Get hard drives
-	// DONE
 	// Retrieving more info on the hard drives would be good, though.
 	// TODO: Somehow make this ignore optical drives (or list that as a feature :P)
 	public function getHD(){
@@ -477,6 +477,7 @@ class LinuxInfo {
 
 		// Each line
 		foreach ($lines as $line) {
+
 			// The parts
 			$parts = explode(' ', trim($line));
 
@@ -490,12 +491,13 @@ class LinuxInfo {
 			$size = @disk_total_space($parts[1]);
 			$free = @disk_free_space($parts[1]);
 
-			// Only use realpath to convert stuff like /dev/by-uuid/long-uuid-string to /dev/short-device-name
-			$realpath = current(explode('/', trim($parts[0], '/'))) == 'dev' ? realpath($parts[0]) : false;
+			// If it's a symlink, find out where it really goes.
+			// (using realpath instead of readlink because the former gives absolute paths)
+			$symlink = is_link($parts[0]) ? realpath($parts[0]) : false;
 
 			// Might be good, go for it
 			$mounts[] = array(
-				'device' => $realpath ? $realpath : $parts[0],
+				'device' => $symlink ? $symlink : $parts[0],
 				'mount' => $parts[1],
 				'type' => $parts[2],
 				'size' => $size ,
@@ -509,7 +511,6 @@ class LinuxInfo {
 	}
 
 	// Get device names
-	// DONE.
 	// TODO optimization. On newer systems this takes only a few fractions of a second,
 	// but on older it can take upwards of 5 seconds, since it parses the entire ids files
 	// looking for device names which resolve to the pci addresses

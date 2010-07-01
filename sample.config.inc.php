@@ -5,7 +5,7 @@ defined('IN_INFO') or exit;
  * Stuff that can be hardcoded for speed and security reasons
  */
 
-// So far defaults to Linux, as support for other OS' is currently nonexistant
+// Linux fully supported. FreeBSD alpha / partially working
 $setting_os = 'linux';
 
 /*

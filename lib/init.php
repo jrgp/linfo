@@ -44,7 +44,8 @@ function __autoload($class) {
 // Exception for info classes 
 class GetInfoException extends Exception{}
 
-// Determine OS. So far, and possibly forever, Linux is supported exclusively
+// Determine OS.
+// Linux support mostly done; FreeBSD under dev next
 function determineOS($os = null) {
 
 	// List of known/supported Os's
