@@ -490,7 +490,8 @@ class LinuxInfo {
 			$size = @disk_total_space($parts[1]);
 			$free = @disk_free_space($parts[1]);
 
-			$realpath = $parts[2] != 'nfs' ? realpath($parts[0]) : false;
+			// Only use realpath to convert stuff like /dev/by-uuid/long-uuid-string to /dev/short-device-name
+			$realpath = current(explode('/', trim($parts[0], '/'))) == 'dev' ? realpath($parts[0]) : false;
 
 			// Might be good, go for it
 			$mounts[] = array(
@@ -509,8 +510,10 @@ class LinuxInfo {
 
 	// Get device names
 	// DONE.
-	// TODO optimization
-	public function getDevs(){
+	// TODO optimization. On newer systems this takes only a few fractions of a second,
+	// but on older it can take upwards of 5 seconds, since it parses the entire ids files
+	// looking for device names which resolve to the pci addresses
+	public function getDevs() {
 
 		// Return array
 		$return = array();
@@ -707,8 +710,6 @@ class LinuxInfo {
 		// Here they should be
 		$bats = (array) @glob('/sys/class/power_supply/BAT*');
 	
-		#print_r($bats);exit;
-
 		// Get vals for each battery
 		foreach ($bats as $b) {
 			$charge_full = get_int_from_file($b.'/charge_full');
