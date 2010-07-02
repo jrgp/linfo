@@ -61,9 +61,9 @@ class FreeBSDInfo {
 			'Load' => !(bool) $this->settings['show']['load'] ? array() : $this->getLoad(), 		# done
 			'UpTime' => !(bool) $this->settings['show']['uptime'] ? '' : $this->getUpTime(), 		# done
 			'RAID' => !(bool) $this->settings['show']['raid'] ? '' : $this->getRAID(),	 		# done (gmirror only)
+			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(), 	# done (dev names only)
 			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(), 			# ugh
 			'HD' => !(bool) $this->settings['show']['hd'] ? '' : $this->getHD(), 				# tbd
-			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(), 	# tbd
 			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(), 		# tbd
 			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps(), 		# tbd
 			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery()  	# tbd
@@ -304,6 +304,45 @@ class FreeBSDInfo {
 		return $return;
 	}
 
+	// So far just gets interface names :-/
+	public function getNet() {
+
+		// Store return vals here
+		$return = array();
+		
+		// Use ifconfig to get net info
+		try {
+			$res = $this->exec->exec('ifconfig');
+		}
+		catch (CallExtException $e) {
+			return $return;
+		}
+
+		// Parse result
+		if (preg_match_all('/^([a-z0-9]+):.+$/im', $string, $m, PREG_SET_ORDER) == 0)
+			return $return;
+
+		// Entries
+		foreach ($m as $net)
+			$return[$net[1]] = array(
+
+				// Not sure how to get this stuff on freebsd
+				'recieved' => array(
+					'bytes' => false,
+					'errors' => false,
+					'packets' => false 
+				),
+				'sent' => array(
+					'bytes' => false,
+					'errors' =>  false,
+					'packets' => false 
+				)
+			);
+
+		// Give
+		return $return;
+	}
+
 	// Get CPU's
 	// I don't really like how this is done
 	public function getCPU() {
@@ -359,10 +398,7 @@ class FreeBSDInfo {
 	
 	// idk
 	public function getDevs(){}
-	
-	// idk
-	public function getNet(){}
-	
+		
 	// idk
 	public function getBattery() {}
 }

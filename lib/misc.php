@@ -37,6 +37,10 @@ function get_int_from_file($file) {
 // Convert bytes to stuff like KB MB GB TB etc
 function byte_convert($size, $precision = 2) {
 
+	// Sanity check
+	if (!is_numeric($size))
+		return 'Unknown';
+
 	// Fixes large disk size overflow issue
 	// Found at http://www.php.net/manual/en/function.disk-free-space.php#81207
 	$types = array( 'B', 'KB', 'MB', 'GB', 'TB' );
@@ -77,7 +81,7 @@ function getContents($file, $default = '') {
 
 // Like above, but in lines instead of a big string
 function getLines($file) {
-if (!is_file($file) || !($lines = @file($file, FILE_SKIP_EMPTY_LINES)))
+	if (!is_file($file) || !($lines = @file($file, FILE_SKIP_EMPTY_LINES)))
 		return array();
 	
 	else
