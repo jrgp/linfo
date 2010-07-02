@@ -33,11 +33,11 @@ function showInfo($info, $settings) {
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>Linfo - '.$info['HostName'].'</title>
+	<title>'.AppName.' - '.$info['HostName'].'</title>
 	<link href="./favicon.ico" type="image/x-icon" rel="shortcut icon" />
 	<style type="text/css">
 		body {
-			font-family: verdana;
+			font-family: verdana, sans-serif;
 			background-color: #ddd;
 			color: #000;
 			font-size: 12px;
@@ -96,6 +96,7 @@ function showInfo($info, $settings) {
 			width: 50%;
 		}
 		#info .center {text-align: center;}
+		td.none { text-align: center; font-size: 10px; }
 	</style>
 </head>
 <body id="info">
@@ -175,13 +176,17 @@ function showInfo($info, $settings) {
 					<th>Amount Received</th>
 				</tr>
 			';
-			foreach($info['Network Devices'] as $device => $stats)
-				echo '
-					<tr>
-						<td>'.$device.'</td>
-						<td>'.byte_convert($stats['sent']['bytes']).'</td>
-						<td>'.byte_convert($stats['recieved']['bytes']).'</td>
-					</tr>';
+
+			if (count($info['Network Devices']) > 0)
+				foreach($info['Network Devices'] as $device => $stats)
+					echo '
+						<tr>
+							<td>'.$device.'</td>
+							<td>'.byte_convert($stats['sent']['bytes']).'</td>
+							<td>'.byte_convert($stats['recieved']['bytes']).'</td>
+						</tr>';
+			else
+				echo '<tr><td colspan="3" class="none">None found</td></tr>';
 			echo '
 			</table>
 		</div>
@@ -190,6 +195,7 @@ function showInfo($info, $settings) {
 			<table>
 				<tr><th>Path</th><th>Device</th><th>Value</th></tr>
 				';
+			if (count($info['Temps']) > 0)
 				foreach($info['Temps'] as $stat) {
 					echo '
 					<tr>
@@ -199,6 +205,8 @@ function showInfo($info, $settings) {
 					</tr>
 					';
 				}
+			else
+				echo '<tr><td colspan="3" class="none">None found</td></tr>';
 				echo '
 			</table>
 		</div>
@@ -207,15 +215,18 @@ function showInfo($info, $settings) {
 			<table>
 				<tr><th>Device</th><th>State</th><th>Charge %</th></tr>
 				';
+			if (count($info['Battery']) > 0)
 				foreach ($info['Battery'] as $bat) {
 					echo '
 					<tr>
 						<td>'.$bat['device'].'</td>
 						<td>'.$bat['state'].'</td>
-						<td>'.$bat['percentage'].'%</td>
+						<td>'.$bat['percentage'].'</td>
 					</tr>
 					';
 				}
+			else
+				echo '<tr><td colspan="3" class="none">None found</td></tr>';
 				echo '
 			</table>
 		</div>
@@ -230,6 +241,7 @@ function showInfo($info, $settings) {
 					<th>Device</th>
 				</tr>
 				';
+			if (count($info['Devices']) > 0)
 				foreach($info['Devices'] as $device)
 					echo '
 						<tr>
@@ -237,6 +249,8 @@ function showInfo($info, $settings) {
 							<td>'.$device['vendor'].'</td>
 							<td>'.$device['device'].'</td>
 						</tr>';
+			else
+				echo '<tr><td colspan="3" class="none">None found</td></tr>';
 				echo '
 			</table>
 		</div>
@@ -248,12 +262,15 @@ function showInfo($info, $settings) {
 					<th>Name</th>
 				</tr>
 				';
-				foreach($info['HD'] as $path => $name)
+			if (count($info['HD']) > 0)
+				foreach($info['HD'] as $drive)
 					echo '
 						<tr>
-							<td>'.$path.'</td>
-							<td>'.$name.'</td>
+							<td>'.$drive['device'].'</td>
+							<td>'.$drive['name'].'</td>
 						</tr>';
+			else
+				echo '<tr><td colspan="3" class="none">None found</td></tr>';
 				echo '
 			</table>
 		</div>
@@ -278,20 +295,23 @@ function showInfo($info, $settings) {
 		$total_used = 0;
 		$total_free = 0;
 
-		// Go through each
-		foreach($info['Mounts'] as $mount) {
-			$total_size += $mount['size'];
-			$total_used += $mount['used'];
-			$total_free += $mount['free'];
-			echo '<tr>
-				<td>'.$mount['device'].'</td>
-				<td>'.$mount['mount'].'</td>
-				<td>'.$mount['type'].'</td>
-				<td>'.byte_convert($mount['size']).'</td>
-				<td>'.byte_convert($mount['used']).'</td>
-				<td>'.byte_convert($mount['free']).'</td>
-			</tr>';
-		}
+		if (count($info['Mounts']) > 0)
+			// Go through each
+			foreach($info['Mounts'] as $mount) {
+				$total_size += $mount['size'];
+				$total_used += $mount['used'];
+				$total_free += $mount['free'];
+				echo '<tr>
+					<td>'.$mount['device'].'</td>
+					<td>'.$mount['mount'].'</td>
+					<td>'.$mount['type'].'</td>
+					<td>'.byte_convert($mount['size']).'</td>
+					<td>'.byte_convert($mount['used']).'</td>
+					<td>'.byte_convert($mount['free']).'</td>
+				</tr>';
+			}
+		else
+			echo '<tr><td colspan="3" class="none">None found</td></tr>';
 
 		// Show totals and finish table
 		echo '

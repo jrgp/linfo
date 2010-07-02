@@ -65,3 +65,21 @@ function seconds_convert($seconds) {
 			floor(($seconds % (60*24))/60) . ' minutes';
 
 }
+
+// Get a file's contents, or default to second param
+function getContents($file, $default = '') {
+	if (!is_file($file) || !($contents = @file_get_contents($file)))
+		return $default;
+	
+	else
+		return trim($contents);
+}
+
+// Like above, but in lines instead of a big string
+function getLines($file) {
+if (!is_file($file) || !($lines = @file($file, FILE_SKIP_EMPTY_LINES)))
+		return array();
+	
+	else
+		return $lines;
+}

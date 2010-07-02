@@ -23,7 +23,7 @@ defined('IN_INFO') or exit;
 
 /*
  * Get info on a usual linux system
- * Works by totally looking around /proc and /sys
+ * Works by exclusively looking around /proc and /sys
  * Totally ignores CallExt class, very deliberately
  */
 
@@ -67,7 +67,7 @@ class LinuxInfo {
 		);
 	}
 
-	// Return OS version
+	// Return OS type
 	public function getOS() {
 		return 'Linux';
 	}
@@ -80,15 +80,15 @@ class LinuxInfo {
 
 		// Make sure we can use it
 		if (!is_file($file) || !is_readable($file))
-			return array();
+			return 'Unknown';
 
 		// Get it
-		$contents = trim(@file_get_contents($file));
+		$contents = getContents($file);
 
 		// Parse it
 		@preg_match('/^Linux version ([^\s]+).+$/', $contents, $m);
 
-		return $m[1];
+		return $m[1] ? $m[1] : 'Unknown';
 	}
 
 	// Get host name
@@ -97,12 +97,8 @@ class LinuxInfo {
 		// File containing info
 		$file = '/proc/sys/kernel/hostname';
 
-		// Make sure we can use it
-		if (!is_file($file) || !is_readable($file))
-			return '';
-
 		// Get it
-		$contents = trim(@file_get_contents($file));
+		$contents = getContents($file, 'Unknown');
 
 		// Return it
 		return $contents;
@@ -127,8 +123,8 @@ class LinuxInfo {
 		$swapVals = array();
 
 		// Get contents of both
-		$memContents = trim(@file_get_contents($procFileMem));
-		$swapContents = trim(@file_get_contents($procFileSwap));
+		$memContents = getContents($procFileMem);
+		$swapContents = getContents($procFileSwap);
 
 		// Get memContents
 		@preg_match_all('/^(\w+)\:\s+(\d+)\s*(kb)\s*?/mi', $memContents, $matches, PREG_OFFSET_CAPTURE);
@@ -270,7 +266,7 @@ class LinuxInfo {
 			return false;
 
 		// Get contents
-		$contents = trim(@file_get_contents($file));
+		$contents = getContents($file);
 
 		// Parts
 		$parts = explode(' ', $contents);
@@ -291,13 +287,13 @@ class LinuxInfo {
 		foreach((array)@glob('/sys/block/*/device/model') as $path) {
 			$dirname = dirname(dirname($path));
 			$parts = explode('/', $path);
-			$dev = '/dev/'.$parts[3];
-			$model = trim(@file_get_contents($path));
-			$return[$dev] = $model;
+			$return[] = array(
+				'name' => getContents($path),
+				'device' => '/dev/'.$parts[3]
+			);
 		}
 
 		return $return;
-
 	}
 
 	// Get temps/voltages
@@ -465,10 +461,7 @@ class LinuxInfo {
 			return false;
 
 		// Get contents
-		$contents = trim(@file_get_contents($file));
-
-		// Parse it
-		$lines = explode("\n", $contents);
+		$lines = getLines($file);
 
 		// Mounts
 		$mounts = array();
@@ -496,7 +489,7 @@ class LinuxInfo {
 				'device' => $symlink ? $symlink : $parts[0],
 				'mount' => $parts[1],
 				'type' => $parts[2],
-				'size' => $size ,
+				'size' => $size,
 				'used' => $size - $free,
 				'free' => $free
 			);
@@ -531,7 +524,7 @@ class LinuxInfo {
 
 		// Get all PCI ids
 		foreach ((array) @glob($sys_pci_dir.'*/uevent') as $path) {
-			$contents = (string) @file_get_contents($path);
+			$contents = getContents($path);
 			if (preg_match('/[PCI_ID|PCI_SUBSYS_ID]=([a-z0-9]+):(.+)\n/i', $contents, $m) == 1) {
 				$pci_dev_id[strtolower($m[1])][strtolower($m[2])] = 1;
 				$pci_dev_num++;
@@ -540,7 +533,7 @@ class LinuxInfo {
 
 		// Get all USB ids
 		foreach ((array) @glob($sys_usb_dir.'*/uevent') as $path) {
-			$contents = (string) @file_get_contents($path);
+			$contents = getContents($path);
 			if (preg_match('/PRODUCT=(.+)\/(.+)\/.+\n/i', $contents, $m) == 1) {
 				$usb_dev_id[str_pad(strtolower($m[1]), 4, '0', STR_PAD_LEFT)][str_pad(strtolower($m[2]), 4, '0', STR_PAD_LEFT)] = 1;
 				$usb_dev_num++;
@@ -617,7 +610,7 @@ class LinuxInfo {
 				return false;
 
 			// Get contents
-			$contents = trim(@file_get_contents($file));
+			$contents = getContents($file);
 
 			// Regex for parsing
 			@preg_match_all(
@@ -650,7 +643,7 @@ class LinuxInfo {
 			return false;
 
 		// Get contents
-		$contents = trim(@file_get_contents($file));
+		$contents = getContents($file);
 
 		// Parts
 		$parts = explode(' ', $contents);
@@ -710,9 +703,9 @@ class LinuxInfo {
 			$return[end(explode('/', $v))] = array(
 				'charge_full' => $charge_full,
 				'charge_now' => $charge_now,
-				'percentage' => round($charge_now / $charge_full, 4) * 100,
-				'device' => trim(@file_get_contents($b.'/manufacturer')) . ' ' . trim(file_get_contents($b.'/model_name')),
-				'state' => trim(@file_get_contents($b.'/status'))
+				'percentage' => (round($charge_now / $charge_full, 4) * 100).'%',
+				'device' => getContents($b.'/manufacturer') . ' ' . getContents($b.'/model_name', 'Unknown'),
+				'state' => getContents($b.'/status', 'Unknown')
 			);
 		}
 
