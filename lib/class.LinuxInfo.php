@@ -179,12 +179,11 @@ class LinuxInfo {
 		// Store CPU's here
 		$cpus = array();
 
+		// Holder for current cpu info
+		$cur_cpu = array();
+
 		// Go through lines in file
 		foreach ($lines as $num => $line) {
-
-			// No current cpu yet? Make a holder for one
-			if (!is_array($cur_cpu))
-				$cur_cpu = array();
 
 			// Approaching new CPU? Save current and start new info for this
 			if ($line == '' && count($cur_cpu) > 0) {

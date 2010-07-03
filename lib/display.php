@@ -126,7 +126,7 @@ function showInfo($info, $settings) {
 				</tr>
 				<tr>
 					<th>Accessed IP</th>
-					<td>'.$_SERVER['SERVER_ADDR'].'</td>
+					<td>'.(isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown').'</td>
 				</tr>
 				<tr>
 					<th>CPUs ('.count($info['CPU']).')</th>
@@ -160,7 +160,7 @@ function showInfo($info, $settings) {
 					<td>'.byte_convert($info['RAM']['total']).'</td>
 				</tr>
 				<tr>
-					<td>Fake (swap)</td>
+					<td>Swap (virtual)</td>
 					<td>'.byte_convert($info['RAM']['swapFree']).'</td>
 					<td>'.byte_convert($info['RAM']['swapTotal'] - $info['RAM']['swapFree']).'</td>
 					<td>'.byte_convert($info['RAM']['swapTotal']).'</td>
