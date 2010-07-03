@@ -99,6 +99,7 @@ class LinuxInfo {
 
 		// Get it
 		$contents = getContents($file, 'Unknown');
+		
 
 		// Return it
 		return $contents;

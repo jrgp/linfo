@@ -160,7 +160,7 @@ function showInfo($info, $settings) {
 					<td>'.byte_convert($info['RAM']['total']).'</td>
 				</tr>
 				<tr>
-					<td>Swap (virtual)</td>
+					<td>Swap</td>
 					<td>'.byte_convert($info['RAM']['swapFree']).'</td>
 					<td>'.byte_convert($info['RAM']['swapTotal'] - $info['RAM']['swapFree']).'</td>
 					<td>'.byte_convert($info['RAM']['swapTotal']).'</td>
