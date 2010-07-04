@@ -17,7 +17,6 @@ $settings['show']['mounts'] = true;
 $settings['show']['network'] = true;
 $settings['show']['uptime'] = true;
 $settings['show']['cpu'] = true;
-$settings['show']['raid'] = true;
 $settings['show']['hostname'] = true;
 $settings['show']['devices'] = true;
 $settings['show']['temps'] = true;
