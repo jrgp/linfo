@@ -23,7 +23,7 @@ Installation:
  - Optionally change settings in sample.config.inc.php, then rename it to config.inc.php
 
 Known issues:
- - Getting Linux device names is very, very slow
+ - Getting Linux device names is slow on old systems
  - FreeBSD support is not quite finished
  - OSX/Win/OtherBSD support does not yet exist
 
