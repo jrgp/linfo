@@ -22,9 +22,11 @@
 defined('IN_INFO') or exit;
 
 /*
- * Incomplete FreeBSD info class
+ * Nearly complete FreeBSD info class
  * So I decided to bite the bullet and use external programs for 
  * BSD/Mac/Win parsing functionality
+ * Note: When Linux compatibility is enabled and /proc is mounted, it only
+ * contains process info; none of the hardware/system/network status that Linux /proc has
  *
  * As I don't have access to a FreeBSD machine with php I'm not sure
  * how well this works, if at all.
@@ -61,12 +63,12 @@ class OS_FreeBSD {
 			'Load' => !(bool) $this->settings['show']['load'] ? array() : $this->getLoad(), 		# done
 			'UpTime' => !(bool) $this->settings['show']['uptime'] ? '' : $this->getUpTime(), 		# done
 			'RAID' => !(bool) $this->settings['show']['raid'] ? '' : $this->getRAID(),	 		# done (gmirror only)
-			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(), 	# done (dev names only)
+			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(), 	# done (names only)
 			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(), 			# ugh
-			'HD' => !(bool) $this->settings['show']['hd'] ? '' : $this->getHD(), 				# tbd
-			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(), 		# tbd
-			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps(), 		# tbd
-			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery()  	# tbd
+			'HD' => !(bool) $this->settings['show']['hd'] ? '' : $this->getHD(), 				# TODO
+			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(), 		# TODO
+			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps(), 		# TODO
+			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery()  	# TODO
 		);
 	}
 
@@ -78,39 +80,15 @@ class OS_FreeBSD {
 	// Get kernel version
 	private function getKernel() {
 		
-		// Try getting uname result
-		try {
-			$res = $this->exec->exec('uname', '-a');
-		}
-		catch (CallExtException $e) {
-			return 'Unknown';
-		}
-		
-		// Try parsing it
-		if (preg_match('/^FreeBSD [\w\.]+ (\w+) FreeBSD$/', $res, $m) == 0)
-			return 'Unknown';
-		else
-			return $m[1];
+		// hmm. PHP has a native function for this
+		return php_uname('r');
 	}
 
 	// Get host name
 	private function getHostName() {
 		
-		// We need uname again; it should use the result above
-		// instead of calling it again
-		try {
-			$res = $this->exec->exec('uname', '-a');
-		}
-		catch (CallExtException $e) {
-			return 'Unknown';
-		}
-		
-		// Try parsing it
-		if (preg_match('/^FreeBSD ([\w\.]+) \w+ FreeBSD$/', $res, $m) == 0)
-			return 'Unknown';
-		else
-			return $m[1];
-	
+		// Take advantage of that function again
+		return php_uname('n');
 	}
 
 	// Get mounted file systems

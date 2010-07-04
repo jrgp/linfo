@@ -2,7 +2,9 @@ Linfo - PHP server health/information script
 
 Goals: 
  - Provide info such as disk space, temperatures, cpu, ram, etc
- - Use very, very few external programs (like df/load/uptime/etc), if any. (parse the file system for info)
+ - Be very fast; generation in under a second is most desired.
+ - Call very few external programs (like df/load/uptime/etc), if any. (parse the file system for info)
+ - Linux version not use external programs *at all* and rely exclusively on /proc and /sys and connecting to locally listening daemons
 
 Global System requirements: 
  - Probably at least PHP 5
@@ -14,14 +16,16 @@ Linux system requirements:
 
 FreeBSD system requirements:
  - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, etc
+ - Known to work under 8.0-RELEASE; older versions may work, I'm not sure
 
 Installation:
  - Extract tarball contents to somewhere under your web root
  - Optionally change settings in sample.config.inc.php, then rename it to config.inc.php
 
 Known issues:
- - Getting device names is very, very slow on older machines
- - Linux support is mostly done; FreeBSD support is extremely alpha
+ - Getting Linux device names is very, very slow
+ - FreeBSD support is not quite finished
+ - OSX/Win/OtherBSD support does not yet exist
 
 License: GNU General Public License
 Primary Author: Joseph Robert Gillotti <joe@u13.net>

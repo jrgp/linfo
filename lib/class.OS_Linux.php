@@ -73,7 +73,7 @@ class OS_Linux {
 	}
 
 	// Get linux kernel version
-	private function getKernel(){
+	private function getKernel() {
 
 		// File containing info
 		$file = '/proc/version';
