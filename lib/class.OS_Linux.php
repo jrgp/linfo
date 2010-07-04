@@ -27,7 +27,7 @@ defined('IN_INFO') or exit;
  * Totally ignores CallExt class, very deliberately
  */
 
-class LinuxInfo {
+class OS_Linux {
 
 	// Keep these tucked away
 	protected
@@ -68,12 +68,12 @@ class LinuxInfo {
 	}
 
 	// Return OS type
-	public function getOS() {
+	private function getOS() {
 		return 'Linux';
 	}
 
 	// Get linux kernel version
-	public function getKernel(){
+	private function getKernel(){
 
 		// File containing info
 		$file = '/proc/version';
@@ -92,7 +92,7 @@ class LinuxInfo {
 	}
 
 	// Get host name
-	public function getHostName() {
+	private function getHostName() {
 
 		// File containing info
 		$file = '/proc/sys/kernel/hostname';
@@ -106,7 +106,7 @@ class LinuxInfo {
 	}
 
 	// Get ram usage/amount/types
-	public function getRam(){
+	private function getRam(){
 
 		// We'll return the contents of this
 		$tmpInfo = array();
@@ -158,7 +158,7 @@ class LinuxInfo {
 	}
 
 	// Get processor info
-	public function getCPU() {
+	private function getCPU() {
 
 		// File that has it
 		$file = '/proc/cpuinfo';
@@ -256,7 +256,7 @@ class LinuxInfo {
 	}
 
 	// Famously interesting uptime
-	public function getUpTime () {
+	private function getUpTime () {
 
 		// File that has it
 		$file = '/proc/uptime';
@@ -278,9 +278,9 @@ class LinuxInfo {
 		return seconds_convert($seconds);
 	}
 
-	// Get hard drives
+	// Get disk drives
 	// TODO: Possibly more information?
-	public function getHD(){
+	private function getHD() {
 
 		$return = array();
 
@@ -297,161 +297,53 @@ class LinuxInfo {
 	}
 
 	// Get temps/voltages
-	public function getTemps(){
+	private function getTemps() {
+		
+		// Hold them here
+		$return = array();
 
-		// Method of getting temps
-		if (is_string($this->settings['options']['temps'])) {
-			switch ($this->settings['options']['temps']) {
+		// hddtemp?
+		if (array_key_exists('hddtemp', $this->settings['temps']) && !empty($this->settings['temps']['hddtemp'])) {
+			try {
+				$hddtemp = new GetHddTemp;
+				$hddtemp->setMode($this->settings['hddtemp']['mode']);
+				if ($this->settings['hddtemp']['mode'] == 'daemon') {
+					$hddtemp->setAddress(
+						$this->settings['hddtemp']['address']['host'],
+						$this->settings['hddtemp']['address']['port']);
+				}
+				$hddtemp_res = $hddtemp->work();
+				if (is_array($hddtemp_res))
+					$return = array_merge($return, $hddtemp_res);
 
-				// Only hddtemp is support as of now
-				case 'hddtemp':
-
-					switch ($this->settings['hddtemp']['mode']) {
-
-						case 'daemon':
-							try {
-								$hddt = new GetHddTemp;
-								$hddt->setMode('daemon');
-								$hddt->setAddress(
-									$this->settings['hddtemp']['address']['host'],
-									$this->settings['hddtemp']['address']['port']
-									);
-
-								return $hddt->work();
-
-							}
-							catch (GetHddTempException $e) {
-								return array();
-							}
-						break;
-
-						case 'syslog':
-							try {
-								$hddt = new GetHddTemp;
-								$hddt->setMode('syslog');
-								return $hddt->work();
-							}
-							catch (GetHddTempException $e) {
-								return array();
-							}
-						break;
-
-
-						// Anything else gets an empty array
-						default:
-							return array();
-						break;
-					}
-				break;
-
-				// Mbmon
-				case 'mbmon':
-					try {
-						$hddt = new GetMbMon;
-						$hddt->setAddress(
-							$this->settings['mbmon']['address']['host'],
-							$this->settings['mbmon']['address']['port']
-							);
-
-						return $hddt->work();
-
-					}
-					catch (GetMbMonException $e) {
-						return array();
-					}
-				break;
-
-				// Anything else gets an empty array
-				default:
-					return array();
-				break;
+			}
+			catch (GetHddTempException $e) {
+				// Current lack of error handling
 			}
 		}
 
-		// Do more than one?
-		elseif(is_array($this->settings['options']['temps'])) {
-
-			// To hold temps to return
-			$return = array();
-
-			// Do mbmon
-			if (in_array('mbmon', $this->settings['options']['temps'])) {
-				try {
-					$hddt = new GetMbMon;
-					$hddt->setAddress(
-						$this->settings['mbmon']['address']['host'],
-						$this->settings['mbmon']['address']['port']
-						);
-
-					$mbmresult = $hddt->work();
-
-				}
-				catch (GetMbMonException $e) {
-					$mbmresult = array();
-				}
+		// mbmon?
+		if (array_key_exists('mbmon', $this->settings['temps']) && !empty($this->settings['temps']['mbmon'])) {
+			try {
+				$mbmon = new GetMbMon;
+				$mbmon->setAddress(
+					$this->settings['mbmon']['address']['host'],
+					$this->settings['mbmon']['address']['port']);
+				$mbmon_res = $mbmon->work();
+				if (is_array($mbmon_res))
+					$return = array_merge($return, $mbmon_res);
 			}
-
-			// Save it
-			if (is_array($mbmresult))
-				$return = array_merge($return, $mbmresult);
-
-			// Do hddtemp
-			if (in_array('hddtemp', $this->settings['options']['temps'])) {
-				switch ($this->settings['hddtemp']['mode']) {
-
-					case 'daemon':
-						try {
-							$hddt = new GetHddTemp;
-							$hddt->setMode('daemon');
-							$hddt->setAddress(
-								$this->settings['hddtemp']['address']['host'],
-								$this->settings['hddtemp']['address']['port']
-								);
-
-							$hddtresult = $hddt->work();
-
-						}
-						catch (GetHddTempException $e) {
-							return array();
-						}
-					break;
-
-					case 'syslog':
-						try {
-							$hddt = new GetHddTemp;
-							$hddt->setMode('syslog');
-							$hddtresult = $hddt->work();
-						}
-						catch (GetHddTempException $e) {
-							return array();
-						}
-					break;
-
-
-					// Anything else gets an empty array
-					default:
-						$hddtresult = array();
-					break;
-				}
+			catch (GetMbMonException $e) {
+				// Current lack of error handling
 			}
-
-			// Save it
-			if (is_array($hddtresult))
-				$return = array_merge($return, $hddtresult);
-
-
-			// Return temps
-			return $return;
-
 		}
-		// Lolwhut?
-		else {
-				return array();
-		}
+
+		// Done
+		return $return;
 	}
 
 	// Get mounts
-	public function getMounts(){
+	private function getMounts(){
 
 		// File that has it
 		$file = '/proc/mounts';
@@ -503,7 +395,7 @@ class LinuxInfo {
 	// TODO optimization. On newer systems this takes only a few fractions of a second,
 	// but on older it can take upwards of 5 seconds, since it parses the entire ids files
 	// looking for device names which resolve to the pci addresses
-	public function getDevs() {
+	private function getDevs() {
 
 		// Return array
 		$return = array();
@@ -590,42 +482,14 @@ class LinuxInfo {
 
 	// Get mdadm raid
 	// TODO - finish. And maybe support other Linux software raids?
-	public function getRAID() {
-
-		// Firstly, are we allowed?
-		if (in_array('raid', $this->settings['show']) && !(bool) $this->settings['show']['raid'])
-			return array();
-
+	private function getRAID() {
+		
 		// Store it here
 		$raidinfo = array();
 
-		// Decide what
-		if (in_array('mdadm', $this->settings['linux']['raid_type'])) {
-
-			// File needed
-			$file = '/proc/mdstat';
-
-			// Is it ok?
-			if (!is_file($file) || !is_readable($file))
-				return false;
-
-			// Get contents
-			$contents = getContents($file);
-
-			// Regex for parsing
-			@preg_match_all(
-				'/(?<name>md\d+)\s+\:\s+(?<state>\w+)\s+(?<personality>raid\d+)\s+(?<devices>\w+\[.+\].*)+\n'.
-				'\s+(?<blocks>\d+)\s+blocks\s+(level (?<level>\d+)\, (?<chunk>\w+) chunk, algorithm '.
-				'(?<algorithm>\d+)\s+)?\[(?<active>\d+\/\d+)\]\s+\[(?<drives>\w+)\]/i'
-				, $contents, $matches, PREG_SET_ORDER);
-
-			// Well?
-			//print_r($matches);
-
-			// Debug
-			//exit;
-
-			$raidinfo = $matches;
+		// mdadm?
+		if (array_key_exists('mdadm', $this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
+			// TODO
 		}
 
 		// Return info
@@ -633,7 +497,7 @@ class LinuxInfo {
 	}
 
 	// Get load
-	public function getLoad(){
+	private function getLoad() {
 
 		// File that has it
 		$file = '/proc/loadavg';
@@ -657,7 +521,7 @@ class LinuxInfo {
 	}
 
 	// Get network devices
-	public function getNet() {
+	private function getNet() {
 
 		// Hold our return values
 		$return = array();
@@ -688,7 +552,7 @@ class LinuxInfo {
 	}
 
 	// Useful for things like laptops. I think this might also work for UPS's, but I'm not sure.
-	public function getBattery() {
+	private function getBattery() {
 		
 		// Return values
 		$return = array();

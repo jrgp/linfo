@@ -30,7 +30,7 @@ defined('IN_INFO') or exit;
  * how well this works, if at all.
  */
 
-class FreeBSDInfo {
+class OS_FreeBSD {
 	
 	// Encapsulate these
 	protected
@@ -71,12 +71,12 @@ class FreeBSDInfo {
 	}
 
 	// Return OS type
-	public function getOS() {
+	private function getOS() {
 		return 'FreeBSD';	
 	}
 	
 	// Get kernel version
-	public function getKernel() {
+	private function getKernel() {
 		
 		// Try getting uname result
 		try {
@@ -94,7 +94,7 @@ class FreeBSDInfo {
 	}
 
 	// Get host name
-	public function getHostName() {
+	private function getHostName() {
 		
 		// We need uname again; it should use the result above
 		// instead of calling it again
@@ -114,7 +114,7 @@ class FreeBSDInfo {
 	}
 
 	// Get mounted file systems
-	public function getMounts() {
+	private function getMounts() {
 		
 		// Get result of mount command
 		try {
@@ -158,7 +158,7 @@ class FreeBSDInfo {
 	}
 
 	// Get ram usage
-	public function getRam(){
+	private function getRam(){
 		
 		// Use sysctl to get ram usage
 		try {
@@ -200,7 +200,7 @@ class FreeBSDInfo {
 	}
 	
 	// Get system load
-	public function getLoad() {
+	private function getLoad() {
 		
 		// Use uptime, since it also has load values and we'll use the rest of it later
 		try {
@@ -224,7 +224,7 @@ class FreeBSDInfo {
 	}
 	
 	// Get uptime
-	public function getUpTime() {
+	private function getUpTime() {
 		
 		// Use uptime
 		try {
@@ -252,7 +252,7 @@ class FreeBSDInfo {
 	}
 
 	// RAID Stats
-	public function getRAID() {
+	private function getRAID() {
 		
 		// Store raid arrays here
 		$return = array();
@@ -261,7 +261,7 @@ class FreeBSDInfo {
 		$i = 0;
 		
 		// Gmirror?
-		if (in_array('gmirror', $this->settings['linux']['raid_type'])) {
+		if (array_key_exists('gmirror', $this->settings['raid']) && !empty($this->settings['raid']['gmirror'])) {
 			
 			try {
 				// Run gmirror status program to get raid array status
@@ -305,7 +305,7 @@ class FreeBSDInfo {
 	}
 
 	// So far just gets interface names :-/
-	public function getNet() {
+	private function getNet() {
 
 		// Store return vals here
 		$return = array();
@@ -345,7 +345,7 @@ class FreeBSDInfo {
 
 	// Get CPU's
 	// I don't really like how this is done
-	public function getCPU() {
+	private function getCPU() {
 
 		// Use sysctl to get CPU info
 		try {
@@ -391,14 +391,14 @@ class FreeBSDInfo {
 	}
 	
 	// idk
-	public function getHD(){}
+	private function getHD(){}
 	
 	// idk
-	public function getTemps(){}
+	private function getTemps(){}
 	
 	// idk
-	public function getDevs(){}
+	private function getDevs(){}
 		
 	// idk
-	public function getBattery() {}
+	private function getBattery() {}
 }

@@ -1,21 +1,15 @@
 <?php
+
+// Don't touch this
 defined('IN_INFO') or exit;
 
 /*
- * Stuff that can be hardcoded for speed and security reasons
- */
-
-// Linux fully supported. FreeBSD alpha / partially working
-$setting_os = 'linux';
-
-/*
- * Settings
+ * Possibly don't show stuff
  */
 
 // For certain reasons, some might choose to not display all we can
 $settings['show']['kernel'] = true;
 $settings['show']['os'] = true;
-$settings['show']['uptime'] = true;
 $settings['show']['load'] = true;
 $settings['show']['ram'] = true;
 $settings['show']['hd'] = true;
@@ -28,7 +22,7 @@ $settings['show']['hostname'] = true;
 $settings['show']['devices'] = true;
 $settings['show']['temps'] = true;
 $settings['show']['battery'] = true;
-$settings['show']['raid'] = true;
+$settings['show']['raid'] = false; # Not finished
 
 // Hide certain file systems / devices
 $settings['hide']['filesystems'] = array(
@@ -36,12 +30,14 @@ $settings['hide']['filesystems'] = array(
 	'usbfs', 'devpts', 'fusectl', 'securityfs');
 $settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none');
 
-// Softraid settings
-$settings['linux']['raid_type'][] = 'mdadm'; // mdadm going to be supported
-$settings['freebsd']['raid_type'][] = 'gmirror'; // gmirror is supported
+// Various softraids. Set to true to enable.
+// Only works if it's available on your system; otherwise does nothing
+$settings['raid']['gmirror'] = false; 
+$settings['raid']['mdadm'] = false;  # TODO
 
-// Getting temps...how? Can either be false, 'hddtemp', 'mbmon', or both: array('hddtemp', 'mbmon')
-$settings['options']['temps'] = false;
+// Various ways of getting temps/voltages/etc. Set to true to enable.
+$settings['temps']['hddtemp'] = false;
+$settings['temps']['mbmon'] = false;
 
 // Configuration for getting temps with hddtemp
 $settings['hddtemp']['mode'] = 'daemon'; // Either daemon or syslog
@@ -56,14 +52,3 @@ $settings['mbmon']['address'] = array( // Address/Port of mbmon daemon to connec
 );
 
 
-/*
- * Caching.
- * Strongly recommended.
- * Make sure cachedir is writable by user php runs as
- * Requires SQLite, which is enabled by default in php => v5
- *
- * ==-- Not yet finished
- *
- */
-$settings['cache'] = true; // Use cache?
-$settings['cache_dir'] = dirname(__FILE__).'/cache/'; // Defaults to cache/ in current folder

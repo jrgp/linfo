@@ -55,7 +55,7 @@ $os = determineOS($setting_os);
 
 // Cannot?
 if ($os == false)
-	exit('Unknown operating system');
+	exit('Unknown/unsupported operating system');
 
 // Get info
 $getter = parseSystem($os, $settings);

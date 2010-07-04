@@ -31,7 +31,7 @@ function __autoload($class) {
 	if (is_file($file)) 
 		require_once $file;
 	else
-		exit('File for '.$class.' not found');
+		exit('File for '.$file.' not found');
 	
 	// Ensure we have it
 	if (class_exists($class))
@@ -45,42 +45,29 @@ function __autoload($class) {
 class GetInfoException extends Exception{}
 
 // Determine OS.
-// Linux support mostly done; FreeBSD under dev, hopefully nearing completion
 function determineOS($os = null) {
+	
+	// This magical constant knows all
+	switch (PHP_OS) {
 
-	// List of known/supported Os's
-	$known = array('linux', 'freebsd', 'darwin', 'windows');
+		// These are supported
+		case 'Linux':
+		case 'FreeBSD':
+			return PHP_OS;
+		break;
 
-	// Maybe we hardcoded OS type in
-	if ($os != null && in_array(strtolower($os), $known)) {
-		return $os;
+		// So anything else isn't
+		default:
+			return false;	
+		break;
 	}
-
-	// Or not:
-
-	// Get uname
-	$uname = strtolower(trim(@`/bin/uname`));
-
-	// Do we have it?
-	if (in_array($uname, $known)) {
-		return $uname;
-	}
-
-	// Otherwise no. Winfux support might be coming later'ish
-	else {
-		return false;
-	}
-
 }
 
 // Start up class based on result of above
 function parseSystem($type, $settings) {
-	$type = ucfirst($type) . 'Info';
-	if (!class_exists($type))
-		exit('Info class for this does not exist');
-
+	$class = 'OS_'.$type;
 	try {
-		$info =  new $type($settings);
+		$info =  new $class($settings);
 	}
 	catch (GetInfoException $e) {
 		exit($e->getMessage());
