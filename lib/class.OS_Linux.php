@@ -371,6 +371,7 @@ class OS_Linux {
 			// Get these
 			$size = @disk_total_space($parts[1]);
 			$free = @disk_free_space($parts[1]);
+			$used = $size != false && $free != false ? $size - $free : false;
 
 			// If it's a symlink, find out where it really goes.
 			// (using realpath instead of readlink because the former gives absolute paths)
@@ -378,12 +379,14 @@ class OS_Linux {
 
 			// Might be good, go for it
 			$mounts[] = array(
-				'device' => $symlink ? $symlink : $parts[0],
+				'device' => $symlink != false ? $symlink : $parts[0],
 				'mount' => $parts[1],
 				'type' => $parts[2],
 				'size' => $size,
-				'used' => $size - $free,
-				'free' => $free
+				'used' => $used,
+				'free' => $free,
+				'free_percent' => ($free !== false && $size !== false ? round($free / $size, 2) * 100 : false),
+				'used_percent' => ($used !== false && $size !== false ? round($used / $size, 2) * 100 : false)
 			);
 		}
 

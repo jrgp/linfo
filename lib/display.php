@@ -306,8 +306,8 @@ function showInfo($info, $settings) {
 					<td>'.$mount['mount'].'</td>
 					<td>'.$mount['type'].'</td>
 					<td>'.byte_convert($mount['size']).'</td>
-					<td>'.byte_convert($mount['used']).'</td>
-					<td>'.byte_convert($mount['free']).'</td>
+					<td>'.byte_convert($mount['used']).' ('.($mount['used_percent'] !== false ? $mount['used_percent'] : 'N/A').'%)</td>
+					<td>'.byte_convert($mount['free']).' ('.($mount['free_percent'] !== false ? $mount['free_percent'] : 'N/A').'%)</td>
 				</tr>';
 			}
 		else
