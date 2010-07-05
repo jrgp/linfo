@@ -97,6 +97,7 @@ function showInfo($info, $settings) {
 		}
 		#info .center {text-align: center;}
 		td.none { text-align: center; font-size: 10px; }
+		span.perc {font-size: 90%;}
 	</style>
 </head>
 <body id="info">
@@ -306,8 +307,10 @@ function showInfo($info, $settings) {
 					<td>'.$mount['mount'].'</td>
 					<td>'.$mount['type'].'</td>
 					<td>'.byte_convert($mount['size']).'</td>
-					<td>'.byte_convert($mount['used']).' ('.($mount['used_percent'] !== false ? $mount['used_percent'] : 'N/A').'%)</td>
-					<td>'.byte_convert($mount['free']).' ('.($mount['free_percent'] !== false ? $mount['free_percent'] : 'N/A').'%)</td>
+					<td>'.byte_convert($mount['used']).
+					' <span class="perc">('.($mount['used_percent'] !== false ? $mount['used_percent'] : 'N/A').'%)</span></td>
+					<td>'.byte_convert($mount['free']).
+					' <span class="perc">('.($mount['free_percent'] !== false ? $mount['free_percent'] : 'N/A').'%)</span></td>
 				</tr>';
 			}
 		else

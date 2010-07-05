@@ -22,6 +22,7 @@ $settings['show']['devices'] = true;
 $settings['show']['temps'] = true;
 $settings['show']['battery'] = true;
 $settings['show']['raid'] = false; # Not finished
+$settings['show']['wifi'] = false; # Not finished
 
 // Hide certain file systems / devices
 $settings['hide']['filesystems'] = array(

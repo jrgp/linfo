@@ -63,7 +63,8 @@ class OS_Linux {
 			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(),
 			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(),
 			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps(),
-			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery()
+			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery(),
+			'Wifi' => !(bool) $this->settings['show']['wifi'] ? array(): $this->getWifi()
 		);
 	}
 
@@ -507,7 +508,7 @@ class OS_Linux {
 
 		// Is it ok?
 		if (!is_file($file) || !is_readable($file))
-			return false;
+			return array();
 
 		// Get contents
 		$contents = getContents($file);
@@ -578,6 +579,44 @@ class OS_Linux {
 
 		// Give it
 		return $return;
+	}
+
+	// Again useful probably only for things like laptops. Get status on wifi adapters
+	// Parses it successfully, yes. But what should I use this info for? idk
+	private function getWifi() {
+
+		// Return these
+		$return = array();
+
+		// In here
+		$contents = getContents('/proc/self/net/wireless');
+
+		// Oi
+		if ($contents == false)
+			return $return;
+
+		// Parse
+		@preg_match_all('/^ ([a-z0-9]+)\:\s*(\d+)\s*([\d\.\-]+)\s*([\d\.\-]+)\s*([\d\.\-]+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/im', $contents, $m, PREG_SET_ORDER);
+
+		// Match
+		foreach ($m as $wlan) {
+			$return[] = array(
+				'device' => $wlan[1],
+				'status' => $wlan[2],
+				'quality_link' => $wlan[3],
+				'quality_level' => $wlan[4],
+				'quality_noise' => $wlan[5],
+				'dis_nwid' => $wlan[6],
+				'dis_crypt' => $wlan[7],
+				'dis_frag' => $wlan[8],
+				'dis_retry' => $wlan[9],
+				'dis_misc' => $wlan[10],
+				'mis_beac' => $wlan[11]
+			);
+		}
+
+		// Done
+		return $contents;
 	}
 }
 
