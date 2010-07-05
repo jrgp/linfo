@@ -39,7 +39,7 @@ function byte_convert($size, $precision = 2) {
 
 	// Sanity check
 	if (!is_numeric($size))
-		return 'Unknown';
+		return '?';
 
 	// Fixes large disk size overflow issue
 	// Found at http://www.php.net/manual/en/function.disk-free-space.php#81207
