@@ -481,7 +481,7 @@ class OS_Linux {
 		if (array_key_exists('mdadm', $this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
 
 			// Try getting contents
-			$mdadm_contents = getContents('/home/joe/tmp/mdstat_outcry');
+			$mdadm_contents = getContents('/proc/mdstat');
 
 			// Parse
 			@preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks\s*(level \d\, [\w\d]+ chunk\, algorithm \d\s*)?\[(\d\/\d)\] \[([U\_]+)\]/mi', $mdadm_contents, $m, PREG_SET_ORDER);
