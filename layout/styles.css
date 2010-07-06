@@ -1,0 +1,62 @@
+body {
+	font-family: verdana, sans-serif;
+	background-color: #ddd;
+	color: #000;
+	font-size: 12px;
+}
+a {
+	color: #666;
+}
+a:hover {
+	color: #000;
+}
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+table th, table td {
+	border: 1px solid #999;
+	padding: 4px;
+}
+th, .alt {
+	background-color: #ccc;
+}
+.infoTable {
+	margin-top: 5px;
+	margin-bottom: 10px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+.infoTable h2 {
+	background-color: #999;
+	color: #fff;
+	margin: 0;
+	padding: 5px;
+	text-shadow: #666 1px 1px 1px;
+}
+#foot {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	font-size: .8em;
+	line-height: 1.1em;
+}
+h1 {
+	font-size: 1.6em;
+	margin: 0;
+	padding: 5px 0px;
+	text-indent: 20px;
+}
+h2 {
+	font-size: 1.2em;
+	margin: 0;
+}
+.col2 {
+	overflow: hidden;
+}
+.col2 .col {
+	float: left;
+	width: 50%;
+}
+#info .center {text-align: center;}
+td.none { text-align: center; font-size: 10px; }
+span.perc {font-size: 90%;}

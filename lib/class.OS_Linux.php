@@ -97,13 +97,9 @@ class OS_Linux {
 
 		// File containing info
 		$file = '/proc/sys/kernel/hostname';
-
-		// Get it
-		$contents = getContents($file, 'Unknown');
 		
-
 		// Return it
-		return $contents;
+		return getContents($file, 'Unknown');
 	}
 
 	// Get ram usage/amount/types
@@ -259,24 +255,18 @@ class OS_Linux {
 	// Famously interesting uptime
 	private function getUpTime () {
 
-		// File that has it
-		$file = '/proc/uptime';
-
-		// Not there?
-		if (!is_file($file) || !is_readable($file))
-			return false;
-
 		// Get contents
-		$contents = getContents($file);
+		$contents = getContents('/proc/uptime', false);
 
-		// Parts
-		$parts = explode(' ', $contents);
+		// eh?
+		if ($contents == false)
+			return 'Unknown';
 
-		// Seconds of uptime, floor high
-		$seconds = ceil($parts[0]);
+		// Seconds
+		list($seconds) = explode(' ', $contents, 1);
 
 		// Get it textual, as in days/minutes/hours/etc
-		return seconds_convert($seconds);
+		return seconds_convert(ceil($seconds));
 	}
 
 	// Get disk drives
@@ -344,45 +334,41 @@ class OS_Linux {
 	}
 
 	// Get mounts
-	private function getMounts(){
+	private function getMounts() {
 
-		// File that has it
-		$file = '/proc/mounts';
+		// File
+		$contents = getContents('/proc/mounts');
 
-		// Not there?
-		if (!is_file($file) || !is_readable($file))
-			return false;
+		// Parse
+		@preg_match_all('/^([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) \d \d$/mi', $contents, $m, PREG_SET_ORDER);
 
-		// Get contents
-		$lines = getLines($file);
-
-		// Mounts
+		// Return these
 		$mounts = array();
 
-		// Each line
-		foreach ($lines as $line) {
-
-			// The parts
-			$parts = explode(' ', trim($line));
-
+		// Populate
+		foreach($m as $mount) {
+			
 			// Should we not show this?
-			if (in_array($parts[0], $this->settings['hide']['storage_devices']) || in_array($parts[2], $this->settings['hide']['filesystems']))
+			if (in_array($mount[1], $this->settings['hide']['storage_devices']) || in_array($mount[3], $this->settings['hide']['filesystems']))
 				continue;
-
+			
+			// Spaces and other things in the mount path are escaped C style. Fix that.
+			$mount[2] = stripcslashes($mount[2]);
+			
 			// Get these
-			$size = @disk_total_space($parts[1]);
-			$free = @disk_free_space($parts[1]);
+			$size = @disk_total_space($mount[2]);
+			$free = @disk_free_space($mount[2]);
 			$used = $size != false && $free != false ? $size - $free : false;
 
 			// If it's a symlink, find out where it really goes.
 			// (using realpath instead of readlink because the former gives absolute paths)
-			$symlink = is_link($parts[0]) ? realpath($parts[0]) : false;
+			$symlink = is_link($mount[1]) ? realpath($mount[1]) : false;
 
 			// Might be good, go for it
 			$mounts[] = array(
-				'device' => $symlink != false ? $symlink : $parts[0],
-				'mount' => $parts[1],
-				'type' => $parts[2],
+				'device' => $symlink != false ? $symlink : $mount[1],
+				'mount' => $mount[2],
+				'type' => $mount[3],
 				'size' => $size,
 				'used' => $used,
 				'free' => $free,
@@ -391,7 +377,7 @@ class OS_Linux {
 			);
 		}
 
-		// Return them
+		// Return
 		return $mounts;
 	}
 
@@ -420,18 +406,18 @@ class OS_Linux {
 
 		// Get all PCI ids
 		foreach ((array) @glob($sys_pci_dir.'*/uevent') as $path) {
-			$contents = getContents($path);
-			if (preg_match('/[PCI_ID|PCI_SUBSYS_ID]=([a-z0-9]+):(.+)\n/i', $contents, $m) == 1) {
-				$pci_dev_id[strtolower($m[1])][strtolower($m[2])] = 1;
+			$contents = strtolower(getContents($path));
+			if (preg_match('/[pci_id|pci_subsys_id]=([a-z0-9]+):(.+)/', $contents, $m) == 1) {
+				$pci_dev_id[$m[1]][$m[2]] = 1;
 				$pci_dev_num++;
 			}
 		}
 
 		// Get all USB ids
 		foreach ((array) @glob($sys_usb_dir.'*/uevent') as $path) {
-			$contents = getContents($path);
-			if (preg_match('/PRODUCT=(.+)\/(.+)\/.+\n/i', $contents, $m) == 1) {
-				$usb_dev_id[str_pad(strtolower($m[1]), 4, '0', STR_PAD_LEFT)][str_pad(strtolower($m[2]), 4, '0', STR_PAD_LEFT)] = 1;
+			$contents = strtolower(getContents($path));
+			if (preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', $contents, $m) == 1) {
+				$usb_dev_id[str_pad($m[1], 4, '0', STR_PAD_LEFT)][str_pad($m[2], 4, '0', STR_PAD_LEFT)] = 1;
 				$usb_dev_num++;
 			}
 		}
@@ -442,11 +428,11 @@ class OS_Linux {
 		if ($f !== FALSE) {
 			for ($line = 0; $contents = fgets($f); $line++) {
 				$contents = rtrim($contents);
-				if (preg_match('/^([a-z0-9]{4})  (.+)/i', $contents, $m) == 1) {
+				if (preg_match('/^([a-z0-9]{4})  ([^$]+)$/i', $contents, $m) == 1) {
 					$cmid = trim(strtolower($m[1]));
 					$cname = $m[2];
 				}
-				elseif(preg_match('/^	([a-z0-9]{4})  (.+)/i', $contents, $m) == 1) {
+				elseif(preg_match('/^	([a-z0-9]{4})  ([^$]+)$/i', $contents, $m) == 1) {
 					if (array_key_exists($cmid, $pci_dev_id) && is_array($pci_dev_id[$cmid]) && array_key_exists($m[1], $pci_dev_id[$cmid])) {
 						$pci_dev[] = array('vendor' => $cname, 'device' => $m[2], 'type' => 'PCI');
 						$left--;
@@ -464,11 +450,11 @@ class OS_Linux {
 		if ($f !== FALSE) {
 			for ($line = 0; $contents = fgets($f); $line++) {
 				$contents = rtrim($contents);
-				if (preg_match('/^([a-z0-9]{4})  (.+)/i', $contents, $m) == 1) {
+				if (preg_match('/^([a-z0-9]{4})  ([^$]+)$/i', $contents, $m) == 1) {
 					$cmid = trim(strtolower($m[1]));
 					$cname = $m[2];
 				}
-				elseif(preg_match('/^	([a-z0-9]{4})  (.+)/i', $contents, $m) == 1) {
+				elseif(preg_match('/^	([a-z0-9]{4})  ([^$]+)$/i', $contents, $m) == 1) {
 					if (array_key_exists($cmid, $usb_dev_id) && is_array($usb_dev_id[$cmid]) && array_key_exists($m[1], $usb_dev_id[$cmid])) {
 						$usb_dev[] = array('vendor' => $cname, 'device' => $m[2], 'type' => 'USB');
 						$left--;
@@ -506,12 +492,12 @@ class OS_Linux {
 		// File that has it
 		$file = '/proc/loadavg';
 
-		// Is it ok?
-		if (!is_file($file) || !is_readable($file))
-			return array();
-
 		// Get contents
 		$contents = getContents($file);
+
+		// ugh
+		if ($contents == '')
+			return array();
 
 		// Parts
 		$parts = explode(' ', $contents);
@@ -571,7 +557,7 @@ class OS_Linux {
 			$return[end(explode('/', $v))] = array(
 				'charge_full' => $charge_full,
 				'charge_now' => $charge_now,
-				'percentage' => (round($charge_now / $charge_full, 4) * 100).'%',
+				'percentage' => ($charge_now != 0 && $charge_full != 0 ? (round($charge_now / $charge_full, 4) * 100) : '?').'%',
 				'device' => getContents($b.'/manufacturer') . ' ' . getContents($b.'/model_name', 'Unknown'),
 				'state' => getContents($b.'/status', 'Unknown')
 			);
@@ -596,8 +582,8 @@ class OS_Linux {
 			return $return;
 
 		// Parse
-		@preg_match_all('/^ ([a-z0-9]+)\:\s*(\d+)\s*([\d\.\-]+)\s*([\d\.\-]+)\s*([\d\.\-]+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/im', $contents, $m, PREG_SET_ORDER);
-
+		@preg_match_all('/^ ([a-zA-Z0-9]+)\:\s*(\d+)\s*([\d\.\-]+)\s*([\d\.\-]+)\s*([\d\.\-]+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $m, PREG_SET_ORDER);
+		
 		// Match
 		foreach ($m as $wlan) {
 			$return[] = array(

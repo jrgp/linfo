@@ -32,6 +32,10 @@ define('IN_INFO', true);
 // Configure paths
 define('LOCAL_PATH', dirname(__FILE__) . '/');
 
+$web_path = dirname($_SERVER['SCRIPT_NAME']);
+$web_path .= substr($web_path, -1) == '/' ? '' : '/';
+define('WEB_PATH', $web_path);
+
 // Load conf file
 if (!is_file(LOCAL_PATH . 'config.inc.php') && is_file(LOCAL_PATH . 'sample.config.inc.php'))
 	exit('Make changes to sample.config.inc.php then rename as config.inc.php');
