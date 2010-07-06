@@ -340,7 +340,7 @@ class OS_Linux {
 		$contents = getContents('/proc/mounts');
 
 		// Parse
-		@preg_match_all('/^([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) \d \d$/mi', $contents, $m, PREG_SET_ORDER);
+		@preg_match_all('/^([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) \d \d$/mS', $contents, $m, PREG_SET_ORDER);
 
 		// Return these
 		$mounts = array();
