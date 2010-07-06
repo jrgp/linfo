@@ -24,6 +24,7 @@ Installation:
 
 Known issues:
  - Getting Linux device names is slow on old systems
+ - Linux WIFI is not quite finished
  - FreeBSD support is not quite finished
  - OSX/Win/OtherBSD support does not yet exist
 

@@ -60,3 +60,10 @@ h2 {
 #info .center {text-align: center;}
 td.none { text-align: center; font-size: 10px; }
 span.perc {font-size: 90%;}
+span.caption {font-size: 90%;}
+td ul {margin: 0; padding: 0;}
+td ul li {list-style-type: square; padding: 0; margin-left: 15px; margin-top: 0; margin-bottom: 0; margin-right: 0;}
+.raid_normal {color: green;}
+.raid_spare {color: blue;}
+.raid_failed {color: maroon;}
+.raid_unknown {color: purple;}

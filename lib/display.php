@@ -212,7 +212,6 @@ function showInfo($info, $settings) {
 		</div>
 	</div>
 </div>
-
 <div class="infoTable">
 	<h2>Filesystem Mounts</h2>
 	<table>
@@ -259,6 +258,67 @@ function showInfo($info, $settings) {
 			<td>'.byte_convert($total_used).'</td>
 			<td>'.byte_convert($total_free).'</td>
 		</tr>
+	</table>
+</div>
+<div class="infoTable">
+	<h2>Raid Arrays</h2>
+	<table>
+		<colgroup>
+			<col style="width: 10%;" />
+			<col style="width: 30%;" />
+			<col style="width: 10%;" />
+			<col style="width: 10%;" />
+			<col style="width: 30%;" />
+			<col style="width: 10%;" />
+		</colgroup>
+		<tr>
+			<th>Name</th>
+			<th>Level</th>
+			<th>Status</th>
+			<th>Blocks</th>
+			<th>Devices</th>
+			<th>Active</th>
+		</tr>
+		';
+		if (count($info['Raid']) > 0)
+			foreach ($info['Raid'] as $raid) {
+				$active = explode('/', $raid['count']);
+				// http://en.wikipedia.org/wiki/Standard_RAID_levels
+				switch ($raid['level']) {
+					case 0:
+						$type = 'Stripe';
+					break;
+					case 1:
+						$type = 'Mirror';
+					break;
+					case 5:
+					case 6:
+						$type = 'Distributed Parity Block-Level Striping';
+					break;
+					default:
+						$type = false;
+					break;
+				}
+				echo '
+				<tr>
+				<td>'.$raid['device'].'</td>
+				<td>'.$raid['level'].($type ? ' <span class="caption">('.$type.')</span>' : '').'</td>
+				<td>'.ucfirst($raid['status']).'</td>
+				<td>'.$raid['blocks'].'</td>
+				<td><ul>';
+				
+				foreach ($raid['drives'] as $drive)
+					echo '<li>'.$drive['drive'].' - <span class="raid_'.$drive['state'].'">'.ucfirst($drive['state']).'</span</li>';
+
+				echo '</li></td>
+				<td>'.$active[1].'/'.$active[0].'</td>
+				</tr>
+				';
+			}
+		else
+			echo '<tr><td colspan="6" class="none">None found</td></tr>';
+
+		echo '
 	</table>
 </div>
 <div id="foot">

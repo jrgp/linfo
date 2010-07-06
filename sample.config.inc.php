@@ -8,6 +8,7 @@ defined('IN_INFO') or exit;
  */
 
 // For certain reasons, some might choose to not display all we can
+// Set these to true to enable; false to disable. They default to false.
 $settings['show']['kernel'] = true;
 $settings['show']['os'] = true;
 $settings['show']['load'] = true;
@@ -21,7 +22,7 @@ $settings['show']['hostname'] = true;
 $settings['show']['devices'] = true;
 $settings['show']['temps'] = true;
 $settings['show']['battery'] = true;
-$settings['show']['raid'] = false; # Not finished
+$settings['show']['raid'] = false; 
 $settings['show']['wifi'] = false; # Not finished
 
 // Hide certain file systems / devices
@@ -32,8 +33,8 @@ $settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none');
 
 // Various softraids. Set to true to enable.
 // Only works if it's available on your system; otherwise does nothing
-$settings['raid']['gmirror'] = false; 
-$settings['raid']['mdadm'] = false;  # TODO
+$settings['raid']['gmirror'] = false;  # For FreeBSD
+$settings['raid']['mdadm'] = false;  # For Linux; known to support RAID 1, 5, and 6
 
 // Various ways of getting temps/voltages/etc. Set to true to enable.
 $settings['temps']['hddtemp'] = false;

@@ -64,7 +64,7 @@ class OS_Linux {
 			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(),
 			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps(),
 			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery(),
-			'Wifi' => !(bool) $this->settings['show']['wifi'] ? array(): $this->getWifi()
+			'Raid' => !(bool) $this->settings['show']['raid'] ? array(): $this->getRAID(),
 		);
 	}
 
@@ -471,7 +471,7 @@ class OS_Linux {
 	}
 
 	// Get mdadm raid
-	// TODO - finish. And maybe support other Linux software raids?
+	// TODO: Maybe support other methods of Linux raid info?
 	private function getRAID() {
 		
 		// Store it here
@@ -479,7 +479,75 @@ class OS_Linux {
 
 		// mdadm?
 		if (array_key_exists('mdadm', $this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
-			// TODO
+
+			// Try getting contents
+			$mdadm_contents = getContents('/proc/mdstat');
+
+			// Parse
+			@preg_match_all(
+				'/([^\s]+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks'.
+				'\s*(level \d\, [\w\d]+ chunk\, algorithm \d\s*)?\[(\d\/\d)\] \[([U\_]+)\]/mi'
+				, $mdadm_contents, $m, PREG_SET_ORDER);
+
+			// Store them here
+			$mdadm_arrays = array();
+
+			// Deal with entries
+			foreach ((array) $m as $array) {
+				
+				// Temporarily store drives here
+				$drives = array();
+
+				// Parse drives
+				foreach (explode(' ', $array[4]) as $drive) {
+
+					// Parse?
+					if(preg_match('/([\w\d]+)\[\d\](\(\w\))?/', $drive, $md) == 1) {
+
+						// Determine a status other than normal, like if it failed or is a spare
+						if (array_key_exists(2, $md)) {
+							switch ($md[2]) {
+								case '(S)':
+									$drive_state = 'spare';
+								break;
+								case '(F)':
+									$drive_state = 'failed';
+								break;
+								case null:
+									$drive_state = 'normal';
+								break;
+								default:
+									$drive_state = 'unknown';
+								break;
+							}
+						}
+						else
+							$drive_state = 'normal';
+
+						// Append this drive to the temp drives array
+						$drives[] = array(
+							'drive' => $md[1],
+							'state' => $drive_state
+						);
+					}
+				}
+
+				// Add record of this array to arrays list
+				$mdadm_arrays[] = array(
+					'device' => $array[1],
+					'status' => $array[2],
+					'level' => $array[3],
+					'drives' => $drives,
+					'blocks' =>  $array[5],
+					'algorithm' => $array[6],
+					'count' => $array[7],
+					'chart' => $array[8]
+				);
+			}
+
+			// Append MD arrays to main raidinfo if it's good
+			if (is_array($mdadm_arrays) && count($mdadm_arrays) > 0 )
+				$raidinfo = array_merge($raidinfo, $mdadm_arrays);
 		}
 
 		// Return info
