@@ -67,3 +67,7 @@ td ul li {list-style-type: square; padding: 0; margin-left: 15px; margin-top: 0;
 .raid_spare {color: blue;}
 .raid_failed {color: maroon;}
 .raid_unknown {color: purple;}
+.margin_auto {margin: auto;}
+table.mini {padding: 0; font-size: 90%; border-collapse;  }
+table.mini th, table.mini td {margin: 0; padding: 0; border: none;}
+table.mini th {background-color: inherit;}

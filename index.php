@@ -55,7 +55,7 @@ require_once LOCAL_PATH . 'lib/misc.php';
 require_once LOCAL_PATH . 'lib/display.php';
 
 // Determine our OS
-$os = determineOS($setting_os);
+$os = determineOS();
 
 // Cannot?
 if ($os == false)

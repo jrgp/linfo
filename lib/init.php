@@ -45,7 +45,7 @@ function __autoload($class) {
 class GetInfoException extends Exception{}
 
 // Determine OS.
-function determineOS($os = null) {
+function determineOS() {
 	
 	// This magical constant knows all
 	switch (PHP_OS) {

@@ -258,17 +258,19 @@ class OS_FreeBSD {
 					if (preg_match('/^(\w+)\/(\w+)\s+(\w+)\s+(\w+)$/', $content, $m)) {
 						$i++;
 						$return[$i] = array(
-							'name' => $m[2],
-							'type' => $m[1],
+							'device' => $m[2],
+							'level' => $m[1],
 							'status' => $m[3],
-							'devices' => array($m[4])
+							'drives' => array($m[4]),
+							'blocks' => 'unknown',
+							'count' => '?/?'
 						);
 					}
 
 					// Hitting a new device in a raid definition
 					elseif (preg_match('/^                      (\w+)$/', $content, $m)) {
 						if (array_key_exists($i, $info))
-							$return[$i]['devices'][] = $m[1];
+							$return[$i]['devices'][] = array('drive' => $m[1], 'state' => 'unknown');
 					}
 				}
 			}

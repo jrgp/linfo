@@ -87,7 +87,7 @@ class OS_Linux {
 		$contents = getContents($file);
 
 		// Parse it
-		@preg_match('/^Linux version ([^\s]+).+$/', $contents, $m);
+		@preg_match('/^Linux version (\S+).+$/', $contents, $m);
 
 		return $m[1] ? $m[1] : 'Unknown';
 	}
@@ -132,7 +132,7 @@ class OS_Linux {
 			$memVals[$v[0]] = $matches[2][$k][0];
 
 		// Get swapContents
-		@preg_match_all('/([^\s]+)\s+(\w+)\s+(\d+)\s(\d+)/i', $swapContents, $matches);
+		@preg_match_all('/(\S+)\s+(\w+)\s+(\d+)\s(\d+)/i', $swapContents, $matches);
 		foreach ((array)$matches[0] as $k => $v)
 			$swapVals[] = array (
 				'device' => $matches[1][$k],
@@ -340,7 +340,7 @@ class OS_Linux {
 		$contents = getContents('/proc/mounts');
 
 		// Parse
-		@preg_match_all('/^([^ ]+) ([^ ]+) ([^ ]+) ([^ ]+) \d \d$/mS', $contents, $m, PREG_SET_ORDER);
+		@preg_match_all('/^(\S+) (\S+) (\S+) (\S+) \d \d$/m', $contents, $m, PREG_SET_ORDER);
 
 		// Return these
 		$mounts = array();
@@ -481,13 +481,10 @@ class OS_Linux {
 		if (array_key_exists('mdadm', $this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
 
 			// Try getting contents
-			$mdadm_contents = getContents('/proc/mdstat');
+			$mdadm_contents = getContents('/home/joe/tmp/mdstat_outcry');
 
 			// Parse
-			@preg_match_all(
-				'/([^\s]+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks'.
-				'\s*(level \d\, [\w\d]+ chunk\, algorithm \d\s*)?\[(\d\/\d)\] \[([U\_]+)\]/mi'
-				, $mdadm_contents, $m, PREG_SET_ORDER);
+			@preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks\s*(level \d\, [\w\d]+ chunk\, algorithm \d\s*)?\[(\d\/\d)\] \[([U\_]+)\]/mi', $mdadm_contents, $m, PREG_SET_ORDER);
 
 			// Store them here
 			$mdadm_arrays = array();
@@ -502,7 +499,7 @@ class OS_Linux {
 				foreach (explode(' ', $array[4]) as $drive) {
 
 					// Parse?
-					if(preg_match('/([\w\d]+)\[\d\](\(\w\))?/', $drive, $md) == 1) {
+					if(preg_match('/([\w\d]+)\[\d+\](\(\w\))?/', $drive, $md) == 1) {
 
 						// Determine a status other than normal, like if it failed or is a spare
 						if (array_key_exists(2, $md)) {
@@ -516,6 +513,8 @@ class OS_Linux {
 								case null:
 									$drive_state = 'normal';
 								break;
+
+								// I'm not sure if there are status codes other than the above
 								default:
 									$drive_state = 'unknown';
 								break;
@@ -526,7 +525,7 @@ class OS_Linux {
 
 						// Append this drive to the temp drives array
 						$drives[] = array(
-							'drive' => $md[1],
+							'drive' => '/dev/'.$md[1],
 							'state' => $drive_state
 						);
 					}
@@ -534,7 +533,7 @@ class OS_Linux {
 
 				// Add record of this array to arrays list
 				$mdadm_arrays[] = array(
-					'device' => $array[1],
+					'device' => '/dev/'.$array[1],
 					'status' => $array[2],
 					'level' => $array[3],
 					'drives' => $drives,
@@ -622,7 +621,7 @@ class OS_Linux {
 		foreach ($bats as $b) {
 			$charge_full = get_int_from_file($b.'/charge_full');
 			$charge_now = get_int_from_file($b.'/charge_now');
-			$return[end(explode('/', $v))] = array(
+			$return[] = array(
 				'charge_full' => $charge_full,
 				'charge_now' => $charge_now,
 				'percentage' => ($charge_now != 0 && $charge_full != 0 ? (round($charge_now / $charge_full, 4) * 100) : '?').'%',
