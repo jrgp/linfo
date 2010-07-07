@@ -65,6 +65,7 @@ class OS_Linux {
 			'Temps' => empty($this->settings['show']['temps']) ? array(): $this->getTemps(),
 			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(),
 			'Raid' => empty($this->settings['show']['raid']) ? array(): $this->getRAID(),
+			'Wifi' => empty($this->settings['show']['wifi']) ? array(): $this->getWifi(),
 		);
 	}
 
@@ -425,11 +426,11 @@ class OS_Linux {
 			for ($line = 0; $contents = fgets($file); $line++) {
 				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
 					$cmid = trim(strtolower($match[1]));
-					$cname = $match[2];
+					$cname = trim($match[2]);
 				}
 				elseif(preg_match('/^	(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
 					if (array_key_exists($cmid, $pci_dev_id) && is_array($pci_dev_id[$cmid]) && array_key_exists($match[1], $pci_dev_id[$cmid])) {
-						$pci_dev[] = array('vendor' => $cname, 'device' => $match[2], 'type' => 'PCI');
+						$pci_dev[] = array('vendor' => $cname, 'device' => trim($match[2]), 'type' => 'PCI');
 						$left--;
 					}
 				}
@@ -447,11 +448,11 @@ class OS_Linux {
 			for ($line = 0; $contents = fgets($file); $line++) {
 				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
 					$cmid = trim(strtolower($match[1]));
-					$cname = $match[2];
+					$cname = trim($match[2]);
 				}
 				elseif(preg_match('/^	(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
 					if (array_key_exists($cmid, $usb_dev_id) && is_array($usb_dev_id[$cmid]) && array_key_exists($match[1], $usb_dev_id[$cmid])) {
-						$usb_dev[] = array('vendor' => $cname, 'device' => $match[2], 'type' => 'USB');
+						$usb_dev[] = array('vendor' => $cname, 'device' => trim($match[2]), 'type' => 'USB');
 						$left--;
 					}
 				}
@@ -585,6 +586,34 @@ class OS_Linux {
 		// Get values for each device
 		foreach ($nets as $v) {
 
+			// States
+			$operstate_contents = getContents($v.'/operstate');
+			switch ($operstate_contents) {
+				case 'down':
+				case 'up':
+				case 'unknown':
+					$state = $operstate_contents;
+				break;
+
+				default:
+					$state = 'unknown';
+				break;
+			}
+
+			// Type
+			$type_contents = strtoupper(getContents($v.'/device/modalias'));
+			list($type) = explode(':', $type_contents, 2);
+			switch ($type) {
+				case 'PCI':
+				case 'USB':
+				break;
+
+				default:
+					$type = 'N/A';
+				break;
+			}
+			
+
 			// Save and get info for each
 			$return[end(explode('/', $v))] = array(
 				'recieved' => array(
@@ -596,7 +625,9 @@ class OS_Linux {
 					'bytes' => get_int_from_file($v.'/statistics/tx_bytes'),
 					'errors' => get_int_from_file($v.'/statistics/tx_errors'),
 					'packets' => get_int_from_file($v.'/statistics/rx_packets')
-				)
+				),
+				'state' => $state,
+				'type' => $type
 			);
 		}
 
@@ -646,7 +677,7 @@ class OS_Linux {
 			return $return;
 
 		// Parse
-		@preg_match_all('/^ ([a-zA-Z0-9]+)\:\s*(\d+)\s*([\d\.\-]+)\s*([\d\.\-]+)\s*([\d\.\-]+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $match, PREG_SET_ORDER);
+		@preg_match_all('/^ (\S+)\:\s*(\d+)\s*(\S+)\s*(\S+)\s*(\S+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $match, PREG_SET_ORDER);
 		
 		// Match
 		foreach ($match as $wlan) {
@@ -666,7 +697,7 @@ class OS_Linux {
 		}
 
 		// Done
-		return $contents;
+		return $return;
 	}
 }
 

@@ -160,8 +160,10 @@ function showInfo($info, $settings) {
 			<table>
 				<tr>
 					<th>Device Name</th>
+					<th>Type</th>
 					<th>Amount Sent</th>
 					<th>Amount Received</th>
+					<th>State</th>
 				</tr>
 			';
 
@@ -170,8 +172,10 @@ function showInfo($info, $settings) {
 					echo '
 						<tr>
 							<td>'.$device.'</td>
+							<td>'.$stats['type'].'</td>
 							<td>'.byte_convert($stats['sent']['bytes']).'</td>
 							<td>'.byte_convert($stats['recieved']['bytes']).'</td>
+							<td class="net_'.$stats['state'].'">'.ucfirst($stats['state']).'</td>
 						</tr>';
 			else
 				echo '<tr><td colspan="3" class="none">None found</td></tr>';
