@@ -292,7 +292,7 @@ class OS_Linux {
 		$return = array();
 
 		// hddtemp?
-		if (array_key_exists('hddtemp', $this->settings['temps']) && !empty($this->settings['temps']['hddtemp'])) {
+		if (array_key_exists('hddtemp', (array)$this->settings['temps']) && !empty($this->settings['temps']['hddtemp'])) {
 			try {
 				$hddtemp = new GetHddTemp;
 				$hddtemp->setMode($this->settings['hddtemp']['mode']);
@@ -312,7 +312,7 @@ class OS_Linux {
 		}
 
 		// mbmon?
-		if (array_key_exists('mbmon', $this->settings['temps']) && !empty($this->settings['temps']['mbmon'])) {
+		if (array_key_exists('mbmon', (array)$this->settings['temps']) && !empty($this->settings['temps']['mbmon'])) {
 			try {
 				$mbmon = new GetMbMon;
 				$mbmon->setAddress(
@@ -474,7 +474,7 @@ class OS_Linux {
 		$raidinfo = array();
 
 		// mdadm?
-		if (array_key_exists('mdadm', $this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
+		if (array_key_exists('mdadm', (array)$this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
 
 			// Try getting contents
 			$mdadm_contents = getContents('/proc/mdstat');
