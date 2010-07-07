@@ -68,11 +68,11 @@ class GetMbMon {
 		$lines = (array) explode("\n", trim($data));
 
 		foreach ($lines as $line) {
-			if (preg_match('/(\w+)\s*:\s*([-+]?[\d\.]+)/i', $line, $m) == 1)
+			if (preg_match('/(\w+)\s*:\s*([-+]?[\d\.]+)/i', $line, $match) == 1)
 				$return[] = array(
 					'path' => 'N/A',
-					'name' => $m[1],
-					'temp' => $m[2],
+					'name' => $match[1],
+					'temp' => $match[2],
 					'unit' => '' // TODO
 				);
 		}

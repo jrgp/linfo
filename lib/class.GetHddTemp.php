@@ -100,9 +100,9 @@ class GetHddTemp {
 		}
 		$devices = array();
 		foreach (getLines($file) as $line) {
-			if (preg_match('/\w+\s*\d+ \d{2}:\d{2}:\d{2} \w+ hddtemp\[\d+\]: (.+): (.+): (\d+) ([CF])/i', trim($line), $m) == 1) {
+			if (preg_match('/\w+\s*\d+ \d{2}:\d{2}:\d{2} \w+ hddtemp\[\d+\]: (.+): (.+): (\d+) ([CF])/i', trim($line), $match) == 1) {
 				// Replace current record of dev with updated temp
-				$devices[$m[1]] = array($m[2], $m[3], $m[4]);
+				$devices[$match[1]] = array($match[2], $match[3], $match[4]);
 			}
 		}
 		$return = array();

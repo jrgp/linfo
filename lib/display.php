@@ -176,7 +176,7 @@ function showInfo($info, $settings) {
 					<tr>
 						<td>'.$bat['device'].'</td>
 						<td>'.$bat['state'].'</td>
-						<td>'.$bat['percentage'].'</td>
+						<td>'.$bat['percentage'].($bat['percentage'] < 0 ? ' <span class="caption">(wtf?)</span>' : '').'</td>
 					</tr>
 					';
 				}

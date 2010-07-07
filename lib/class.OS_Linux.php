@@ -51,20 +51,20 @@ class OS_Linux {
 
 		// Return everything, whilst obeying display permissions
 		return array(
-			'OS' => !(bool) $this->settings['show']['os'] ? '' : $this->getOS(),
-			'Kernel' => !(bool) $this->settings['show']['kernel'] ? '' : $this->getKernel(),
-			'RAM' => !(bool) $this->settings['show']['ram'] ? array() : $this->getRam(),
-			'HD' => !(bool) $this->settings['show']['hd'] ? '' : $this->getHD(),
-			'Mounts' => !(bool) $this->settings['show']['mounts'] ? array() : $this->getMounts(),
-			'Load' => !(bool) $this->settings['show']['load'] ? array() : $this->getLoad(),
-			'HostName' => !(bool) $this->settings['show']['hostname'] ? '' : $this->getHostName(),
-			'UpTime' => !(bool) $this->settings['show']['uptime'] ? '' : $this->getUpTime(),
-			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(),
-			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(),
-			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(),
-			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps(),
-			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery(),
-			'Raid' => !(bool) $this->settings['show']['raid'] ? array(): $this->getRAID(),
+			'OS' => empty($this->settings['show']['os']) ? '' : $this->getOS(),
+			'Kernel' => empty($this->settings['show']['kernel']) ? '' : $this->getKernel(),
+			'RAM' => empty($this->settings['show']['ram']) ? array() : $this->getRam(),
+			'HD' => empty($this->settings['show']['hd']) ? '' : $this->getHD(),
+			'Mounts' => empty($this->settings['show']['mounts']) ? array() : $this->getMounts(),
+			'Load' => empty($this->settings['show']['load']) ? array() : $this->getLoad(),
+			'HostName' => empty($this->settings['show']['hostname']) ? '' : $this->getHostName(),
+			'UpTime' => empty($this->settings['show']['uptime']) ? '' : $this->getUpTime(),
+			'CPU' => empty($this->settings['show']['cpu']) ? array() : $this->getCPU(),
+			'Network Devices' => empty($this->settings['show']['network']) ? array() : $this->getNet(),
+			'Devices' => empty($this->settings['show']['devices']) ? array() : $this->getDevs(),
+			'Temps' => empty($this->settings['show']['temps']) ? array(): $this->getTemps(),
+			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(),
+			'Raid' => empty($this->settings['show']['raid']) ? array(): $this->getRAID(),
 		);
 	}
 
@@ -87,9 +87,9 @@ class OS_Linux {
 		$contents = getContents($file);
 
 		// Parse it
-		@preg_match('/^Linux version (\S+).+$/', $contents, $m);
+		@preg_match('/^Linux version (\S+).+$/', $contents, $match);
 
-		return $m[1] ? $m[1] : 'Unknown';
+		return $match[1] ? $match[1] : 'Unknown';
 	}
 
 	// Get host name
@@ -125,7 +125,7 @@ class OS_Linux {
 		$swapContents = getContents($procFileSwap);
 
 		// Get memContents
-		@preg_match_all('/^(\w+)\:\s+(\d+)\s*(kb)\s*?/mi', $memContents, $matches, PREG_OFFSET_CAPTURE);
+		@preg_match_all('/^([^:]+)\:\s+(\d+)\s*([kb|KB])\s*?/m', $memContents, $matches, PREG_OFFSET_CAPTURE);
 
 		// Deal with it
 		foreach ((array)$matches[1] as $k => $v)
@@ -340,13 +340,13 @@ class OS_Linux {
 		$contents = getContents('/proc/mounts');
 
 		// Parse
-		@preg_match_all('/^(\S+) (\S+) (\S+) (\S+) \d \d$/m', $contents, $m, PREG_SET_ORDER);
+		@preg_match_all('/^(\S+) (\S+) (\S+) (\S+) \d \d$/m', $contents, $match, PREG_SET_ORDER);
 
 		// Return these
 		$mounts = array();
 
 		// Populate
-		foreach($m as $mount) {
+		foreach($match as $mount) {
 			
 			// Should we not show this?
 			if (in_array($mount[1], $this->settings['hide']['storage_devices']) || in_array($mount[3], $this->settings['hide']['filesystems']))
@@ -406,64 +406,62 @@ class OS_Linux {
 
 		// Get all PCI ids
 		foreach ((array) @glob($sys_pci_dir.'*/uevent') as $path) {
-			$contents = strtolower(getContents($path));
-			if (preg_match('/[pci_id|pci_subsys_id]=([a-z0-9]+):(.+)/', $contents, $m) == 1) {
-				$pci_dev_id[$m[1]][$m[2]] = 1;
+			if (preg_match('/[pci_id|pci_subsys_id]=(\w+):(\w+)/', strtolower(getContents($path)), $match) == 1) {
+				$pci_dev_id[$match[1]][$match[2]] = 1;
 				$pci_dev_num++;
 			}
 		}
 
 		// Get all USB ids
 		foreach ((array) @glob($sys_usb_dir.'*/uevent') as $path) {
-			$contents = strtolower(getContents($path));
-			if (preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', $contents, $m) == 1) {
-				$usb_dev_id[str_pad($m[1], 4, '0', STR_PAD_LEFT)][str_pad($m[2], 4, '0', STR_PAD_LEFT)] = 1;
+			if (preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', strtolower(getContents($path)), $match) == 1) {
+				$usb_dev_id[str_pad($match[1], 4, '0', STR_PAD_LEFT)][str_pad($match[2], 4, '0', STR_PAD_LEFT)] = 1;
 				$usb_dev_num++;
 			}
 		}
 
 		// Get PCI vendor/dev names
-		$f = @fopen($pci_ids, 'rb');
+		$file = @fopen($pci_ids, 'rb');
 		$left = $pci_dev_num;
-		if ($f !== FALSE) {
-			for ($line = 0; $contents = fgets($f); $line++) {
-				$contents = rtrim($contents);
-				if (preg_match('/^([a-z0-9]{4})  ([^$]+)$/i', $contents, $m) == 1) {
-					$cmid = trim(strtolower($m[1]));
-					$cname = $m[2];
+		if ($f !== false) {
+			for ($line = 0; $contents = fgets($file); $line++) {
+				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
+					$cmid = trim(strtolower($match[1]));
+					$cname = $match[2];
 				}
-				elseif(preg_match('/^	([a-z0-9]{4})  ([^$]+)$/i', $contents, $m) == 1) {
-					if (array_key_exists($cmid, $pci_dev_id) && is_array($pci_dev_id[$cmid]) && array_key_exists($m[1], $pci_dev_id[$cmid])) {
-						$pci_dev[] = array('vendor' => $cname, 'device' => $m[2], 'type' => 'PCI');
+				elseif(preg_match('/^	(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
+					if (array_key_exists($cmid, $pci_dev_id) && is_array($pci_dev_id[$cmid]) && array_key_exists($match[1], $pci_dev_id[$cmid])) {
+						$pci_dev[] = array('vendor' => $cname, 'device' => $match[2], 'type' => 'PCI');
 						$left--;
 					}
 				}
+				// Potentially save time by not parsing the rest of the file once we have what we need
 				if ($left == 0)
 					break;
 			}
-			@fclose($f);
+			@fclose($file);
 		}
 
 		// Get USB vendor/dev names
-		$f = @fopen($usb_ids, 'rb');
+		$file = @fopen($usb_ids, 'rb');
 		$left = $usb_dev_num;
-		if ($f !== FALSE) {
-			for ($line = 0; $contents = fgets($f); $line++) {
-				$contents = rtrim($contents);
-				if (preg_match('/^([a-z0-9]{4})  ([^$]+)$/i', $contents, $m) == 1) {
-					$cmid = trim(strtolower($m[1]));
-					$cname = $m[2];
+		if ($file !== false) {
+			for ($line = 0; $contents = fgets($file); $line++) {
+				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
+					$cmid = trim(strtolower($match[1]));
+					$cname = $match[2];
 				}
-				elseif(preg_match('/^	([a-z0-9]{4})  ([^$]+)$/i', $contents, $m) == 1) {
-					if (array_key_exists($cmid, $usb_dev_id) && is_array($usb_dev_id[$cmid]) && array_key_exists($m[1], $usb_dev_id[$cmid])) {
-						$usb_dev[] = array('vendor' => $cname, 'device' => $m[2], 'type' => 'USB');
+				elseif(preg_match('/^	(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
+					if (array_key_exists($cmid, $usb_dev_id) && is_array($usb_dev_id[$cmid]) && array_key_exists($match[1], $usb_dev_id[$cmid])) {
+						$usb_dev[] = array('vendor' => $cname, 'device' => $match[2], 'type' => 'USB');
 						$left--;
 					}
 				}
+				// Potentially save time by not parsing the rest of the file once we have what we need
 				if ($left == 0)
 					break;
 			}
-			@fclose($f);
+			@fclose($file);
 		}
 
 		// Return it all
@@ -484,13 +482,13 @@ class OS_Linux {
 			$mdadm_contents = getContents('/proc/mdstat');
 
 			// Parse
-			@preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks\s*(level \d\, [\w\d]+ chunk\, algorithm \d\s*)?\[(\d\/\d)\] \[([U\_]+)\]/mi', $mdadm_contents, $m, PREG_SET_ORDER);
+			@preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks\s*(level \d\, [\w\d]+ chunk\, algorithm \d\s*)?\[(\d\/\d)\] \[([U\_]+)\]/mi', $mdadm_contents, $match, PREG_SET_ORDER);
 
 			// Store them here
 			$mdadm_arrays = array();
 
 			// Deal with entries
-			foreach ((array) $m as $array) {
+			foreach ((array) $match as $array) {
 				
 				// Temporarily store drives here
 				$drives = array();
@@ -499,11 +497,11 @@ class OS_Linux {
 				foreach (explode(' ', $array[4]) as $drive) {
 
 					// Parse?
-					if(preg_match('/([\w\d]+)\[\d+\](\(\w\))?/', $drive, $md) == 1) {
+					if(preg_match('/([\w\d]+)\[\d+\](\(\w\))?/', $drive, $match_drive) == 1) {
 
 						// Determine a status other than normal, like if it failed or is a spare
-						if (array_key_exists(2, $md)) {
-							switch ($md[2]) {
+						if (array_key_exists(2, $match_drive)) {
+							switch ($match_drive[2]) {
 								case '(S)':
 									$drive_state = 'spare';
 								break;
@@ -525,7 +523,7 @@ class OS_Linux {
 
 						// Append this drive to the temp drives array
 						$drives[] = array(
-							'drive' => '/dev/'.$md[1],
+							'drive' => '/dev/'.$match_drive[1],
 							'state' => $drive_state
 						);
 					}
@@ -649,10 +647,10 @@ class OS_Linux {
 			return $return;
 
 		// Parse
-		@preg_match_all('/^ ([a-zA-Z0-9]+)\:\s*(\d+)\s*([\d\.\-]+)\s*([\d\.\-]+)\s*([\d\.\-]+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $m, PREG_SET_ORDER);
+		@preg_match_all('/^ ([a-zA-Z0-9]+)\:\s*(\d+)\s*([\d\.\-]+)\s*([\d\.\-]+)\s*([\d\.\-]+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $match, PREG_SET_ORDER);
 		
 		// Match
-		foreach ($m as $wlan) {
+		foreach ($match as $wlan) {
 			$return[] = array(
 				'device' => $wlan[1],
 				'status' => $wlan[2],
