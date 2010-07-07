@@ -275,10 +275,10 @@ class OS_Linux {
 			$dirname = dirname(dirname($path));
 			$parts = explode('/', $path);
 			$return[] = array(
-				'name' =>  getContents($path),
-				'vendor' => getContents(dirname($path).'/vendor'),
+				'name' =>  getContents($path, 'Unknown'),
+				'vendor' => getContents(dirname($path).'/vendor', 'Unknown'),
 				'device' => '/dev/'.$parts[3],
-				'removable' => (bool) getContents(dirname(dirname($path)).'/removable'),
+				'removable' => (bool) getContents(dirname(dirname($path)).'/removable', 'Unknown'),
 			);
 		}
 
