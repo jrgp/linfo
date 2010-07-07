@@ -268,8 +268,10 @@ function showInfo($info, $settings) {
 			<h2>Drives</h2>
 			<table>
 				<tr>
-					<th>Device Path</th>
+					<th>Path</th>
+					<th>Vendor</th>
 					<th>Name</th>
+					<th>Removable</th>
 				</tr>
 				';
 			if (count($info['HD']) > 0)
@@ -277,7 +279,9 @@ function showInfo($info, $settings) {
 					echo '
 						<tr>
 							<td>'.$drive['device'].'</td>
+							<td>'.$drive['vendor'].'</td>
 							<td>'.$drive['name'].'</td>
+							<td>',$drive['removable'] ? 'Yes' : 'No','</td>
 						</tr>';
 			else
 				echo '<tr><td colspan="3" class="none">None found</td></tr>';
