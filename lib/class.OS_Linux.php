@@ -120,25 +120,21 @@ class OS_Linux {
 		$memVals = array();
 		$swapVals = array();
 
-		// Get contents of both
-		$memContents = getContents($procFileMem);
-		$swapContents = getContents($procFileSwap);
-
 		// Get memContents
-		@preg_match_all('/^([^:]+)\:\s+(\d+)\s*([kb|KB])\s*?/m', $memContents, $matches, PREG_OFFSET_CAPTURE);
+		@preg_match_all('/^([^:]+)\:\s+(\d+)\s*([kb|kB])?\s*/m', getContents($procFileMem), $matches, PREG_SET_ORDER);
 
 		// Deal with it
-		foreach ((array)$matches[1] as $k => $v)
-			$memVals[$v[0]] = $matches[2][$k][0];
+		foreach ((array)$matches as $memInfo)
+			$memVals[$memInfo[1]] = $memInfo[2];
 
 		// Get swapContents
-		@preg_match_all('/(\S+)\s+(\w+)\s+(\d+)\s(\d+)/i', $swapContents, $matches);
-		foreach ((array)$matches[0] as $k => $v)
+		@preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)[^$]*$/m', getContents($procFileSwap), $matches, PREG_SET_ORDER);
+		foreach ((array)$matches as $swapDevice)
 			$swapVals[] = array (
-				'device' => $matches[1][$k],
-				'type' => $matches[2][$k],
-				'size' => $matches[3][$k],
-				'used' => $matches[4][$k]
+				'device' => $swapDevice[1],
+				'type' => $swapDevice[2],
+				'size' => $swapDevice[3]*1024,
+				'used' => $swapDevice[4]*1024
 			);
 
 		// Get individual vals
@@ -634,6 +630,7 @@ class OS_Linux {
 
 	// Again useful probably only for things like laptops. Get status on wifi adapters
 	// Parses it successfully, yes. But what should I use this info for? idk
+	// And also, I'm not sure how to interpret the status value
 	private function getWifi() {
 
 		// Return these

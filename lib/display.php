@@ -83,10 +83,19 @@ function showInfo($info, $settings) {
 
 		// Show memory?
 		if (!empty($settings['show']['ram'])) {
+			
+			// Show detailed swap info?
+			$show_detailed_swap = is_array($info['RAM']['swapInfo']) && count($info['RAM']['swapInfo']) > 0;
 		echo '
 		<div class="infoTable">
 			<h2>Memory</h2>
 			<table>
+				<colgroup>
+					<col style="width: 10%;" />
+					<col style="width: 30%;" />
+					<col style="width: 30%;" />
+					<col style="width: 30%;" />
+				</colgroup>
 				<tr>
 					<th>Type</th>
 					<th>Free</th>
@@ -100,11 +109,45 @@ function showInfo($info, $settings) {
 					<td>'.byte_convert($info['RAM']['total']).'</td>
 				</tr>
 				<tr>
-					<td>Swap</td>
+					<td'.($show_detailed_swap ? ' rowspan="2"' : '').'>Swap</td>
 					<td>'.byte_convert($info['RAM']['swapFree']).'</td>
 					<td>'.byte_convert($info['RAM']['swapTotal'] - $info['RAM']['swapFree']).'</td>
 					<td>'.byte_convert($info['RAM']['swapTotal']).'</td>
-				</tr>
+				</tr>';
+				
+				if ($show_detailed_swap) {
+				echo '
+				<tr>
+					<td colspan="3">
+						<table class="mini center">
+							<colgroup>
+								<col style="width: 25%;" />
+								<col style="width: 25%;" />
+								<col style="width: 25%;" />
+								<col style="width: 25%;" />
+							</colgroup>
+							<tr>
+								<th>Device</th>
+								<th>Type</th>
+								<th>Size</th>
+								<th>Used</th>
+							</tr>';
+							foreach($info['RAM']['swapInfo'] as $swap)
+								echo '
+								<tr>
+									<td>'.$swap['device'].'</td>
+									<td>'.ucfirst($swap['type']).'</td>
+									<td>'.byte_convert($swap['size']).'</td>
+									<td>'.byte_convert($swap['used']).'</td>
+								</tr>
+								';
+							echo '
+						</table>
+					</td>
+				</tr>';
+				}
+
+				echo '
 			</table>
 		</div>';
 		}
