@@ -31,6 +31,9 @@ $settings['hide']['filesystems'] = array(
 	'usbfs', 'devpts', 'fusectl', 'securityfs');
 $settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none');
 
+// Hide hard drives that begin with /dev/sg?. These are duplicates of usual ones, like /dev/sd?
+$settings['hide']['sg'] = true;
+
 // Various softraids. Set to true to enable.
 // Only works if it's available on your system; otherwise does nothing
 $settings['raid']['gmirror'] = false;  # For FreeBSD

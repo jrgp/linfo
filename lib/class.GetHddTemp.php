@@ -32,10 +32,15 @@ class GetHddTempException extends Exception{}
 class GetHddTemp {
 
 	// Store these
-	protected $mode, $host, $port;
+	protected $mode, $host, $port, $settings;
 
 	// Default socket connect timeout
 	const timeout = 3;
+
+	// Start us off
+	public function __construct($settings) {
+		$this->settings = $settings;
+	}
 
 	// Localize mode
 	public function setMode($mode) {
@@ -77,6 +82,9 @@ class GetHddTemp {
 		$return = array();
 		foreach ($drives as $drive) {
 			list($path, $name, $temp, $unit) = explode('|', trim($drive));
+			// Ignore /dev/sg? 
+			if (!empty($this->settings['hide']['sg']) && substr($path, 0, 7) == '/dev/sg')
+				continue;
 			$return[] = array(
 				'path' => $path,
 				'name' => $name,

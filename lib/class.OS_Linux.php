@@ -295,7 +295,7 @@ class OS_Linux {
 		// hddtemp?
 		if (array_key_exists('hddtemp', (array)$this->settings['temps']) && !empty($this->settings['temps']['hddtemp'])) {
 			try {
-				$hddtemp = new GetHddTemp;
+				$hddtemp = new GetHddTemp($this->settings);
 				$hddtemp->setMode($this->settings['hddtemp']['mode']);
 				if ($this->settings['hddtemp']['mode'] == 'daemon') {
 					$hddtemp->setAddress(
