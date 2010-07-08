@@ -1,6 +1,6 @@
 <?php
 
-// Don't touch this
+// Don't touch this. It attempts to thwart attempts of reading this file by another php script
 defined('IN_INFO') or exit;
 
 /*
@@ -19,11 +19,19 @@ $settings['show']['network'] = true;
 $settings['show']['uptime'] = true;
 $settings['show']['cpu'] = true;
 $settings['show']['hostname'] = true;
-$settings['show']['devices'] = true;
-$settings['show']['temps'] = true;
-$settings['show']['battery'] = true;
+$settings['show']['devices'] = true; # Slow on old systems
+
+// Disabled by default as they require extra config below
+$settings['show']['temps'] = false;
 $settings['show']['raid'] = false; 
+
+// Following are probably only useful on laptop/desktop/workstation systems, not servers, although they work just as well
+$settings['show']['battery'] = false;
 $settings['show']['wifi'] = false; # Not finished
+
+/*
+ * Misc settings pertaining to the above follow below:
+ */
 
 // Hide certain file systems / devices
 $settings['hide']['filesystems'] = array(
@@ -32,7 +40,7 @@ $settings['hide']['filesystems'] = array(
 $settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none');
 
 // Hide hard drives that begin with /dev/sg?. These are duplicates of usual ones, like /dev/sd?
-$settings['hide']['sg'] = true;
+$settings['hide']['sg'] = true; # Linux only
 
 // Various softraids. Set to true to enable.
 // Only works if it's available on your system; otherwise does nothing
