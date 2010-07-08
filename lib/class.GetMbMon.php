@@ -86,5 +86,4 @@ class GetMbMon {
 		$temps = $this->parseSockData($sockResult);
 		return $temps;
 	}
-
 }

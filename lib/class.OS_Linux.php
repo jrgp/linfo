@@ -328,6 +328,19 @@ class OS_Linux {
 			}
 		}
 
+		// sensord? (part of lm-sensors)
+		if (array_key_exists('sensord', (array)$this->settings['temps']) && !empty($this->settings['temps']['sensord'])) {
+			try {
+				$sensord = new GetSensord;
+				$sensord_res = $sensord->work();
+				if (is_array($sensord_res))
+					$return = array_merge($return, $sensord_res);
+			}
+			catch (GetSensordException $e) {
+				// Current lack of error handling
+			}
+		}
+
 		// Done
 		return $return;
 	}

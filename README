@@ -28,6 +28,11 @@ Known issues:
  - FreeBSD support is not quite finished
  - OSX/Win/OtherBSD support does not yet exist
 
+Linux system temps/voltages/etc requirments:
+ - Have hddtemp listening or periodically writing to syslog, and/or
+ - Have mbmon listening, and/or
+ - Have sensord periodically writing to syslog
+
 License: GNU General Public License
 Primary Author: Joseph Robert Gillotti <joe@u13.net>
 URL: http://linfo.sourceforge.net/
