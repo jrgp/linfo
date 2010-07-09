@@ -122,7 +122,7 @@ class OS_Linux {
 		$swapVals = array();
 
 		// Get memContents
-		@preg_match_all('/^([^:]+)\:\s+(\d+)\s*([kb|kB])?\s*/m', getContents($procFileMem), $matches, PREG_SET_ORDER);
+		@preg_match_all('/^([^:]+)\:\s+(\d+)\s*(?:[kb|kB])?\s*/m', getContents($procFileMem), $matches, PREG_SET_ORDER);
 
 		// Deal with it
 		foreach ((array)$matches as $memInfo)
@@ -418,7 +418,7 @@ class OS_Linux {
 
 		// Get all PCI ids
 		foreach ((array) @glob($sys_pci_dir.'*/uevent') as $path) {
-			if (preg_match('/[pci_id|pci_subsys_id]=(\w+):(\w+)/', strtolower(getContents($path)), $match) == 1) {
+			if (preg_match('/pci\_(?:id|subsys_id)=(\w+):(\w+)/', strtolower(getContents($path)), $match) == 1) {
 				$pci_dev_id[$match[1]][$match[2]] = 1;
 				$pci_dev_num++;
 			}
@@ -435,7 +435,7 @@ class OS_Linux {
 		// Get PCI vendor/dev names
 		$file = @fopen($pci_ids, 'rb');
 		$left = $pci_dev_num;
-		if ($f !== false) {
+		if ($file !== false) {
 			for ($line = 0; $contents = fgets($file); $line++) {
 				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
 					$cmid = trim(strtolower($match[1]));
@@ -616,15 +616,7 @@ class OS_Linux {
 			// Type
 			$type_contents = strtoupper(getContents($v.'/device/modalias'));
 			list($type) = explode(':', $type_contents, 2);
-			switch ($type) {
-				case 'PCI':
-				case 'USB':
-				break;
-
-				default:
-					$type = 'N/A';
-				break;
-			}
+			$type = $type != 'USB' && $type != 'PCI' ? 'N/A' : $type;
 			
 
 			// Save and get info for each
