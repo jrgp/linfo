@@ -122,7 +122,7 @@ class OS_Linux {
 		$swapVals = array();
 
 		// Get memContents
-		@preg_match_all('/^([^:]+)\:\s+(\d+)\s*(?:[kb|kB])?\s*/m', getContents($procFileMem), $matches, PREG_SET_ORDER);
+		@preg_match_all('/^([^:]+)\:\s+(\d+)\s*(?:k[bB])?\s*/m', getContents($procFileMem), $matches, PREG_SET_ORDER);
 
 		// Deal with it
 		foreach ((array)$matches as $memInfo)
@@ -384,8 +384,8 @@ class OS_Linux {
 				'size' => $size,
 				'used' => $used,
 				'free' => $free,
-				'free_percent' => ($free !== false && $size !== false ? round($free / $size, 2) * 100 : false),
-				'used_percent' => ($used !== false && $size !== false ? round($used / $size, 2) * 100 : false)
+				'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
+				'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false)
 			);
 		}
 
@@ -418,7 +418,7 @@ class OS_Linux {
 
 		// Get all PCI ids
 		foreach ((array) @glob($sys_pci_dir.'*/uevent') as $path) {
-			if (preg_match('/pci\_(?:id|subsys_id)=(\w+):(\w+)/', strtolower(getContents($path)), $match) == 1) {
+			if (preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', strtolower(getContents($path)), $match) == 1) {
 				$pci_dev_id[$match[1]][$match[2]] = 1;
 				$pci_dev_num++;
 			}
