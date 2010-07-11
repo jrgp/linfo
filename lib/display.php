@@ -272,9 +272,9 @@ function showInfo($info, $settings) {
 					<th>Path</th>
 					<th>Vendor</th>
 					<th>Name</th>
-					<th>Removable</th>
 					<th>Reads</th>
 					<th>Writes</th>
+					<th>Size</th>
 				</tr>
 				';
 			if (count($info['HD']) > 0)
@@ -284,9 +284,9 @@ function showInfo($info, $settings) {
 							<td>'.$drive['device'].'</td>
 							<td>'.$drive['vendor'].'</td>
 							<td>'.$drive['name'].'</td>
-							<td>',$drive['removable'] ? 'Yes' : 'No','</td>
 							<td>',$drive['reads'] !== false ? number_format($drive['reads']) : 'Unknown','</td>
 							<td>',$drive['writes'] !== false ? number_format($drive['writes']) : 'Unknown','</td>
+							<td>'.byte_convert($drive['size']).'</td>
 						</tr>';
 			else
 				echo '<tr><td colspan="4" class="none">None found</td></tr>';

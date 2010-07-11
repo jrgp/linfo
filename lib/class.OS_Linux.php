@@ -305,9 +305,9 @@ class OS_Linux {
 				'name' =>  getContents($path, 'Unknown'),
 				'vendor' => getContents(dirname($path).'/vendor', 'Unknown'),
 				'device' => '/dev/'.$parts[3],
-				'removable' => (bool) getContents(dirname(dirname($path)).'/removable', 'Unknown'),
 				'reads' => $reads,
-				'writes' => $writes
+				'writes' => $writes,
+				'size' => getContents(dirname(dirname($path)).'/size', 0) * 512
 			);
 		}
 		return $return;
