@@ -295,6 +295,24 @@ function showInfo($info, $settings) {
 		</div>';
 		}
 
+		// Show sound card stuff?
+		if (!empty($settings['show']['sound'])) {
+		echo '
+		<div class="infoTable">
+			<h2>Sound Cards</h2>
+			<table>
+				<tr>
+					<th>Number</th>
+					<th>Card</th>
+				</tr>';
+				foreach ($info['SoundCards'] as $card)
+					echo '<tr><td>'.$card['number'].'</td><td>'.$card['card'].'</td></tr>';
+				echo '
+			</table>
+		</div>
+		';
+		}
+
 		echo '
 	</div>
 </div>';

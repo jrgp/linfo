@@ -69,6 +69,7 @@ class OS_Linux {
 			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(),
 			'Raid' => empty($this->settings['show']['raid']) ? array(): $this->getRAID(),
 			'Wifi' => empty($this->settings['show']['wifi']) ? array(): $this->getWifi(),
+			'SoundCards' => empty($this->settings['show']['sound']) ? array(): $this->getSoundCards(),
 		);
 	}
 
@@ -277,7 +278,7 @@ class OS_Linux {
 		$contents = getContents('/proc/uptime', false);
 
 		// eh?
-		if ($contents == false) {
+		if ($contents === false) {
 			$this->error->add('Linfo Core', '/proc/uptime does not exist.');
 			return 'Unknown';
 		}
@@ -286,7 +287,24 @@ class OS_Linux {
 		list($seconds) = explode(' ', $contents, 1);
 
 		// Get it textual, as in days/minutes/hours/etc
-		return seconds_convert(ceil($seconds));
+		$uptime = seconds_convert(ceil($seconds));
+
+		// Now find out when the system was booted
+		$contents = getContents('/proc/stat', false);
+
+		// Ugh
+		if ($contents === false)
+			return $uptime; // Settle for just uptime
+
+		// Get date of boot
+		if (preg_match('/^btime (\d+)$/m', $contents, $boot) != 1)
+			return $uptime;
+
+		// Okay?
+		list(, $boot) = $boot;
+
+		// Return
+		return $uptime . '; started on '.date('m/d/y', $boot);
 	}
 
 	// Get disk drives
@@ -743,6 +761,39 @@ class OS_Linux {
 
 		// Done
 		return $return;
+	}
+
+	// Yet something else that has no business being enabled on a server system
+	// Sound card stuff
+	private function getSoundCards() {
+
+		// This should be it
+		$file = '/proc/asound/cards';
+
+		// eh?
+		if (!is_file($file)) {
+			$this->error->add('Linux sound card detector', '/proc/asound/cards does not exist');
+		}
+
+		// Get contents and parse
+		$contents = getContents($file);
+
+		// Parse
+		if (preg_match_all('/^\s*(\d+)\s\[[\s\w]+\]:\s(.+)$/m', $contents, $matches, PREG_SET_ORDER) == 0)
+			return array();
+
+		// eh?
+		$cards = array();
+
+		// Deal with results
+		foreach ($matches as $card)	
+			$cards[] = array(
+				'number' => $card[1],
+				'card' => $card[2],
+			);
+
+		// Give cards
+		return $cards;
 	}
 }
 

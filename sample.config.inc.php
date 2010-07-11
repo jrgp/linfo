@@ -27,6 +27,7 @@ $settings['show']['raid'] = false;
 
 // Following are probably only useful on laptop/desktop/workstation systems, not servers, although they work just as well
 $settings['show']['battery'] = false;
+$settings['show']['sound'] = false;
 $settings['show']['wifi'] = false; # Not finished
 
 /*
