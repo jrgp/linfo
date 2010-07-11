@@ -64,4 +64,6 @@ $settings['mbmon']['address'] = array( // Address/Port of mbmon daemon to connec
 	'port' => 411
 );
 
+// Show errors? Disabled by default to hide vulnerabilities / attributes on the server
+$settings['show_errors'] = false;
 

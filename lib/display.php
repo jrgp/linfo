@@ -43,41 +43,38 @@ function showInfo($info, $settings) {
 	<div class="col">
 		<div class="infoTable">
 			<h2>Core</h2>
-			<table>
+			<table>';
+			
+			// Linfo Core. Decide what to show.
+			$core = array();
+			if (!empty($settings['show']['os']))
+				$core[] = array('OS', $info['OS']);
+			if (!empty($settings['show']['kernel']))
+				$core[] = array('Kernel', $info['Kernel']);
+			$core[] = array('Accessed IP', (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
+			if (!empty($settings['show']['uptime']))
+				$core[] = array('Uptime', $info['UpTime']);
+			if (!empty($settings['show']['hostname']))
+				$core[] = array('Hostname', $info['HostName']);
+			if (!empty($settings['show']['cpu'])) {
+				$cpus = '';
+				foreach ($info['CPU'] as $cpu) 
+					$cpus .= $cpu['Vendor'] . ' - ' . $cpu['Model'] . ' ('.$cpu['MHz'].' MHz)<br />';
+				$core[] = array('CPUs ('.count($info['CPU']).')', $cpus);
+			}
+			if (!empty($settings['show']['load']))
+				$core[] = array('Load', implode(' ', $info['Load']));
+			
+			// Show
+			foreach ($core as $coreInfo)
+				echo '
 				<tr>
-					<th>OS</th>
-					<td>'.$info['OS'].'</td>
+					<th>'.$coreInfo[0].'</th>
+					<td>'.$coreInfo[1].'</td>
 				</tr>
-				<tr>
-					<th>Kernel</th>
-					<td>'.$info['Kernel'].'</td>
-				</tr>
-				<tr>
-					<th>Uptime</th>
-					<td>'.$info['UpTime'].'</td>
-				</tr>
-				<tr>
-					<th>Hostname</th>
-					<td>'.$info['HostName'].'</td>
-				</tr>
-				<tr>
-					<th>Accessed IP</th>
-					<td>'.(isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown').'</td>
-				</tr>
-				<tr>
-					<th>CPUs ('.count($info['CPU']).')</th>
-					<td>';
+				';
 
-					foreach ($info['CPU'] as $cpu) {
-						echo $cpu['Vendor'] . ' - ' . $cpu['Model'] . ' ('.$cpu['MHz'].' MHz)<br />';
-					}
-
-					echo '</td>
-				</tr>
-				<tr>
-					<th>Load</th>
-					<td>'.implode(' ', $info['Load']).'</td>
-				</tr>
+			echo '
 			</table>
 		</div>';
 
@@ -288,7 +285,7 @@ function showInfo($info, $settings) {
 							<td>',$drive['removable'] ? 'Yes' : 'No','</td>
 						</tr>';
 			else
-				echo '<tr><td colspan="3" class="none">None found</td></tr>';
+				echo '<tr><td colspan="4" class="none">None found</td></tr>';
 				echo '
 			</table>
 		</div>';
@@ -416,6 +413,33 @@ echo '
 		echo '
 	</table>
 </div>';
+}
+
+// Feel like showing errors? Are there any even?
+if (!empty($settings['show_errors']) && LinfoError::Fledging()->num() > 0) {
+
+	echo '
+	<div id="errorList" class="infoTable">
+		<h2>Data gathering errors</h2>
+		<table>
+			<tr>
+				<th>From Where</th>
+				<th>Message</th>
+			</tr>';
+
+			foreach (LinfoError::Fledging()->show() as $error) {
+				echo '
+				<tr>
+					<td>'.$error[0].'</td>
+					<td>'.$error[1].'</td>
+				</tr>
+				';
+			}
+
+			echo '
+		</table>
+	</div>
+	';
 }
 
 echo '

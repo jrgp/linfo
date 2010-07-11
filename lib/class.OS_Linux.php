@@ -31,13 +31,16 @@ class OS_Linux {
 
 	// Keep these tucked away
 	protected
-		$settings;
+		$settings, $error;
 
 	// Start us off
 	public function __construct($settings) {
 
 		// Localize settings
 		$this->settings = $settings;
+
+		// Localize error handler
+		$this->error = LinfoError::Fledging();
 
 		// Make sure we have what we need
 		if (!is_dir('/sys') || !is_dir('/proc')) {
@@ -81,16 +84,21 @@ class OS_Linux {
 		$file = '/proc/version';
 
 		// Make sure we can use it
-		if (!is_file($file) || !is_readable($file))
+		if (!is_file($file) || !is_readable($file)) {
+			$this->error->add('Linfo Core', '/proc/version not found');
 			return 'Unknown';
+		}
 
 		// Get it
 		$contents = getContents($file);
 
 		// Parse it
-		@preg_match('/^Linux version (\S+).+$/', $contents, $match);
+		if (preg_match('/^Linux version (\S+).+$/', $contents, $match) != 1) {
+			$this->error->add('Linfo Core', 'Error parsing /proc/version');
+			return 'Unknown';
+		}
 
-		return $match[1] ? $match[1] : 'Unknown';
+		return $match[1];
 	}
 
 	// Get host name
@@ -99,8 +107,17 @@ class OS_Linux {
 		// File containing info
 		$file = '/proc/sys/kernel/hostname';
 		
-		// Return it
-		return getContents($file, 'Unknown');
+		// Get it
+		$hostname = getContents($file, false);
+
+		// Failed?
+		if ($hostname === false) {
+			$this->error->add('Linfo Core', 'Error getting /proc/sys/kernel/hostname');
+			return 'Unknown';
+		}
+		else {
+			return $hostname;
+		}
 	}
 
 	// Get ram usage/amount/types
@@ -114,8 +131,10 @@ class OS_Linux {
 		$procFileMem = '/proc/meminfo';
 
 		// First off, these need to exist..
-		if (!is_readable($procFileSwap) || !is_readable($procFileMem))
+		if (!is_readable($procFileSwap) || !is_readable($procFileMem)) {
+			$this->error->add('Linfo Core', '/proc/swaps and/or /proc/meminfo are not readable');
 			return array();
+		}
 
 		// To hold their values
 		$memVals = array();
@@ -158,8 +177,10 @@ class OS_Linux {
 		$file = '/proc/cpuinfo';
 
 		// Not there?
-		if (!is_file($file) || !is_readable($file))
+		if (!is_file($file) || !is_readable($file)) {
+			$this->error->add('Linfo Core', '/proc/cpuinfo not readable');
 			return array();
+		}
 
 		/*
 		 * Get all info for all CPUs from the cpuinfo file
@@ -256,8 +277,10 @@ class OS_Linux {
 		$contents = getContents('/proc/uptime', false);
 
 		// eh?
-		if ($contents == false)
+		if ($contents == false) {
+			$this->error->add('Linfo Core', '/proc/uptime does not exist.');
 			return 'Unknown';
+		}
 
 		// Seconds
 		list($seconds) = explode(' ', $contents, 1);
@@ -308,7 +331,7 @@ class OS_Linux {
 
 			}
 			catch (GetHddTempException $e) {
-				// Current lack of error handling
+				$this->error->add('hddtemp parser', $e->getMessage());
 			}
 		}
 
@@ -324,7 +347,7 @@ class OS_Linux {
 					$return = array_merge($return, $mbmon_res);
 			}
 			catch (GetMbMonException $e) {
-				// Current lack of error handling
+				$this->error->add('mbmon parser', $e->getMessage());
 			}
 		}
 
@@ -337,7 +360,7 @@ class OS_Linux {
 					$return = array_merge($return, $sensord_res);
 			}
 			catch (GetSensordException $e) {
-				// Current lack of error handling
+				$this->error->add('sensord parser', $e->getMessage());
 			}
 		}
 
@@ -349,10 +372,15 @@ class OS_Linux {
 	private function getMounts() {
 
 		// File
-		$contents = getContents('/proc/mounts');
+		$contents = getContents('/proc/mounts', false);
+
+		// Can't?
+		if ($contents == false)
+			$this->error->add('Linfo Core', '/proc/mounts does not exist');
 
 		// Parse
-		@preg_match_all('/^(\S+) (\S+) (\S+) (\S+) \d \d$/m', $contents, $match, PREG_SET_ORDER);
+		if (@preg_match_all('/^(\S+) (\S+) (\S+) (\S+) \d \d$/m', $contents, $match, PREG_SET_ORDER) === false)
+			$this->error->add('Linfo Core', 'Error parsing /proc/mounts');
 
 		// Return these
 		$mounts = array();
@@ -491,10 +519,14 @@ class OS_Linux {
 		if (array_key_exists('mdadm', (array)$this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
 
 			// Try getting contents
-			$mdadm_contents = getContents('/proc/mdstat');
+			$mdadm_contents = getContents('/proc/mdstat', false);
+
+			// No?
+			if ($mdadm_contents === false)
+				$this->error->add('Linux softraid mdstat parser', '/proc/mdstat does not exist.');
 
 			// Parse
-			@preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks\s*(level \d\, [\w\d]+ chunk\, algorithm \d\s*)?\[(\d\/\d)\] \[([U\_]+)\]/mi', $mdadm_contents, $match, PREG_SET_ORDER);
+			@preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks\s*(level \d\, [\w\d]+ chunk\, algorithm \d\s*)?\[(\d\/\d)\] \[([U\_]+)\]/mi', (string) $mdadm_contents, $match, PREG_SET_ORDER);
 
 			// Store them here
 			$mdadm_arrays = array();
@@ -570,11 +602,13 @@ class OS_Linux {
 		$file = '/proc/loadavg';
 
 		// Get contents
-		$contents = getContents($file);
+		$contents = getContents($file, false);
 
 		// ugh
-		if ($contents == '')
+		if ($contents === false) {
+			$this->error->add('Linfo Core', '/proc/loadavg unreadable');
 			return array();
+		}
 
 		// Parts
 		$parts = explode(' ', $contents);
@@ -678,8 +712,10 @@ class OS_Linux {
 		$contents = getContents('/proc/self/net/wireless');
 
 		// Oi
-		if ($contents == false)
+		if ($contents == false) {
+			$this->error->add('Linux WiFi info parser', '/proc/self/net/wireless does not exist');
 			return $return;
+		}
 
 		// Parse
 		@preg_match_all('/^ (\S+)\:\s*(\d+)\s*(\S+)\s*(\S+)\s*(\S+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $match, PREG_SET_ORDER);
