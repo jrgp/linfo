@@ -294,18 +294,22 @@ class OS_Linux {
 	private function getHD() {
 
 		$return = array();
-
 		foreach((array)@glob('/sys/block/*/device/model') as $path) {
 			$dirname = dirname(dirname($path));
 			$parts = explode('/', $path);
+			if (preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', getContents(dirname(dirname($path)).'/stat'), $statMatches) !== 1)
+				list($reads, $writes) = array(false, false);
+			else
+				list(, $reads, $writes) = $statMatches;
 			$return[] = array(
 				'name' =>  getContents($path, 'Unknown'),
 				'vendor' => getContents(dirname($path).'/vendor', 'Unknown'),
 				'device' => '/dev/'.$parts[3],
 				'removable' => (bool) getContents(dirname(dirname($path)).'/removable', 'Unknown'),
+				'reads' => $reads,
+				'writes' => $writes
 			);
 		}
-
 		return $return;
 	}
 
