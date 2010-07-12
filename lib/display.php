@@ -338,13 +338,24 @@ echo '
 		$total_size = 0;
 		$total_used = 0;
 		$total_free = 0;
-
+		
+		// Don't add totals for duplicates
+		$done_devices = array();
+		
+		// Are there any?
 		if (count($info['Mounts']) > 0)
+
 			// Go through each
 			foreach($info['Mounts'] as $mount) {
-				$total_size += $mount['size'];
-				$total_used += $mount['used'];
-				$total_free += $mount['free'];
+
+				// Only add totals for this device if we haven't already
+				if (!in_array($mount['device'], $done_devices)) {
+					$total_size += $mount['size'];
+					$total_used += $mount['used'];
+					$total_free += $mount['free'];
+					$done_devices[] = $mount['device'];
+				}
+
 				echo '<tr>
 					<td>'.$mount['device'].'</td>
 					<td>'.$mount['mount'].'</td>
