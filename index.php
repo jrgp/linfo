@@ -53,6 +53,7 @@ $settings['hide']['filesystems'][] = 'binfmt_misc';
 require_once LOCAL_PATH . 'lib/init.php';
 require_once LOCAL_PATH . 'lib/misc.php';
 require_once LOCAL_PATH . 'lib/display.php';
+require_once LOCAL_PATH . 'lib/class.LinfoTimer.php';
 
 // Determine our OS
 $os = determineOS();

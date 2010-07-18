@@ -65,6 +65,13 @@ $settings['mbmon']['address'] = array( // Address/Port of mbmon daemon to connec
 	'port' => 411
 );
 
+/*
+ * Debugging settings
+ */
+
 // Show errors? Disabled by default to hide vulnerabilities / attributes on the server
 $settings['show_errors'] = false;
 
+// Show results from timing ourselves? Similar to above.
+// Lets you see how much time getting each bit of info takes.
+$settings['timer'] = false;

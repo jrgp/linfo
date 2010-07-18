@@ -28,4 +28,4 @@ table.mini th {background-color: inherit;}
 .net_up {color: green;}
 .net_down {color: maroon;}
 .net_unknown {color: purple;}
-#errorList {font-size: 70%; margin-top: 15px; margin-bottom: 15px;}
+#errorList, #timerList {font-size: 70%; margin-top: 15px; margin-bottom: 15px;}

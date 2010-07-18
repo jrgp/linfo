@@ -80,6 +80,10 @@ class OS_Linux {
 
 	// Get linux kernel version
 	private function getKernel() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Kernel');
 
 		// File containing info
 		$file = '/proc/version';
@@ -104,6 +108,10 @@ class OS_Linux {
 
 	// Get host name
 	private function getHostName() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Hostname');
 
 		// File containing info
 		$file = '/proc/sys/kernel/hostname';
@@ -123,6 +131,10 @@ class OS_Linux {
 
 	// Get ram usage/amount/types
 	private function getRam(){
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Memory');
 
 		// We'll return the contents of this
 		$tmpInfo = array();
@@ -173,6 +185,10 @@ class OS_Linux {
 
 	// Get processor info
 	private function getCPU() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('CPUs');
 
 		// File that has it
 		$file = '/proc/cpuinfo';
@@ -273,6 +289,10 @@ class OS_Linux {
 
 	// Famously interesting uptime
 	private function getUpTime () {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Uptime');
 
 		// Get contents
 		$contents = getContents('/proc/uptime', false);
@@ -310,6 +330,10 @@ class OS_Linux {
 	// Get disk drives
 	// TODO: Possibly more information?
 	private function getHD() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Drives');
 
 		$return = array();
 		foreach((array)@glob('/sys/block/*/device/model') as $path) {
@@ -333,7 +357,11 @@ class OS_Linux {
 
 	// Get temps/voltages
 	private function getTemps() {
-		
+	
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Temperature');
+
 		// Hold them here
 		$return = array();
 
@@ -392,6 +420,10 @@ class OS_Linux {
 
 	// Get mounts
 	private function getMounts() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Mounted file systems');
 
 		// File
 		$contents = getContents('/proc/mounts', false);
@@ -448,6 +480,10 @@ class OS_Linux {
 	// but on older it can take upwards of 5 seconds, since it parses the entire ids files
 	// looking for device names which resolve to the pci addresses
 	private function getDevs() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Hardware Devices');
 
 		// Return array
 		$return = array();
@@ -534,6 +570,10 @@ class OS_Linux {
 	// TODO: Maybe support other methods of Linux raid info?
 	private function getRAID() {
 		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('RAID');
+		
 		// Store it here
 		$raidinfo = array();
 
@@ -619,6 +659,10 @@ class OS_Linux {
 
 	// Get load
 	private function getLoad() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Load Averages');
 
 		// File that has it
 		$file = '/proc/loadavg';
@@ -645,6 +689,10 @@ class OS_Linux {
 
 	// Get network devices
 	private function getNet() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Network Devices');
 
 		// Hold our return values
 		$return = array();
@@ -699,6 +747,10 @@ class OS_Linux {
 	// Useful for things like laptops. I think this might also work for UPS's, but I'm not sure.
 	private function getBattery() {
 		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Batteries');
+		
 		// Return values
 		$return = array();
 
@@ -726,6 +778,10 @@ class OS_Linux {
 	// Parses it successfully, yes. But what should I use this info for? idk
 	// And also, I'm not sure how to interpret the status value
 	private function getWifi() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Wifi');
 
 		// Return these
 		$return = array();
@@ -766,6 +822,10 @@ class OS_Linux {
 	// Yet something else that has no business being enabled on a server system
 	// Sound card stuff
 	private function getSoundCards() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Sound cards');
 
 		// This should be it
 		$file = '/proc/asound/cards';
