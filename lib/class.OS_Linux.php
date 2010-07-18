@@ -486,7 +486,7 @@ class OS_Linux {
 		$file = @fopen($pci_ids, 'rb');
 		$left = $pci_dev_num;
 		if ($file !== false) {
-			for ($line = 0; $contents = fgets($file); $line++) {
+			while ($contents = @fgets($file)) {
 				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
 					$cmid = trim(strtolower($match[1]));
 					$cname = trim($match[2]);
@@ -508,7 +508,7 @@ class OS_Linux {
 		$file = @fopen($usb_ids, 'rb');
 		$left = $usb_dev_num;
 		if ($file !== false) {
-			for ($line = 0; $contents = fgets($file); $line++) {
+			while($contents = @fgets($file)) {
 				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
 					$cmid = trim(strtolower($match[1]));
 					$cname = trim($match[2]);
