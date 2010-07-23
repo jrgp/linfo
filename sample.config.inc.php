@@ -49,9 +49,10 @@ $settings['raid']['gmirror'] = false;  # For FreeBSD
 $settings['raid']['mdadm'] = false;  # For Linux; known to support RAID 1, 5, and 6
 
 // Various ways of getting temps/voltages/etc. Set to true to enable. Currently these are just for Linux
+$settings['temps']['hwmon'] = true; // Requires no extra config, is fast, and is in /sys :)
 $settings['temps']['hddtemp'] = false;
 $settings['temps']['mbmon'] = false;
-$settings['temps']['sensord'] = false; // Part of lm-sensors; logs periodically to syslog
+$settings['temps']['sensord'] = false; // Part of lm-sensors; logs periodically to syslog. slow
 
 // Configuration for getting temps with hddtemp
 $settings['hddtemp']['mode'] = 'daemon'; // Either daemon or syslog

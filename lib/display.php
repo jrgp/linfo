@@ -195,7 +195,7 @@ function showInfo($info, $settings) {
 					<tr>
 						<td>'.$stat['path'].'</td>
 						<td>'.$stat['name'].'</td>
-						<td>'.$stat['temp'].$stat['unit'].'</td>
+						<td>'.$stat['temp'].' '.$stat['unit'].'</td>
 					</tr>
 					';
 				}

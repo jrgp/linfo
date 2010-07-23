@@ -85,6 +85,9 @@ class GetHddTemp {
 			// Ignore /dev/sg? 
 			if (!empty($this->settings['hide']['sg']) && substr($path, 0, 7) == '/dev/sg')
 				continue;
+			// Ignore no longer existant devices?
+			if (!file_exists($path) && is_readable('/dev'))
+				continue;
 			$return[] = array(
 				'path' => $path,
 				'name' => $name,

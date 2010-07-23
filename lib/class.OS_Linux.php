@@ -414,6 +414,48 @@ class OS_Linux {
 			}
 		}
 
+		// hwmon? (probably the fastest of what's here)
+		if (array_key_exists('hwmon', (array)$this->settings['temps']) && !empty($this->settings['temps']['hwmon'])) {
+
+			// Store them here
+			$hdmon_vals = array();
+
+			// Wacky location
+			foreach ((array) @glob('/sys/class/hwmon/hwmon*/*_label') as $path) {
+
+				// Get info here
+				$section = rtrim($path, 'label');
+				$filename = basename($path);
+				$label = getContents($path);
+				$value = getContents($section.'input');
+
+				// Determine units and possibly fix values
+				if (strpos($filename, 'fan') !== false)
+					$unit = 'RPM';
+				elseif (strpos($filename, 'temp') !== false) {
+					$unit = 'F';  // Always seems to be in farenheight
+					$value = strlen($value) == 5 ? substr($value, 0, 2) : $value;  // Pointless extra 0's
+				}
+				elseif (preg_match('/^in\d_label$/', $filename)) {
+					$unit = 'v'; 
+				}
+				else 
+					$unit = ''; // idk
+
+				// Append values
+				$hwmon_vals[] = array(
+					'path' => 'N/A',
+					'name' => $label,
+					'temp' => $value,
+					'unit' => $unit
+				);
+			}
+			
+			// Save any if we have any
+			if (count($hwmon_vals) > 0)
+				$return = array_merge($return, $hwmon_vals);
+		}
+
 		// Done
 		return $return;
 	}
