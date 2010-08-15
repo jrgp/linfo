@@ -103,7 +103,7 @@ class OS_FreeBSD {
 		}
 		
 		// Parse it
-		if (preg_match_all('/(.+)\s+on\s+(.+)\s+\((\w+)\, .+\)\n/i', $res, $m, PREG_SET_ORDER) == 0)
+		if (preg_match_all('/(.+)\s+on\s+(.+)\s+\((\w+).*\)\n/i', $res, $m, PREG_SET_ORDER) == 0)
 			return array();
 		
 		// Store them here
@@ -160,16 +160,19 @@ class OS_FreeBSD {
 		$tmpInfo['swapFree'] = 0;
 
 		// Parse the file
-		if (preg_match_all('/([a-z\ ]+):\s*\(Total: (\d+)\w,? Active:? (\d+)\w\)\n/i', $string, $m, PREG_SET_ORDER) == 0)
+		if (!preg_match_all('/([a-z\ ]+):\s*\(Total: (\d+)\w,? Active:? (\d+)\w\)\n/i', $res, $m, PREG_SET_ORDER))
 			return $tmpInfo;
 
 		// Parse each entry	
 		foreach ($m as $r) {
 			switch ($r[1]) {
-				case 'Virtual Memory':
+
+				// TODO Virtual != Swap
+				/*case 'Virtual Memory':
 					$tmpInfo['swapTotal'] = $r[2] * 1024;
 					$tmpInfo['swapFree'] = ($r[2] - $r[3]) * 1024;
 				break;
+				*/
 				case 'Real Memory':
 					$tmpInfo['total'] = $r[2]  * 1024;
 					$tmpInfo['free'] = ($r[2] - $r[3]) * 1024;
@@ -208,6 +211,9 @@ class OS_FreeBSD {
 	// Get uptime
 	private function getUpTime() {
 		
+		// todo
+		return '';
+
 		// Use uptime
 		try {
 			$res = $this->exec->exec('uptime');
@@ -216,12 +222,15 @@ class OS_FreeBSD {
 			return '';
 		}
 
+		echo $res;
+
 		// Parse it
-		if (preg_match('/^\d+:\d+\w{2}\s+up\s+(\d+)\s+days,\s+(\d+):(\d+).+$/', $res, $m) == 0)
+		if (preg_match('/^\d+:\d+[AP]M\s+up\s+((\d+)\s+days,\s+)?(\d+):(\d+).+$/', $res, $m) == 0)
 			return '';
 
 		// Get what
-		list(, $days, $hours, $minutes) = $m;
+		//list(, $days, $hours, $minutes) = $m;
+		print_r($m);
 		
 		// Convert to seconds
 		$seconds = 0;
@@ -291,6 +300,7 @@ class OS_FreeBSD {
 	// So far just gets interface names :-/
 	private function getNet() {
 
+
 		// Store return vals here
 		$return = array();
 		
@@ -303,7 +313,7 @@ class OS_FreeBSD {
 		}
 
 		// Parse result
-		if (preg_match_all('/^([a-z0-9]+):.+$/im', $string, $m, PREG_SET_ORDER) == 0)
+		if (preg_match_all('/^([a-z0-9]+):.+$/im', $res, $m, PREG_SET_ORDER) == 0)
 			return $return;
 
 		// Entries
@@ -320,7 +330,9 @@ class OS_FreeBSD {
 					'bytes' => false,
 					'errors' =>  false,
 					'packets' => false 
-				)
+				),
+				'state' => '?',
+				'type' => '?'
 			);
 
 		// Give

@@ -175,7 +175,7 @@ function showInfo($info, $settings) {
 							<td class="net_'.$stats['state'].'">'.ucfirst($stats['state']).'</td>
 						</tr>';
 			else
-				echo '<tr><td colspan="3" class="none">None found</td></tr>';
+				echo '<tr><td colspan="5" class="none">None found</td></tr>';
 			echo '
 			</table>
 		</div>';
@@ -289,7 +289,7 @@ function showInfo($info, $settings) {
 							<td>'.byte_convert($drive['size']).'</td>
 						</tr>';
 			else
-				echo '<tr><td colspan="4" class="none">None found</td></tr>';
+				echo '<tr><td colspan="6" class="none">None found</td></tr>';
 				echo '
 			</table>
 		</div>';
