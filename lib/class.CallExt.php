@@ -62,7 +62,8 @@ class CallExt {
 		// Try finding the exec
 		foreach ($this->searchPaths as $path) {
 			if (is_file($path.$name) && is_executable($path.$name)) {
-				$result = `$path.$name $switches`;
+				$command = "$path$name $switches";
+				$result = `$command`;
 				$this->cliCache[$name.$switches] = $result;
 				return $result;
 				break;

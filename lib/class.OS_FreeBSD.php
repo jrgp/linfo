@@ -47,7 +47,7 @@ class OS_FreeBSD {
 
 		// Start our external executable executing stuff
 		$this->exec = new CallExt;
-		$this->exec->setSearchPaths('/sbin', '/bin', '/user/bin', '/user/local/bin');
+		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin'));
 	}
 	
 	// This function will likely be shared among all the info classes
@@ -119,15 +119,19 @@ class OS_FreeBSD {
 			// Get these
 			$size = @disk_total_space($mount[2]);
 			$free = @disk_free_space($mount[2]);
+			$used = $size - $free;
 			
 			// Might be good, go for it
 			$mounts[] = array(
 				'device' => $mount[1],
-				'mount' => $parts[2],
-				'type' => $parts[3],
+				'mount' => $mount[2],
+				'type' => $mount[3],
 				'size' => $size ,
-				'used' => $size - $free,
-				'free' => $free
+				'used' => $used,
+				'free' => $free,
+				'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
+				'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false)
+
 			);
 		}
 
