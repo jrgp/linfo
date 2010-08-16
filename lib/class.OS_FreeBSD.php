@@ -405,20 +405,29 @@ class OS_FreeBSD {
 
 		// Keep them here
 		$devices = array();
-		$sort = array();
+
+		// Store the type column for each key
+		$sort_type = array();
 		
 		// Stuff it
 		foreach ($m as $device) {
+
+			// Only call this once
 			$type = strtoupper($device[3]);
+
+			// Stuff entry
 			$devices[] = array(
 				'vendor' => '?', // Maybe todo? 
 				'device' => $device[2],
 				'type' => $type
 			);
-			$sort[] = $type;
+
+			// For the sorting of this entry
+			$sort_type[] = $type;
 		}
 		
-		array_multisort($devices, SORT_STRING, $sort);
+		// Sort
+		array_multisort($devices, SORT_STRING, $sort_type);
 
 		// Return
 		return $devices;
