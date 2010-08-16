@@ -93,6 +93,10 @@ class OS_FreeBSD {
 	// Get mounted file systems
 	private function getMounts() {
 		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Mounted file systems');
+		
 		// Get result of mount command
 		try {
 			$res = $this->exec->exec('mount');
@@ -140,6 +144,10 @@ class OS_FreeBSD {
 
 	// Get ram usage
 	private function getRam(){
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Memory');
 		
 		// Use sysctl to get ram usage
 		try {
@@ -202,6 +210,10 @@ class OS_FreeBSD {
 	// Get system load
 	private function getLoad() {
 		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Load Averages');
+		
 		// Use uptime, since it also has load values
 		try {
 			$res = $this->exec->exec('uptime');
@@ -226,6 +238,10 @@ class OS_FreeBSD {
 	// Get uptime
 	private function getUpTime() {
 		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Uptime');
+		
 		// Use sysctl to get unix timestamp of boot. Very elegant!
 		try {
 			$res = $this->exec->exec('sysctl', 'kern.boottime');
@@ -247,6 +263,10 @@ class OS_FreeBSD {
 
 	// RAID Stats
 	private function getRAID() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('RAID');
 		
 		// Store raid arrays here
 		$return = array();
@@ -302,6 +322,10 @@ class OS_FreeBSD {
 
 	// So far just gets interface names :-/
 	private function getNet() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Network Devices');
 
 		// Store return vals here
 		$return = array();
@@ -344,6 +368,10 @@ class OS_FreeBSD {
 	// Get CPU's
 	// I still don't really like how this is done
 	private function getCPU() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('CPUs');
 
 		// Store them here
 		$cpus = array();
@@ -371,6 +399,10 @@ class OS_FreeBSD {
 	// Let's do the former :-/
 	private function getHD(){
 		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Drives');
+		
 		// Get hard drives detected at boot
 		if (preg_match_all('/^((?:ad|da|acd|cd)\d+)\: ((?:\w+|\d+\w+)) \<(\S+)\s+([^>]+)\>/m', $this->bootLog, $m, PREG_SET_ORDER) == 0)
 			return array();
@@ -392,12 +424,12 @@ class OS_FreeBSD {
 		return $drives;
 	}
 	
-	// idk
-	private function getTemps(){
-	}
-	
 	// Parse dmesg boot log
-	private function getDevs(){
+	private function getDevs() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Hardware Devices');
 		
 		// Get all devices detected during boot
 		if (preg_match_all('/^(\w+\d+): <(.+)>.* on (\w+)\d+$/m', $this->bootLog, $m, PREG_SET_ORDER) == 0)
@@ -435,6 +467,10 @@ class OS_FreeBSD {
 		
 	// APM? Seems to only support either one battery of them all collectively
 	private function getBattery() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Batteries');
 
 		// Store them here
 		$batts = array();
@@ -478,5 +514,13 @@ class OS_FreeBSD {
 			
 		// Return
 		return $batts;
+	}
+	
+	// idk
+	private function getTemps() {
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Temperature');
+	
 	}
 }

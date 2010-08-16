@@ -21,7 +21,7 @@
 
 defined('IN_INFO') or exit;
 
-// Get a file who's contents should just be an int
+// Get a file who's contents should just be an int. Returns zero on failure.
 function get_int_from_file($file) {
 	if (!file_exists($file))
 		return 0;
@@ -82,7 +82,6 @@ function seconds_convert($uptime) {
 function getContents($file, $default = '') {
 	if (!is_file($file) || !($contents = @file_get_contents($file)))
 		return $default;
-	
 	else
 		return trim($contents);
 }
