@@ -54,20 +54,20 @@ class OS_FreeBSD {
 
 		// Return everything, whilst obeying display permissions
 		return array(
-			'OS' => empty( $this->settings['show']) ? '' : $this->getOS(), 				# done
-			'Kernel' => empty( $this->settings['show']) ? '' : $this->getKernel(), 		# done 
-			'HostName' => empty( $this->settings['show']) ? '' : $this->getHostName(), 		# done
-			'Mounts' => empty( $this->settings['show']) ? array() : $this->getMounts(), 		# done
-			'RAM' => empty( $this->settings['show']) ? array() : $this->getRam(), 			# done
-			'Load' => empty( $this->settings['show']) ? array() : $this->getLoad(), 		# done
-			'Devices' => empty( $this->settings['show']) ? array() : $this->getDevs(), 		# done
-			'HD' => empty( $this->settings['show']) ? '' : $this->getHD(), 				# done 
-			'UpTime' => empty( $this->settings['show']) ? '' : $this->getUpTime(), 		# done
-			'RAID' => empty( $this->settings['show']) ? '' : $this->getRAID(),	 		# done (gmirror only)
-			'Network Devices' => empty( $this->settings['show']) ? array() : $this->getNet(), 	# done (names only)
-			'Battery' => empty( $this->settings['show']) ? array(): $this->getBattery(),  	# works
-			'CPU' => empty( $this->settings['show']) ? array() : $this->getCPU(), 			# works
-			'Temps' => empty( $this->settings['show']) ? array(): $this->getTemps(), 		# TODO
+			'OS' => empty($this->settings['show']) ? '' : $this->getOS(), 			# done
+			'Kernel' => empty($this->settings['show']) ? '' : $this->getKernel(), 		# done
+			'HostName' => empty($this->settings['show']) ? '' : $this->getHostName(), 	# done
+			'Mounts' => empty($this->settings['show']) ? array() : $this->getMounts(), 	# done
+			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(), 		# done
+			'Load' => empty($this->settings['show']) ? array() : $this->getLoad(), 		# done
+			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# done
+			'HD' => empty($this->settings['show']) ? '' : $this->getHD(), 			# done
+			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(), 		# done
+			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# done (gmirror only)
+			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),# done (names only)
+			'Battery' => empty($this->settings['show']) ? array(): $this->getBattery(),  	# works
+			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# works
+			'Temps' => empty($this->settings['show']) ? array(): $this->getTemps(), 	# TODO
 		);
 	}
 
