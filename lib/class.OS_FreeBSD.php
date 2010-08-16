@@ -405,15 +405,21 @@ class OS_FreeBSD {
 
 		// Keep them here
 		$devices = array();
+		$sort = array();
 		
 		// Stuff it
-		foreach ($m as $device)
+		foreach ($m as $device) {
+			$type = strtoupper($device[3]);
 			$devices[] = array(
 				'vendor' => '?', // Maybe todo? 
 				'device' => $device[2],
-				'type' => strtoupper($device[3])
+				'type' => $type
 			);
+			$sort[] = $type;
+		}
 		
+		array_multisort($devices, SORT_STRING, $sort);
+
 		// Return
 		return $devices;
 	}
