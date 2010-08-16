@@ -182,7 +182,7 @@ function showInfo($info, $settings) {
 		}
 
 		// Show temps?
-		if (!empty($settings['show']['temps'])) {
+		if (!empty($settings['show']['temps']) && count($info['Temps']) > 0) {
 		echo '
 		<div class="infoTable">
 			<h2>Temps / Voltages</h2>
@@ -383,7 +383,7 @@ echo '
 }
 
 // Show RAID Arrays?
-if (!empty($settings['show']['raid'])) {
+if (!empty($settings['show']['raid']) && count($info['Raid']) > 0) {
 echo '
 <div class="infoTable">
 	<h2>Raid Arrays</h2>
