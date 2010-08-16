@@ -61,21 +61,21 @@ function seconds_convert($uptime) {
 	$seconds = floor($uptime % 60);
 
 	// Send out formatted string
-	$return = '';
+	$return = array();
 
 	if ($days > 0)
-		$return .= $days.' days, ';
+		$return[] = $days.' days';
 	
 	if ($hours > 0)
-		$return .= $hours.' hrs, ';
+		$return[] = $hours.' hrs';
 
 	if ($minutes > 0)
-		$return .= $minutes.' mins, ';
+		$return[] = $minutes.' mins';
 
 	if ($seconds > 0)
-		$return .= $seconds. ' secs';
+		$return[] = $seconds. (date('m/d') == '06/03' ? ' sex' : ' secs');
 
-	return $return;
+	return implode(', ', $return);
 }
 
 // Get a file's contents, or default to second param
