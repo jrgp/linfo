@@ -366,6 +366,18 @@ class OS_FreeBSD {
 		}
 		catch(CallExtException $e) {}
 
+		// Get type from dmesg boot
+		$type = array();
+		$type_nics = array();
+		foreach ($netstat_match as $net)
+			$type_nics[] = $net[1];
+		if (preg_match_all('/^(\w+): <.+>.+on ([a-z]+)\d+/m', $this->bootLog, $type_match, PREG_SET_ORDER)) {
+			foreach ($type_match as $type_nic_match) {
+				if (in_array($type_nic_match[1], $type_nics))
+					$type[$type_nic_match[1]] = $type_nic_match[2];
+			}
+		}
+
 
 		// Save info
 		foreach ($netstat_match as $net) {
@@ -400,7 +412,9 @@ class OS_FreeBSD {
 					'packets' => $net[5] 
 				),
 				'state' => $state,
-				'type' => '?' // todo?
+
+				// TODO: Value for following is usually vague
+				'type' => array_key_exists($net[1], $type) ? strtoupper($type[$net[1]]) : 'N/A'
 			);
 		}
 
