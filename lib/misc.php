@@ -49,25 +49,19 @@ function byte_convert($size, $precision = 2) {
 }
 
 // Like above, but for seconds
-function seconds_convert($seconds) {
-	if ($seconds < 60)
-		return $seconds .' seconds';
+function seconds_convert($uptime) {
+	
+	// Method here heavily based on freebsd's uptime source
+	$uptime += $uptime > 60 ? 30 : 0;
+	$days = $uptime / 86400;
+	$uptime %= 86400;
+	$hours = $uptime / 3600;
+	$uptime %= 3600;
+	$minutes = $uptime / 60;
+	$seconds = $uptime % 60;
 
-	// Minutes?
-	elseif ($seconds/60 < 60)
-		return floor($seconds/60) . ' minutes';
-
-	// Hours?
-	elseif ($seconds/60/60 < 24)
-		return floor($seconds/60/60) . ' hours';
-
-	// Days?
-	else
-		return
-			floor($seconds/60/60/24) . ' days, ' .
-			floor(($seconds % (60*60*24))/60/60) . ' hours, ' .
-			floor(($seconds % (60*24))/60) . ' minutes';
-
+	// Send out formatted string
+	return sprintf('%d days, %d hours, %d minutes, %d seconds', $days, $hours, $minutes, $seconds);
 }
 
 // Get a file's contents, or default to second param
