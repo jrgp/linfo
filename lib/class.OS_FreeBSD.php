@@ -22,11 +22,10 @@
 defined('IN_INFO') or exit;
 
 /*
- * Nearly complete FreeBSD info class
- * So I decided to bite the bullet and use external programs for 
- * BSD/Mac/Win parsing functionality
+ * Nearly complete FreeBSD info class:
+ *
  * Note: When Linux compatibility is enabled and /proc is mounted, it only
- * contains process info; none of the hardware/system/network status that Linux /proc has
+ * contains process info; none of the hardware/system/network status that Linux /proc has.
  */
 
 class OS_FreeBSD {
@@ -45,6 +44,9 @@ class OS_FreeBSD {
 		// Start our external executable executing stuff
 		$this->exec = new CallExt;
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
+		
+		// Used enough times to just call it once, here
+		$this->bootLog = getContents('/var/run/dmesg.boot');
 	}
 	
 	// This function will likely be shared among all the info classes
@@ -62,8 +64,8 @@ class OS_FreeBSD {
 			'UpTime' => !(bool) $this->settings['show']['uptime'] ? '' : $this->getUpTime(), 		# done
 			'RAID' => !(bool) $this->settings['show']['raid'] ? '' : $this->getRAID(),	 		# done (gmirror only)
 			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(), 	# done (names only)
-			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(), 			# eh
-			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery(),  	# Probably done
+			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery(),  	# Can't imagine a better way
+			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(), 			# works
 			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(), 		# TODO
 			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps(), 		# TODO
 		);
@@ -180,12 +182,12 @@ class OS_FreeBSD {
 			foreach ($sm as $swap) {
 				$tmpInfo['swapTotal'] += $swap[2]*1024;
 				$tmpInfo['swapFree'] += (($swap[2] - $swap[3])*1024);
-				$ft = @filetype($swap[1]);
+				$ft = @filetype($swap[1]); // TODO: I'd rather it be Partition or File
 				$tmpInfo['swapInfo'][] = array(
 					'device' => $swap[1],
 					'size' => $swap[2]*1024,
 					'used' => $swap[3]*1024,
-					'type' => ucfirst($ft)
+					'type' => ucfirst($ft) 
 				);
 			}
 		}
@@ -200,7 +202,7 @@ class OS_FreeBSD {
 	// Get system load
 	private function getLoad() {
 		
-		// Use uptime, since it also has load values and we'll use the rest of it later
+		// Use uptime, since it also has load values
 		try {
 			$res = $this->exec->exec('uptime');
 		}
@@ -301,7 +303,6 @@ class OS_FreeBSD {
 	// So far just gets interface names :-/
 	private function getNet() {
 
-
 		// Store return vals here
 		$return = array();
 		
@@ -333,7 +334,7 @@ class OS_FreeBSD {
 					'packets' => false 
 				),
 				'state' => '?',
-				'type' => '?'
+				'type' => preg_match('/^'.preg_quote($net[1]).': \<.+\> on (\w+)\d+$/m', $this->bootLog, $m) ? $m[1] : 'N/A'
 			);
 
 		// Give
@@ -346,10 +347,7 @@ class OS_FreeBSD {
 
 		$cpus = array();
 
-		$file = '/var/run/dmesg.boot';
-
-		$contents = getContents($file);
-		if (preg_match('/^CPU: ([^(]+) \(([\d\.]+)\-MHz.+\).*\n\s+Origin = "(\w+)"/m', $contents, $cpu_m) == 0)
+		if (preg_match('/^CPU: ([^(]+) \(([\d\.]+)\-MHz.+\).*\n\s+Origin = "(\w+)"/m', $this->bootLog, $cpu_m) == 0)
 			return $cpus;
 		
 		// I don't like how this is done. It implies that if you have more than one CPU they're all identical
@@ -368,11 +366,7 @@ class OS_FreeBSD {
 	// It's either parse dmesg boot log or use atacontrol, which requires root
 	// Let's do the former :-/
 	private function getHD(){
-		$file = '/var/run/dmesg.boot';
-		if (!is_file($file) || !is_readable($file))
-			return array();
-		$contents = getContents($file);
-		if (preg_match_all('/^((?:ad|da|acd|cd)\d+)\: ((?:\w+|\d+\w+)) \<(\S+)\s+([^>]+)\>/m', $contents, $m, PREG_SET_ORDER) == 0)
+		if (preg_match_all('/^((?:ad|da|acd|cd)\d+)\: ((?:\w+|\d+\w+)) \<(\S+)\s+([^>]+)\>/m', $this->bootLog, $m, PREG_SET_ORDER) == 0)
 			return array();
 		$drives = array();
 		foreach ($m as $drive) {
