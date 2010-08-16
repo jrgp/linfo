@@ -58,14 +58,14 @@ class OS_FreeBSD {
 			'Mounts' => !(bool) $this->settings['show']['mounts'] ? array() : $this->getMounts(), 		# done
 			'RAM' => !(bool) $this->settings['show']['ram'] ? array() : $this->getRam(), 			# done
 			'Load' => !(bool) $this->settings['show']['load'] ? array() : $this->getLoad(), 		# done
+			'HD' => !(bool) $this->settings['show']['hd'] ? '' : $this->getHD(), 				# done 
 			'UpTime' => !(bool) $this->settings['show']['uptime'] ? '' : $this->getUpTime(), 		# done
 			'RAID' => !(bool) $this->settings['show']['raid'] ? '' : $this->getRAID(),	 		# done (gmirror only)
 			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(), 	# done (names only)
 			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(), 			# eh
-			'HD' => !(bool) $this->settings['show']['hd'] ? '' : $this->getHD(), 				# Done 
+			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery(),  	# Probably done
 			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(), 		# TODO
 			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps(), 		# TODO
-			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery()  	# TODO
 		);
 	}
 
@@ -224,35 +224,20 @@ class OS_FreeBSD {
 	// Get uptime
 	private function getUpTime() {
 		
-		// todo
-		return '';
-
-		// Use uptime
+		// Use sysctl to get unix timestamp of boot. Very elegant!
 		try {
-			$res = $this->exec->exec('uptime');
+			$res = $this->exec->exec('sysctl', 'kern.boottime');
 		}
 		catch (CallExtException $e) {
 			return '';
 		}
 
-		echo $res;
-
-		// Parse it
-		if (preg_match('/^\d+:\d+[AP]M\s+up\s+((\d+)\s+days,\s+)?(\d+):(\d+).+$/', $res, $m) == 0)
+		// Extract boot part of it
+		if (preg_match('/^kern.boottime\: \{ sec \= (\d+).+$/', $res, $m) == 0)
 			return '';
-
-		// Get what
-		//list(, $days, $hours, $minutes) = $m;
-		print_r($m);
-		
-		// Convert to seconds
-		$seconds = 0;
-		$seconds += $days*24*60*60;
-		$seconds += $hours*60*60;
-		$seconds += $minutes*60;
 		
 		// Get it textual, as in days/minutes/hours/etc
-		return seconds_convert($seconds);
+		return seconds_convert(time() - $m[1]);
 	}
 
 	// RAID Stats
