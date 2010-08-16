@@ -53,15 +53,29 @@ function seconds_convert($uptime) {
 	
 	// Method here heavily based on freebsd's uptime source
 	$uptime += $uptime > 60 ? 30 : 0;
-	$days = $uptime / 86400;
+	$days = floor($uptime / 86400);
 	$uptime %= 86400;
-	$hours = $uptime / 3600;
+	$hours = floor($uptime / 3600);
 	$uptime %= 3600;
-	$minutes = $uptime / 60;
-	$seconds = $uptime % 60;
+	$minutes = floor($uptime / 60);
+	$seconds = floor($uptime % 60);
 
 	// Send out formatted string
-	return sprintf('%d days, %d hours, %d minutes, %d seconds', $days, $hours, $minutes, $seconds);
+	$return = '';
+
+	if ($days > 0)
+		$return .= $days.' days, ';
+	
+	if ($hours > 0)
+		$return .= $hours.' hours,';
+
+	if ($minutes > 0)
+		$return .= $minutes.' minutes,';
+
+	if ($seconds > 0)
+		$return .= $seconds. ' seconds';
+
+	return $return;
 }
 
 // Get a file's contents, or default to second param

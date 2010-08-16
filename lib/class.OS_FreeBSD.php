@@ -236,8 +236,11 @@ class OS_FreeBSD {
 		if (preg_match('/^kern.boottime\: \{ sec \= (\d+).+$/', $res, $m) == 0)
 			return '';
 		
+		// Boot unix timestamp
+		$booted = $m[1];
+
 		// Get it textual, as in days/minutes/hours/etc
-		return seconds_convert(time() - $m[1]);
+		return seconds_convert(time() - $booted) . '; started on ' . date('m/d/y', $booted);
 	}
 
 	// RAID Stats
