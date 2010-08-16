@@ -350,15 +350,27 @@ class OS_FreeBSD {
 		}
 		
 		// Initially get interfaces themselves along with numerical stats
-		if (preg_match_all('/^(\w+\w)\s*\w+\s+<Link\#\w+>(?:\D+|\s+\w+:\w+:\w+:\w+:\w+:\w+\s+)(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+/m', $netstat, $m, PREG_SET_ORDER) == 0)
+		if (preg_match_all('/^(\w+\w)\s*\w+\s+<Link\#\w+>(?:\D+|\s+\w+:\w+:\w+:\w+:\w+:\w+\s+)(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+/m', $netstat, $netstat_match, PREG_SET_ORDER) == 0)
 			return $return;
+
+		// Try using ifconfig to get states of the network interfaces
+		$statuses = array();
+		try {
+			$ifconfig = $this->exec->exec('ifconfig', '-a');
+			foreach ((array) explode("\n", $ifconfig) as $line) {
+				if (preg_match('/^(\w+):/', $line, $m) == 1)
+					$current_nic = $m[1];
+				elseif (preg_match('/^\s+status: (\w+)$/', $line, $m) == 1)
+					$statuses[$current_nic] = $m[1];
+			}
+		}
+		catch(CallExtException $e) {}
 
 
 		// Save info
-		foreach ($m as $net)
+		foreach ($netstat_match as $net)
 			$return[$net[1]] = array(
 				
-				// Not sure how to get this stuff on freebsd
 				'recieved' => array(
 					'bytes' => $net[4],
 					'errors' => $net[3],
@@ -369,7 +381,7 @@ class OS_FreeBSD {
 					'errors' =>  $net[6],
 					'packets' => $net[5] 
 				),
-				'state' => '?',
+				'state' => array_key_exists($net[1], $statuses) ? $statuses[$net[1]] : 'unknown',
 				'type' => '?'
 			);
 
