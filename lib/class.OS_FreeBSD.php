@@ -33,13 +33,17 @@ class OS_FreeBSD {
 	// Encapsulate these
 	protected
 		$settings,
-		$exec;
+		$exec,
+		$error;
 
 	// Start us off
 	public function __construct($settings) {
 		
 		// Localize settings
 		$this->settings = $settings;
+		
+		// Localize error handler
+		$this->error = LinfoError::Fledging();
 
 		// Start our external executable executing stuff
 		$this->exec = new CallExt;
@@ -102,6 +106,7 @@ class OS_FreeBSD {
 			$res = $this->exec->exec('mount');
 		}
 		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error running `mount` command');
 			return array();
 		}
 		
@@ -154,6 +159,7 @@ class OS_FreeBSD {
 			$sys = $this->exec->exec('sysctl', 'vm.vmtotal');
 		}
 		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error using sysctl to get ram usage');
 			return array();
 		}
 		
@@ -200,6 +206,7 @@ class OS_FreeBSD {
 			}
 		}
 		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error using `swapinfo` to get swap usage');
 			// meh
 		}
 
@@ -219,6 +226,7 @@ class OS_FreeBSD {
 			$res = $this->exec->exec('uptime');
 		}
 		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error using `uptime` to get system load');
 			return array();
 		}
 
@@ -247,6 +255,7 @@ class OS_FreeBSD {
 			$res = $this->exec->exec('sysctl', 'kern.boottime');
 		}
 		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error using sysctl to get boot time');
 			return '';
 		}
 
@@ -311,6 +320,7 @@ class OS_FreeBSD {
 				}
 			}
 			catch (CallExtException $e) {
+				$this->error->add('RAID', 'Error using gmirror to get raid info');
 				// Don't jump out; allow potential more raid array
 				// mechanisms to be gathered and outputted
 			}
@@ -335,6 +345,7 @@ class OS_FreeBSD {
 			$res = $this->exec->exec('ifconfig');
 		}
 		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error using `ifconfig` to get network info');
 			return $return;
 		}
 
@@ -480,6 +491,7 @@ class OS_FreeBSD {
 			$res = $this->exec->exec('apm', '-abl');
 		}
 		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error using `apm` battery info');
 			return $batts;
 		}
 		
