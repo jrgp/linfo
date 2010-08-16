@@ -381,10 +381,26 @@ class OS_FreeBSD {
 	}
 	
 	// idk
-	private function getTemps(){}
+	private function getTemps(){
+	}
 	
-	// idk
-	private function getDevs(){}
+	// Parse dmesg boot log
+	private function getDevs(){
+		if (preg_match_all('/^(\w+\d+): <(.+)>.* on (\w+)\d+$/m', $this->bootLog, $m, PREG_SET_ORDER) == 0)
+			return array();
+
+
+		$devices = array();
+
+		foreach ($m as $device)
+			$devices[] = array(
+				'vendor' => '?',
+				'device' => $device[2],
+				'type' => strtoupper($device[3])
+			);
+
+		return $devices;
+	}
 		
 	// APM?
 	private function getBattery() {
