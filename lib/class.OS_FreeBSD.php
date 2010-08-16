@@ -356,49 +356,27 @@ class OS_FreeBSD {
 	}
 
 	// Get CPU's
-	// I don't really like how this is done
+	// I still don't really like how this is done
 	private function getCPU() {
 
-		// Use sysctl to get CPU info
-		try {
-			$res = $this->exec->exec('sysctl', 'hw.model hw.ncpu');
-		}
-		catch (CallExtException $e) {
-			return array();
-		}
-
-		// Parse result
-		if (preg_match_all('/([\w\.]+): (.+)/', $res, $m, PREG_SET_ORDER) == 0)
-			return array();
-
-		// Get
-		foreach ($m as $cpstat) {
-			switch ($cpstat[1]) {
-				case 'hw.model':
-					$model = $cpstat[2];
-				break;
-				case 'hw.ncpu':
-					$num = $cpstat[2];
-				break;
-			}
-		}
-
-		// Ugh
-		if (!$num || !$model)
-			return array();
-		
-		// Return this
 		$cpus = array();
 
-		// Get output ready
+		$file = '/var/run/dmesg.boot';
+
+		$contents = getContents($file);
+		if (preg_match('/^CPU: ([^(]+) \(([\d\.]+)\-MHz.+\).*\n\s+Origin = "(\w+)"/m', $contents, $cpu_m) == 0)
+			return $cpus;
+		
+		// I don't like how this is done. It implies that if you have more than one CPU they're all identical
+		$num = preg_match('/^FreeBSD\/SMP\: Multiprocessor System Detected\: (\d+) CPUs/m', $contents, $num_m) ? $num_m[1] : 1;	
+
 		for ($i = 1; $i <= $num; $i++)
 			$cpus[] = array(
-				'Vendor' => '?',# ugh
-				'MHz' => '?',	# ugh
-				'Model' => $model
+				'Model' => $cpu_m[1],
+				'MHz' => $cpu_m[2],
+				'Vendor' => $cpu_m[3]
 			);
-		
-		// Return
+
 		return $cpus;
 	}
 	
