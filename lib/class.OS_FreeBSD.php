@@ -22,7 +22,7 @@
 defined('IN_INFO') or exit;
 
 /*
- * Nearly complete FreeBSD info class:
+ * Mostly complete FreeBSD info class.
  *
  * Note: When Linux compatibility is enabled and /proc is mounted, it only
  * contains process info; none of the hardware/system/network status that Linux /proc has.
@@ -60,13 +60,13 @@ class OS_FreeBSD {
 			'Mounts' => !(bool) $this->settings['show']['mounts'] ? array() : $this->getMounts(), 		# done
 			'RAM' => !(bool) $this->settings['show']['ram'] ? array() : $this->getRam(), 			# done
 			'Load' => !(bool) $this->settings['show']['load'] ? array() : $this->getLoad(), 		# done
+			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(), 		# done
 			'HD' => !(bool) $this->settings['show']['hd'] ? '' : $this->getHD(), 				# done 
 			'UpTime' => !(bool) $this->settings['show']['uptime'] ? '' : $this->getUpTime(), 		# done
 			'RAID' => !(bool) $this->settings['show']['raid'] ? '' : $this->getRAID(),	 		# done (gmirror only)
 			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(), 	# done (names only)
-			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery(),  	# Can't imagine a better way
+			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery(),  	# works
 			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(), 			# works
-			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(), 		# TODO
 			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps(), 		# TODO
 		);
 	}
@@ -345,30 +345,40 @@ class OS_FreeBSD {
 	// I still don't really like how this is done
 	private function getCPU() {
 
+		// Store them here
 		$cpus = array();
-
+		
+		// Get cpu type
 		if (preg_match('/^CPU: ([^(]+) \(([\d\.]+)\-MHz.+\).*\n\s+Origin = "(\w+)"/m', $this->bootLog, $cpu_m) == 0)
 			return $cpus;
 		
 		// I don't like how this is done. It implies that if you have more than one CPU they're all identical
 		$num = preg_match('/^FreeBSD\/SMP\: Multiprocessor System Detected\: (\d+) CPUs/m', $contents, $num_m) ? $num_m[1] : 1;	
-
+		
+		// Stuff it with identical cpus
 		for ($i = 1; $i <= $num; $i++)
 			$cpus[] = array(
 				'Model' => $cpu_m[1],
 				'MHz' => $cpu_m[2],
 				'Vendor' => $cpu_m[3]
 			);
-
+		
+		// Return
 		return $cpus;
 	}
 	
 	// It's either parse dmesg boot log or use atacontrol, which requires root
 	// Let's do the former :-/
 	private function getHD(){
+		
+		// Get hard drives detected at boot
 		if (preg_match_all('/^((?:ad|da|acd|cd)\d+)\: ((?:\w+|\d+\w+)) \<(\S+)\s+([^>]+)\>/m', $this->bootLog, $m, PREG_SET_ORDER) == 0)
 			return array();
+
+		// Keep them here
 		$drives = array();
+
+		// Stuff array
 		foreach ($m as $drive) {
 			$drives[] = array(
 				'name' => $drive[4],
@@ -377,6 +387,8 @@ class OS_FreeBSD {
 				'size' => preg_match('/^(\d+)MB$/', $drive[2], $m) == 1 ? $m[1] * 1048576 : false
 			);
 		}
+
+		// Return
 		return $drives;
 	}
 	
@@ -386,27 +398,33 @@ class OS_FreeBSD {
 	
 	// Parse dmesg boot log
 	private function getDevs(){
+		
+		// Get all devices detected during boot
 		if (preg_match_all('/^(\w+\d+): <(.+)>.* on (\w+)\d+$/m', $this->bootLog, $m, PREG_SET_ORDER) == 0)
 			return array();
 
-
+		// Keep them here
 		$devices = array();
-
+		
+		// Stuff it
 		foreach ($m as $device)
 			$devices[] = array(
-				'vendor' => '?',
+				'vendor' => '?', // Maybe todo? 
 				'device' => $device[2],
 				'type' => strtoupper($device[3])
 			);
-
+		
+		// Return
 		return $devices;
 	}
 		
-	// APM?
+	// APM? Seems to only support either one battery of them all collectively
 	private function getBattery() {
 
+		// Store them here
 		$batts = array();
-
+		
+		// Get result of program
 		try {
 			$res = $this->exec->exec('apm', '-abl');
 		}
@@ -414,8 +432,10 @@ class OS_FreeBSD {
 			return $batts;
 		}
 		
+		// Values from program
 		list(, $bat_status, $percentage) = explode("\n", $res);
-
+		
+		// Interpret status code
 		switch ($bat_status) {
 			case 0:
 				$status = 'High';
@@ -433,13 +453,15 @@ class OS_FreeBSD {
 				$status = 'Unknown';
 			break;	
 		}
-
+		
+		// Save battery
 		$batts[] = array(
 			'percentage' => $percentage.'%',
 			'state' => $status,
 			'device' => 'battery'
 		);
-
+			
+		// Return
 		return $batts;
 	}
 }
