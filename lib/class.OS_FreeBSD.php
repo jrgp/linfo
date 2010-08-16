@@ -47,7 +47,7 @@ class OS_FreeBSD {
 
 		// Start our external executable executing stuff
 		$this->exec = new CallExt;
-		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin'));
+		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
 	}
 	
 	// This function will likely be shared among all the info classes
@@ -144,7 +144,7 @@ class OS_FreeBSD {
 		
 		// Use sysctl to get ram usage
 		try {
-			$res = $this->exec->exec('sysctl', 'vm.vmtotal');
+			$sys = $this->exec->exec('sysctl', 'vm.vmtotal');
 		}
 		catch (CallExtException $e) {
 			return array();
@@ -158,28 +158,44 @@ class OS_FreeBSD {
 		$tmpInfo['free'] = 0;
 		$tmpInfo['swapTotal'] = 0;
 		$tmpInfo['swapFree'] = 0;
+		$tmpInfo['swapInfo'] = array();
 
 		// Parse the file
-		if (!preg_match_all('/([a-z\ ]+):\s*\(Total: (\d+)\w,? Active:? (\d+)\w\)\n/i', $res, $m, PREG_SET_ORDER))
+		if (!preg_match_all('/([a-z\ ]+):\s*\(Total: (\d+)\w,? Active:? (\d+)\w\)\n/i', $sys, $rm, PREG_SET_ORDER))
 			return $tmpInfo;
 
 		// Parse each entry	
-		foreach ($m as $r) {
+		foreach ($rm as $r) {
 			switch ($r[1]) {
 
-				// TODO Virtual != Swap
-				/*case 'Virtual Memory':
-					$tmpInfo['swapTotal'] = $r[2] * 1024;
-					$tmpInfo['swapFree'] = ($r[2] - $r[3]) * 1024;
-				break;
-				*/
 				case 'Real Memory':
 					$tmpInfo['total'] = $r[2]  * 1024;
 					$tmpInfo['free'] = ($r[2] - $r[3]) * 1024;
 				break;
 			}
 		}
-	
+		
+		// Swap info
+		try {
+			$swapinfo = $this->exec->exec('swapinfo', '-k');
+			// Parse swap info
+			@preg_match_all('/^(\S+)\s+(\d+)\s+(\d+)\s+(\d+)/m', $swapinfo, $sm, PREG_SET_ORDER);
+			foreach ($sm as $swap) {
+				$tmpInfo['swapTotal'] += $swap[2]*1024;
+				$tmpInfo['swapFree'] += (($swap[2] - $swap[3])*1024);
+				$ft = @filetype($swap[1]);
+				$tmpInfo['swapInfo'][] = array(
+					'device' => $swap[1],
+					'size' => $swap[2]*1024,
+					'used' => $swap[3]*1024,
+					'type' => ucfirst($ft)
+				);
+			}
+		}
+		catch (CallExtException $e) {
+			// meh
+		}
+
 		// Return it
 		return $tmpInfo;
 	}
@@ -386,8 +402,26 @@ class OS_FreeBSD {
 		return $cpus;
 	}
 	
-	// idk
-	private function getHD(){}
+	// It's either parse dmesg boot log or use atacontrol, which requires root
+	// Let's do the former :-/
+	private function getHD(){
+		$file = '/var/run/dmesg.boot';
+		if (!is_file($file) || !is_readable($file))
+			return array();
+		$contents = getContents($file);
+		if (preg_match_all('/^((?:ad|da|acd|cd)\d+)\: ((?:\w+|\d+\w+)) \<(\S+)\s+([^>]+)\>/m', $contents, $m, PREG_SET_ORDER) == 0)
+			return array();
+		$drives = array();
+		foreach ($m as $drive) {
+			$drives[] = array(
+				'name' => $drive[4],
+				'vendor' => $drive[3],
+				'device' => '/dev/'.$drive[1],
+				'size' => preg_match('/^(\d+)MB$/', $drive[2], $m) == 1 ? $m[1] * 1048576 : false
+			);
+		}
+		return $drives;
+	}
 	
 	// idk
 	private function getTemps(){}
