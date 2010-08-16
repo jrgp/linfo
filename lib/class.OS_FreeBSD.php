@@ -340,39 +340,40 @@ class OS_FreeBSD {
 		// Store return vals here
 		$return = array();
 		
-		// Use ifconfig to get net info
+		// Use netstat to get info
 		try {
-			$res = $this->exec->exec('ifconfig');
+			$netstat = $this->exec->exec('netstat', '-nbdi');
 		}
-		catch (CallExtException $e) {
-			$this->error->add('Linfo Core', 'Error using `ifconfig` to get network info');
+		catch(CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error using `netstat` to get network info');
 			return $return;
 		}
-
-		// Parse result
-		if (preg_match_all('/^([a-z0-9]+):.+$/im', $res, $m, PREG_SET_ORDER) == 0)
+		
+		// Initially get interfaces themselves along with numerical stats
+		if (preg_match_all('/^(\w+\w)\s*\w+\s+<Link\#\w+>(?:\D+|\s+\w+:\w+:\w+:\w+:\w+:\w+\s+)(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+/m', $netstat, $m, PREG_SET_ORDER) == 0)
 			return $return;
 
-		// Entries
+
+		// Save info
 		foreach ($m as $net)
 			$return[$net[1]] = array(
-
+				
 				// Not sure how to get this stuff on freebsd
 				'recieved' => array(
-					'bytes' => false,
-					'errors' => false,
-					'packets' => false 
+					'bytes' => $net[4],
+					'errors' => $net[3],
+					'packets' => $net[2] 
 				),
 				'sent' => array(
-					'bytes' => false,
-					'errors' =>  false,
-					'packets' => false 
+					'bytes' => $net[7],
+					'errors' =>  $net[6],
+					'packets' => $net[5] 
 				),
 				'state' => '?',
-				'type' => preg_match('/^'.preg_quote($net[1]).': \<.+\> on (\w+)\d+$/m', $this->bootLog, $m) ? $m[1] : 'N/A'
+				'type' => '?'
 			);
 
-		// Give
+		// Return it
 		return $return;
 	}
 
