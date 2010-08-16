@@ -324,7 +324,7 @@ class OS_Linux {
 		list(, $boot) = $boot;
 
 		// Return
-		return $uptime . '; started on '.date('m/d/y', $boot);
+		return $uptime . '; booted '.date('m/d/y h:i A', $boot);
 	}
 
 	// Get disk drives

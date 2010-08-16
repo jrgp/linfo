@@ -240,7 +240,7 @@ class OS_FreeBSD {
 		$booted = $m[1];
 
 		// Get it textual, as in days/minutes/hours/etc
-		return seconds_convert(time() - $booted) . '; started on ' . date('m/d/y', $booted);
+		return seconds_convert(time() - $booted) . '; booted ' . date('m/d/y h:i A', $booted);
 	}
 
 	// RAID Stats

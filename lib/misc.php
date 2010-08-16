@@ -67,13 +67,13 @@ function seconds_convert($uptime) {
 		$return .= $days.' days, ';
 	
 	if ($hours > 0)
-		$return .= $hours.' hours,';
+		$return .= $hours.' hrs, ';
 
 	if ($minutes > 0)
-		$return .= $minutes.' minutes,';
+		$return .= $minutes.' mins, ';
 
 	if ($seconds > 0)
-		$return .= $seconds. ' seconds';
+		$return .= $seconds. ' secs';
 
 	return $return;
 }
