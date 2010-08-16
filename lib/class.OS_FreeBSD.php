@@ -27,9 +27,6 @@ defined('IN_INFO') or exit;
  * BSD/Mac/Win parsing functionality
  * Note: When Linux compatibility is enabled and /proc is mounted, it only
  * contains process info; none of the hardware/system/network status that Linux /proc has
- *
- * As I don't have access to a FreeBSD machine with php I'm not sure
- * how well this works, if at all.
  */
 
 class OS_FreeBSD {
@@ -64,8 +61,8 @@ class OS_FreeBSD {
 			'UpTime' => !(bool) $this->settings['show']['uptime'] ? '' : $this->getUpTime(), 		# done
 			'RAID' => !(bool) $this->settings['show']['raid'] ? '' : $this->getRAID(),	 		# done (gmirror only)
 			'Network Devices' => !(bool) $this->settings['show']['network'] ? array() : $this->getNet(), 	# done (names only)
-			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(), 			# ugh
-			'HD' => !(bool) $this->settings['show']['hd'] ? '' : $this->getHD(), 				# TODO
+			'CPU' => !(bool) $this->settings['show']['cpu'] ? array() : $this->getCPU(), 			# eh
+			'HD' => !(bool) $this->settings['show']['hd'] ? '' : $this->getHD(), 				# Done 
 			'Devices' => !(bool) $this->settings['show']['devices'] ? array() : $this->getDevs(), 		# TODO
 			'Temps' => !(bool) $this->settings['show']['temps'] ? array(): $this->getTemps(), 		# TODO
 			'Battery' => !(bool) $this->settings['show']['battery'] ? array(): $this->getBattery()  	# TODO
@@ -407,6 +404,44 @@ class OS_FreeBSD {
 	// idk
 	private function getDevs(){}
 		
-	// idk
-	private function getBattery() {}
+	// APM?
+	private function getBattery() {
+
+		$batts = array();
+
+		try {
+			$res = $this->exec->exec('apm', '-abl');
+		}
+		catch (CallExtException $e) {
+			return $batts;
+		}
+		
+		list(, $bat_status, $percentage) = explode("\n", $res);
+
+		switch ($bat_status) {
+			case 0:
+				$status = 'High';
+			break;
+			case 1:
+				$status = 'Low';
+			break;
+			case 2:
+				$status = 'Critical';
+			break;	
+			case 3:
+				$status = 'Charging';
+			break;
+			default:
+				$status = 'Unknown';
+			break;	
+		}
+
+		$batts[] = array(
+			'percentage' => $percentage.'%',
+			'state' => $status,
+			'device' => 'battery'
+		);
+
+		return $batts;
+	}
 }
