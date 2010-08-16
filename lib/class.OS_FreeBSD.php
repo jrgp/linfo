@@ -368,7 +368,25 @@ class OS_FreeBSD {
 
 
 		// Save info
-		foreach ($netstat_match as $net)
+		foreach ($netstat_match as $net) {
+
+			// Determine status
+			switch (array_key_exists($net[1], $statuses) ? $statuses[$net[1]] : 'unknown') {
+
+				case 'active':
+					$state = 'up';
+				break;
+				
+				case 'inactive':
+					$state = 'down';
+				break;
+
+				default:
+					$state = 'unknown';
+				break;
+			}
+
+			// Save info
 			$return[$net[1]] = array(
 				
 				'recieved' => array(
@@ -381,9 +399,10 @@ class OS_FreeBSD {
 					'errors' =>  $net[6],
 					'packets' => $net[5] 
 				),
-				'state' => array_key_exists($net[1], $statuses) ? $statuses[$net[1]] : 'unknown',
-				'type' => '?'
+				'state' => $state,
+				'type' => '?' // todo?
 			);
+		}
 
 		// Return it
 		return $return;
