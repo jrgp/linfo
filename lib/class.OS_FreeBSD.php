@@ -67,8 +67,8 @@ class OS_FreeBSD {
 			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# done
 			'HD' => empty($this->settings['show']) ? '' : $this->getHD(), 			# done
 			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(), 		# done
+			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),# done 
 			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# done (gmirror only)
-			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),# done (names only)
 			'Battery' => empty($this->settings['show']) ? array(): $this->getBattery(),  	# works
 			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# works
 			'Temps' => empty($this->settings['show']) ? array(): $this->getTemps(), 	# TODO
@@ -330,7 +330,7 @@ class OS_FreeBSD {
 		return $return;
 	}
 
-	// So far just gets interface names :-/
+	// Done
 	private function getNet() {
 		
 		// Time?
@@ -341,6 +341,7 @@ class OS_FreeBSD {
 		$return = array();
 		
 		// Use netstat to get info
+		// TODO: This is reallllyyyy slow. Alternative?
 		try {
 			$netstat = $this->exec->exec('netstat', '-nbdi');
 		}
@@ -372,10 +373,9 @@ class OS_FreeBSD {
 		foreach ($netstat_match as $net)
 			$type_nics[] = $net[1];
 		if (preg_match_all('/^(\w+): <.+>.+on ([a-z]+)\d+/m', $this->bootLog, $type_match, PREG_SET_ORDER)) {
-			foreach ($type_match as $type_nic_match) {
+			foreach ($type_match as $type_nic_match) 
 				if (in_array($type_nic_match[1], $type_nics))
 					$type[$type_nic_match[1]] = $type_nic_match[2];
-			}
 		}
 
 

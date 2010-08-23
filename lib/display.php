@@ -356,6 +356,12 @@ echo '
 					$done_devices[] = $mount['device'];
 				}
 
+				// If it's an NFS mount it's likely in the form of server:path (without a trailing slash), 
+				// but if the path is just / it likely just shows up as server:,
+				// which is vague. If there isn't a /, add one
+				if (preg_match('/^.+:$/', $mount['device']) == 1)
+					$mount['device'] .= DIRECTORY_SEPARATOR;
+					
 				echo '<tr>
 					<td>'.$mount['device'].'</td>
 					<td>'.$mount['mount'].'</td>
