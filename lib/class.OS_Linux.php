@@ -912,11 +912,18 @@ class OS_Linux {
 			'proc_zombie' => false,
 			'proc_sleeping' => false,
 			'proc_running' => false,
+			'proc_total' => false,
 			'threads' => false
 		);
 		
 		// Get all the paths to each process' status file
 		$processes = (array) @glob('/proc/*/status');
+
+		// Total
+		$total = count($processes);
+
+		if ($total > 0)
+			$result['proc_total'] = $total;
 
 		// Go through each
 		foreach ($processes as $status_path) {
@@ -952,6 +959,8 @@ class OS_Linux {
 			if (is_numeric($threads))
 				$result['threads'] = $result['threads'] == false ? $threads : $result['threads'] + $threads;
 		}
+
+		// Deal with totals
 
 		// Give off result
 		return $result;

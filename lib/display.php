@@ -87,9 +87,11 @@ function showInfo($info, $settings) {
 					<tr>
 						<th>Processes</th>
 						<td>
+						Total: ',$info['processStats']['proc_total'] == false ? '?' : $info['processStats']['proc_total'],';
+						
 						Active: ',$info['processStats']['proc_running'] == false ? '?' : $info['processStats']['proc_running'],'
 						Sleeping: ',$info['processStats']['proc_sleeping'] == false ? '?' : $info['processStats']['proc_sleeping'],';
-						Zombie: ',$info['processStats']['proc_zombie'] == false ? '?' : $info['processStats']['proc_zombie'],';
+						Zombie: ',$info['processStats']['proc_zombie'] == false ? '?' : $info['processStats']['proc_zombie'],'
 						</td>
 					</tr>
 					<tr>
