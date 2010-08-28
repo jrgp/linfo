@@ -18,6 +18,7 @@ $settings['show']['mounts'] = true;
 $settings['show']['network'] = true;
 $settings['show']['uptime'] = true;
 $settings['show']['cpu'] = true;
+$settings['show']['process_stats'] = true;  # Linux only; stuff like number of zombies/sleepers/threads/etc
 $settings['show']['hostname'] = true;
 $settings['show']['devices'] = true; # Slow on old systems
 

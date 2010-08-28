@@ -70,6 +70,7 @@ class OS_Linux {
 			'Raid' => empty($this->settings['show']['raid']) ? array(): $this->getRAID(),
 			'Wifi' => empty($this->settings['show']['wifi']) ? array(): $this->getWifi(),
 			'SoundCards' => empty($this->settings['show']['sound']) ? array(): $this->getSoundCards(),
+			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats()
 		);
 	}
 
@@ -896,6 +897,64 @@ class OS_Linux {
 
 		// Give cards
 		return $cards;
+	}
+
+	// Get stats on processes
+	private function getProcessStats() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Process Stats');
+
+		// We'll return this after stuffing it with useful info
+		$result = array(
+			'exists' => true, 
+			'proc_zombie' => false,
+			'proc_sleeping' => false,
+			'proc_running' => false,
+			'threads' => false
+		);
+		
+		// Get all the paths to each process' status file
+		$processes = (array) @glob('/proc/*/status');
+
+		// Go through each
+		foreach ($processes as $status_path) {
+			
+			// Get that file's contents
+			$status_contents = getContents($status_path);
+
+			// Try getting state
+			@preg_match('/^State:\s+(\w)/m', $status_contents, $state_match);
+
+			// Well?
+			switch ($state_match[1]) {
+				case 'D': // disk sleep? wtf?
+				case 'S':
+					$result['proc_sleeping'] = $result['proc_sleeping'] == false ? 1 : $result['proc_sleeping'] + 1;
+				break;
+				case 'Z':
+					$result['proc_zombie'] = $result['proc_zombie'] == false ? 1 : $result['proc_zombie'] + 1;
+				break;
+				case 'R':
+					$result['proc_running'] = $result['proc_running'] == false ? 1 : $result['proc_running'] + 1;
+				break;
+			}
+
+			// Try getting number of threads
+			@preg_match('/^Threads:\s+(\d+)/m', $status_contents, $threads_match);
+
+			// Well?
+			if ($threads_match)
+				list(, $threads) = $threads_match;
+
+			// Append it on if it's good
+			if (is_numeric($threads))
+				$result['threads'] = $result['threads'] == false ? $threads : $result['threads'] + $threads;
+		}
+
+		// Give off result
+		return $result;
 	}
 }
 

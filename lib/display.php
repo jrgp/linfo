@@ -78,6 +78,31 @@ function showInfo($info, $settings) {
 			</table>
 		</div>';
 
+		// Process stats?
+		if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
+			echo '
+			<div class="infoTable">
+				<h2>Processes</h2>
+				<table>
+					<tr>
+						<th>Processes</th>
+						<td>
+						Zombie: ',$info['processStats']['proc_zombie'] == false ? '?' : $info['processStats']['proc_zombie'],';
+						Sleeping: ',$info['processStats']['proc_sleeping'] == false ? '?' : $info['processStats']['proc_sleeping'],';
+						Active: ',$info['processStats']['proc_running'] == false ? '?' : $info['processStats']['proc_running'],'
+						</td>
+					</tr>
+					<tr>
+						<th>Threads</th>
+						<td>
+							',$info['processStats']['threads'] == false ? '?' : number_format($info['processStats']['threads']),'
+						</td>
+					</tr>
+				</table>
+			</div>
+			';
+		}
+
 		// Show memory?
 		if (!empty($settings['show']['ram'])) {
 			
