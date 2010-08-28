@@ -87,17 +87,16 @@ function showInfo($info, $settings) {
 					<tr>
 						<th>Processes</th>
 						<td>
-						Total: ',$info['processStats']['proc_total'] == false ? '?' : $info['processStats']['proc_total'],';
-						
-						Active: ',$info['processStats']['proc_running'] == false ? '?' : $info['processStats']['proc_running'],'
-						Sleeping: ',$info['processStats']['proc_sleeping'] == false ? '?' : $info['processStats']['proc_sleeping'],';
-						Zombie: ',$info['processStats']['proc_zombie'] == false ? '?' : $info['processStats']['proc_zombie'],'
+						Total: '.number_format($info['processStats']['proc_total']).';
+						Active: '.number_format($info['processStats']['proc_running']).'
+						Sleeping: '.number_format($info['processStats']['proc_sleeping']).';
+						Zombie: '.number_format($info['processStats']['proc_zombie']),'
 						</td>
 					</tr>
 					<tr>
 						<th>Threads</th>
 						<td>
-							',$info['processStats']['threads'] == false ? '?' : number_format($info['processStats']['threads']),'
+							'.number_format($info['processStats']['threads']).'
 						</td>
 					</tr>
 				</table>
@@ -127,7 +126,7 @@ function showInfo($info, $settings) {
 					<th>Size</th>
 				</tr>
 				<tr>
-					<td>Real</td>
+					<td>Physical</td>
 					<td>'.byte_convert($info['RAM']['free']).'</td>
 					<td>'.byte_convert($info['RAM']['total'] - $info['RAM']['free']).'</td>
 					<td>'.byte_convert($info['RAM']['total']).'</td>

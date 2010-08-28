@@ -909,24 +909,25 @@ class OS_Linux {
 		// We'll return this after stuffing it with useful info
 		$result = array(
 			'exists' => true, 
-			'proc_zombie' => false,
-			'proc_sleeping' => false,
-			'proc_running' => false,
-			'proc_total' => false,
-			'threads' => false
+			'proc_zombie' => 0,
+			'proc_sleeping' => 0,
+			'proc_running' => 0,
+			'proc_total' => 0,
+			'threads' => 0
 		);
 		
 		// Get all the paths to each process' status file
 		$processes = (array) @glob('/proc/*/status');
 
 		// Total
-		$total = count($processes);
-
-		if ($total > 0)
-			$result['proc_total'] = $total;
+		$result['proc_total'] = count($processes);
 
 		// Go through each
 		foreach ($processes as $status_path) {
+
+			// Don't waste time if we can't use it
+			if (!is_readable($status_path))
+				continue;
 			
 			// Get that file's contents
 			$status_contents = getContents($status_path);
@@ -938,13 +939,13 @@ class OS_Linux {
 			switch ($state_match[1]) {
 				case 'D': // disk sleep? wtf?
 				case 'S':
-					$result['proc_sleeping'] = $result['proc_sleeping'] == false ? 1 : $result['proc_sleeping'] + 1;
+					$result['proc_sleeping'] = $result['proc_sleeping'] + 1;
 				break;
 				case 'Z':
-					$result['proc_zombie'] = $result['proc_zombie'] == false ? 1 : $result['proc_zombie'] + 1;
+					$result['proc_zombie'] = $result['proc_zombie'] + 1;
 				break;
 				case 'R':
-					$result['proc_running'] = $result['proc_running'] == false ? 1 : $result['proc_running'] + 1;
+					$result['proc_running'] = $result['proc_running'] + 1;
 				break;
 			}
 
@@ -957,7 +958,7 @@ class OS_Linux {
 
 			// Append it on if it's good
 			if (is_numeric($threads))
-				$result['threads'] = $result['threads'] == false ? $threads : $result['threads'] + $threads;
+				$result['threads'] = $result['threads'] + $threads;
 		}
 
 		// Deal with totals
