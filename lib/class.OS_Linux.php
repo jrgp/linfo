@@ -937,6 +937,7 @@ class OS_Linux {
 			'proc_zombie' => 0,
 			'proc_sleeping' => 0,
 			'proc_running' => 0,
+			'proc_stopped' => 0,
 			'proc_total' => 0,
 			'threads' => 0
 		);
@@ -972,6 +973,9 @@ class OS_Linux {
 				case 'R':
 					$result['proc_running'] = $result['proc_running'] + 1;
 				break;
+				case 'T':
+					$result['proc_stopped'] = $result['proc_stopped'] + 1;
+				break;
 			}
 
 			// Try getting number of threads
@@ -986,10 +990,7 @@ class OS_Linux {
 				$result['threads'] = $result['threads'] + $threads;
 		}
 
-		// Deal with totals
-
 		// Give off result
 		return $result;
 	}
 }
-

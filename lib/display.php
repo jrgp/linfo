@@ -88,8 +88,9 @@ function showInfo($info, $settings) {
 						<th>Processes</th>
 						<td>
 						Total: '.number_format($info['processStats']['proc_total']).';
-						Active: '.number_format($info['processStats']['proc_running']).'
+						Running: '.number_format($info['processStats']['proc_running']).'
 						Sleeping: '.number_format($info['processStats']['proc_sleeping']).';
+						Stopped: '.number_format($info['processStats']['proc_stopped']).';
 						Zombie: '.number_format($info['processStats']['proc_zombie']),'
 						</td>
 					</tr>
