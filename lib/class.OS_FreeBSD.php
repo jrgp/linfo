@@ -452,8 +452,7 @@ class OS_FreeBSD {
 		return $cpus;
 	}
 	
-	// It's either parse dmesg boot log or use atacontrol, which requires root
-	// Let's do the former :-/
+	// TODO: Get reads/writes and partitions for the drives
 	private function getHD(){
 		
 		// Time?
@@ -473,7 +472,9 @@ class OS_FreeBSD {
 				'name' => $drive[4],
 				'vendor' => $drive[3],
 				'device' => '/dev/'.$drive[1],
-				'size' => preg_match('/^(\d+)MB$/', $drive[2], $m) == 1 ? $m[1] * 1048576 : false
+				'size' => preg_match('/^(\d+)MB$/', $drive[2], $m) == 1 ? $m[1] * 1048576 : false,
+				'reads' => false,
+				'writes' => false
 			);
 		}
 

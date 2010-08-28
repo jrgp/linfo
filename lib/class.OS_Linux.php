@@ -336,24 +336,49 @@ class OS_Linux {
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Drives');
 
-		$return = array();
+		// Get partitions
+		$partitions = array();
+		$partitions_contents = getContents('/proc/partitions');
+		@preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, PREG_SET_ORDER);
+		if (is_array($partitions_match))
+			foreach($partitions_match as $partition)
+				$partitions[$partition[2]][] = array(
+					'size' => $partition[1] * 1024,
+					'number' => $partition[3]
+				);
+		
+		// Store drives here
+		$drives = array();
+		
+		// Get actual drives
 		foreach((array)@glob('/sys/block/*/device/model') as $path) {
+
+			// Dirname of the drive's sys entry
 			$dirname = dirname(dirname($path));
+
+			// Parts of the path
 			$parts = explode('/', $path);
+
+			// Attempt getting read/write stats
 			if (preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', getContents(dirname(dirname($path)).'/stat'), $statMatches) !== 1)
 				list($reads, $writes) = array(false, false);
 			else
 				list(, $reads, $writes) = $statMatches;
-			$return[] = array(
+
+			// Append this drive on
+			$drives[] = array(
 				'name' =>  getContents($path, 'Unknown'),
 				'vendor' => getContents(dirname($path).'/vendor', 'Unknown'),
 				'device' => '/dev/'.$parts[3],
 				'reads' => $reads,
 				'writes' => $writes,
-				'size' => getContents(dirname(dirname($path)).'/size', 0) * 512
+				'size' => getContents(dirname(dirname($path)).'/size', 0) * 512,
+				'partitions' => array_key_exists($parts[3], $partitions) && is_array($partitions[$parts[3]]) ? $partitions[$parts[3]] : false 
 			);
 		}
-		return $return;
+
+		// Return drives
+		return $drives;
 	}
 
 	// Get temps/voltages

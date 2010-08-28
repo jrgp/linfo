@@ -304,7 +304,7 @@ function showInfo($info, $settings) {
 				</tr>
 				';
 			if (count($info['HD']) > 0)
-				foreach($info['HD'] as $drive)
+				foreach($info['HD'] as $drive) {
 					echo '
 						<tr>
 							<td>'.$drive['device'].'</td>
@@ -314,6 +314,24 @@ function showInfo($info, $settings) {
 							<td>',$drive['writes'] !== false ? number_format($drive['writes']) : 'Unknown','</td>
 							<td>'.byte_convert($drive['size']).'</td>
 						</tr>';
+
+					// If we've got partitions for this drive, show them too
+					if (is_array($drive['partitions']) && count($drive['partitions']) > 0) {
+						echo '
+						<tr>
+							<td colspan="6">
+							';
+							
+						// Each
+						foreach ($drive['partitions'] as $partition)
+							echo '&#9492; '.$drive['device'].$partition['number'].' - '.byte_convert($partition['size']).'<br />';
+
+							echo '
+							</td>
+						</tr>
+						';
+					}
+				}
 			else
 				echo '<tr><td colspan="6" class="none">None found</td></tr>';
 				echo '
