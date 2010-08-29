@@ -65,6 +65,17 @@ function showInfo($info, $settings) {
 			if (!empty($settings['show']['load']))
 				$core[] = array('Load', implode(' ', $info['Load']));
 			
+		if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
+			$core[] = array('Processes', '
+						Total: '.number_format($info['processStats']['proc_total']).';
+						Running: '.number_format($info['processStats']['proc_running']).'
+						Sleeping: '.number_format($info['processStats']['proc_sleeping']).';
+						Stopped: '.number_format($info['processStats']['proc_stopped']).';
+						Zombie: '.number_format($info['processStats']['proc_zombie']),'
+			');
+			$core[] = array('Threads', number_format($info['processStats']['threads']));
+		}
+
 			// Show
 			foreach ($core as $coreInfo)
 				echo '
@@ -78,32 +89,6 @@ function showInfo($info, $settings) {
 			</table>
 		</div>';
 
-		// Process stats?
-		if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
-			echo '
-			<div class="infoTable">
-				<h2>Processes</h2>
-				<table>
-					<tr>
-						<th>Processes</th>
-						<td>
-						Total: '.number_format($info['processStats']['proc_total']).';
-						Running: '.number_format($info['processStats']['proc_running']).'
-						Sleeping: '.number_format($info['processStats']['proc_sleeping']).';
-						Stopped: '.number_format($info['processStats']['proc_stopped']).';
-						Zombie: '.number_format($info['processStats']['proc_zombie']),'
-						</td>
-					</tr>
-					<tr>
-						<th>Threads</th>
-						<td>
-							'.number_format($info['processStats']['threads']).'
-						</td>
-					</tr>
-				</table>
-			</div>
-			';
-		}
 
 		// Show memory?
 		if (!empty($settings['show']['ram'])) {
