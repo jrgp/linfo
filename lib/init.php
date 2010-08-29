@@ -37,7 +37,7 @@ function __autoload($class) {
 	if (class_exists($class))
 		return;
 	else
-		exit('Class '.$class.' not found');
+		exit('Class '.$class.' not found in '.$file);
 }
 
 
@@ -53,6 +53,7 @@ function determineOS() {
 		// These are supported
 		case 'Linux':
 		case 'FreeBSD':
+		case 'NetBSD':
 			return PHP_OS;
 		break;
 
