@@ -219,15 +219,14 @@ function showInfo($info, $settings) {
 		}
 
 		// Show battery?
-		if (!empty($settings['show']['battery'])) {
+		if (!empty($settings['show']['battery']) && count($info['Battery']) > 0) {
 		echo '
 		<div class="infoTable">
 			<h2>Batteries</h2>
 			<table>
 				<tr><th>Device</th><th>State</th><th>Charge %</th></tr>
 				';
-			if (count($info['Battery']) > 0)
-				foreach ($info['Battery'] as $bat) {
+				foreach ($info['Battery'] as $bat) 
 					echo '
 					<tr>
 						<td>'.$bat['device'].'</td>
@@ -235,9 +234,6 @@ function showInfo($info, $settings) {
 						<td>'.$bat['percentage'].($bat['percentage'] < 0 ? ' <span class="caption">(wtf?)</span>' : '').'</td>
 					</tr>
 					';
-				}
-			else
-				echo '<tr><td colspan="3" class="none">None found</td></tr>';
 				echo '
 			</table>
 		</div>';
@@ -294,11 +290,11 @@ function showInfo($info, $settings) {
 					echo '
 						<tr>
 							<td>'.$drive['device'].'</td>
-							<td>'.$drive['vendor'].'</td>
+							<td>',$drive['vendor'] ? $drive['vendor'] : 'Unknown','</td>
 							<td>'.$drive['name'].'</td>
 							<td>',$drive['reads'] !== false ? number_format($drive['reads']) : 'Unknown','</td>
 							<td>',$drive['writes'] !== false ? number_format($drive['writes']) : 'Unknown','</td>
-							<td>'.byte_convert($drive['size']).'</td>
+							<td>',$drive['size'] ? byte_convert($drive['size']) : 'Unknown','</td>
 						</tr>';
 
 					// If we've got partitions for this drive, show them too
@@ -326,7 +322,7 @@ function showInfo($info, $settings) {
 		}
 
 		// Show sound card stuff?
-		if (!empty($settings['show']['sound'])) {
+		if (!empty($settings['show']['sound']) && count($info['SoundCards']) > 0) {
 		echo '
 		<div class="infoTable">
 			<h2>Sound Cards</h2>

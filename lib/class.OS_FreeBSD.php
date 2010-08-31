@@ -34,7 +34,8 @@ class OS_FreeBSD {
 	protected
 		$settings,
 		$exec,
-		$error;
+		$error,
+		$bootLog;
 
 	// Start us off
 	public function __construct($settings) {
