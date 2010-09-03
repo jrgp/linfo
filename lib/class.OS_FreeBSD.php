@@ -28,30 +28,19 @@ defined('IN_INFO') or exit;
  * contains process info; none of the hardware/system/network status that Linux /proc has.
  */
 
-class OS_FreeBSD {
+class OS_FreeBSD extends OS_BSD_Common{
 	
 	// Encapsulate these
 	protected
 		$settings,
 		$exec,
 		$error,
-		$bootLog;
+		$dmesg;
 
 	// Start us off
 	public function __construct($settings) {
-		
-		// Localize settings
-		$this->settings = $settings;
-		
-		// Localize error handler
-		$this->error = LinfoError::Fledging();
-
-		// Start our external executable executing stuff
-		$this->exec = new CallExt;
+		parent::__construct($settings);
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
-		
-		// Used enough times to just call it once, here
-		$this->bootLog = getContents('/var/run/dmesg.boot');
 	}
 	
 	// This function will likely be shared among all the info classes
@@ -154,14 +143,8 @@ class OS_FreeBSD {
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Memory');
 		
-		// Use sysctl to get ram usage
-		try {
-			$sys = $this->exec->exec('sysctl', 'vm.vmtotal');
-		}
-		catch (CallExtException $e) {
-			$this->error->add('Linfo Core', 'Error using sysctl to get ram usage');
-			return array();
-		}
+		// Use sysctl for memory
+		$sys = $this->getSysCTL('vm.vmtotal');
 		
 		// We'll return the contents of this
 		$tmpInfo = array();
@@ -251,16 +234,10 @@ class OS_FreeBSD {
 			$t = new LinfoTimerStart('Uptime');
 		
 		// Use sysctl to get unix timestamp of boot. Very elegant!
-		try {
-			$res = $this->exec->exec('sysctl', 'kern.boottime');
-		}
-		catch (CallExtException $e) {
-			$this->error->add('Linfo Core', 'Error using sysctl to get boot time');
-			return '';
-		}
-
+		$res = $this->getSysCTL('kern.boottime');
+		
 		// Extract boot part of it
-		if (preg_match('/^kern.boottime\: \{ sec \= (\d+).+$/', $res, $m) == 0)
+		if (preg_match('/^\{ sec \= (\d+).+$/', $res, $m) == 0)
 			return '';
 		
 		// Boot unix timestamp
@@ -372,7 +349,7 @@ class OS_FreeBSD {
 		$type_nics = array();
 		foreach ($netstat_match as $net)
 			$type_nics[] = $net[1];
-		if (preg_match_all('/^(\w+): <.+>.+on ([a-z]+)\d+/m', $this->bootLog, $type_match, PREG_SET_ORDER)) {
+		if (preg_match_all('/^(\w+): <.+>.+on ([a-z]+)\d+/m', $this->dmesg, $type_match, PREG_SET_ORDER)) {
 			foreach ($type_match as $type_nic_match) 
 				if (in_array($type_nic_match[1], $type_nics))
 					$type[$type_nic_match[1]] = $type_nic_match[2];
@@ -434,7 +411,7 @@ class OS_FreeBSD {
 		$cpus = array();
 		
 		// Get cpu type
-		if (preg_match('/^CPU: ([^(]+) \(([\d\.]+)\-MHz.+\).*\n\s+Origin = "(\w+)"/m', $this->bootLog, $cpu_m) == 0)
+		if (preg_match('/^CPU: ([^(]+) \(([\d\.]+)\-MHz.+\).*\n\s+Origin = "(\w+)"/m', $this->dmesg, $cpu_m) == 0)
 			return $cpus;
 		
 		// I don't like how this is done. It implies that if you have more than one CPU they're all identical
@@ -460,7 +437,7 @@ class OS_FreeBSD {
 			$t = new LinfoTimerStart('Drives');
 		
 		// Get hard drives detected at boot
-		if (preg_match_all('/^((?:ad|da|acd|cd)\d+)\: ((?:\w+|\d+\w+)) \<(\S+)\s+([^>]+)\>/m', $this->bootLog, $m, PREG_SET_ORDER) == 0)
+		if (preg_match_all('/^((?:ad|da|acd|cd)\d+)\: ((?:\w+|\d+\w+)) \<(\S+)\s+([^>]+)\>/m', $this->dmesg, $m, PREG_SET_ORDER) == 0)
 			return array();
 
 		// Keep them here
@@ -490,7 +467,7 @@ class OS_FreeBSD {
 			$t = new LinfoTimerStart('Hardware Devices');
 		
 		// Get all devices detected during boot
-		if (preg_match_all('/^(\w+\d+): <(.+)>.* on (\w+)\d+$/m', $this->bootLog, $m, PREG_SET_ORDER) == 0)
+		if (preg_match_all('/^(\w+\d+): <(.+)>.* on (\w+)\d+$/m', $this->dmesg, $m, PREG_SET_ORDER) == 0)
 			return array();
 
 		// Keep them here

@@ -25,7 +25,7 @@ defined('IN_INFO') or exit;
  * NetBSD info class. Differs slightly from FreeBSD's
  */
 
-class OS_NetBSD {
+class OS_NetBSD extends OS_BSD_Common {
 
 	// Encapsulate these
 	protected
@@ -36,40 +36,11 @@ class OS_NetBSD {
 
 	// Start us off
 	public function __construct($settings) {
-		
-		// Localize settings
-		$this->settings = $settings;
-		
-		// Localize error handler
-		$this->error = LinfoError::Fledging();
-
-		// Start our external executable executing stuff
-		$this->exec = new CallExt;
+		parent::__construct($settings);
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/pkg/bin', '/usr/sbin'));
-
-		// Called in a separate function so we can time it easier
-		$this->loadDmesg();
-
 	}
 
 
-	// Load dmesg
-	private function loadDmesg() {
-		// Time it
-		if (!empty($this->settings['timer']))
-			$t = new LinfoTimerStart('Output of dmesg');
-		
-		// We parse dmesg often
-		try {
-			$this->dmesg = $this->exec->exec('dmesg');
-		}
-
-		// As much as I'd love to use realtime dmesg, settle for boot log if that didn't work
-		catch (CallExtException $e) {
-			$this->dmesg = getContents('/var/run/dmesg.boot');
-		}
-	}
-	
 	// Get
 	public function getAll() {
 
@@ -166,13 +137,7 @@ class OS_NetBSD {
 			$t = new LinfoTimerStart('Load Averages');
 
 		// Try using sysctl to get load average
-		try {
-			$res = $this->exec->exec('sysctl', 'vm.loadavg');
-		}
-		catch (CallExtException $e) {
-			$this->error->add('Linfo Core', 'Error running `sysctl` to get load');
-			return array();
-		}
+		$res = $this->getSysCTL('vm.loadavg');
 
 		// Match it
 		if (@preg_match('/([\d\.]+) ([\d\.]+) ([\d\.]+)$/', $res, $load_match))
@@ -194,20 +159,14 @@ class OS_NetBSD {
 			$t = new LinfoTimerStart('Uptime');
 
 		// Use sysctl
-		try {
-			$res = $this->exec->exec('sysctl', 'kern.boottime');
-		}
-		catch (CallExtException $e) {
-			$this->error->add('Linfo Core', 'Error running `sysctl` to get boot time');
-			return array();
-		}
+		$res = $this->getSysCTL('kern.boottime');
 
 		// Match it
-		if (@preg_match('/^kern.boottime = ([^$]+)$/', $res, $time_match) != 1)
+		if (@preg_match('/^(\d+)$/', $res, $time_match) != 1)
 			return false;
 
-		// Get it in unix timestamp
-		$booted = strtotime($time_match[1]);
+		// Get it 
+		$booted = $time_match[1];
 
 		// Give it
 		return seconds_convert(time() - $booted) . '; booted ' . date('m/d/y h:i A', $booted);
@@ -381,8 +340,40 @@ class OS_NetBSD {
 		return $cpus;
 	}
 
+	// Get ram usage
+	private function getRam(){
+		// Start us off at zilch
+		$return['total'] = 0;
+		$return['free'] = 0;
+		$return['swapTotal'] = 0;
+		$return['swapFree'] = 0;
+		$return['swapInfo'] = array();
+
+		// Get swap
+		try {
+			$swapinfo = $this->exec->exec('swapctl', '-l');
+			@preg_match_all('/^(\S+)\s+(\d+)\s+(\d+)\s+(\d+)/m', $swapinfo, $sm, PREG_SET_ORDER);
+			foreach ($sm as $swap) {
+				$return['swapTotal'] += $swap[2]*1024;
+				$return['swapFree'] += (($swap[2] - $swap[3])*1024);
+				$ft = is_file ($ft) ? @filetype($swap[1]) : 'Unknown'; // TODO: I'd rather it be Partition or File
+				$return['swapInfo'][] = array(
+					'device' => $swap[1],
+					'size' => $swap[2]*1024,
+					'used' => $swap[3]*1024,
+					'type' => ucfirst($ft) 
+				);
+			}
+		}
+		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error using `swapctl` to get swap usage');
+		}
+
+
+		return $return;
+	}
+	
 	// TODO:
-	private function getRam(){}
 	private function getDevs(){}
 	private function getRAID(){}
 	private function getBattery(){}
