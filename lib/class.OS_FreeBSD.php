@@ -59,6 +59,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(), 		# done
 			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),# done 
 			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# done (gmirror only)
+			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # lacks thread stats
 			'Battery' => empty($this->settings['show']) ? array(): $this->getBattery(),  	# works
 			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# works
 			'Temps' => empty($this->settings['show']) ? array(): $this->getTemps(), 	# TODO
@@ -548,6 +549,63 @@ class OS_FreeBSD extends OS_BSD_Common{
 			
 		// Return
 		return $batts;
+	}
+	
+	// Get stats on processes
+	private function getProcessStats() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Process Stats');
+
+		// We'll return this after stuffing it with useful info
+		$result = array(
+			'exists' => true, 
+			'proc_zombie' => 0,
+			'proc_sleeping' => 0,
+			'proc_running' => 0,
+			'proc_stopped' => 0,
+			'proc_total' => 0,
+			'threads' => false // I'm not sure how to get this
+		);
+
+		// Use ps
+		try {
+			// Get it
+			$ps = $this->exec->exec('ps', 'ax');
+
+			// Match them
+			preg_match_all('/^\s*\d+\s+[\w?]+\s+([A-Z])\S*\s+.+$/m', $ps, $processes, PREG_SET_ORDER);
+			
+			// Get total
+			$result['proc_total'] = count($processes);
+			
+			// Go through
+			foreach ($processes as $process) {
+				switch ($process[1]) {
+					case 'S':
+					case 'I':
+						$result['proc_sleeping'] = $result['proc_sleeping'] + 1;
+					break;
+					case 'Z':
+						$result['proc_zombie'] = $result['proc_zombie'] + 1;
+					break;
+					case 'R':
+					case 'D':
+						$result['proc_running'] = $result['proc_running'] + 1;
+					break;
+					case 'T':
+						$result['proc_stopped'] = $result['proc_stopped'] + 1;
+					break;
+				}
+			}
+		}
+		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error using `ps` to get process info');
+		}
+
+		// Give
+		return $result;
 	}
 	
 	// idk

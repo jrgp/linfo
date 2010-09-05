@@ -54,9 +54,9 @@ class OS_NetBSD extends OS_BSD_Common {
 			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(), 		# done
 			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(), 		# done
 			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# done
+			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# done
 			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # lacks thread stats
 			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),# lacks type
-			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# Works, but assumes they're identical
 			'HD' => empty($this->settings['show']) ? '' : $this->getHD(), 			# Known to get hard drives and cdroms
 			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# TODO 
 			'Battery' => empty($this->settings['show']) ? array() : $this->getBattery(),  	# TODO
@@ -516,7 +516,7 @@ class OS_NetBSD extends OS_BSD_Common {
 					case 'O':
 						$result['proc_running'] = $result['proc_running'] + 1;
 					break;
-					case 'S':
+					case 'T':
 						$result['proc_stopped'] = $result['proc_stopped'] + 1;
 					break;
 				}
