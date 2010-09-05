@@ -54,13 +54,13 @@ class OS_NetBSD extends OS_BSD_Common {
 			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(), 		# done
 			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(), 		# done
 			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# done
-			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats() # lacks thread stats
+			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # lacks thread stats
 			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),# lacks type
 			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# Works, but assumes they're identical
 			'HD' => empty($this->settings['show']) ? '' : $this->getHD(), 			# Known to get hard drives and cdroms
 			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# TODO 
 			'Battery' => empty($this->settings['show']) ? array() : $this->getBattery(),  	# TODO
-			'Temps' => empty($this->settings['show']) ? array() : $this->getTemps(), 	# TODO
+			'Temps' => empty($this->settings['show']) ? array() : $this->getTemps() 	# TODO
 		);
 	}
 
@@ -199,9 +199,9 @@ class OS_NetBSD extends OS_BSD_Common {
 		try {
 			$ifconfig = $this->exec->exec('ifconfig', '-a');
 			foreach ((array) explode("\n", $ifconfig) as $line) {
-				if (preg_match('/^(\w+) :/', $line, $m) == 1)
+				if (preg_match('/^(\w+) :/m', $line, $m) == 1)
 					$current_nic = $m[1];
-				elseif (preg_match('/^\s+status: (\w+)$/', $line, $m) == 1)
+				elseif (preg_match('/^\s+status: (\w+)$/m', $line, $m) == 1)
 					$statuses[$current_nic] = $m[1];
 			}
 		}
