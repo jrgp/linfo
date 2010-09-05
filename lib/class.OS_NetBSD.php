@@ -254,7 +254,7 @@ class OS_NetBSD extends OS_BSD_Common {
 		$curr_hd = false;
 
 		// Parse dmesg
-		foreach ((array) @explode("\n", $this->dmesg) as $dmesg_line) {
+		foreach (explode("\n", $this->dmesg) as $dmesg_line) {
 			
 			// Beginning of a drive entry
 			if (preg_match('/^([a-z]{2}\d) at [^:]+: <([^>]+)> (\w+)/', $dmesg_line, $init_match)) {
@@ -315,7 +315,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Get cpu's
-	private function getCPU(){
+	private function getCPU() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -342,12 +342,62 @@ class OS_NetBSD extends OS_BSD_Common {
 
 	// Get ram usage
 	private function getRam(){
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Memory');
+
 		// Start us off at zilch
+		$return = array();
+		$return['type'] = 'Virtual';
 		$return['total'] = 0;
 		$return['free'] = 0;
 		$return['swapTotal'] = 0;
 		$return['swapFree'] = 0;
 		$return['swapInfo'] = array();
+
+		// Get virtual memory usage with vmstat
+		try {
+			// Get result of vmstat
+			$vmstat = $this->exec->exec('vmstat', '-s');
+
+			// Get bytes per page
+			preg_match('/^\s+(\d+) bytes per page$/m', $vmstat, $bytes_per_page);
+
+			// Did we?
+			if (!is_numeric($bytes_per_page[1]) || $bytes_per_page[1] < 0)
+				throw new Exception('Error parsing page size out of `vmstat`');
+			else
+				list(, $bytes_per_page) = $bytes_per_page;
+
+			// Get available ram
+			preg_match('/^\s+(\d+) pages managed$/m', $vmstat, $available_ram);
+			
+			// Did we?
+			if (!is_numeric($available_ram[1]))
+				throw new Exception('Error parsing managed pages out of `vmstat`');
+			else
+				list(, $available_ram) = $available_ram;
+
+			// Get free ram
+			preg_match('/^\s+(\d+) pages free$/m', $vmstat, $free_ram);
+			
+			// Did we?
+			if (!is_numeric($free_ram[1]))
+				throw new Exception('Error parsing free pages out of `vmstat`');
+			else
+				list(, $free_ram) = $free_ram;
+
+			// Okay, cool. Total them up
+			$return['total'] = $available_ram * $bytes_per_page;
+			$return['free'] = $free_ram * $bytes_per_page;
+		}
+		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error using `vmstat` to get memory usage');
+		}
+		catch (Exception $e) {
+			$this->error->add('Linfo Core', $e->getMessage());
+		}
 
 		// Get swap
 		try {
@@ -369,7 +419,7 @@ class OS_NetBSD extends OS_BSD_Common {
 			$this->error->add('Linfo Core', 'Error using `swapctl` to get swap usage');
 		}
 
-
+		// Give it off
 		return $return;
 	}
 	

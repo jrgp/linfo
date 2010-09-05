@@ -25,6 +25,7 @@ defined('IN_INFO') or exit;
  * Get info on a usual linux system
  * Works by exclusively looking around /proc and /sys
  * Totally ignores CallExt class, very deliberately
+ * Also deliberately ignores trying to find out the distro. i
  */
 
 class OS_Linux {
@@ -138,7 +139,7 @@ class OS_Linux {
 			$t = new LinfoTimerStart('Memory');
 
 		// We'll return the contents of this
-		$tmpInfo = array();
+		$return = array();
 
 		// Files containing juicy info
 		$procFileSwap = '/proc/swaps';
@@ -172,16 +173,16 @@ class OS_Linux {
 			);
 
 		// Get individual vals
-		$tmpInfo['total'] = $memVals['MemTotal']*1024;
-		$tmpInfo['free'] = $memVals['MemFree']*1024;
-		$tmpInfo['swapTotal'] = $memVals['SwapTotal']*1024;
-		$tmpInfo['swapFree'] = $memVals['SwapFree']*1024;
-		$tmpInfo['swapCached'] = $memVals['SwapCached']*1024;
-		$tmpInfo['swapInfo'] = $swapVals;
+		$return['type'] = 'Physical';
+		$return['total'] = $memVals['MemTotal']*1024;
+		$return['free'] = $memVals['MemFree']*1024;
+		$return['swapTotal'] = $memVals['SwapTotal']*1024;
+		$return['swapFree'] = $memVals['SwapFree']*1024;
+		$return['swapCached'] = $memVals['SwapCached']*1024;
+		$return['swapInfo'] = $swapVals;
 
 		// Return it
-		return $tmpInfo;
-
+		return $return;
 	}
 
 	// Get processor info

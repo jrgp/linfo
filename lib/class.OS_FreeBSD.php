@@ -147,27 +147,25 @@ class OS_FreeBSD extends OS_BSD_Common{
 		$sys = $this->getSysCTL('vm.vmtotal');
 		
 		// We'll return the contents of this
-		$tmpInfo = array();
+		$return = array();
 
 		// Start us off at zilch
-		$tmpInfo['total'] = 0;
-		$tmpInfo['free'] = 0;
-		$tmpInfo['swapTotal'] = 0;
-		$tmpInfo['swapFree'] = 0;
-		$tmpInfo['swapInfo'] = array();
+		$return['type'] = 'Virtual';
+		$return['total'] = 0;
+		$return['free'] = 0;
+		$return['swapTotal'] = 0;
+		$return['swapFree'] = 0;
+		$return['swapInfo'] = array();
 
 		// Parse the file
 		if (!preg_match_all('/([a-z\ ]+):\s*\(Total: (\d+)\w,? Active:? (\d+)\w\)\n/i', $sys, $rm, PREG_SET_ORDER))
-			return $tmpInfo;
+			return $return;
 
 		// Parse each entry	
 		foreach ($rm as $r) {
-			switch ($r[1]) {
-
-				case 'Real Memory':
-					$tmpInfo['total'] = $r[2]  * 1024;
-					$tmpInfo['free'] = ($r[2] - $r[3]) * 1024;
-				break;
+			if ($r[1] == 'Real Memory') {
+					$return['total'] = $r[2]  * 1024;
+					$return['free'] = ($r[2] - $r[3]) * 1024;
 			}
 		}
 		
@@ -177,10 +175,10 @@ class OS_FreeBSD extends OS_BSD_Common{
 			// Parse swap info
 			@preg_match_all('/^(\S+)\s+(\d+)\s+(\d+)\s+(\d+)/m', $swapinfo, $sm, PREG_SET_ORDER);
 			foreach ($sm as $swap) {
-				$tmpInfo['swapTotal'] += $swap[2]*1024;
-				$tmpInfo['swapFree'] += (($swap[2] - $swap[3])*1024);
+				$return['swapTotal'] += $swap[2]*1024;
+				$return['swapFree'] += (($swap[2] - $swap[3])*1024);
 				$ft = @filetype($swap[1]); // TODO: I'd rather it be Partition or File
-				$tmpInfo['swapInfo'][] = array(
+				$return['swapInfo'][] = array(
 					'device' => $swap[1],
 					'size' => $swap[2]*1024,
 					'used' => $swap[3]*1024,
@@ -194,7 +192,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 		}
 
 		// Return it
-		return $tmpInfo;
+		return $return;
 	}
 	
 	// Get system load
