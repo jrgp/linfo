@@ -483,7 +483,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 
 			// Stuff entry
 			$devices[] = array(
-				'vendor' => '?', // Maybe todo? 
+				'vendor' => false, // Maybe todo? 
 				'device' => $device[2],
 				'type' => $type
 			);

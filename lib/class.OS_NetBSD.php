@@ -456,7 +456,7 @@ class OS_NetBSD extends OS_BSD_Common {
 
 			// Stuff entry
 			$devices[] = array(
-				'vendor' => '?', // Maybe todo? 
+				'vendor' => false, // Maybe todo? 
 				'device' => $device[3],
 				'type' => $type
 			);

@@ -70,11 +70,11 @@ function showInfo($info, $settings) {
 
 				// We do; show them
 				$core[] = array('Processes', '
-							Total: '.number_format($info['processStats']['proc_total']).';
-							Running: '.number_format($info['processStats']['proc_running']).'
-							Sleeping: '.number_format($info['processStats']['proc_sleeping']).';
-							Stopped: '.number_format($info['processStats']['proc_stopped']).';
-							Zombie: '.number_format($info['processStats']['proc_zombie']),'
+					Total: '.number_format($info['processStats']['proc_total']).';
+					Running: '.number_format($info['processStats']['proc_running']).'
+					Sleeping: '.number_format($info['processStats']['proc_sleeping']).';
+					Stopped: '.number_format($info['processStats']['proc_stopped']).';
+					Zombie: '.number_format($info['processStats']['proc_zombie']),'
 				');
 
 				// We might not have threads
@@ -266,7 +266,7 @@ function showInfo($info, $settings) {
 					echo '
 						<tr>
 							<td class="center">'.$device['type'].'</td>
-							<td>'.$device['vendor'].'</td>
+							<td>',$device['vendor'] ? $device['vendor'] : 'Unknown' ,'</td>
 							<td>'.$device['device'].'</td>
 						</tr>';
 			else

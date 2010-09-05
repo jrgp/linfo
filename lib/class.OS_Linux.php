@@ -25,7 +25,7 @@ defined('IN_INFO') or exit;
  * Get info on a usual linux system
  * Works by exclusively looking around /proc and /sys
  * Totally ignores CallExt class, very deliberately
- * Also deliberately ignores trying to find out the distro. i
+ * Also deliberately ignores trying to find out the distro. 
  */
 
 class OS_Linux {
