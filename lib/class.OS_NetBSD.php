@@ -52,14 +52,15 @@ class OS_NetBSD extends OS_BSD_Common {
 			'Mounts' => empty($this->settings['show']) ? array() : $this->getMounts(), 	# done
 			'Load' => empty($this->settings['show']) ? array() : $this->getLoad(), 		# done
 			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(), 		# done
+			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(), 		# done
+			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# done
+			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats() # lacks thread stats
 			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),# lacks type
 			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# Works, but assumes they're identical
 			'HD' => empty($this->settings['show']) ? '' : $this->getHD(), 			# Known to get hard drives and cdroms
-			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(), 		# TODO
-			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# TODO
 			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# TODO 
-			'Battery' => empty($this->settings['show']) ? array(): $this->getBattery(),  	# TODO
-			'Temps' => empty($this->settings['show']) ? array(): $this->getTemps(), 	# TODO
+			'Battery' => empty($this->settings['show']) ? array() : $this->getBattery(),  	# TODO
+			'Temps' => empty($this->settings['show']) ? array() : $this->getTemps(), 	# TODO
 		);
 	}
 
@@ -130,7 +131,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Get system load
-	private function getLoad(){
+	private function getLoad() {
 
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -153,7 +154,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Get the always gloatable uptime
-	private function getUpTime(){
+	private function getUpTime() {
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Uptime');
@@ -173,7 +174,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Get network devices
-	private function getNet(){
+	private function getNet() {
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Network Devices');
@@ -198,7 +199,7 @@ class OS_NetBSD extends OS_BSD_Common {
 		try {
 			$ifconfig = $this->exec->exec('ifconfig', '-a');
 			foreach ((array) explode("\n", $ifconfig) as $line) {
-				if (preg_match('/^(\w+):/', $line, $m) == 1)
+				if (preg_match('/^(\w+) :/', $line, $m) == 1)
 					$current_nic = $m[1];
 				elseif (preg_match('/^\s+status: (\w+)$/', $line, $m) == 1)
 					$statuses[$current_nic] = $m[1];
@@ -243,7 +244,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Get drives
-	private function getHD(){
+	private function getHD() {
 
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -341,7 +342,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Get ram usage
-	private function getRam(){
+	private function getRam() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -423,9 +424,111 @@ class OS_NetBSD extends OS_BSD_Common {
 		return $return;
 	}
 	
+	// Get devices
+	private function getDevs() {
+
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Hardware Devices');
+		
+		// Get them
+		if(preg_match_all('/^([a-z]+\d+) at ([a-z]+)\d+[^:]+:(.+)/m', $this->dmesg, $devices_match, PREG_SET_ORDER) == 0)
+			return array();		
+		
+		// Keep them here
+		$devices = array();
+
+		// Store the type column for each key
+		$sort_type = array();
+		
+		// Stuff it
+		foreach ($devices_match as $device) {
+
+			// Ignore shit I can't decipher with
+			if ($device[2] == 'ppb' || strpos($device[3], 'vendor') !== false)
+				continue;
+
+			// Only call this once
+			$type = strtoupper($device[2]);
+
+			// Stuff entry
+			$devices[] = array(
+				'vendor' => '?', // Maybe todo? 
+				'device' => $device[3],
+				'type' => $type
+			);
+
+			// For the sorting of this entry
+			$sort_type[] = $type;
+		}
+		
+		// Sort
+		array_multisort($devices, SORT_STRING, $sort_type);
+
+		// Give them
+		return $devices;
+	}
+	
+	// Get stats on processes
+	private function getProcessStats() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Process Stats');
+
+		// We'll return this after stuffing it with useful info
+		$result = array(
+			'exists' => true, 
+			'proc_zombie' => 0,
+			'proc_sleeping' => 0,
+			'proc_running' => 0,
+			'proc_stopped' => 0,
+			'proc_total' => 0,
+			'threads' => false // I'm not sure how to get this
+		);
+
+		// Use ps
+		try {
+			// Get it
+			$ps = $this->exec->exec('ps', 'ax');
+
+			// Match them
+			preg_match_all('/^\s*\d+\s+[\w?]+\s+([A-Z])\S*\s+.+$/m', $ps, $processes, PREG_SET_ORDER);
+			
+			// Get total
+			$result['proc_total'] = count($processes);
+			
+			// Go through
+			foreach ($processes as $process) {
+				switch ($process[1]) {
+					case 'S':
+					case 'I':
+						$result['proc_sleeping'] = $result['proc_sleeping'] + 1;
+					break;
+					case 'Z':
+						$result['proc_zombie'] = $result['proc_zombie'] + 1;
+					break;
+					case 'R':
+					case 'D':
+					case 'O':
+						$result['proc_running'] = $result['proc_running'] + 1;
+					break;
+					case 'S':
+						$result['proc_stopped'] = $result['proc_stopped'] + 1;
+					break;
+				}
+			}
+		}
+		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error using `ps` to get process info');
+		}
+
+		// Give
+		return $result;
+	}
+	
 	// TODO:
-	private function getDevs(){}
-	private function getRAID(){}
-	private function getBattery(){}
-	private function getTemps(){}
+	private function getRAID() {}
+	private function getBattery() {}
+	private function getTemps() {}
 }

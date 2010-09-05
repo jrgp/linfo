@@ -67,6 +67,8 @@ function showInfo($info, $settings) {
 			
 			// We very well may not have process stats
 			if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
+
+				// We do; show them
 				$core[] = array('Processes', '
 							Total: '.number_format($info['processStats']['proc_total']).';
 							Running: '.number_format($info['processStats']['proc_running']).'
@@ -74,7 +76,10 @@ function showInfo($info, $settings) {
 							Stopped: '.number_format($info['processStats']['proc_stopped']).';
 							Zombie: '.number_format($info['processStats']['proc_zombie']),'
 				');
-				$core[] = array('Threads', number_format($info['processStats']['threads']));
+
+				// We might not have threads
+				if ($info['processStats']['threads'] !== false)
+					$core[] = array('Threads', number_format($info['processStats']['threads']));
 			}
 
 			// Show
