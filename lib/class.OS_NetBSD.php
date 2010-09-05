@@ -198,11 +198,14 @@ class OS_NetBSD extends OS_BSD_Common {
 		// Try using ifconfig to get statuses for each interface
 		try {
 			$ifconfig = $this->exec->exec('ifconfig', '-a');
+			$current_nic = false;
 			foreach ((array) explode("\n", $ifconfig) as $line) {
-				if (preg_match('/^(\w+) :/m', $line, $m) == 1)
+				if (preg_match('/^(\w+):/m', $line, $m) == 1)
 					$current_nic = $m[1];
-				elseif (preg_match('/^\s+status: (\w+)$/m', $line, $m) == 1)
+				elseif ($current_nic != false && preg_match('/^\s+status: (\w+)$/m', $line, $m) == 1) {
 					$statuses[$current_nic] = $m[1];
+					$current_nic = false;
+				}
 			}
 		}
 		catch(CallExtException $e) {}
