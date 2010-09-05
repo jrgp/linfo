@@ -17,6 +17,10 @@ Goals:
    not names and command line arguments given to running programs.
  - Don't use blatantly slow methods such as preg_split()
 
+Usable clients:
+ - Any web browser should work, including text only ones
+ - Tested with: Firefox 3.x, Chrome, IE, Lynx, Elinks
+
 Global System requirements: 
  - At least PHP 5
  - Access to php's preg library, specifically preg_match() and preg_match_all(). You most likely already have this.
@@ -28,6 +32,10 @@ Linux system requirements:
 FreeBSD system requirements:
  - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, etc
  - Known to work under 8.0-RELEASE; older versions may work, I'm not sure
+
+NetBSD system requirements:
+ - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, /usr/pkg/bin, etc
+ - Known to work under NetBSD 5.0.2; older versions may work, I'm not sure
 
 Installation/usage:
  1) Extract tarball contents to somewhere under your web root
