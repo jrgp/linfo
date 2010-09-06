@@ -561,10 +561,13 @@ class OS_FreeBSD extends OS_BSD_Common{
 		// We'll return this after stuffing it with useful info
 		$result = array(
 			'exists' => true, 
-			'proc_zombie' => 0,
-			'proc_sleeping' => 0,
-			'proc_running' => 0,
-			'proc_stopped' => 0,
+			'totals' => array(
+				'running' => 0,
+				'zombie' => 0,
+				'sleeping' => 0,
+				'stopped' => 0,
+				'idle' => 0
+			),
 			'proc_total' => 0,
 			'threads' => false // I'm not sure how to get this
 		);
@@ -585,17 +588,20 @@ class OS_FreeBSD extends OS_BSD_Common{
 				switch ($process[1]) {
 					case 'S':
 					case 'I':
-						$result['proc_sleeping'] = $result['proc_sleeping'] + 1;
+						$result['totals']['sleeping'] = $result['totals']['sleeping'] + 1;
 					break;
 					case 'Z':
-						$result['proc_zombie'] = $result['proc_zombie'] + 1;
+						$result['totals']['zombie'] = $result['totals']['zombie'] + 1;
 					break;
 					case 'R':
 					case 'D':
-						$result['proc_running'] = $result['proc_running'] + 1;
+						$result['totals']['running'] = $result['totals']['running'] + 1;
 					break;
 					case 'T':
-						$result['proc_stopped'] = $result['proc_stopped'] + 1;
+						$result['totals']['stopped'] = $result['totals']['stopped'] + 1;
+					break;
+					case 'W':
+						$result['totals']['idle'] = $result['totals']['idle'] + 1;
 					break;
 				}
 			}
