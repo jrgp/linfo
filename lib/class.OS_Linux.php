@@ -942,7 +942,8 @@ class OS_Linux {
 				'stopped' => 0,
 			),
 			'proc_total' => 0,
-			'threads' => 0
+			'threads' => 0,
+			'cpu' => (float) 0
 		);
 		
 		// Get all the paths to each process' status file
@@ -968,16 +969,16 @@ class OS_Linux {
 			switch ($state_match[1]) {
 				case 'D': // disk sleep? wtf?
 				case 'S':
-					$result['totals']['sleeping'] = $result['totals']['sleeping'] + 1;
+					$result['totals']['sleeping']++;
 				break;
 				case 'Z':
-					$result['totals']['zombie'] = $result['totals']['zombie'] + 1;
+					$result['totals']['zombie']++;
 				break;
 				case 'R':
-					$result['totals']['running'] = $result['totals']['running'] + 1;
+					$result['totals']['running']++;
 				break;
 				case 'T':
-					$result['totals']['stopped'] = $result['totals']['stopped'] + 1;
+					$result['totals']['stopped']++;
 				break;
 			}
 

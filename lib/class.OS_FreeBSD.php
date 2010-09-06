@@ -588,20 +588,20 @@ class OS_FreeBSD extends OS_BSD_Common{
 				switch ($process[1]) {
 					case 'S':
 					case 'I':
-						$result['totals']['sleeping'] = $result['totals']['sleeping'] + 1;
+						$result['totals']['sleeping']++;
 					break;
 					case 'Z':
-						$result['totals']['zombie'] = $result['totals']['zombie'] + 1;
+						$result['totals']['zombie']++;
 					break;
 					case 'R':
 					case 'D':
-						$result['totals']['running'] = $result['totals']['running'] + 1;
+						$result['totals']['running']++;
 					break;
 					case 'T':
-						$result['totals']['stopped'] = $result['totals']['stopped'] + 1;
+						$result['totals']['stopped']++;
 					break;
 					case 'W':
-						$result['totals']['idle'] = $result['totals']['idle'] + 1;
+						$result['totals']['idle']++;
 					break;
 				}
 			}
