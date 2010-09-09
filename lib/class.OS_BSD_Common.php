@@ -58,6 +58,7 @@ abstract class OS_BSD_Common {
 	}
 
 	// Use sysctl to get something, and cache result.
+	// Also allow getting multiple keys at once
 	protected function getSysCTL($keys) {
 		$keys = (array) $keys;
 		$return = array();

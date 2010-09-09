@@ -33,10 +33,8 @@ function __autoload($class) {
 	else
 		exit('File for '.$file.' not found');
 	
-	// Ensure we have it
-	if (class_exists($class))
-		return;
-	else
+	// Make sure we have it
+	if (!class_exists($class))
 		exit('Class '.$class.' not found in '.$file);
 }
 
@@ -44,7 +42,7 @@ function __autoload($class) {
 // Exception for info classes 
 class GetInfoException extends Exception{}
 
-// Determine OS.
+// Determine OS. If true, returns OS name; otherwise false
 function determineOS() {
 	
 	// This magical constant knows all
