@@ -23,6 +23,8 @@ defined('IN_INFO') or exit;
 
 /*
  * NetBSD info class. Differs slightly from FreeBSD's
+ * TODO: netbsd's /proc contains really useful info
+ * possibly get some stuff from it if it exists
  */
 
 class OS_NetBSD extends OS_BSD_Common {
@@ -36,7 +38,11 @@ class OS_NetBSD extends OS_BSD_Common {
 
 	// Start us off
 	public function __construct($settings) {
+		
+		// Initiate parent
 		parent::__construct($settings);
+		
+		// We search these folders for our commands
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/pkg/bin', '/usr/sbin'));
 	}
 

@@ -18,7 +18,6 @@
  * 
 */
 
-
 // Timer
 define('TIME_START', microtime(true));
 
@@ -26,26 +25,32 @@ define('TIME_START', microtime(true));
 define('AppName', 'Linfo');
 define('VERSION', sprintf('%s %s', AppName, '(svn)'));
 
-// Anti hack
+// Anti hack, as in allow included files to ensure they were included
 define('IN_INFO', true);
 
-// Configure paths
+// Configure absolute path to local directory
 define('LOCAL_PATH', dirname(__FILE__) . '/');
 
+// Configure absolute path to web directory
 $web_path = dirname($_SERVER['SCRIPT_NAME']);
-$web_path .= substr($web_path, -1) == '/' ? '' : '/';
-define('WEB_PATH', $web_path);
+define('WEB_PATH', substr($web_path, -1) == '/' ? $web_path : $web_path.'/');
 
-// Load conf file
+// If configuration file does not exist but the sample does, say so
 if (!is_file(LOCAL_PATH . 'config.inc.php') && is_file(LOCAL_PATH . 'sample.config.inc.php'))
 	exit('Make changes to sample.config.inc.php then rename as config.inc.php');
+
+// If the config file is just gone, also say so
 elseif(!is_file(LOCAL_PATH . 'config.inc.php'))
 	exit('Config file not found.');
+
+// It exists; just include it
 require_once LOCAL_PATH . 'config.inc.php';
 
-// Fix some things
+// Make sure these are arrays
 $settings['hide']['filesystems'] = is_array($settings['hide']['filesystems']) ? $settings['hide']['filesystems'] : array();
 $settings['hide']['storage_devices'] = is_array($settings['hide']['storage_devices']) ? $settings['hide']['storage_devices'] : array();
+
+// Make sure these are always hidden
 $settings['hide']['filesystems'][] = 'rootfs';
 $settings['hide']['filesystems'][] = 'binfmt_misc';
 
@@ -68,6 +73,11 @@ $info = $getter->getAll();
 
 // Show
 if (array_key_exists('json', $_GET))
+	// Allow json'ing the info, which might be helpful for
+	// using linfo to be an ajax source for some other app
 	echo json_encode($info);
 else
+	// Otherwise, extremely minimal html 
 	showInfo($info, $settings);
+
+// That should be it

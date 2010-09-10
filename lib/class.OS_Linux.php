@@ -44,10 +44,8 @@ class OS_Linux {
 		$this->error = LinfoError::Fledging();
 
 		// Make sure we have what we need
-		if (!is_dir('/sys') || !is_dir('/proc')) {
+		if (!is_dir('/sys') || !is_dir('/proc'))
 			throw new GetInfoException('This needs access to /proc and /sys to work.');
-		}
-
 	}
 
 	// All
@@ -77,6 +75,8 @@ class OS_Linux {
 
 	// Return OS type
 	private function getOS() {
+		
+		// Linux, obviously
 		return 'Linux';
 	}
 
@@ -105,6 +105,7 @@ class OS_Linux {
 			return 'Unknown';
 		}
 
+		// Return it
 		return $match[1];
 	}
 
@@ -127,6 +128,8 @@ class OS_Linux {
 			return 'Unknown';
 		}
 		else {
+
+			// Didn't fail; return it
 			return $hostname;
 		}
 	}
@@ -164,13 +167,16 @@ class OS_Linux {
 
 		// Get swapContents
 		@preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)[^$]*$/m', getContents($procFileSwap), $matches, PREG_SET_ORDER);
-		foreach ((array)$matches as $swapDevice)
+		foreach ((array)$matches as $swapDevice) {
+			
+			// Append each swap device
 			$swapVals[] = array (
 				'device' => $swapDevice[1],
 				'type' => $swapDevice[2],
 				'size' => $swapDevice[3]*1024,
 				'used' => $swapDevice[4]*1024
 			);
+		}
 
 		// Get individual vals
 		$return['type'] = 'Physical';
@@ -282,7 +288,6 @@ class OS_Linux {
 
 			// Save this one
 			$return[] = $curr;
-
 		}
 
 		// Return them
@@ -340,13 +345,15 @@ class OS_Linux {
 		// Get partitions
 		$partitions = array();
 		$partitions_contents = getContents('/proc/partitions');
-		@preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, PREG_SET_ORDER);
-		if (is_array($partitions_match))
+		if (@preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, PREG_SET_ORDER) > 0) {
+			// Go through each match
 			foreach($partitions_match as $partition)
+				// And save each partition, using the drive path as a key
 				$partitions[$partition[2]][] = array(
 					'size' => $partition[1] * 1024,
 					'number' => $partition[3]
 				);
+		}
 		
 		// Store drives here
 		$drives = array();
@@ -362,8 +369,10 @@ class OS_Linux {
 
 			// Attempt getting read/write stats
 			if (preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', getContents(dirname(dirname($path)).'/stat'), $statMatches) !== 1)
+				// Didn't get it
 				list($reads, $writes) = array(false, false);
 			else
+				// Got it, save it
 				list(, $reads, $writes) = $statMatches;
 
 			// Append this drive on
@@ -395,18 +404,30 @@ class OS_Linux {
 		// hddtemp?
 		if (array_key_exists('hddtemp', (array)$this->settings['temps']) && !empty($this->settings['temps']['hddtemp'])) {
 			try {
+				// Initiate class
 				$hddtemp = new GetHddTemp($this->settings);
+
+				// Set mode, as in either daemon or syslog
 				$hddtemp->setMode($this->settings['hddtemp']['mode']);
+
+				// If we're daemon, save host and port
 				if ($this->settings['hddtemp']['mode'] == 'daemon') {
 					$hddtemp->setAddress(
 						$this->settings['hddtemp']['address']['host'],
 						$this->settings['hddtemp']['address']['port']);
 				}
+
+				// Result after working it
 				$hddtemp_res = $hddtemp->work();
+
+				// If it's an array, it worked
 				if (is_array($hddtemp_res))
+					// Save result
 					$return = array_merge($return, $hddtemp_res);
 
 			}
+
+			// There was an issue
 			catch (GetHddTempException $e) {
 				$this->error->add('hddtemp parser', $e->getMessage());
 			}
@@ -415,12 +436,20 @@ class OS_Linux {
 		// mbmon?
 		if (array_key_exists('mbmon', (array)$this->settings['temps']) && !empty($this->settings['temps']['mbmon'])) {
 			try {
+				// Initiate class
 				$mbmon = new GetMbMon;
+
+				// Set host and port
 				$mbmon->setAddress(
 					$this->settings['mbmon']['address']['host'],
 					$this->settings['mbmon']['address']['port']);
+
+				// Get result after working it
 				$mbmon_res = $mbmon->work();
+
+				// If it's an array, it worked
 				if (is_array($mbmon_res))
+					// Save result
 					$return = array_merge($return, $mbmon_res);
 			}
 			catch (GetMbMonException $e) {
@@ -431,9 +460,15 @@ class OS_Linux {
 		// sensord? (part of lm-sensors)
 		if (array_key_exists('sensord', (array)$this->settings['temps']) && !empty($this->settings['temps']['sensord'])) {
 			try {
+				// Iniatate class
 				$sensord = new GetSensord;
+
+				// Work it
 				$sensord_res = $sensord->work();
+
+				// If it's an array, it worked
 				if (is_array($sensord_res))
+					// Save result
 					$return = array_merge($return, $sensord_res);
 			}
 			catch (GetSensordException $e) {
@@ -442,6 +477,7 @@ class OS_Linux {
 		}
 
 		// hwmon? (probably the fastest of what's here)
+		// too simple to be in its own class
 		if (array_key_exists('hwmon', (array)$this->settings['temps']) && !empty($this->settings['temps']['hwmon'])) {
 
 			// Store them here
@@ -467,7 +503,7 @@ class OS_Linux {
 					$unit = 'v'; 
 				}
 				else 
-					$unit = ''; // idk
+					$unit = ''; // Not sure if there's a temp
 
 				// Append values
 				$hwmon_vals[] = array(
@@ -548,6 +584,7 @@ class OS_Linux {
 	// TODO optimization. On newer systems this takes only a few fractions of a second,
 	// but on older it can take upwards of 5 seconds, since it parses the entire ids files
 	// looking for device names which resolve to the pci addresses
+	// Also todo: quantity of duplicates. 
 	private function getDevs() {
 		
 		// Time?
@@ -794,6 +831,8 @@ class OS_Linux {
 
 			// Save and get info for each
 			$return[end(explode('/', $v))] = array(
+
+				// Stats are stored in simple files just containing the number
 				'recieved' => array(
 					'bytes' => get_int_from_file($v.'/statistics/rx_bytes'),
 					'errors' => get_int_from_file($v.'/statistics/rx_errors'),
@@ -804,6 +843,8 @@ class OS_Linux {
 					'errors' => get_int_from_file($v.'/statistics/tx_errors'),
 					'packets' => get_int_from_file($v.'/statistics/rx_packets')
 				),
+
+				// These were determined above
 				'state' => $state,
 				'type' => $type
 			);
@@ -828,8 +869,12 @@ class OS_Linux {
 	
 		// Get vals for each battery
 		foreach ($bats as $b) {
+
+			// Get these from the simple text files
 			$charge_full = get_int_from_file($b.'/charge_full');
 			$charge_now = get_int_from_file($b.'/charge_now');
+
+			// Save result set
 			$return[] = array(
 				'charge_full' => $charge_full,
 				'charge_now' => $charge_now,
@@ -926,6 +971,7 @@ class OS_Linux {
 	}
 
 	// Get stats on processes
+	// todo: merge state and thread regexes into one, which might be possible
 	private function getProcessStats() {
 		
 		// Time?
@@ -942,8 +988,7 @@ class OS_Linux {
 				'stopped' => 0,
 			),
 			'proc_total' => 0,
-			'threads' => 0,
-			'cpu' => (float) 0
+			'threads' => 0
 		);
 		
 		// Get all the paths to each process' status file
@@ -965,7 +1010,7 @@ class OS_Linux {
 			// Try getting state
 			@preg_match('/^State:\s+(\w)/m', $status_contents, $state_match);
 
-			// Well?
+			// Well? Determine state
 			switch ($state_match[1]) {
 				case 'D': // disk sleep? wtf?
 				case 'S':

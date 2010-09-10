@@ -39,7 +39,11 @@ class OS_FreeBSD extends OS_BSD_Common{
 
 	// Start us off
 	public function __construct($settings) {
+
+		// Initiate parent
 		parent::__construct($settings);
+
+		// We search these folders for our commands
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
 	}
 	
@@ -68,6 +72,8 @@ class OS_FreeBSD extends OS_BSD_Common{
 
 	// Return OS type
 	private function getOS() {
+
+		// Obviously
 		return 'FreeBSD';	
 	}
 	
@@ -278,6 +284,8 @@ class OS_FreeBSD extends OS_BSD_Common{
 					// Hitting a new raid definition
 					if (preg_match('/^(\w+)\/(\w+)\s+(\w+)\s+(\w+)$/', $content, $m)) {
 						$i++;
+
+						// Save result set
 						$return[$i] = array(
 							'device' => $m[2],
 							'level' => $m[1],
@@ -290,6 +298,8 @@ class OS_FreeBSD extends OS_BSD_Common{
 
 					// Hitting a new device in a raid definition
 					elseif (preg_match('/^                      (\w+)$/', $content, $m)) {
+
+						// This migh be part of a raid dev; save it if it is
 						if (array_key_exists($i, $info))
 							$return[$i]['devices'][] = array('drive' => $m[1], 'state' => 'unknown');
 					}
@@ -333,12 +343,24 @@ class OS_FreeBSD extends OS_BSD_Common{
 		// Try using ifconfig to get states of the network interfaces
 		$statuses = array();
 		try {
+			// Output of ifconfig command
 			$ifconfig = $this->exec->exec('ifconfig', '-a');
+
+			// Set this to false to prevent wasted regexes
+			$current_nic = false;
+
+			// Go through each line
 			foreach ((array) explode("\n", $ifconfig) as $line) {
+
+				// Approachign new nic def
 				if (preg_match('/^(\w+):/', $line, $m) == 1)
 					$current_nic = $m[1];
-				elseif (preg_match('/^\s+status: (\w+)$/', $line, $m) == 1)
+
+				// Hopefully match its status
+				elseif ($current_nic && preg_match('/^\s+status: (\w+)$/', $line, $m) == 1) {
 					$statuses[$current_nic] = $m[1];
+					$current_nic = false;
+				}
 			}
 		}
 		catch(CallExtException $e) {}
@@ -346,11 +368,21 @@ class OS_FreeBSD extends OS_BSD_Common{
 		// Get type from dmesg boot
 		$type = array();
 		$type_nics = array();
+
+		// Store the to-be detected nics here
 		foreach ($netstat_match as $net)
 			$type_nics[] = $net[1];
+
+		// Go through dmesg looking for them
 		if (preg_match_all('/^(\w+): <.+>.+on ([a-z]+)\d+/m', $this->dmesg, $type_match, PREG_SET_ORDER)) {
+			
+			// Go through each
 			foreach ($type_match as $type_nic_match) 
+
+				// Is this one of our detected nics?
 				if (in_array($type_nic_match[1], $type_nics))
+
+					// Yes; save status
 					$type[$type_nic_match[1]] = $type_nic_match[2];
 		}
 
@@ -377,6 +409,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 			// Save info
 			$return[$net[1]] = array(
 				
+				// These came from netstat
 				'recieved' => array(
 					'bytes' => $net[4],
 					'errors' => $net[3],
@@ -387,8 +420,11 @@ class OS_FreeBSD extends OS_BSD_Common{
 					'errors' =>  $net[6],
 					'packets' => $net[5] 
 				),
+
+				// This came from ifconfig -a
 				'state' => $state,
 
+				// And this came from dmeg.
 				// TODO: Value for following is usually vague
 				'type' => array_key_exists($net[1], $type) ? strtoupper($type[$net[1]]) : 'N/A'
 			);
@@ -400,6 +436,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 
 	// Get CPU's
 	// I still don't really like how this is done
+	// todo: support multiple non-identical cpu's
 	private function getCPU() {
 		
 		// Time?
@@ -418,6 +455,8 @@ class OS_FreeBSD extends OS_BSD_Common{
 		
 		// Stuff it with identical cpus
 		for ($i = 1; $i <= $num; $i++)
+			
+			// Save each
 			$cpus[] = array(
 				'Model' => $cpu_m[1],
 				'MHz' => $cpu_m[2],
