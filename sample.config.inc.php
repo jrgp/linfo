@@ -4,6 +4,12 @@
 defined('IN_INFO') or exit;
 
 /*
+ * Usual configuration
+ */
+$settings['byte_notation'] = 1024; // Either 1024 or 1000; defaults to 1024
+
+
+/*
  * Possibly don't show stuff
  */
 

@@ -36,15 +36,21 @@ function get_int_from_file($file) {
 
 // Convert bytes to stuff like KB MB GB TB etc
 function byte_convert($size, $precision = 2) {
+	
+	// Grab these
+	global $settings;
 
 	// Sanity check
 	if (!is_numeric($size))
 		return '?';
+	
+	// Get the notation
+	$notation = $settings['byte_notation'] == 1000 ? 1000: 1024;
 
 	// Fixes large disk size overflow issue
 	// Found at http://www.php.net/manual/en/function.disk-free-space.php#81207
 	$types = array( 'B', 'KB', 'MB', 'GB', 'TB' );
-	for( $i = 0; $size >= 1024 && $i < ( count( $types ) -1 ); $size /= 1024, $i++ );
+	for( $i = 0; $size >= $notation && $i < ( count( $types ) -1 ); $size /= $notation, $i++ );
 	return( round( $size, $precision ) . ' ' . $types[$i] );
 }
 
