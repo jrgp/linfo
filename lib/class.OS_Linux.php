@@ -496,7 +496,7 @@ class OS_Linux {
 				if (strpos($filename, 'fan') !== false)
 					$unit = 'RPM';
 				elseif (strpos($filename, 'temp') !== false) {
-					$unit = 'F';  // Always seems to be in farenheight
+					$unit = 'C';  // Always seems to be in celsius
 					$value = strlen($value) == 5 ? substr($value, 0, 2) : $value;  // Pointless extra 0's
 				}
 				elseif (preg_match('/^in\d_label$/', $filename)) {
