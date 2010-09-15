@@ -368,9 +368,11 @@ class OS_Linux {
 			$parts = explode('/', $path);
 
 			// Attempt getting read/write stats
-			if (preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', getContents(dirname(dirname($path)).'/stat'), $statMatches) !== 1)
+			if (preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', getContents(dirname(dirname($path)).'/stat'), $statMatches) !== 1) {
 				// Didn't get it
-				list($reads, $writes) = array(false, false);
+				$reads = false;
+				$writes = false;
+			}
 			else
 				// Got it, save it
 				list(, $reads, $writes) = $statMatches;
