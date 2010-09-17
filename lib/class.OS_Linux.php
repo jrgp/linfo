@@ -597,8 +597,14 @@ class OS_Linux {
 		$return = array();
 
 		// Location of useful paths
-		$pci_ids = '/usr/share/misc/pci.ids';
-		$usb_ids = '/usr/share/misc/usb.ids';
+		$pci_ids = locate_actual_path(array(
+			'/usr/share/misc/pci.ids',	// debian/ubuntu
+			'/usr/share/pci.ids'		// opensuse
+		));
+		$usb_ids = locate_actual_path(array(
+			'/usr/share/misc/usb.ids',	// debian/ubuntu
+			'/usr/share/usb.ids'		// opensuse
+		));
 		$sys_pci_dir = '/sys/bus/pci/devices/';
 		$sys_usb_dir = '/sys/bus/usb/devices/';
 
@@ -627,7 +633,7 @@ class OS_Linux {
 		}
 
 		// Get PCI vendor/dev names
-		$file = @fopen($pci_ids, 'rb');
+		$file = $pci_ids != false ? @fopen($pci_ids, 'rb') : false;
 		$left = $pci_dev_num;
 		if ($file !== false) {
 			while ($contents = @fgets($file)) {
@@ -649,7 +655,7 @@ class OS_Linux {
 		}
 
 		// Get USB vendor/dev names
-		$file = @fopen($usb_ids, 'rb');
+		$file = $usb_ids ? @fopen($usb_ids, 'rb') : false;
 		$left = $usb_dev_num;
 		if ($file !== false) {
 			while($contents = @fgets($file)) {

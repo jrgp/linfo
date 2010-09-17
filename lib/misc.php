@@ -21,6 +21,17 @@
 
 defined('IN_INFO') or exit;
 
+// Certain files, specifcally the pci/usb ids files, vary in location from
+// linux distro to linux distro. This function, when passed an array of
+// possible file location, picks the first it finds and returns it. When
+// none are found, it returns false
+function locate_actual_path($paths) {
+	foreach ($paths as $path)
+		if (is_file($path))
+			return $path;
+	return false;
+}
+
 // Get a file who's contents should just be an int. Returns zero on failure.
 function get_int_from_file($file) {
 	if (!file_exists($file))
