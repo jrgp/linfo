@@ -36,6 +36,7 @@ function showInfo($info, $settings) {
 	<title>'.AppName.' - '.$info['HostName'].'</title>
 	<link href="'.WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon" />
 	<link href="'.WEB_PATH.'layout/styles.css" type="text/css" rel="stylesheet" />
+	<meta name="generator" content="Linfo '.VERSION.'" />
 </head>
 <body id="info">
 <h1>System Health: '.$info['HostName'].'</h1>
