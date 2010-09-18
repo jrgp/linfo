@@ -2,10 +2,10 @@ Linfo Change log
 
 v1.1 - 09/05/2010
  - Full NetBSD support
- - Partial Minix support
  - First real cross platform release
 
 v1.2 - 09/18/2010
  - OpenBSD support
+ - Partial Minix support
  - Various improvements
  - Real changelog started
