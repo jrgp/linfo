@@ -73,7 +73,10 @@ abstract class OS_BSD_Common {
 					$this->sysctl[$key] = $sys;
 					$return[$key] = $sys;
 				}
-				catch(CallExtException $e) {}
+				catch(CallExtException $e) {
+					$this->sysctl[$key] = false;
+					$return[$key] = false;
+				}
 			}
 		}
 		return count($return) == 1 ? current($return) : $return;

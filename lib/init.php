@@ -51,6 +51,7 @@ function determineOS() {
 		// These are supported
 		case 'Linux':
 		case 'FreeBSD':
+		case 'OpenBSD':
 		case 'NetBSD':
 		case 'Minix':
 			return PHP_OS;
