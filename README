@@ -1,5 +1,7 @@
 Linfo - PHP server health/information script
 
+Currently runs on: Linux; FreeBSD; NetBSD; OpenBSD; Minix (alpha)
+
 Etymology:
  - The name 'Linfo' was decided upon before I intended it to be cross platform.
    It was originally only going to be for Linux, and hence I called it Linux-Info,
@@ -8,14 +10,18 @@ Etymology:
 Goals: 
  - Provide info such as disk space, temperatures, cpu, ram, etc
  - Be very fast; generation in under a second is most desired.
- - Call very few external programs (like df/load/uptime/etc), if any. (parse the file system for info)
- - Linux version not use external programs *at all* and rely exclusively on /proc and /sys and connecting to locally listening daemons
- - Don't go nuts with eye candy. Don't use ajax. Make viewing the info on text only browsers possible and easy.
+ - Call very few external programs (like df/load/uptime/etc), if any. (parse
+   the file system for info, if possible)
+ - Linux version not use external programs *at all* and rely exclusively on
+   /proc and /sys and connecting to locally listening daemons
+ - Don't go nuts with eye candy. Don't use ajax. Make viewing the info on
+   text only browsers possible and easy.
  - Any javascript ever used must be *extremely* subtle and degrade gracefully
- - Don't bother finding Linux distro since it's irrelevant; the kernel and other specs are what matters most
+ - Don't bother finding Linux distro since it's irrelevant; the kernel and
+   other specs are what matters most
  - Don't give info that can be exploited and turned into a security risk, especially
    not names and command line arguments given to running programs.
- - Don't use blatantly slow methods such as preg_split()
+ - Don't use blatantly slow methods such as preg_split(), especially not in loops
 
 Usable clients:
  - Any web browser should work, including text only ones
@@ -23,7 +29,8 @@ Usable clients:
 
 Global System requirements: 
  - At least PHP 5
- - Access to php's preg library, specifically preg_match() and preg_match_all(). You most likely already have this.
+ - Access to php's preg (PCRE) library, specifically preg_match() 
+   and preg_match_all(). You most likely already have this.
 
 Linux system requirements:
  - /proc and /sys mounted appropriately
@@ -36,6 +43,11 @@ FreeBSD system requirements:
 NetBSD system requirements:
  - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, /usr/pkg/bin, etc
  - Known to work under NetBSD 5.0.2; older versions may work, I'm not sure
+
+OpenBSD system requirements/notes:
+ - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin,  etc
+ - Known to work under OpenBSD 4.7; older versions may work, I'm not sure
+ - It will not work under the default httpd chroot
 
 Installation/usage:
  1) Extract tarball contents to somewhere under your web root
@@ -54,7 +66,8 @@ Linux system temps/voltages/etc requirments:
  - Have hddtemp listening or periodically writing to syslog, and/or
  - Have mbmon listening, and/or
  - Have sensord periodically writing to syslog and/or
- - Have hwmon set up in /sys. This is enabled by default and works by default at least on recent ubuntu versions
+ - Have hwmon set up in /sys. This is enabled by default and works by default 
+   at least on recent ubuntu versions
 
 License: GNU General Public License
 Author/copyright holder: Joseph Robert Gillotti <joe@u13.net>
