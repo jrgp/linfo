@@ -46,8 +46,8 @@ class OS_FreeBSD extends OS_BSD_Common{
 		// We search these folders for our commands
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
 		
-		// Get these out of the way here
-		$this->sysctl = array_merge($this->sysctl, $this->GetSysCTL(array('kern.boottime', 'vm.vmtotal')));
+		// sysctl values we'll access below
+		$this->GetSysCTL(array('kern.boottime', 'vm.vmtotal', 'vm.loadavg'));
 	}
 	
 	// This function will likely be shared among all the info classes
@@ -209,18 +209,8 @@ class OS_FreeBSD extends OS_BSD_Common{
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Load Averages');
 		
-		// Use uptime, since it also has load values
-		try {
-			$res = $this->exec->exec('uptime');
-		}
-		catch (CallExtException $e) {
-			$this->error->add('Linfo Core', 'Error using `uptime` to get system load');
-			return array();
-		}
-
-		// Parse it
-		if (preg_match('/^.+load averages: ([\d\.]+), ([\d\.]+), ([\d\.]+)$/', $res, $m) == 0)
-			return array();
+		// Parse sysctl value for system load
+		$m = explode(' ', $this->sysctl['vm.loadavg']);
 		
 		// Give
 		return array(

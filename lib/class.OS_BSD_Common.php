@@ -113,7 +113,6 @@ abstract class OS_BSD_Common {
 				// Try it
 				try {
 					$results[$v] = $this->exec->exec('sysctl', $v);
-
 				}
 
 				// Didn't work again... just forget it and set value to empty string
@@ -123,14 +122,11 @@ abstract class OS_BSD_Common {
 			}
 		}
 
-		// Cache these incase they're called again
-		foreach ($results as $k => $v)
-			if (!array_key_exists($k, $this->sysctl))
-				$this->sysctl[$k] = $v;
+		// Cache these incase they're called upon again
+		$this->sysctl = array_merge($results, $this->sysctl);
 
 		// Return an array of all values retrieved, or if just one was 
 		// requested, then that one as a string
 		return count($results) == 1 ? reset($results) : $results;
 	}
-
 }
