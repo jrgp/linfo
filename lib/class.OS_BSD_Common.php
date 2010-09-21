@@ -68,9 +68,13 @@ abstract class OS_BSD_Common {
 		// Store the results of which here
 		$results = array();
 
-		// Check and see if we have any of these already. If so, use previous 
-		// values and don't retrive them again
+		// Go through each
 		foreach ($keys as $k => $v) {
+			// unfuck evil shit, such as malicious shell injection
+			$keys[$k] = escapeshellarg($v);
+			
+			// Check and see if we have any of these already. If so, use previous 
+			// values and don't retrive them again
 			if (array_key_exists($v, $this->sysctl)) {
 				unset($keys[$k]);
 				$results[$v] = $this->sysctl[$v];
