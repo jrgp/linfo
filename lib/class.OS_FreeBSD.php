@@ -45,6 +45,9 @@ class OS_FreeBSD extends OS_BSD_Common{
 
 		// We search these folders for our commands
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
+		
+		// Get these out of the way here
+		$this->sysctl = array_merge($this->sysctl, $this->GetSysCTL(array('kern.boottime', 'vm.vmtotal')));
 	}
 	
 	// This function will likely be shared among all the info classes
@@ -150,9 +153,6 @@ class OS_FreeBSD extends OS_BSD_Common{
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Memory');
 		
-		// Use sysctl for memory
-		$sys = $this->getSysCTL('vm.vmtotal');
-		
 		// We'll return the contents of this
 		$return = array();
 
@@ -164,8 +164,8 @@ class OS_FreeBSD extends OS_BSD_Common{
 		$return['swapFree'] = 0;
 		$return['swapInfo'] = array();
 
-		// Parse the file
-		if (!preg_match_all('/([a-z\ ]+):\s*\(Total: (\d+)\w,? Active:? (\d+)\w\)\n/i', $sys, $rm, PREG_SET_ORDER))
+		// Parse the vm.vmtotal sysctl entry
+		if (!preg_match_all('/([a-z\ ]+):\s*\(Total: (\d+)\w,? Active:? (\d+)\w\)\n/i', $this->sysctl['vm.vmtotal'], $rm, PREG_SET_ORDER))
 			return $return;
 
 		// Parse each entry	
@@ -239,10 +239,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 			$t = new LinfoTimerStart('Uptime');
 		
 		// Use sysctl to get unix timestamp of boot. Very elegant!
-		$res = $this->getSysCTL('kern.boottime');
-		
-		// Extract boot part of it
-		if (preg_match('/^\{ sec \= (\d+).+$/', $res, $m) == 0)
+		if (preg_match('/^\{ sec \= (\d+).+$/', $this->sysctl['kern.boottime'], $m) == 0)
 			return '';
 		
 		// Boot unix timestamp

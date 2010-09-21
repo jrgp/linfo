@@ -58,28 +58,79 @@ abstract class OS_BSD_Common {
 	}
 
 	// Use sysctl to get something, and cache result.
-	// Also allow getting multiple keys at once
+	// Also allow getting multiple keys at once, in which case sysctl 
+	// will only be called once instead of multiple times (assuming it doesn't break)
 	protected function getSysCTL($keys) {
+
+		// Get the keys as an array, so we can treat it as an array of keys
 		$keys = (array) $keys;
-		$return = array();
-		foreach ($keys as $i => $key) {
-			if (array_key_exists($key, $this->sysctl)) {
-				$return[$key] = $this->sysctl[$key];
-				unset($keys[$i]);
+
+		// Store the results of which here
+		$results = array();
+
+		// Check and see if we have any of these already. If so, use previous 
+		// values and don't retrive them again
+		foreach ($keys as $k => $v) {
+			if (array_key_exists($v, $this->sysctl)) {
+				unset($keys[$k]);
+				$results[$v] = $this->sysctl[$v];
 			}
-			else {
-				try {
-					$sys = $this->exec->exec('sysctl', '-n '.$key);
-					$this->sysctl[$key] = $sys;
-					$return[$key] = $sys;
+		}
+
+		// Try running sysctl to get all the values together
+		try {
+			// Result of sysctl
+			$command = $this->exec->exec('sysctl', implode(' ', $keys));
+
+			// Place holder
+			$current_key = false;
+
+			// Go through each line
+			foreach (explode("\n", $command) as $line) {
+
+				// If this is the beginning of one of the keys' values
+				if (preg_match('/^([a-z0-9\.\-\_]+):(.+)/', $line, $line_match) == 1) {
+					if ($line_match[1] != $current_key) {
+						$current_key = $line_match[1];
+						$results[$line_match[1]] = trim($line_match[2]);
+					}
 				}
-				catch(CallExtException $e) {
-					$this->sysctl[$key] = false;
-					$return[$key] = false;
+
+				// If this line is a continuation of one of the keys' values
+				elseif($current_key != false) {
+					$results[$current_key] .= "\n".trim($line);
 				}
 			}
 		}
-		return count($return) == 1 ? current($return) : $return;
+
+		// Something broke with that sysctl call; try getting
+		// all the values separately (slower)
+		catch(CallExtException $e) {
+
+			// Go through each
+			foreach ($keys as $v) {
+
+				// Try it
+				try {
+					$results[$v] = $this->exec->exec('sysctl', $v);
+
+				}
+
+				// Didn't work again... just forget it and set value to empty string
+				catch (CallExtException $e) {
+					$results[$v] = '';
+				}
+			}
+		}
+
+		// Cache these incase they're called again
+		foreach ($results as $k => $v)
+			if (!array_key_exists($k, $this->sysctl))
+				$this->sysctl[$k] = $v;
+
+		// Return an array of all values retrieved, or if just one was 
+		// requested, then that one as a string
+		return count($results) == 1 ? reset($results) : $results;
 	}
 
 }
