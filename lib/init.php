@@ -54,6 +54,7 @@ function determineOS() {
 		case 'OpenBSD':
 		case 'NetBSD':
 		case 'Minix':
+		case 'Darwin':
 			return PHP_OS;
 		break;
 
