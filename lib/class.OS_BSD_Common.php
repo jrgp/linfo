@@ -60,7 +60,7 @@ abstract class OS_BSD_Common {
 	// Use sysctl to get something, and cache result.
 	// Also allow getting multiple keys at once, in which case sysctl 
 	// will only be called once instead of multiple times (assuming it doesn't break)
-	protected function getSysCTL($keys) {
+	protected function getSysCTL($keys, $do_return = true) {
 
 		// Get the keys as an array, so we can treat it as an array of keys
 		$keys = (array) $keys;
@@ -131,6 +131,7 @@ abstract class OS_BSD_Common {
 
 		// Return an array of all values retrieved, or if just one was 
 		// requested, then that one as a string
-		return count($results) == 1 ? reset($results) : $results;
+		if ($do_return)
+			return count($results) == 1 ? reset($results) : $results;
 	}
 }

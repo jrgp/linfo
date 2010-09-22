@@ -47,7 +47,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
 		
 		// sysctl values we'll access below
-		$this->GetSysCTL(array('kern.boottime', 'vm.vmtotal', 'vm.loadavg'));
+		$this->GetSysCTL(array('kern.boottime', 'vm.vmtotal', 'vm.loadavg'), true);
 	}
 	
 	// This function will likely be shared among all the info classes

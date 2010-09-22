@@ -44,6 +44,9 @@ class OS_Darwin extends OS_BSD_Common{
 
 		// We search these folders for our commands
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/sbin'));
+
+		// We need these sysctl values
+		$this->GetSysCTL(array('machdep.cpu.vendor', 'machdep.cpu.brand_string', 'hw.cpufrequency', 'hw.ncpu', 'vm.swapusage'), true);
 	}
 	
 	// This function will likely be shared among all the info classes
@@ -355,17 +358,15 @@ class OS_Darwin extends OS_BSD_Common{
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('CPUs');
 
+		// Store them here
 		$cpus = array();
-		$vendor = $this->GetSysCTL('machdep.cpu.vendor');
-		$type = $this->getSysCTL('machdep.cpu.brand_string');
-		$speed = $this->getSysCTL('hw.cpufrequency') / 1000000;
-		$quantity = $this->getSysCTL('hw.ncpu');
 		
-		for ($i = 0; $i < $quantity; $i++)
+		// The same one multiple times
+		for ($i = 0; $i < $this->sysctl['hw.ncpu']; $i++)
 			$cpus[] = array(
-				'Model' => $type,
-				'MHz' => $speed,
-				'Vendor' => $vendor
+				'Model' => $this->sysctl['machdep.cpu.brand_string'],
+				'MHz' => $this->sysctl['hw.cpufrequency'] / 1000000,
+				'Vendor' => $this->sysctl['machdep.cpu.vendor']
 				
 			);
 
@@ -388,8 +389,7 @@ class OS_Darwin extends OS_BSD_Common{
 		$return['swapInfo'] = array();
 
 
-		$swap = $this->GetSysCTL('vm.swapusage');
-		if (preg_match('/total = ([\d\.]+)M\s+used = ([\d\.]+)M\s+free = ([\d\.]+)M/', $swap, $swap_match)) {
+		if (preg_match('/total = ([\d\.]+)M\s+used = ([\d\.]+)M\s+free = ([\d\.]+)M/', $this->sysctl['vm.swapusage'], $swap_match)) {
 			list(, $swap_total, $swap_used, $swap_free) = $swap_match;
 			$return['swapTotal'] = $swap_total * 1000000;
 			$return['swapFree'] = $swap_free * 1000000;
