@@ -46,7 +46,14 @@ class OS_Darwin extends OS_BSD_Common{
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/sbin'));
 
 		// We need these sysctl values
-		$this->GetSysCTL(array('machdep.cpu.vendor', 'machdep.cpu.brand_string', 'hw.cpufrequency', 'hw.ncpu', 'vm.swapusage'), true);
+		$this->GetSysCTL(array(
+			'machdep.cpu.vendor',
+			'machdep.cpu.brand_string',
+			'hw.cpufrequency',
+			'hw.ncpu',
+			'vm.swapusage',
+			'kern.boottime',
+		),false);
 	}
 	
 	// This function will likely be shared among all the info classes
@@ -239,18 +246,15 @@ class OS_Darwin extends OS_BSD_Common{
 	
 	}
 
-	// Get uptime
+	// Get uptime 
 	private function getUpTime() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Uptime');
 		
-		// Use sysctl to get unix timestamp of boot. Very elegant!
-		$res = $this->getSysCTL('kern.boottime');
-		
 		// Extract boot part of it
-		if (preg_match('/^\{ sec \= (\d+).+$/', $res, $m) == 0)
+		if (preg_match('/^\{ sec \= (\d+).+$/', $this->sysctl['kern.boottime'], $m) == 0)
 			return '';
 		
 		// Boot unix timestamp
