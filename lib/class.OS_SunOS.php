@@ -73,10 +73,21 @@ class OS_SunOS {
 	// Return OS type
 	private function getOS() {
 
-		if (reset(explode('.', $this->release, 2)) < 5)
-			return 'SunOS';
-		else
-			return 'Solaris';
+		// Get SunOS version
+		$v = reset(explode('.', $this->release, 2));
+
+		// Stuff 4 and under is SunOS. 5 and up is Solaris
+		switch ($v) {
+			case ($v > 4):
+				return 'Solaris';
+			break;
+			default:
+				return 'SunOS';
+			break;
+		}
+		
+		// What's next is determining what variant of Solaris,
+		// eg: opensolaris (R.I.P.), nexenta, illumos, etc
 	}
 	
 	// Get kernel version
