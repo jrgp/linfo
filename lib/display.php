@@ -59,12 +59,12 @@ function showInfo($info, $settings) {
 				$core[] = array('Hostname', $info['HostName']);
 			if (!empty($settings['show']['cpu'])) {
 				$cpus = '';
-				foreach ($info['CPU'] as $cpu) 
+				foreach ((array) $info['CPU'] as $cpu) 
 					$cpus .= $cpu['Vendor'] . ' - ' . $cpu['Model'] . ' ('.$cpu['MHz'].' MHz)<br />';
 				$core[] = array('CPUs ('.count($info['CPU']).')', $cpus);
 			}
 			if (!empty($settings['show']['load']))
-				$core[] = array('Load', implode(' ', $info['Load']));
+				$core[] = array('Load', implode(' ', (array) $info['Load']));
 			
 			// We very well may not have process stats
 			if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
