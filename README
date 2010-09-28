@@ -1,6 +1,6 @@
 Linfo - PHP server health/information script
 
-Currently runs on: Linux; FreeBSD; NetBSD; OpenBSD; Minix (alpha)
+Currently runs on: Linux; FreeBSD; NetBSD; OpenBSD; Minix (alpha); Darwin (alpha); SunOS(alpha)
 
 Etymology:
  - The name 'Linfo' was decided upon before I intended it to be cross platform.
@@ -31,6 +31,7 @@ Global System requirements:
  - At least PHP 5
  - Access to php's preg (PCRE) library, specifically preg_match() 
    and preg_match_all(). You most likely already have this.
+ - note: PCRE is Linfo's only php requirement :)
 
 Linux system requirements:
  - /proc and /sys mounted appropriately
