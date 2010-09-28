@@ -44,6 +44,9 @@ class OS_NetBSD extends OS_BSD_Common {
 		
 		// We search these folders for our commands
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/pkg/bin', '/usr/sbin'));
+
+		// sysctl values we'll access below
+		$this->GetSysCTL(array('kern.boottime', 'vm.loadavg'), false);
 	}
 
 
@@ -144,7 +147,7 @@ class OS_NetBSD extends OS_BSD_Common {
 			$t = new LinfoTimerStart('Load Averages');
 
 		// Try using sysctl to get load average
-		$res = $this->getSysCTL('vm.loadavg');
+		$res = $this->sysctl['vm.loadavg'];
 
 		// Match it
 		if (@preg_match('/([\d\.]+) ([\d\.]+) ([\d\.]+)$/', $res, $load_match))
@@ -166,7 +169,7 @@ class OS_NetBSD extends OS_BSD_Common {
 			$t = new LinfoTimerStart('Uptime');
 
 		// Use sysctl
-		$booted = strtotime($this->getSysCTL('kern.boottime'));
+		$booted = strtotime($this->sysctl['kern.boottime']);
 
 		// Give it
 		return seconds_convert(time() - $booted) . '; booted ' . date('m/d/y h:i A', $booted);
