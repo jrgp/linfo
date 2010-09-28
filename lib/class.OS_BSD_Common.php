@@ -93,7 +93,7 @@ abstract class OS_BSD_Common {
 			foreach (explode("\n", $command) as $line) {
 
 				// If this is the beginning of one of the keys' values
-				if (preg_match('/^([a-z0-9\.\-\_]+):(.+)/', $line, $line_match) == 1) {
+				if (preg_match('/^([a-z0-9\.\-\_]+)\s*(?:\:|=)(.+)/', $line, $line_match) == 1) {
 					if ($line_match[1] != $current_key) {
 						$current_key = $line_match[1];
 						$results[$line_match[1]] = trim($line_match[2]);

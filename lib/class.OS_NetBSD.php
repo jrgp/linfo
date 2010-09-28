@@ -166,14 +166,7 @@ class OS_NetBSD extends OS_BSD_Common {
 			$t = new LinfoTimerStart('Uptime');
 
 		// Use sysctl
-		$res = $this->getSysCTL('kern.boottime');
-
-		// Match it
-		if (@preg_match('/^(\d+)$/', $res, $time_match) != 1)
-			return false;
-
-		// Get it 
-		$booted = $time_match[1];
+		$booted = strtotime($this->getSysCTL('kern.boottime'));
 
 		// Give it
 		return seconds_convert(time() - $booted) . '; booted ' . date('m/d/y h:i A', $booted);
