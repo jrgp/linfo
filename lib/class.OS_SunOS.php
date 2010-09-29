@@ -48,10 +48,19 @@ class OS_SunOS {
 
 		// Get multiple kstat values at once and store them here. It seems kstat is SunOS' version of BSD's sysctl
 		$this->loadkstat(array(
+			
+			// unix time stamp of system boot
 			'unix:0:system_misc:boot_time',
+
+			// usual 3 system load values
 			'unix:0:system_misc:avenrun_1min',
 			'unix:0:system_misc:avenrun_5min',
-			'unix:0:system_misc:avenrun_15min'
+			'unix:0:system_misc:avenrun_15min',
+
+			// physical ram info
+			'unix:0:seg_cache:slab_size',
+			'unix:0:system_pages:pagestotal',
+			'unix:0:system_pages:pagesfree',
 		));
 	}
 	
@@ -249,36 +258,13 @@ class OS_SunOS {
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Memory');
 		
-		// We'll return the contents of this
-		$return = array();
-
-		// Start us off at zilch
-		$return['type'] = 'Virtual';
-		$return['total'] = 0;
-		$return['free'] = 0;
-		$return['swapTotal'] = 0;
-		$return['swapFree'] = 0;
-		$return['swapInfo'] = array();
-
-		// Get swap info
-		try {
-
-			// Run it
-			$swap_res = $this->exec->exec('swap', '-s');
-
-			// Match
-			if (preg_match('/^total: \d+k bytes allocated \+ \d+k reserved = (\d+)k used, (\d+)k available$/', $swap_res, $swap_match)) {
-				$return['swapTotal'] = $swap_match[1]*1024 + $swap_match[2]*1024;
-				$return['swapFree'] = $swap_match[2]*1024;
-			}
-		}
-		catch (CallExtException $e){
-			// Couldn't get swap
-		}
-		
-
 		// Give
-		return $return;
+		return array(
+			'type' => 'Physical',
+			'total' => $this->kstat['unix:0:system_pages:pagestotal'] * $this->kstat['unix:0:seg_cache:slab_size'],
+			'free' => $this->kstat['unix:0:system_pages:pagesfree'] * $this->kstat['unix:0:seg_cache:slab_size'],
+			'swapInfo' => array()
+		);
 	}
 
 	function getProcessStats() {
@@ -307,7 +293,7 @@ class OS_SunOS {
 			$ps = $this->exec->exec('ps', '-fe -o s');
 			
 			// Go through it
-			foreach (explode("\n", $ps) as $process) {
+			foreach (explode("\n", trim($ps)) as $process) {
 
 				// Decide what this is
 				switch ($process) {

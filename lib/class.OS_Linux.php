@@ -359,7 +359,7 @@ class OS_Linux {
 		$drives = array();
 		
 		// Get actual drives
-		foreach((array)@glob('/sys/block/*/device/model') as $path) {
+		foreach((array)@glob('/sys/block/*/device/model', GLOB_NOSORT) as $path) {
 
 			// Dirname of the drive's sys entry
 			$dirname = dirname(dirname($path));
@@ -486,7 +486,7 @@ class OS_Linux {
 			$hdmon_vals = array();
 
 			// Wacky location
-			foreach ((array) @glob('/sys/class/hwmon/hwmon*/*_label') as $path) {
+			foreach ((array) @glob('/sys/class/hwmon/hwmon*/*_label', GLOB_NOSORT) as $path) {
 
 				// Get info here
 				$section = rtrim($path, 'label');
@@ -617,7 +617,7 @@ class OS_Linux {
 		$usb_dev_num = 0;
 
 		// Get all PCI ids
-		foreach ((array) @glob($sys_pci_dir.'*/uevent') as $path) {
+		foreach ((array) @glob($sys_pci_dir.'*/uevent', GLOB_NOSORT) as $path) {
 			if (preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', strtolower(getContents($path)), $match) == 1) {
 				$pci_dev_id[$match[1]][$match[2]] = 1;
 				$pci_dev_num++;
@@ -625,7 +625,7 @@ class OS_Linux {
 		}
 
 		// Get all USB ids
-		foreach ((array) @glob($sys_usb_dir.'*/uevent') as $path) {
+		foreach ((array) @glob($sys_usb_dir.'*/uevent', GLOB_NOSORT) as $path) {
 			if (preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', strtolower(getContents($path)), $match) == 1) {
 				$usb_dev_id[str_pad($match[1], 4, '0', STR_PAD_LEFT)][str_pad($match[2], 4, '0', STR_PAD_LEFT)] = 1;
 				$usb_dev_num++;
@@ -812,7 +812,7 @@ class OS_Linux {
 		$return = array();
 
 		// Use glob to get paths
-		$nets = (array) @glob('/sys/class/net/*');
+		$nets = (array) @glob('/sys/class/net/*', GLOB_NOSORT);
 
 		// Get values for each device
 		foreach ($nets as $v) {
@@ -873,7 +873,7 @@ class OS_Linux {
 		$return = array();
 
 		// Here they should be
-		$bats = (array) @glob('/sys/class/power_supply/BAT*');
+		$bats = (array) @glob('/sys/class/power_supply/BAT*', GLOB_NOSORT);
 	
 		// Get vals for each battery
 		foreach ($bats as $b) {
@@ -1000,7 +1000,7 @@ class OS_Linux {
 		);
 		
 		// Get all the paths to each process' status file
-		$processes = (array) @glob('/proc/*/status');
+		$processes = (array) @glob('/proc/*/status', GLOB_NOSORT);
 
 		// Total
 		$result['proc_total'] = count($processes);
