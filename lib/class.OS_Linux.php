@@ -599,12 +599,16 @@ class OS_Linux {
 		// Location of useful paths
 		$pci_ids = locate_actual_path(array(
 			'/usr/share/misc/pci.ids',	// debian/ubuntu
-			'/usr/share/pci.ids'		// opensuse
+			'/usr/share/pci.ids',		// opensuse
+			'/usr/share/hwdata/pci.ids',	// centos. maybe also redhat/fedora
 		));
 		$usb_ids = locate_actual_path(array(
 			'/usr/share/misc/usb.ids',	// debian/ubuntu
-			'/usr/share/usb.ids'		// opensuse
+			'/usr/share/usb.ids',		// opensuse
+			'/usr/share/hwdata/usb.ids',	// centos. maybe also redhat/fedora
 		));
+
+		// /sys and /proc are identical across distros
 		$sys_pci_dir = '/sys/bus/pci/devices/';
 		$sys_usb_dir = '/sys/bus/usb/devices/';
 
