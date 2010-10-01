@@ -622,9 +622,24 @@ class OS_Linux {
 
 		// Get all PCI ids
 		foreach ((array) @glob($sys_pci_dir.'*/uevent', GLOB_NOSORT) as $path) {
-			if (preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', strtolower(getContents($path)), $match) == 1) {
+
+			// Usually fetch vendor/device id out of uevent
+			if (is_readable($path) && preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', strtolower(getContents($path)), $match) == 1) {
 				$pci_dev_id[$match[1]][$match[2]] = 1;
 				$pci_dev_num++;
+			}
+
+			// I think only centos forbids read access to uevent and has this instead:
+			else {
+				$path = dirname($path);
+				$vendor = getContents($path.'/subsystem_vendor', false);
+				$device = getContents($path.'/subsystem_device', false);
+				if ($vendor !== false && $device !== false) {
+					$vendor = str_pad(strtoupper(substr($vendor, 2)), 4, '0', STR_PAD_LEFT);
+					$device = str_pad(strtoupper(substr($device, 2)), 4, '0', STR_PAD_LEFT);
+					$pci_dev_id[$vendor][$device] = 1;
+					$pci_dev_num++;
+				}
 			}
 		}
 
@@ -823,7 +838,7 @@ class OS_Linux {
 
 			// States
 			$operstate_contents = getContents($v.'/operstate');
-			switch ($operstate_contents) {
+			switch (operstate_contents) {
 				case 'down':
 				case 'up':
 				case 'unknown':
