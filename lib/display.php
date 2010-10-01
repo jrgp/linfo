@@ -432,12 +432,22 @@ echo '
 			echo '<tr><td colspan="7" class="none">None found</td></tr>';
 
 		// Show totals and finish table
+		$total_used_perc = $total_size > 0 && $total_used > 0 ?  round($total_used / $total_size, 2) * 100 : 0;
 		echo '
 		<tr class="alt">
 			<td colspan="3">Totals: </td>
 			<td>'.byte_convert($total_size).'</td>
 			<td>'.byte_convert($total_used).'</td>
-			<td colspan="2">'.byte_convert($total_free).'</td>
+			<td>'.byte_convert($total_free).'</td>
+			<td>
+				<div class="bar_chart">
+					<div class="bar_inner" style="width: '.$total_used_perc.'%;">
+						<div class="bar_text">
+							'.$total_used_perc.'%
+						</div>
+					</div>
+				</div>
+			</td>
 		</tr>
 	</table>
 </div>';
