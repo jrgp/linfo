@@ -90,11 +90,10 @@ function showInfo($info, $settings) {
 			// Show
 			$core_num = count($core);
 			for ($i = 0; $i < $core_num; $i++) {
-				$coreInfo = $core[$i];
 				echo '
 				<tr>
-					<th>'.$coreInfo[0].'</th>
-					<td>'.$coreInfo[1].'</td>
+					<th>'.$core[$i][0].'</th>
+					<td>'.$core[$i][1].'</td>
 				</tr>
 				';
 			}
@@ -275,12 +274,11 @@ function showInfo($info, $settings) {
 			$num_devs = count($info['Devices']);
 			if ($num_devs > 0) {
 				for ($i = 0; $i < $num_devs; $i++) {
-					$device = $info['Devices'][$i];
 					echo '
 						<tr>
-							<td class="center">'.$device['type'].'</td>
-							<td>',$device['vendor'] ? $device['vendor'] : 'Unknown' ,'</td>
-							<td>'.$device['device'].'</td>
+							<td class="center">'.$info['Devices'][$i]['type'].'</td>
+							<td>',$info['Devices'][$i]['vendor'] ? $info['Devices'][$i]['vendor'] : 'Unknown' ,'</td>
+							<td>'.$info['Devices'][$i]['device'].'</td>
 						</tr>';
 				}
 			}
@@ -386,7 +384,7 @@ echo '
 		$total_used = 0;
 		$total_free = 0;
 		
-		// Don't add totals for duplicates
+		// Don't add totals for duplicates. (same filesystem mount twice in different places)
 		$done_devices = array();
 		
 		// Are there any?

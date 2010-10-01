@@ -227,18 +227,15 @@ class OS_Linux {
 		$num_lines = count($lines);
 		for ($i = 0; $i < $num_lines; $i++) {
 			
-			// Line
-			$line = $lines[$i];
-
 			// Approaching new CPU? Save current and start new info for this
-			if ($line == '' && count($cur_cpu) > 0) {
+			if ($lines[$i] == '' && count($cur_cpu) > 0) {
 				$cpus[] = $cur_cpu;
 				$cur_cpu = array();
 				continue;
 			}
 
 			// Info here
-			$m = explode(':', $line, 2);
+			$m = explode(':', $lines[$i], 2);
 			$m[0] = trim($m[0]);
 			$m[1] = trim($m[1]);
 
@@ -266,31 +263,28 @@ class OS_Linux {
 		$num_cpus = count($cpus);
 		for ($i = 0; $i < $num_cpus; $i++) {
 			
-			// CPU
-			$cpu = $cpus[$i];
-
 			// Save info for this one here temporarily
 			$curr = array();
 
 			// Try getting brand/vendor
-			if (array_key_exists('vendor_id', $cpu))
-				$curr['Vendor'] = $cpu['vendor_id'];
+			if (array_key_exists('vendor_id', $cpus[$i]))
+				$curr['Vendor'] = $cpus[$i]['vendor_id'];
 			else
 				$curr['Vendor'] = 'unknown';
 
 			// Speed in MHz
-			if (array_key_exists('cpu MHz', $cpu))
-				$curr['MHz'] = $cpu['cpu MHz'];
-			elseif (array_key_exists('Cpu0ClkTck', $cpu)) // Old Sun boxes
-				$curr['MHz'] = hexdec($cpu['Cpu0ClkTck']) / 1000000;
+			if (array_key_exists('cpu MHz', $cpus[$i]))
+				$curr['MHz'] = $cpus[$i]['cpu MHz'];
+			elseif (array_key_exists('Cpu0ClkTck', $cpus[$i])) // Old Sun boxes
+				$curr['MHz'] = hexdec($cpus[$i]['Cpu0ClkTck']) / 1000000;
 			else
 				$curr['MHz'] = 'unknown';
 
 			// CPU Model
-			if (array_key_exists('model name', $cpu))
-				$curr['Model'] = $cpu['model name'];
-			elseif (array_key_exists('cpu', $cpu)) // Again, old Sun boxes
-				$curr['Model'] = $cpu['cpu'];
+			if (array_key_exists('model name', $cpus[$i]))
+				$curr['Model'] = $cpus[$i]['model name'];
+			elseif (array_key_exists('cpu', $cpus[$i])) // Again, old Sun boxes
+				$curr['Model'] = $cpus[$i]['cpu'];
 			else
 				$curr['Model'] = 'unknown';
 
@@ -1067,15 +1061,12 @@ class OS_Linux {
 		// Go through each
 		for ($i = 0; $i < $result['proc_total']; $i++) {
 			
-			// Path to it
-			$status_path = $processes[$i];
-
 			// Don't waste time if we can't use it
-			if (!is_readable($status_path))
+			if (!is_readable($processes[$i]))
 				continue;
 			
 			// Get that file's contents
-			$status_contents = getContents($status_path);
+			$status_contents = getContents($processes[$i]);
 
 			// Try getting state
 			@preg_match('/^State:\s+(\w)/m', $status_contents, $state_match);
