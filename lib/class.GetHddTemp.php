@@ -77,17 +77,32 @@ class GetHddTemp {
 
 	// Parse and return info from daemon socket
 	private function parseSockData($data) {
-
+		
+		// Kill surounding ||'s and split it by pipes
 		$drives = explode('||', trim($data, '|'));
+
+		// Return oour stuff here
 		$return = array();
-		foreach ($drives as $drive) {
+
+		// Go through each
+		$num_drives = count($drives);
+		for($i = 0; $i < $num_drives; $i++) {
+
+			// This drive
+			$drive = $drives[$i];
+
+			// Extract stuff from it
 			list($path, $name, $temp, $unit) = explode('|', trim($drive));
+
 			// Ignore /dev/sg? 
 			if (!empty($this->settings['hide']['sg']) && substr($path, 0, 7) == '/dev/sg')
 				continue;
+
 			// Ignore no longer existant devices?
 			if (!file_exists($path) && is_readable('/dev'))
 				continue;
+			
+			// Save it
 			$return[] = array(
 				'path' => $path,
 				'name' => $name,
@@ -95,6 +110,8 @@ class GetHddTemp {
 				'unit' => strtoupper($unit)
 			);
 		}
+
+		// Give off results
 		return $return;
 	}
 

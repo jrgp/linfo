@@ -501,7 +501,12 @@ class OS_Linux {
 			$hdmon_vals = array();
 
 			// Wacky location
-			foreach ((array) @glob('/sys/class/hwmon/hwmon*/*_label', GLOB_NOSORT) as $path) {
+			$hwmon_paths = (array) @glob('/sys/class/hwmon/hwmon*/*_label', GLOB_NOSORT);
+			$num_paths = count($hwmon_paths);
+			for ($i = 0; $i < $num_paths; $i++) {
+
+				// The path
+				$path = $hwmon_paths[$i];
 
 				// Get info here
 				$section = rtrim($path, 'label');

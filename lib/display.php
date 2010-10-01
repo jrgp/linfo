@@ -88,13 +88,16 @@ function showInfo($info, $settings) {
 			}
 
 			// Show
-			foreach ($core as $coreInfo)
+			$core_num = count($core);
+			for ($i = 0; $i < $core_num; $i++) {
+				$coreInfo = $core[$i];
 				echo '
 				<tr>
 					<th>'.$coreInfo[0].'</th>
 					<td>'.$coreInfo[1].'</td>
 				</tr>
 				';
+			}
 
 			echo '
 			</table>
@@ -212,8 +215,10 @@ function showInfo($info, $settings) {
 			<table>
 				<tr><th>Path</th><th>Device</th><th>Value</th></tr>
 				';
-			if (count($info['Temps']) > 0)
-				foreach($info['Temps'] as $stat) {
+			$num_temps = count($info['Temps']);
+			if ($num_temps > 0) {
+					for($i = 0; $i < $num_temps; $i++) {
+					$stat = $info['Temps'][$i];
 					echo '
 					<tr>
 						<td>'.$stat['path'].'</td>
@@ -221,7 +226,8 @@ function showInfo($info, $settings) {
 						<td>'.$stat['temp'].' '.$stat['unit'].'</td>
 					</tr>
 					';
-				}
+					}
+			}
 			else
 				echo '<tr><td colspan="3" class="none">None found</td></tr>';
 				echo '
@@ -266,14 +272,18 @@ function showInfo($info, $settings) {
 					<th>Device</th>
 				</tr>
 				';
-			if (count($info['Devices']) > 0)
-				foreach($info['Devices'] as $device)
+			$num_devs = count($info['Devices']);
+			if ($num_devs > 0) {
+				for ($i = 0; $i < $num_devs; $i++) {
+					$device = $info['Devices'][$i];
 					echo '
 						<tr>
 							<td class="center">'.$device['type'].'</td>
 							<td>',$device['vendor'] ? $device['vendor'] : 'Unknown' ,'</td>
 							<td>'.$device['device'].'</td>
 						</tr>';
+				}
+			}
 			else
 				echo '<tr><td colspan="3" class="none">None found</td></tr>';
 				echo '
