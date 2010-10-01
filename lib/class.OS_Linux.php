@@ -224,7 +224,11 @@ class OS_Linux {
 		$cur_cpu = array();
 
 		// Go through lines in file
-		foreach ($lines as $num => $line) {
+		$num_lines = count($lines);
+		for ($i = 0; $i < $num_lines; $i++) {
+			
+			// Line
+			$line = $lines[$i];
 
 			// Approaching new CPU? Save current and start new info for this
 			if ($line == '' && count($cur_cpu) > 0) {
@@ -259,7 +263,11 @@ class OS_Linux {
 		$return = array();
 
 		// See if we have what we want
-		foreach($cpus as $cpu) {
+		$num_cpus = count($cpus);
+		for ($i = 0; $i < $num_cpus; $i++) {
+			
+			// CPU
+			$cpu = $cpus[$i];
 
 			// Save info for this one here temporarily
 			$curr = array();
@@ -347,19 +355,26 @@ class OS_Linux {
 		$partitions_contents = getContents('/proc/partitions');
 		if (@preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, PREG_SET_ORDER) > 0) {
 			// Go through each match
-			foreach($partitions_match as $partition)
-				// And save each partition, using the drive path as a key
+			$num_partitions = count($partitions_match);
+			for ($i = 0; $i < $num_partitions; $i++) {
+				$partition = $partitions_match[$i];
 				$partitions[$partition[2]][] = array(
 					'size' => $partition[1] * 1024,
 					'number' => $partition[3]
 				);
+			}
 		}
 		
 		// Store drives here
 		$drives = array();
 		
 		// Get actual drives
-		foreach((array)@glob('/sys/block/*/device/model', GLOB_NOSORT) as $path) {
+		$drive_paths = (array) @glob('/sys/block/*/device/model', GLOB_NOSORT);
+		$num_drives = count($drive_paths);
+		for ($i = 0; $i < $num_drives; $i++) {
+			
+			// Path
+			$path = $drive_paths[$i];
 
 			// Dirname of the drive's sys entry
 			$dirname = dirname(dirname($path));
@@ -547,7 +562,11 @@ class OS_Linux {
 		$mounts = array();
 
 		// Populate
-		foreach($match as $mount) {
+		$num_matches = count($match);
+		for ($i = 0; $i < $num_matches; $i++) {
+
+			// This mount
+			$mount = $match[$i];
 			
 			// Should we not show this?
 			if (in_array($mount[1], $this->settings['hide']['storage_devices']) || in_array($mount[3], $this->settings['hide']['filesystems']))
@@ -621,7 +640,12 @@ class OS_Linux {
 		$usb_dev_num = 0;
 
 		// Get all PCI ids
-		foreach ((array) @glob($sys_pci_dir.'*/uevent', GLOB_NOSORT) as $path) {
+		$pci_paths = (array) @glob($sys_pci_dir.'*/uevent', GLOB_NOSORT);
+		$num_pci_paths = count($pci_paths);
+		for ($i = 0; $i < $num_pci_paths; $i++) {
+			
+			// This path
+			$path = $pci_paths[$i];
 
 			// Usually fetch vendor/device id out of uevent
 			if (is_readable($path) && preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', strtolower(getContents($path)), $match) == 1) {
@@ -644,7 +668,14 @@ class OS_Linux {
 		}
 
 		// Get all USB ids
-		foreach ((array) @glob($sys_usb_dir.'*/uevent', GLOB_NOSORT) as $path) {
+		$usb_paths = (array) @glob($sys_usb_dir.'*/uevent', GLOB_NOSORT);
+		$num_usb_paths = count($usb_paths);
+		for ($i = 0; $i < $num_usb_paths; $i++) {
+			
+			// This path
+			$path = $usb_paths[$i];
+
+			// See if this matches
 			if (preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', strtolower(getContents($path)), $match) == 1) {
 				$usb_dev_id[str_pad($match[1], 4, '0', STR_PAD_LEFT)][str_pad($match[2], 4, '0', STR_PAD_LEFT)] = 1;
 				$usb_dev_num++;
@@ -655,7 +686,7 @@ class OS_Linux {
 		$file = $pci_ids != false ? @fopen($pci_ids, 'rb') : false;
 		$left = $pci_dev_num;
 		if ($file !== false) {
-			while ($contents = @fgets($file)) {
+			do {
 				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
 					$cmid = trim(strtolower($match[1]));
 					$cname = trim($match[2]);
@@ -669,7 +700,7 @@ class OS_Linux {
 				// Potentially save time by not parsing the rest of the file once we have what we need
 				if ($left == 0)
 					break;
-			}
+			} while ($contents = @fgets($file));
 			@fclose($file);
 		}
 
@@ -677,7 +708,7 @@ class OS_Linux {
 		$file = $usb_ids ? @fopen($usb_ids, 'rb') : false;
 		$left = $usb_dev_num;
 		if ($file !== false) {
-			while($contents = @fgets($file)) {
+			do {
 				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
 					$cmid = trim(strtolower($match[1]));
 					$cname = trim($match[2]);
@@ -691,7 +722,7 @@ class OS_Linux {
 				// Potentially save time by not parsing the rest of the file once we have what we need
 				if ($left == 0)
 					break;
-			}
+			} while ($contents = @fgets($file));
 			@fclose($file);
 		}
 
@@ -834,10 +865,14 @@ class OS_Linux {
 		$nets = (array) @glob('/sys/class/net/*', GLOB_NOSORT);
 
 		// Get values for each device
-		foreach ($nets as $v) {
+		$num_nets = count($nets);
+		for ($i = 0; $i < $num_nets; $i++) {
+			
+			// Path
+			$path = $nets[$i];
 
 			// States
-			$operstate_contents = getContents($v.'/operstate');
+			$operstate_contents = getContents($path.'/operstate');
 			switch (operstate_contents) {
 				case 'down':
 				case 'up':
@@ -851,24 +886,24 @@ class OS_Linux {
 			}
 
 			// Type
-			$type_contents = strtoupper(getContents($v.'/device/modalias'));
+			$type_contents = strtoupper(getContents($path.'/device/modalias'));
 			list($type) = explode(':', $type_contents, 2);
 			$type = $type != 'USB' && $type != 'PCI' ? 'N/A' : $type;
 			
 
 			// Save and get info for each
-			$return[end(explode('/', $v))] = array(
+			$return[end(explode('/', $path))] = array(
 
 				// Stats are stored in simple files just containing the number
 				'recieved' => array(
-					'bytes' => get_int_from_file($v.'/statistics/rx_bytes'),
-					'errors' => get_int_from_file($v.'/statistics/rx_errors'),
-					'packets' => get_int_from_file($v.'/statistics/rx_packets')
+					'bytes' => get_int_from_file($path.'/statistics/rx_bytes'),
+					'errors' => get_int_from_file($path.'/statistics/rx_errors'),
+					'packets' => get_int_from_file($path.'/statistics/rx_packets')
 				),
 				'sent' => array(
-					'bytes' => get_int_from_file($v.'/statistics/tx_bytes'),
-					'errors' => get_int_from_file($v.'/statistics/tx_errors'),
-					'packets' => get_int_from_file($v.'/statistics/rx_packets')
+					'bytes' => get_int_from_file($path.'/statistics/tx_bytes'),
+					'errors' => get_int_from_file($path.'/statistics/tx_errors'),
+					'packets' => get_int_from_file($path.'/statistics/rx_packets')
 				),
 
 				// These were determined above
@@ -1025,7 +1060,10 @@ class OS_Linux {
 		$result['proc_total'] = count($processes);
 
 		// Go through each
-		foreach ($processes as $status_path) {
+		for ($i = 0; $i < $result['proc_total']; $i++) {
+			
+			// Path to it
+			$status_path = $processes[$i];
 
 			// Don't waste time if we can't use it
 			if (!is_readable($status_path))
