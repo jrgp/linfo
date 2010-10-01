@@ -376,6 +376,7 @@ echo '
 			<th>Size</th>
 			<th>Used</th>
 			<th>Free</th>
+			<th style="width: 12%;">Chart</th>
 		</tr>
 		';
 
@@ -406,7 +407,7 @@ echo '
 				// which is vague. If there isn't a /, add one
 				if (preg_match('/^.+:$/', $mount['device']) == 1)
 					$mount['device'] .= DIRECTORY_SEPARATOR;
-					
+
 				echo '<tr>
 					<td>'.$mount['device'].'</td>
 					<td>'.$mount['mount'].'</td>
@@ -415,11 +416,20 @@ echo '
 					<td>'.byte_convert($mount['used']).
 					' <span class="perc">('.($mount['used_percent'] !== false ? $mount['used_percent'] : 'N/A').'%)</span></td>
 					<td>'.byte_convert($mount['free']).
-					' <span class="perc">('.($mount['free_percent'] !== false ? $mount['free_percent'] : 'N/A').'%)</span></td>
+					' <span class="perc">('.($mount['free_percent'] !== false ? $mount['free_percent'] : 'N/A').'%)</span></td>	
+					<td>
+						<div class="bar_chart">
+							<div class="bar_inner" style="width: '.(int) $mount['used_percent'].'%;">
+								<div class="bar_text">
+									'.($mount['used_percent'] ? $mount['used_percent'].'%' : 'N/A').'
+								</div>
+							</div>
+						</div>
+					</td>
 				</tr>';
 			}
 		else
-			echo '<tr><td colspan="6" class="none">None found</td></tr>';
+			echo '<tr><td colspan="7" class="none">None found</td></tr>';
 
 		// Show totals and finish table
 		echo '
@@ -427,7 +437,7 @@ echo '
 			<td colspan="3">Totals: </td>
 			<td>'.byte_convert($total_size).'</td>
 			<td>'.byte_convert($total_used).'</td>
-			<td>'.byte_convert($total_free).'</td>
+			<td colspan="2">'.byte_convert($total_free).'</td>
 		</tr>
 	</table>
 </div>';
