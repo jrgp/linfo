@@ -582,6 +582,12 @@ class OS_Linux {
 			// If it's a symlink, find out where it really goes.
 			// (using realpath instead of readlink because the former gives absolute paths)
 			$symlink = is_link($mount[1]) ? realpath($mount[1]) : false;
+			
+			// Optionally get mount options
+			if ($this->settings['show']['mounts_options'] && !in_array($mount[3], (array) $this->settings['hide']['fs_mount_options'])) 
+				$mount_options = explode(',', $mount[4]);
+			else 
+				$mount_options = array();
 
 			// Might be good, go for it
 			$mounts[] = array(
@@ -592,7 +598,8 @@ class OS_Linux {
 				'used' => $used,
 				'free' => $free,
 				'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
-				'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false)
+				'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false),
+				'options' => $mount_options
 			);
 		}
 

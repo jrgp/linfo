@@ -21,6 +21,7 @@ $settings['show']['load'] = true;
 $settings['show']['ram'] = true;
 $settings['show']['hd'] = true;
 $settings['show']['mounts'] = true;
+$settings['show']['mounts_options'] = false; // Might be useless/confidential information; disabled by default.
 $settings['show']['network'] = true;
 $settings['show']['uptime'] = true;
 $settings['show']['cpu'] = true;
@@ -46,6 +47,9 @@ $settings['hide']['filesystems'] = array(
 	'tmpfs', 'ecryptfs', 'nfsd', 'rpc_pipefs',
 	'usbfs', 'devpts', 'fusectl', 'securityfs');
 $settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none');
+
+// Hide mount options for these file systems. (very, very suggested, especially the ecryptfs ones)
+$settings['hide']['fs_mount_options'] = array('ecryptfs');
 
 // Hide hard drives that begin with /dev/sg?. These are duplicates of usual ones, like /dev/sd?
 $settings['hide']['sg'] = true; # Linux only

@@ -372,7 +372,8 @@ echo '
 		<tr>
 			<th>Device</th>
 			<th>Mount Point</th>
-			<th>Filesystem</th>
+			<th>Filesystem</th>',$settings['show']['mounts_options'] ? '
+			<th>Mount Options</th>' : '','
 			<th>Size</th>
 			<th>Used</th>
 			<th>Free</th>
@@ -411,7 +412,8 @@ echo '
 				echo '<tr>
 					<td>'.$mount['device'].'</td>
 					<td>'.$mount['mount'].'</td>
-					<td>'.$mount['type'].'</td>
+					<td>'.$mount['type'].'</td>', $settings['show']['mounts_options'] ? '
+					<td>'.(empty($mount['options']) ? '<em>unknown</em>' : '<ul><li>'.implode('</li><li>', $mount['options']).'</li></ul>').'</td>' : '','
 					<td>'.byte_convert($mount['size']).'</td>
 					<td>'.byte_convert($mount['used']).
 					' <span class="perc">('.($mount['used_percent'] !== false ? $mount['used_percent'] : 'N/A').'%)</span></td>
@@ -429,13 +431,13 @@ echo '
 				</tr>';
 			}
 		else
-			echo '<tr><td colspan="7" class="none">None found</td></tr>';
+			echo '<tr><td colspan="',$settings['show']['mounts_options'] ? 7 : 8,'" class="none">None found</td></tr>';
 
 		// Show totals and finish table
 		$total_used_perc = $total_size > 0 && $total_used > 0 ?  round($total_used / $total_size, 2) * 100 : 0;
 		echo '
 		<tr class="alt">
-			<td colspan="3">Totals: </td>
+			<td colspan="',$settings['show']['mounts_options'] ? 4 : 3,'">Totals: </td>
 			<td>'.byte_convert($total_size).'</td>
 			<td>'.byte_convert($total_used).'</td>
 			<td>'.byte_convert($total_free).'</td>

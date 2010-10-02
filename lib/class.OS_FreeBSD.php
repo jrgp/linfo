@@ -111,7 +111,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 		}
 		
 		// Parse it
-		if (preg_match_all('/(.+)\s+on\s+(.+)\s+\((\w+).*\)\n/i', $res, $m, PREG_SET_ORDER) == 0)
+		if (preg_match_all('/(.+)\s+on\s+(.+)\s+\((\w+)(?:, (.+)?)\)\n/i', $res, $m, PREG_SET_ORDER) == 0)
 			return array();
 		
 		// Store them here
@@ -129,6 +129,16 @@ class OS_FreeBSD extends OS_BSD_Common{
 			$free = @disk_free_space($mount[2]);
 			$used = $size - $free;
 			
+			// Optionally get mount options
+			if (
+				$this->settings['show']['mounts_options'] &&
+				!in_array($mount[3], (array) $this->settings['hide']['fs_mount_options']) &&
+				isset($mount[4])
+			) 
+				$mount_options = explode(', ', $mount[4]);
+			else 
+				$mount_options = array();
+
 			// Might be good, go for it
 			$mounts[] = array(
 				'device' => $mount[1],
@@ -138,7 +148,8 @@ class OS_FreeBSD extends OS_BSD_Common{
 				'used' => $used,
 				'free' => $free,
 				'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
-				'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false)
+				'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false),
+				'options' => $mount_options
 			);
 		}
 
