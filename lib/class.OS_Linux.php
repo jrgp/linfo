@@ -879,7 +879,7 @@ class OS_Linux {
 
 			// States
 			$operstate_contents = getContents($path.'/operstate');
-			switch (operstate_contents) {
+			switch ($operstate_contents) {
 				case 'down':
 				case 'up':
 				case 'unknown':
