@@ -811,7 +811,7 @@ class OS_Linux {
 					'status' => $array[2],
 					'level' => $array[3],
 					'drives' => $drives,
-					'blocks' =>  $array[5],
+					'size' =>  byte_convert($array[5]*1024),
 					'algorithm' => $array[6],
 					'count' => $array[7],
 					'chart' => $array[8]

@@ -289,7 +289,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 							'level' => $m[1],
 							'status' => $m[3],
 							'drives' => array($m[4]),
-							'blocks' => 'unknown',
+							'size' => 'unknown',
 							'count' => '?/?'
 						);
 					}

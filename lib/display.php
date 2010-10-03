@@ -473,7 +473,7 @@ echo '
 			<th>Name</th>
 			<th>Level</th>
 			<th>Status</th>
-			<th>Blocks</th>
+			<th>Size</th>
 			<th>Devices</th>
 			<th>Active</th>
 		</tr>
@@ -502,7 +502,7 @@ echo '
 				<td>'.$raid['device'].'</td>
 				<td>'.$raid['level'].($type ? ' <span class="caption">('.$type.')</span>' : '').'</td>
 				<td>'.ucfirst($raid['status']).'</td>
-				<td>'.$raid['blocks'].'</td>
+				<td>'.$raid['size'].'</td>
 				<td><table class="mini center margin_auto"><tr><th>Device</th><th>State</th></tr>';
 				
 				foreach ($raid['drives'] as $drive)
