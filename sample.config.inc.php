@@ -45,7 +45,7 @@ $settings['show']['wifi'] = false; # Not finished
 // Hide certain file systems / devices
 $settings['hide']['filesystems'] = array(
 	'tmpfs', 'ecryptfs', 'nfsd', 'rpc_pipefs',
-	'usbfs', 'devpts', 'fusectl', 'securityfs');
+	'usbfs', 'devpts', 'fusectl', 'securityfs', 'fuse.truecrypt');
 $settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none');
 
 // Hide mount options for these file systems. (very, very suggested, especially the ecryptfs ones)
