@@ -61,7 +61,8 @@ Known issues:
  - Getting Linux device names is slow on old systems
  - Getting Linux device names does not work on all distros [yet]
  - Linux Wifi is not finished
- - OSX/Win/OtherBSD support does not yet exist
+ - Windows support does not yet exist and I'm not sure how much I care.
+   This is primarily a Unix script
 
 Linux system temps/voltages/etc requirments:
  - Have hddtemp listening or periodically writing to syslog, and/or
@@ -69,6 +70,10 @@ Linux system temps/voltages/etc requirments:
  - Have sensord periodically writing to syslog and/or
  - Have hwmon set up in /sys. This is enabled by default and works by default 
    at least on recent ubuntu versions
+
+Reach me by:
+ - joe@u13.net
+ - IRC - jrgp @ freenode
 
 License: GNU General Public License
 Author/copyright holder: Joseph Robert Gillotti <joe@u13.net>

@@ -80,4 +80,4 @@ else
 	// Otherwise, extremely minimal html 
 	showInfo($info, $settings);
 
-// That should be it
+// "This is where it ends, Commander"
