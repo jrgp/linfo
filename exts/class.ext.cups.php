@@ -68,13 +68,13 @@ class ext_cups {
 			elseif (preg_match('/^Rank\s+Owner\s+Job\s+File\(s\)\s+Total Size$/', $lines[$i])) {
 				$begin_queue_list = true;
 			}
-			elseif ($begin_queue_list && preg_match('/^([a-z0-9]+)\s(\S+)\s+(\d+)\s+(.+)\s+(\d+) bytes$/', $lines[$i], $queue_match)) {
+			elseif ($begin_queue_list && preg_match('/^([a-z0-9]+)\s+(\S+)\s+(\d+)\s+(.+)\s+(\d+) bytes$/', $lines[$i], $queue_match)) {
 				$queue[] = array(
 					'rank' => $queue_match[1],
 					'owner' => $queue_match[2],
-					'job' => $queue_match[2],
-					'files' => $queue_match[3],
-					'size' => $queue_match[4]
+					'job' => $queue_match[3],
+					'files' => $queue_match[4],
+					'size' => byte_convert($queue_match[5])
 				);
 			}
 		}
@@ -102,33 +102,67 @@ class ext_cups {
 			$rows[] = array (
 				'type' => 'header',
 				'values' => array(
-					array(2, 'Printers')
+					array(5, 'Printers')
 				)
 			);
 			$rows[] = array (
 				'type' => 'header',
-				'values' => array(
+				'columns' => array(
 					'Name',
-					'Status'
+					array(4, 'Status')
 				)
 			);
 			
 			// show printers if we have them
 			if (count($this->_res['printers']) == 0)
-				$rows[] = array('type' => 'values', 'columns' => array(2, 'None found'));
+				$rows[] = array('type' => 'values', 'columns' => array(array(5, 'None found')));
 			else {
 				foreach ($this->_res['printers'] as $printer)
 					$rows[] = array(
 						'type' => 'values',
 						'columns' => array(
 							$printer['name'],
-							$printer['status']
+							array(4, $printer['status'])
 						)
 					);
 			}
 
 			// show printer qeue list
-			// ...
+			$rows[] = array(
+				'type' => 'header',
+				'columns' => array(
+					array(5, 'Queue')
+				)
+			);
+			
+			$rows[] = array (
+				'type' => 'header',
+				'columns' => array(
+					'Rank',
+					'Owner',
+					'Job',
+					'files',
+					'size',
+				)
+			);
+
+			if (count($this->_res['queue']) == 0)
+				$rows[] = array('type' => 'values', 'columns' => array(array(5, 'Empty')));
+			else {
+				foreach ($this->_res['queue'] as $job)
+					$rows[] = array(
+						'type' => 'values',
+						'columns' => array(
+							$job['rank'],
+							$job['owner'],
+							$job['job'],
+							$job['files'],
+							$job['size'],	
+						)
+					);
+			}
+
+
 
 			// give info
 			return array(
