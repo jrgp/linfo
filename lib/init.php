@@ -81,15 +81,37 @@ function parseSystem($type, $settings) {
 
 // Deal with extra extensions
 function runExtensions(&$info, $settings) {
+
+	// Info array is passed by reference so we can edit it directly
 	$info['extensions'] = array();
+
+	// Go through each enabled extension
 	foreach((array)$settings['extensions'] as $ext => $enabled) {
-		if (!empty($enabled)) {
-			$class = 'ext_'.$ext;
-			if (file_exists(LOCAL_PATH . 'exts/class.ext.'.$ext.'.php'))
-				require_once LOCAL_PATH . 'exts/class.ext.'.$ext.'.php';
-			$ext_class = new $class();
-			$ext_class->work();
-			$info['extensions'][$ext] = $ext_class->result();
-		}
+
+		// Is it really enabled?
+		if (empty($enabled)) 
+			continue;
+
+		// Does the file exist? load it then
+		if (file_exists(LOCAL_PATH . 'exts/class.ext.'.$ext.'.php'))
+			require_once LOCAL_PATH . 'exts/class.ext.'.$ext.'.php';
+		else
+			continue;
+		
+		// Name of its class
+		$class = 'ext_'.$ext;
+
+		// Load it
+		$ext_class = new $class();
+
+		// Deal with it
+		$ext_class->work();
+
+		// Result
+		$result = $ext_class->result();
+
+		// Save result if it's good
+		if ($result != false)
+			$info['extensions'][$ext] = $result;
 	}
 }

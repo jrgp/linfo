@@ -27,11 +27,13 @@ defined('IN_INFO') or exit;
  */
 class ext_cups {
 
+	// Store these tucked away here
 	private
 		$_CallExt,
 		$_LinfoError,
 		$_res;
 
+	// Localize important classes
 	public function __construct() {
 		$this->_LinfoError = LinfoError::Fledging();
 		$this->_CallExt = new CallExt;
@@ -40,34 +42,56 @@ class ext_cups {
 
 	// call lpq and parse it
 	private function _call() {
+		
+		// Time this
+		$t = new LinfoTimerStart('CUPS extension');
+
+		// Deal with calling it
 		try {
 			$result = $this->_CallExt->exec('lpq');
 		}
 		catch (CallExtException $e) {
-			// fucked up somehow
+			// messed up somehow
 			$this->_LinfoError->add('CUPS Extension', $e->getMessage());
 			$this->_res = false;
+
+			// Don't bother going any further
 			return false;
 		}
 
+		// Split it into lines
 		$lines = explode("\n", $result);
+
+		// Hold temporarily values here
 		$printers = array();
 		$queue = array();
 		$begin_queue_list = false;
+
+		// Go through it line by line
 		for ($i = 0, $num = count($lines); $i < $num; $i++) {
+
+			// So regexes don't break on endlines
 			$lines[$i] = trim($lines[$i]);
+
+			// If there are no entries, don't waste time and end here
 			if ($lines[$i] == 'no entries') {
 				break;	
 			}
+
+			// A printer entry
 			elseif (preg_match('/^(.+)+ is (ready|ready and printing|not ready)$/', $lines[$i], $printers_match) == 1) {
 				$printers[] = array(
 					'name' => str_replace('_', ' ', $printers_match[1]),
 					'status' => $printers_match[2]
 				);
 			}
+
+			// The beginning of the queue list
 			elseif (preg_match('/^Rank\s+Owner\s+Job\s+File\(s\)\s+Total Size$/', $lines[$i])) {
 				$begin_queue_list = true;
 			}
+
+			// A job in the queue
 			elseif ($begin_queue_list && preg_match('/^([a-z0-9]+)\s+(\S+)\s+(\d+)\s+(.+)\s+(\d+) bytes$/', $lines[$i], $queue_match)) {
 				$queue[] = array(
 					'rank' => $queue_match[1],
@@ -79,23 +103,32 @@ class ext_cups {
 			}
 		}
 		
+		// Save result lset
 		$this->_res = array(
 			'printers' => $printers,
 			'queue' => $queue
 		);
 
+		// Apparent success
 		return true;
 	}
 
+	// Called to get working
 	public function work() {
 		$this->_call();
 	}
 
+	// Get result. Essentially take results and make it usable by the create_table function
 	public function result() {
+
+		// Don't bother if it didn't go well
 		if ($this->_res == false)
 			return false;
+
+		// it did; continue
 		else {
 
+			// Store rows here
 			$rows = array();
 
 			// start off printers list
@@ -127,7 +160,7 @@ class ext_cups {
 					);
 			}
 
-			// show printer qeue list
+			// show printer queue list
 			$rows[] = array(
 				'type' => 'header',
 				'columns' => array(
@@ -146,6 +179,7 @@ class ext_cups {
 				)
 			);
 
+			// Go through each item in the lsit
 			if (count($this->_res['queue']) == 0)
 				$rows[] = array('type' => 'values', 'columns' => array(array(5, 'Empty')));
 			else {

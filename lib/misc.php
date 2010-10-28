@@ -119,6 +119,8 @@ function getLines($file) {
 
 // Create a table out of an array. Mostly used by extensions
 /*
+	Example array structure:
+
 	$structure = array(
 		'root_title' => 'Name',
 		'rows' => array(
@@ -142,29 +144,51 @@ function getLines($file) {
 	);
 */
 function create_table($structure) {
-	$html = '
-		<div class="infoTable">
-		<h2>'.$structure['root_title'].'</h2>
-		<table>
-	';
 
+	// Start it off
+	$html = '
+<div class="infoTable">
+	<h2>'.$structure['root_title'].'</h2>
+	<table>';
+	
+	// Go throuch each row
 	foreach ($structure['rows'] as $row) {
+
+		// Ignore this if it's empty
 		if (empty($row['columns']))
 			continue;
-		$html .= '<tr>';
+
+		// Start the typical tr
+		$html .= '
+		<tr>';
+
+		// Is this row a header? 
 		if ($row['type'] == 'header') {
 			foreach ($row['columns'] as $v)
-				$html .= is_array($v) ? '<th colspan="'.$v[0].'">'.$v[1].'</th>' : '<th>'.$v.'</th>';
+				$html .= is_array($v) ? '
+			<th colspan="'.$v[0].'">'.$v[1].'</th>' : '
+			<th>'.$v.'</th>';
 		}
+
+		// Or is it values?
 		elseif ($row['type'] == 'values') {
 			foreach ($row['columns'] as $v)
-				$html .= is_array($v) ? '<td colspan="'.$v[0].'">'.$v[1].'</td>' : '<td>'.$v.'</td>';
+				$html .= is_array($v) ? '
+			<td colspan="'.$v[0].'">'.$v[1].'</td>' : '
+			<td>'.$v.'</td>';
 
 		}
-		$html .= '</tr>';
+
+		// End the usual tr
+		$html .= '
+		</tr>';
 	}
+	
+	// Closing tags
+	$html .= '
+	</table>
+</div>';
 
-	$html .= '</table></div>';
-
+	// Give it
 	return $html;
 }
