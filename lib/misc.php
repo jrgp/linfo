@@ -149,6 +149,8 @@ function create_table($structure) {
 	';
 
 	foreach ($structure['rows'] as $row) {
+		if (empty($row['columns']))
+			continue;
 		$html .= '<tr>';
 		if ($row['type'] == 'header') {
 			foreach ($row['columns'] as $v)
@@ -162,7 +164,7 @@ function create_table($structure) {
 		$html .= '</tr>';
 	}
 
-	$html .= '</table>';
+	$html .= '</table></div>';
 
 	return $html;
 }

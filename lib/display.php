@@ -551,7 +551,7 @@ if (!empty($settings['show_errors']) && LinfoError::Fledging()->num() > 0) {
 // Additional extensions
 if (count($info['extensions']) > 0) {
 	foreach ($info['extensions'] as $ext)
-		if (is_array($ext))
+		if (is_array($ext) && count($ext) > 0)
 			echo create_table($ext);
 }
 
