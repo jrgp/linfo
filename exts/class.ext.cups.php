@@ -38,11 +38,13 @@ class ext_cups {
 		$this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
 	}
 
+	// call lpq and parse it
 	private function _call() {
 		try {
 			$result = $this->_CallExt->exec('lpq');
 		}
 		catch (CallExtException $e) {
+			// fucked up somehow
 			$this->_LinfoError->add('CUPS Extension', $e->getMessage());
 			$this->_res = false;
 			return false;
@@ -95,6 +97,8 @@ class ext_cups {
 		else {
 
 			$rows = array();
+
+			// start off printers list
 			$rows[] = array (
 				'type' => 'header',
 				'values' => array(
@@ -108,7 +112,8 @@ class ext_cups {
 					'Status'
 				)
 			);
-
+			
+			// show printers if we have them
 			if (count($this->_res['printers']) == 0)
 				$rows[] = array('type' => 'values', 'columns' => array(2, 'None found'));
 			else {
@@ -122,6 +127,10 @@ class ext_cups {
 					);
 			}
 
+			// show printer qeue list
+			// ...
+
+			// give info
 			return array(
 				'root_title' => 'CUPS Printer Status',
 				'rows' => $rows
