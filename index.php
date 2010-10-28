@@ -59,6 +59,7 @@ require_once LOCAL_PATH . 'lib/init.php';
 require_once LOCAL_PATH . 'lib/misc.php';
 require_once LOCAL_PATH . 'lib/display.php';
 require_once LOCAL_PATH . 'lib/class.LinfoTimer.php';
+require_once LOCAL_PATH . 'lib/interface.LinfoExtension.php';
 
 // Determine our OS
 $os = determineOS();
@@ -70,6 +71,9 @@ if ($os == false)
 // Get info
 $getter = parseSystem($os, $settings);
 $info = $getter->getAll();
+
+// Extensions
+runExtensions($info, $settings);
 
 // Show
 if (array_key_exists('json', $_GET))

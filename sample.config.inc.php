@@ -78,6 +78,15 @@ $settings['mbmon']['address'] = array( // Address/Port of mbmon daemon to connec
 );
 
 /*
+ * Extra extensions which extend the Linfo core, as described above
+ * On Linux systems, these do indeed work by calling external programs, 
+ * and as such are disabled by default as they may be a security risk if
+ * said external programs become compromised
+ * Enable at your own risk. 
+ */
+$settings['extensions']['cups'] = false; # Parse output of 'lpq' to get printers and current CUPS jobs and their stauses
+
+/*
  * Debugging settings
  */
 

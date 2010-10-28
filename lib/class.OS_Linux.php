@@ -693,6 +693,8 @@ class OS_Linux {
 		$left = $pci_dev_num;
 		if ($file !== false) {
 			do {
+				if (!isset($contents))
+					continue;
 				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
 					$cmid = trim(strtolower($match[1]));
 					$cname = trim($match[2]);
@@ -715,6 +717,8 @@ class OS_Linux {
 		$left = $usb_dev_num;
 		if ($file !== false) {
 			do {
+				if (!isset($contents))
+					continue;
 				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
 					$cmid = trim(strtolower($match[1]));
 					$cname = trim($match[2]);

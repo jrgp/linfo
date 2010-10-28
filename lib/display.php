@@ -548,6 +548,13 @@ if (!empty($settings['show_errors']) && LinfoError::Fledging()->num() > 0) {
 	';
 }
 
+// Additional extensions
+if (count($info['extensions']) > 0) {
+	foreach ($info['extensions'] as $ext)
+		if (is_array($ext))
+			echo create_table($ext);
+}
+
 // Feel like showing timed results?
 if (!empty($settings['timer'])) {
 	echo '

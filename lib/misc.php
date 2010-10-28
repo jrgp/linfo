@@ -116,3 +116,53 @@ function getLines($file) {
 	else
 		return $lines;
 }
+
+// Create a table out of an array. Mostly used by extensions
+/*
+	$structure = array(
+		'root_title' => 'Name',
+		'rows' => array(
+			01 = array(
+				'type' => 'header',
+				'columns' => array(
+					'Column 1',
+					'Column 2',
+					// OR array(colspannumber, 'value')
+				)
+			)
+			02 => array(
+				'type' => 'values',
+				'columns' => array(
+					'Value 1',
+					'Value 2',
+					// OR array(colspannumber, 'value')
+				)
+			)
+		)
+	);
+*/
+function create_table($structure) {
+	$html = '
+		<div class="infoTable">
+		<h2>'.$structure['root_title'].'</h2>
+		<table>
+	';
+
+	foreach ($structure['rows'] as $row) {
+		$html .= '<tr>';
+		if ($row['type'] == 'header') {
+			foreach ($row['columns'] as $v)
+				$html .= is_array($v) ? '<th colspan="'.$v[0].'">'.$v[1].'</th>' : '<th>'.$v.'</th>';
+		}
+		elseif ($row['type'] == 'values') {
+			foreach ($row['columns'] as $v)
+				$html .= is_array($v) ? '<td colspan="'.$v[0].'">'.$v[1].'</td>' : '<td>'.$v.'</td>';
+
+		}
+		$html .= '</tr>';
+	}
+
+	$html .= '</table>';
+
+	return $html;
+}

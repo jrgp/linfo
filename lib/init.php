@@ -78,3 +78,18 @@ function parseSystem($type, $settings) {
 
 	return $info;
 }
+
+// Deal with extra extensions
+function runExtensions(&$info, $settings) {
+	$info['extensions'] = array();
+	foreach((array)$settings['extensions'] as $ext => $enabled) {
+		if (!empty($enabled)) {
+			$class = 'ext_'.$ext;
+			if (file_exists(LOCAL_PATH . 'exts/class.ext.'.$ext.'.php'))
+				require_once LOCAL_PATH . 'exts/class.ext.'.$ext.'.php';
+			$ext_class = new $class();
+			$ext_class->work();
+			$info['extensions'][$ext] = $ext_class->result();
+		}
+	}
+}
