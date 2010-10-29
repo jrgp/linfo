@@ -23,7 +23,7 @@ define('TIME_START', microtime(true));
 
 // Version
 define('AppName', 'Linfo');
-define('VERSION', sprintf('%s %s', AppName, '(svn - $Revision$)'));
+define('VERSION', sprintf('%s %s', AppName, '$Revision$)'));
 
 // Anti hack, as in allow included files to ensure they were included
 define('IN_INFO', true);
