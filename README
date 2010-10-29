@@ -71,7 +71,10 @@ Linux system temps/voltages/etc requirments:
  - Have hwmon set up in /sys. This is enabled by default and works by default 
    at least on recent ubuntu versions
 
-Reach me by:
+Experimental new features/extensions:
+ - CUPS parsing. 
+
+Please send suggestions, help requests, comments, complaints, beer, pizza, and hookers to:
  - joe@u13.net
  - IRC - jrgp @ freenode
 
