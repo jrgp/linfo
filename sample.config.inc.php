@@ -85,6 +85,7 @@ $settings['mbmon']['address'] = array( // Address/Port of mbmon daemon to connec
  * Enable at your own risk. 
  */
 $settings['extensions']['cups'] = false; # Parse output of 'lpq' to get printers and current CUPS jobs and their stauses
+$settings['extensions']['smb'] = false; # Parse output of 'smbstatus' to get current samba connections
 
 /*
  * Debugging settings

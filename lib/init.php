@@ -93,11 +93,15 @@ function runExtensions(&$info, $settings) {
 			continue;
 
 		// Does the file exist? load it then
-		if (file_exists(LOCAL_PATH . 'exts/class.ext.'.$ext.'.php'))
-			require_once LOCAL_PATH . 'exts/class.ext.'.$ext.'.php';
-		else
+		if (file_exists(LOCAL_PATH . 'lib/class.ext.'.$ext.'.php'))
+			require_once LOCAL_PATH . 'lib/class.ext.'.$ext.'.php';
+		else {
+			
+			// Issue an error and skip this thing otheriwse
+			LinfoError::Fledging()->add('Extension Loader', 'Cannot find file for "'.$ext.'" extension.');
 			continue;
-		
+		}
+
 		// Name of its class
 		$class = 'ext_'.$ext;
 
