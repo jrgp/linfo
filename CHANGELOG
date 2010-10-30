@@ -14,3 +14,9 @@ v1.3 - 10/27/2010
  - Various other OS support
  - Various improvements
  - Various new features
+
+v1.4 - 10/20/2010
+ - MAC netstat parsing fix
+ - Experimental cups/samba status parsing
+ - New colorscheme
+ - Various improvements
