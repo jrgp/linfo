@@ -377,7 +377,7 @@ echo '
 			<th>Size</th>
 			<th>Used</th>
 			<th>Free</th>
-			<th style="width: 12%;">Percent Free</th>
+			<th style="width: 12%;">Percent Used</th>
 		</tr>
 		';
 
