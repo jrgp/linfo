@@ -170,7 +170,7 @@ function create_table($structure) {
 			<th>'.$v.'</th>';
 		}
 
-		// Or is it values?
+		// Or is it a row saying nothing was found?
 		elseif ($row['type'] == 'none') {
 			foreach ($row['columns'] as $v)
 				$html .= is_array($v) ? '
