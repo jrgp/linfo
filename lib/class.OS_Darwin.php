@@ -39,7 +39,7 @@ class OS_Darwin extends OS_BSD_Common{
 	// Start us off
 	public function __construct($settings) {
 
-		// Initiate parent
+		// Instantiate parent
 		parent::__construct($settings);
 
 		// We search these folders for our commands
@@ -86,7 +86,7 @@ class OS_Darwin extends OS_BSD_Common{
 		return 'Darwin (Mac OS X)';
 	}
 
-	// kernel version
+	// Kernel version
 	public function getKernel() {
 		return php_uname('r');
 	}
