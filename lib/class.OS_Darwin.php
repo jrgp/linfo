@@ -167,8 +167,27 @@ class OS_Darwin extends OS_BSD_Common{
 		}
 		
 		// Initially get interfaces themselves along with numerical stats
+		//
+		// Example output:
+		// Name  Mtu   Network       Address            Ipkts Ierrs     Ibytes    Opkts Oerrs     Obytes  Coll Drop
+		// lo0   16384 <Link#1>                          1945     0     429565     1945     0     429565     0 
+		// en0   1500  <Link#4>    58:b0:35:f9:fd:2b        0     0          0        0     0      59166     0 
+		// fw0   4078  <Link#6>    d8:30:62:ff:fe:f5:c8:9c        0     0          0        0     0        346     0 
 		if (preg_match_all(
-			'/^([a-z0-9*]+)\s*\w+\s+<Link\#\w+>(?:\D+|\s+\w+:\w+:\w+:\w+:\w+:\w+\s+)(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s*/m', $netstat, $netstat_match, PREG_SET_ORDER) == 0)
+			'/^
+			([a-z0-9*]+)\s*  # Name
+			\w+\s+           # Mtu
+			<Link\#\w+>      # Network
+			(?:\D+|\s+\w+:\w+:\w+:\w+:\w+:\w+\s+)  # MAC address
+			(\w+)\s+  # Ipkts
+			(\w+)\s+  # Ierrs
+			(\w+)\s+  # Ibytes
+			(\w+)\s+  # Opkts
+			(\w+)\s+  # Oerrs
+			(\w+)\s+  # Obytes
+			(\w+)\s+  # Coll
+			(\w+)?\s*  # Drop
+			$/mx', $netstat, $netstat_match, PREG_SET_ORDER) == 0)
 			return $return;
 
 
