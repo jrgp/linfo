@@ -171,6 +171,15 @@ function create_table($structure) {
 		}
 
 		// Or is it values?
+		elseif ($row['type'] == 'none') {
+			foreach ($row['columns'] as $v)
+				$html .= is_array($v) ? '
+			<td colspan="'.$v[0].'" class="none">'.$v[1].'</td>' : '
+			<td class="none">'.$v.'</td>';
+
+		}
+
+		// Or is it values?
 		elseif ($row['type'] == 'values') {
 			foreach ($row['columns'] as $v)
 				$html .= is_array($v) ? '

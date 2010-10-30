@@ -183,7 +183,7 @@ class ext_smb {
 			}
 			else {
 				$rows[] = array(
-					'type' => 'values',
+					'type' => 'none',
 					'columns' => array(
 						array(5, 'None found')
 					)
@@ -221,7 +221,7 @@ class ext_smb {
 			}
 			else {
 				$rows[] = array(
-					'type' => 'values',
+					'type' => 'none',
 					'columns' => array(
 						array(5, 'None found')
 					)
@@ -285,7 +285,7 @@ class ext_smb {
 			}
 			else {
 				$rows[] = array(
-					'type' => 'values',
+					'type' => 'none',
 					'columns' => array(
 						array(5, 'None found')
 					)

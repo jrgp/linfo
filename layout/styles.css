@@ -1,19 +1,23 @@
-body { font-family: arial, sans-serif; background-color: #ddd; color: #000; font-size: 12px;}
+body { font-family: arial, sans-serif; background-color: #fff; color: #000; font-size: 12px;}
 a { color: #666;}
 a:hover { color: #000;}
-table { border-collapse: collapse; width: 100%;}
-table th, table td { border: 1px solid #999; padding: 2px;}
-th, .alt { background-color: #ccc;}
-.infoTable { margin-top: 5px; margin-bottom: 10px; margin-left: 5px; margin-right: 5px;}
-.infoTable h2 { background-color: #999; color: #fff; margin: 0; padding: 5px; text-shadow: #666 1px 1px 1px;}
-#foot { margin-top: 20px; margin-bottom: 20px; font-size: .8em; line-height: 1.1em;}
-h1 { font-size: 1.6em; margin: 0; padding: 5px 0px; text-indent: 20px;}
+table { border-collapse: collapse; width: 100%; }
+table th { font-weight: normal; color: #444; }
+table th, table td {
+	border-right: 1px solid #c3c3c3; border-left: 1px solid #c3c3c3;
+	border-bottom: 1px solid #c3c3c3; padding: 4px; background-color: #eee;}
+table tr th, table tr.alt td { background-color: #ddd;}
+.infoTable { margin: 5px 5px 10px 5px; }
+.infoTable h2 { color: #fff; margin: 0; padding: 5px; text-shadow: #2665a7 1px 1px 1px;
+	border: 1px solid #4a8fd6; background-color: #5c9ada; border-top-left-radius: 3px; border-top-right-radius: 3px; }
+#foot { margin: 15px 0px 20px 15px; color: #444; }
+h1 { font-size: 1.6em; margin: 0; padding: 5px 15px; }
 h2 { font-size: 1.2em; margin: 0;}
 .col2 { overflow: hidden;}
 .col2 .col { float: left; width: 50%;}
 #info .center {text-align: center;}
-td.none { text-align: center; font-size: 10px; }
-span.perc {font-size: 90%;}
+td.none { text-align: center; font-size: 12px; padding: 10px; color: #666; background-color: #f3f3f3; }
+span.perc {color: #666;}
 span.caption {font-size: 90%;}
 td ul {margin: 0; padding: 0;}
 td ul li {list-style-type: square; padding: 0; margin-left: 15px; margin-top: 0; margin-bottom: 0; margin-right: 0;}
@@ -30,6 +34,8 @@ table.mini th {background-color: inherit;}
 .net_unknown {color: purple;}
 #errorList, #timerList {font-size: 70%; margin-top: 15px; margin-bottom: 15px;}
 .bar_chart { position: relative; margin: auto;}
-.bar_inner {height: 18px; background-color: #999;}
-.bar_text {position: absolute; line-height: 18px; font-size: 12px; text-indent: 2px; text-align: center; width: 100%;}
+.bar_inner {border-radius: 2px; height: 18px; background-color: #b7cce2; }
+.bar_text { position: absolute; line-height: 18px;
+	font-size: 12px; text-indent: 2px; text-align: center; width: 100%; }
+.alt .bar_inner { background-color: #96b4d5; }
 

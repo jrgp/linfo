@@ -146,7 +146,7 @@ class ext_cups {
 			
 			// show printers if we have them
 			if (count($this->_res['printers']) == 0)
-				$rows[] = array('type' => 'values', 'columns' => array(array(5, 'None found')));
+				$rows[] = array('type' => 'none', 'columns' => array(array(5, 'None found')));
 			else {
 				foreach ($this->_res['printers'] as $printer)
 					$rows[] = array(
@@ -172,14 +172,14 @@ class ext_cups {
 					'Rank',
 					'Owner',
 					'Job',
-					'files',
-					'size',
+					'Files',
+					'Size',
 				)
 			);
 
 			// Go through each item in the lsit
 			if (count($this->_res['queue']) == 0)
-				$rows[] = array('type' => 'values', 'columns' => array(array(5, 'Empty')));
+				$rows[] = array('type' => 'none', 'columns' => array(array(5, 'Empty')));
 			else {
 				foreach ($this->_res['queue'] as $job)
 					$rows[] = array(
