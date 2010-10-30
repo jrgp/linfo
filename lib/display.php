@@ -60,7 +60,11 @@ function showInfo($info, $settings) {
 			if (!empty($settings['show']['cpu'])) {
 				$cpus = '';
 				foreach ((array) $info['CPU'] as $cpu) 
-					$cpus .= $cpu['Vendor'] . ' - ' . $cpu['Model'] . ' ('.$cpu['MHz'].' MHz)<br />';
+					$cpus .=
+						(array_key_exists('Vendor', $cpu) ? $cpu['Vendor'] . ' - ' : '') .
+						$cpu['Model'] .
+						(array_key_exists('MHz', $cpu) ? ' ('.$cpu['MHz'].' MHz)' : '') .
+						'<br />';
 				$core[] = array('CPUs ('.count($info['CPU']).')', $cpus);
 			}
 			if (!empty($settings['show']['load']))
