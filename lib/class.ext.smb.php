@@ -177,7 +177,7 @@ class ext_smb {
 						'columns' => array(
 							$conn['username'],
 							$conn['group'],
-							array(3,$conn['hostname']. ($conn['hostname'] != $conn['ip'] ? '<em> ('.$conn['ip'].'</em>':''))
+							array(3,$conn['hostname']. ($conn['hostname'] != $conn['ip'] ? ' <span class="perc">('.$conn['ip'].')</span>':''))
 						)
 					);
 			}
