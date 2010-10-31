@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
  * 
  * Linfo is free software: you can redistribute it and/or modify
@@ -15,13 +15,17 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with Linfo.  If not, see <http://www.gnu.org/licenses/>.
- * 
-*/
+ */
 
-
+/**
+ * Keep out hackers...
+ */
 defined('IN_INFO') or exit;
 
-// Set up class auto loading
+/**
+ * Set up class auto loading
+ * @param string $class the name of the class being searched fro
+ */
 function __autoload($class) {
 	
 	// Path to where it should be
@@ -39,12 +43,16 @@ function __autoload($class) {
 }
 
 
-// Exception for info classes 
+/**
+ * Exception for info classes
+ */
 class GetInfoException extends Exception{}
 
-// Determine OS. If true, returns OS name; otherwise false
+/**
+ * Determine the OS
+ * @return string|false if the OS is found, returns the name; Otherwise false
+ */
 function determineOS() {
-	
 	// This magical constant knows all
 	switch (PHP_OS) {
 
@@ -66,7 +74,12 @@ function determineOS() {
 	}
 }
 
-// Start up class based on result of above
+/**
+ * Start up class based on result of determineOS
+ * @param string $type the name of the operating system
+ * @param array $settings linfo settings
+ * @return array the system information
+ */
 function parseSystem($type, $settings) {
 	$class = 'OS_'.$type;
 	try {
@@ -79,7 +92,11 @@ function parseSystem($type, $settings) {
 	return $info;
 }
 
-// Deal with extra extensions
+/**
+ * Deal with extra extensions
+ * @param array $info the system information
+ * @param array $settings linfo settings
+ */
 function runExtensions(&$info, $settings) {
 
 	// Info array is passed by reference so we can edit it directly
