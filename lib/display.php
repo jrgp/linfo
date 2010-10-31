@@ -23,6 +23,8 @@ defined('IN_INFO') or exit;
 
 // Show it all..
 function showInfo($info, $settings) {
+
+	global $lang;
 	
 	// Start compressed output buffering
 	ob_start('ob_gzhandler');
@@ -39,24 +41,24 @@ function showInfo($info, $settings) {
 	<meta name="generator" content="'.VERSION.'" />
 </head>
 <body id="info">
-<h1>System Health: '.$info['HostName'].'</h1>
+<h1>'.sprintf($lang['header'], $info['HostName']).'</h1>
 <div class="col2">
 	<div class="col">
 		<div class="infoTable">
-			<h2>Core</h2>
+			<h2>'.$lang['core'].'</h2>
 			<table>';
 			
 			// Linfo Core. Decide what to show.
 			$core = array();
 			if (!empty($settings['show']['os']))
-				$core[] = array('OS', $info['OS']);
+				$core[] = array($lang['os'], $info['OS']);
 			if (!empty($settings['show']['kernel']))
-				$core[] = array('Kernel', $info['Kernel']);
-			$core[] = array('Accessed IP', (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
+				$core[] = array($lang['kernel'], $info['Kernel']);
+			$core[] = array($lang['accessed_ip'], (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
 			if (!empty($settings['show']['uptime']))
-				$core[] = array('Uptime', $info['UpTime']);
+				$core[] = array($lang['uptime'], $info['UpTime']);
 			if (!empty($settings['show']['hostname']))
-				$core[] = array('Hostname', $info['HostName']);
+				$core[] = array($lang['hostname'], $info['HostName']);
 			if (!empty($settings['show']['cpu'])) {
 				$cpus = '';
 				foreach ((array) $info['CPU'] as $cpu) 
@@ -68,7 +70,7 @@ function showInfo($info, $settings) {
 				$core[] = array('CPUs ('.count($info['CPU']).')', $cpus);
 			}
 			if (!empty($settings['show']['load']))
-				$core[] = array('Load', implode(' ', (array) $info['Load']));
+				$core[] = array($lang['load'], implode(' ', (array) $info['Load']));
 			
 			// We very well may not have process stats
 			if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
@@ -84,11 +86,11 @@ function showInfo($info, $settings) {
 				$proc_stats[] = 'total: ' . number_format($info['processStats']['proc_total']);
 
 				// Show them
-				$core[] = array('Processes', implode('; ', $proc_stats));
+				$core[] = array($lang['processes'], implode('; ', $proc_stats));
 
 				// We might not have threads
 				if ($info['processStats']['threads'] !== false)
-					$core[] = array('Threads', number_format($info['processStats']['threads']));
+					$core[] = array($lang['threads'], number_format($info['processStats']['threads']));
 			}
 
 			// Show
@@ -114,7 +116,7 @@ function showInfo($info, $settings) {
 			$show_detailed_swap = is_array($info['RAM']['swapInfo']) && count($info['RAM']['swapInfo']) > 0;
 		echo '
 		<div class="infoTable">
-			<h2>Memory</h2>
+			<h2>'.$lang['memory'].'</h2>
 			<table>
 				<colgroup>
 					<col style="width: 10%;" />
@@ -123,10 +125,10 @@ function showInfo($info, $settings) {
 					<col style="width: 30%;" />
 				</colgroup>
 				<tr>
-					<th>Type</th>
-					<th>Free</th>
-					<th>Used</th>
-					<th>Size</th>
+					<th>'.$lang['type'].'</th>
+					<th>'.$lang['free'].'</th>
+					<th>'.$lang['used'].'</th>
+					<th>'.$lang['size'].'</th>
 				</tr>
 				<tr>
 					<td>'.$info['RAM']['type'].'</td>
@@ -153,10 +155,10 @@ function showInfo($info, $settings) {
 								<col style="width: 25%;" />
 							</colgroup>
 							<tr>
-								<th>Device</th>
-								<th>Type</th>
-								<th>Size</th>
-								<th>Used</th>
+								<th>'.$lang['device'].'</th>
+								<th>'.$lang['type'].'</th>
+								<th>'.$lang['size'].'</th>
+								<th>'.$lang['used'].'</th>
 							</tr>';
 							foreach($info['RAM']['swapInfo'] as $swap)
 								echo '
@@ -182,14 +184,14 @@ function showInfo($info, $settings) {
 		if (!empty($settings['show']['network'])) {
 		echo '
 		<div class="infoTable">
-			<h2>Network Devices</h2>
+			<h2>'.$lang['network_devices'].'</h2>
 			<table>
 				<tr>
-					<th>Device Name</th>
-					<th>Type</th>
-					<th>Amount Sent</th>
-					<th>Amount Received</th>
-					<th>State</th>
+					<th>'.$lang['device_name'].'</th>
+					<th>'.$lang['type'].'</th>
+					<th>'.$lang['amount_sent'].'</th>
+					<th>'.$lang['amount_received'].'</th>
+					<th>'.$lang['state'].'</th>
 				</tr>
 			';
 
@@ -204,7 +206,7 @@ function showInfo($info, $settings) {
 							<td class="net_'.$stats['state'].'">'.ucfirst($stats['state']).'</td>
 						</tr>';
 			else
-				echo '<tr><td colspan="5" class="none">None found</td></tr>';
+				echo '<tr><td colspan="5" class="none">'.$lang['none_found'].'</td></tr>';
 			echo '
 			</table>
 		</div>';
@@ -214,9 +216,9 @@ function showInfo($info, $settings) {
 		if (!empty($settings['show']['temps']) && count($info['Temps']) > 0) {
 		echo '
 		<div class="infoTable">
-			<h2>Temps / Voltages</h2>
+			<h2>'.$lang['temps_voltages'].'</h2>
 			<table>
-				<tr><th>Path</th><th>Device</th><th>Value</th></tr>
+				<tr><th>'.$lang['path'].'</th><th>'.$lang['device'].'</th><th>'.$lang['value'].'</th></tr>
 				';
 			$num_temps = count($info['Temps']);
 			if ($num_temps > 0) {
@@ -232,7 +234,7 @@ function showInfo($info, $settings) {
 					}
 			}
 			else
-				echo '<tr><td colspan="3" class="none">None found</td></tr>';
+				echo '<tr><td colspan="3" class="none">'.$lang['none_found'].'</td></tr>';
 				echo '
 			</table>
 		</div>';
@@ -242,9 +244,9 @@ function showInfo($info, $settings) {
 		if (!empty($settings['show']['battery']) && count($info['Battery']) > 0) {
 		echo '
 		<div class="infoTable">
-			<h2>Batteries</h2>
+			<h2>'.$lang['batteries'].'</h2>
 			<table>
-				<tr><th>Device</th><th>State</th><th>Charge %</th></tr>
+				<tr><th>'.$lang['device'].'</th><th>'.$lang['state'].'</th><th>'.$lang['charge'].' %</th></tr>
 				';
 				foreach ($info['Battery'] as $bat) 
 					echo '
@@ -267,12 +269,12 @@ function showInfo($info, $settings) {
 		if (!empty($settings['show']['devices'])) {
 		echo '
 		<div class="infoTable">
-			<h2>Hardware</h2>
+			<h2>'.$lang['hardware'].'</h2>
 			<table>
 				<tr>
-					<th>Type</th>
-					<th>Vendor</th>
-					<th>Device</th>
+					<th>'.$lang['type'].'</th>
+					<th>'.$lang['vendor'].'</th>
+					<th>'.$lang['device'].'</th>
 				</tr>
 				';
 			$num_devs = count($info['Devices']);
@@ -287,7 +289,7 @@ function showInfo($info, $settings) {
 				}
 			}
 			else
-				echo '<tr><td colspan="3" class="none">None found</td></tr>';
+				echo '<tr><td colspan="3" class="none">'.$lang['none_found'].'</td></tr>';
 				echo '
 			</table>
 		</div>';
@@ -300,12 +302,12 @@ function showInfo($info, $settings) {
 			<h2>Drives</h2>
 			<table>
 				<tr>
-					<th>Path</th>
-					<th>Vendor</th>
-					<th>Name</th>
-					<th>Reads</th>
-					<th>Writes</th>
-					<th>Size</th>
+					<th>'.$lang['path'].'</th>
+					<th>'.$lang['vendor'].'</th>
+					<th>'.$lang['name'].'</th>
+					<th>'.$lang['reads'].'</th>
+					<th>'.$lang['writes'].'</th>
+					<th>'.$lang['size'].'</th>
 				</tr>
 				';
 			if (count($info['HD']) > 0)
@@ -313,11 +315,11 @@ function showInfo($info, $settings) {
 					echo '
 						<tr>
 							<td>'.$drive['device'].'</td>
-							<td>',$drive['vendor'] ? $drive['vendor'] : 'Unknown','</td>
+							<td>',$drive['vendor'] ? $drive['vendor'] : $lang['unknown'],'</td>
 							<td>'.$drive['name'].'</td>
-							<td>',$drive['reads'] !== false ? number_format($drive['reads']) : 'Unknown','</td>
-							<td>',$drive['writes'] !== false ? number_format($drive['writes']) : 'Unknown','</td>
-							<td>',$drive['size'] ? byte_convert($drive['size']) : 'Unknown','</td>
+							<td>',$drive['reads'] !== false ? number_format($drive['reads']) : $lang['unknown'],'</td>
+							<td>',$drive['writes'] !== false ? number_format($drive['writes']) : $lang['unknown'],'</td>
+							<td>',$drive['size'] ? byte_convert($drive['size']) : $lang['unknown'],'</td>
 						</tr>';
 
 					// If we've got partitions for this drive, show them too
@@ -338,7 +340,7 @@ function showInfo($info, $settings) {
 					}
 				}
 			else
-				echo '<tr><td colspan="6" class="none">None found</td></tr>';
+				echo '<tr><td colspan="6" class="none">'.$lang['none_found'].'</td></tr>';
 				echo '
 			</table>
 		</div>';
@@ -348,11 +350,11 @@ function showInfo($info, $settings) {
 		if (!empty($settings['show']['sound']) && count($info['SoundCards']) > 0) {
 		echo '
 		<div class="infoTable">
-			<h2>Sound Cards</h2>
+			<h2>'.$lang['sound_cards'].'</h2>
 			<table>
 				<tr>
-					<th>Number</th>
-					<th>Card</th>
+					<th>'.$lang['number'].'</th>
+					<th>'.$lang['card'].'</th>
 				</tr>';
 				foreach ($info['SoundCards'] as $card)
 					echo '<tr><td>'.$card['number'].'</td><td>'.$card['card'].'</td></tr>';
@@ -371,17 +373,17 @@ function showInfo($info, $settings) {
 if (!empty($settings['show']['mounts'])) {
 echo '
 <div class="infoTable">
-	<h2>Filesystem Mounts</h2>
+	<h2>'.$lang['filesystem_mounts'].'</h2>
 	<table>
 		<tr>
-			<th>Device</th>
-			<th>Mount Point</th>
-			<th>Filesystem</th>',$settings['show']['mounts_options'] ? '
-			<th>Mount Options</th>' : '','
-			<th>Size</th>
-			<th>Used</th>
-			<th>Free</th>
-			<th style="width: 12%;">Percent Used</th>
+			<th>'.$lang['device'].'</th>
+			<th>'.$lang['mount_point'].'</th>
+			<th>'.$lang['filesystem'].'</th>',$settings['show']['mounts_options'] ? '
+			<th>'.$lang['mount_options'].'</th>' : '','
+			<th>'.$lang['size'].'</th>
+			<th>'.$lang['used'].'</th>
+			<th>'.$lang['free'].'</th>
+			<th style="width: 12%;">'.$lang['percent_used'].'</th>
 		</tr>
 		';
 
@@ -463,7 +465,7 @@ echo '
 if (!empty($settings['show']['raid']) && count($info['Raid']) > 0) {
 echo '
 <div class="infoTable">
-	<h2>Raid Arrays</h2>
+	<h2>'.$lang['raid_arrays'].'</h2>
 	<table>
 		<colgroup>
 			<col style="width: 10%;" />
@@ -474,12 +476,12 @@ echo '
 			<col style="width: 10%;" />
 		</colgroup>
 		<tr>
-			<th>Name</th>
-			<th>Level</th>
-			<th>Status</th>
-			<th>Size</th>
-			<th>Devices</th>
-			<th>Active</th>
+			<th>'.$lang['name'].'</th>
+			<th>'.$lang['level'].'</th>
+			<th>'.$lang['status'].'</th>
+			<th>'.$lang['size'].'</th>
+			<th>'.$lang['devices'].'</th>
+			<th>'.$lang['active'].'</th>
 		</tr>
 		';
 		if (count($info['Raid']) > 0)
@@ -507,7 +509,7 @@ echo '
 				<td>'.$raid['level'].($type ? ' <span class="caption">('.$type.')</span>' : '').'</td>
 				<td>'.ucfirst($raid['status']).'</td>
 				<td>'.$raid['size'].'</td>
-				<td><table class="mini center margin_auto"><tr><th>Device</th><th>State</th></tr>';
+				<td><table class="mini center margin_auto"><tr><th>'.$lang['device'].'</th><th>'.$lang['state'].'</th></tr>';
 				
 				foreach ($raid['drives'] as $drive)
 					echo '<tr><td>'.$drive['drive'].'</td><td class="raid_'.$drive['state'].'">'.ucfirst($drive['state']).'</td></tr>';
@@ -518,7 +520,7 @@ echo '
 				';
 			}
 		else
-			echo '<tr><td colspan="6" class="none">None found</td></tr>';
+			echo '<tr><td colspan="6" class="none">'.$lang['none_found'].'</td></tr>';
 
 		echo '
 	</table>
@@ -530,11 +532,11 @@ if (!empty($settings['show_errors']) && LinfoError::Fledging()->num() > 0) {
 
 	echo '
 	<div id="errorList" class="infoTable">
-		<h2>Data gathering errors</h2>
+		<h2>'.$lang['error_head'].'</h2>
 		<table>
 			<tr>
-				<th>From Where</th>
-				<th>Message</th>
+				<th>'.$lang['from_where'].'</th>
+				<th>'.$lang['message'].'</th>
 			</tr>';
 
 			foreach (LinfoError::Fledging()->show() as $error) {
@@ -563,18 +565,18 @@ if (count($info['extensions']) > 0) {
 if (!empty($settings['timer'])) {
 	echo '
 	<div id="timerList" class="infoTable">
-		<h2>Timer</h2>
+		<h2>'.$lang['timer'].'</h2>
 		<table>
 			<tr>
-				<th>Area</th>
-				<th>Time taken to fetch</th>
+				<th>'.$lang['area'].'</th>
+				<th>'.$lang['time_taken'].'</th>
 			</tr>';
 
 			foreach (LinfoTimer::Fledging()->getResults() as $result) {
 				echo '
 				<tr>
 					<td>'.$result[0].'</td>
-					<td>'.round($result[1], 3).' seconds</td>
+					<td>'.round($result[1], 3).' '.$lang['seconds'].'</td>
 				</tr>
 				';
 			}
@@ -587,8 +589,8 @@ if (!empty($settings['timer'])) {
 
 echo '
 <div id="foot">
-	Generated by <a href="http://linfo.sf.net"><em>'.VERSION.'</em></a>  in '.round(microtime(true) - TIME_START,2).' seconds.<br />
-	<em>'.AppName.'</em> &copy; 2010 Joseph Gillotti &amp; friends <em>(see readme)</em>. Source code licensed under GPL.
+	'.sprintf($lang['footer_app'], '<a href="http://linfo.sf.net"><em>'.VERSION.'</em></a>',  round(microtime(true) - TIME_START,2)).'<br />
+	<em>'.AppName.'</em> &copy; 2010 Joseph Gillotti &amp; friends. Source code licensed under GPL.
 </div>
 </body>
 </html>';

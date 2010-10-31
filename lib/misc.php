@@ -73,6 +73,8 @@ function byte_convert($size, $precision = 2) {
 
 // Like above, but for seconds
 function seconds_convert($uptime) {
+
+	global $lang;
 	
 	// Method here heavily based on freebsd's uptime source
 	$uptime += $uptime > 60 ? 30 : 0;
@@ -87,16 +89,16 @@ function seconds_convert($uptime) {
 	$return = array();
 
 	if ($days > 0)
-		$return[] = $days.' days';
+		$return[] = $days.' '.$lang['days'];
 	
 	if ($hours > 0)
-		$return[] = $hours.' hrs';
+		$return[] = $hours.' '.$lang['hours'];
 
 	if ($minutes > 0)
-		$return[] = $minutes.' mins';
+		$return[] = $minutes.' '.$lang['minutes'];
 
 	if ($seconds > 0)
-		$return[] = $seconds. (date('m/d') == '06/03' ? ' sex' : ' secs');
+		$return[] = $seconds. (date('m/d') == '06/03' ? ' sex' : ' '.$lang['seconds']);
 
 	return implode(', ', $return);
 }

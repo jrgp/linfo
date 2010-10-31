@@ -61,6 +61,17 @@ require_once LOCAL_PATH . 'lib/display.php';
 require_once LOCAL_PATH . 'lib/class.LinfoTimer.php';
 require_once LOCAL_PATH . 'lib/interface.LinfoExtension.php';
 
+// Default to english translation if garbage is passed
+if (empty($settings['language']) || !preg_match('/^[a-z]{2}$/', $settings['language']))
+	$settings['language'] = 'en';
+
+// If it can't be found default to english
+if (!is_file(LOCAL_PATH . 'lang/'.$settings['language'].'.php'))
+	$settings['language'] = 'en';
+	
+// Load translation
+require_once LOCAL_PATH . 'lang/'.$settings['language'].'.php';
+
 // Determine our OS
 $os = determineOS();
 
