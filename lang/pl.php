@@ -70,6 +70,7 @@ $lang = array(
 	'level' => 'Poziom',
 	'status' => 'Pozycja',
 	'devices' => 'Urządzenia',
+	'label' => 'Label', // TODO: translate from english
 	'active' => 'Aktywne',
 	'batteries' => 'Baterie',
 	'charge' => 'Opłaty',

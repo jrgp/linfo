@@ -216,7 +216,6 @@ class OS_Windows {
 			if ($volume['IndexingEnabled']) {
 				$options[] = 'indexed';
 			}
-			$options = implode(" ", $options);
 			$volumes[] = array(
 				'device' => false,
 				'label' => $volume['Label'],

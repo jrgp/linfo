@@ -71,6 +71,7 @@ $lang = array(
 	'level' => 'Level',
 	'status' => 'Status',
 	'devices' => 'Devices',
+	'label' => 'Label',
 	'active' => 'Active',
 	'batteries' => 'Batteries',
 	'charge' => 'Charge',

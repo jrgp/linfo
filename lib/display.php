@@ -116,8 +116,6 @@ function showInfo($info, $settings) {
 
 	// Show memory?
 	if (!empty($settings['show']['ram'])) {
-		// Show detailed swap info?
-		$show_detailed_swap = is_array($info['RAM']['swapInfo']) && count($info['RAM']['swapInfo']) > 0;
 		echo '
 		<div class="infoTable">
 			<h2>'.$lang['memory'].'</h2>
@@ -139,44 +137,51 @@ function showInfo($info, $settings) {
 					<td>'.byte_convert($info['RAM']['free']).'</td>
 					<td>'.byte_convert($info['RAM']['total'] - $info['RAM']['free']).'</td>
 					<td>'.byte_convert($info['RAM']['total']).'</td>
-				</tr>
-				<tr>
-					<td'.($show_detailed_swap ? ' rowspan="2"' : '').'>Swap</td>
-					<td>'.byte_convert($info['RAM']['swapFree']).'</td>
-					<td>'.byte_convert($info['RAM']['swapTotal'] - $info['RAM']['swapFree']).'</td>
-					<td>'.byte_convert($info['RAM']['swapTotal']).'</td>
 				</tr>';
 				
-				if ($show_detailed_swap) {
-				echo '
-				<tr>
-					<td colspan="3">
-						<table class="mini center">
-							<colgroup>
-								<col style="width: 25%;" />
-								<col style="width: 25%;" />
-								<col style="width: 25%;" />
-								<col style="width: 25%;" />
-							</colgroup>
-							<tr>
-								<th>'.$lang['device'].'</th>
-								<th>'.$lang['type'].'</th>
-								<th>'.$lang['size'].'</th>
-								<th>'.$lang['used'].'</th>
-							</tr>';
-							foreach($info['RAM']['swapInfo'] as $swap)
-								echo '
-								<tr>
-									<td>'.$swap['device'].'</td>
-									<td>'.ucfirst($swap['type']).'</td>
-									<td>'.byte_convert($swap['size']).'</td>
-									<td>'.byte_convert($swap['used']).'</td>
-								</tr>
-								';
-							echo '
-						</table>
-					</td>
-				</tr>';
+				if (determineOS() != 'Windows') {
+					// Show detailed swap info?
+					$show_detailed_swap = is_array($info['RAM']['swapInfo']) && count($info['RAM']['swapInfo']) > 0;
+					
+					echo'
+					<tr>
+						<td'.($show_detailed_swap ? ' rowspan="2"' : '').'>Swap</td>
+						<td>'.byte_convert($info['RAM']['swapFree']).'</td>
+						<td>'.byte_convert($info['RAM']['swapTotal'] - $info['RAM']['swapFree']).'</td>
+						<td>'.byte_convert($info['RAM']['swapTotal']).'</td>
+					</tr>';
+					
+					if ($show_detailed_swap) {
+						echo '
+						<tr>
+							<td colspan="3">
+								<table class="mini center">
+									<colgroup>
+										<col style="width: 25%;" />
+										<col style="width: 25%;" />
+										<col style="width: 25%;" />
+										<col style="width: 25%;" />
+									</colgroup>
+									<tr>
+										<th>'.$lang['device'].'</th>
+										<th>'.$lang['type'].'</th>
+										<th>'.$lang['size'].'</th>
+										<th>'.$lang['used'].'</th>
+									</tr>';
+									foreach($info['RAM']['swapInfo'] as $swap)
+										echo '
+										<tr>
+											<td>'.$swap['device'].'</td>
+											<td>'.ucfirst($swap['type']).'</td>
+											<td>'.byte_convert($swap['size']).'</td>
+											<td>'.byte_convert($swap['used']).'</td>
+										</tr>
+										';
+									echo '
+								</table>
+							</td>
+						</tr>';
+					}
 				}
 
 				echo '
@@ -376,13 +381,36 @@ function showInfo($info, $settings) {
 
 	// Show file system mounts?
 	if (!empty($settings['show']['mounts'])) {
+		$has_devices = false;
+		$has_labels = false;
+		foreach($info['Mounts'] as $mount) {
+			if (!empty($mount['device'])) {
+				$has_devices = true;
+			}
+			if (!empty($mount['label'])) {
+				$has_labels = true;
+			}
+		}
+		$addcolumns = 0;
+		if ($settings['show']['mounts_options'])
+			$addcolumns++;
+		if ($has_devices)
+			$addcolumns++;
+		if ($has_labels)
+			$addcolumns++;
 		echo '
 <div class="infoTable">
 	<h2>'.$lang['filesystem_mounts'].'</h2>
 	<table>
-		<tr>
-			<th>'.$lang['device'].'</th>
-			<th>'.$lang['mount_point'].'</th>
+		<tr>';
+		if ($has_devices) {
+			echo '<th>'.$lang['device'].'</th>';
+		}
+			echo '<th>'.$lang['mount_point'].'</th>';
+		if ($has_labels) {
+			echo '<th>'.$lang['label'].'</th>';
+		}
+		echo'
 			<th>'.$lang['filesystem'].'</th>',$settings['show']['mounts_options'] ? '
 			<th>'.$lang['mount_options'].'</th>' : '','
 			<th>'.$lang['size'].'</th>
@@ -411,7 +439,9 @@ function showInfo($info, $settings) {
 					$total_size += $mount['size'];
 					$total_used += $mount['used'];
 					$total_free += $mount['free'];
-					$done_devices[] = $mount['device'];
+					if (!empty($mount['device'])) {
+						$done_devices[] = $mount['device'];
+					}
 				}
 
 				// If it's an NFS mount it's likely in the form of server:path (without a trailing slash), 
@@ -420,9 +450,15 @@ function showInfo($info, $settings) {
 				if (preg_match('/^.+:$/', $mount['device']) == 1)
 					$mount['device'] .= DIRECTORY_SEPARATOR;
 
-				echo '<tr>
-					<td>'.$mount['device'].'</td>
-					<td>'.$mount['mount'].'</td>
+				echo '<tr>';
+				if ($has_devices) {
+					echo '<td>'.$mount['device'].'</td>';
+				}
+					echo '<td>'.$mount['mount'].'</td>';
+				if ($has_labels) {
+					echo '<td>'.$mount['label'].'</td>';
+				}
+				echo'
 					<td>'.$mount['type'].'</td>', $settings['show']['mounts_options'] ? '
 					<td>'.(empty($mount['options']) ? '<em>unknown</em>' : '<ul><li>'.implode('</li><li>', $mount['options']).'</li></ul>').'</td>' : '','
 					<td>'.byte_convert($mount['size']).'</td>
@@ -441,14 +477,15 @@ function showInfo($info, $settings) {
 					</td>
 				</tr>';
 			}
-		else
-			echo '<tr><td colspan="',$settings['show']['mounts_options'] ? 7 : 8,'" class="none">None found</td></tr>';
+		else {
+			echo '<tr><td colspan="',6 + $addcolumns,'" class="none">None found</td></tr>';
+		}
 
 		// Show totals and finish table
 		$total_used_perc = $total_size > 0 && $total_used > 0 ?  round($total_used / $total_size, 2) * 100 : 0;
 		echo '
 		<tr class="alt">
-			<td colspan="',$settings['show']['mounts_options'] ? 4 : 3,'">Totals: </td>
+			<td colspan="',2 + $addcolumns,'">Totals: </td>
 			<td>'.byte_convert($total_size).'</td>
 			<td>'.byte_convert($total_used).'</td>
 			<td>'.byte_convert($total_free).'</td>
