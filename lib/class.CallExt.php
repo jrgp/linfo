@@ -32,13 +32,25 @@ class CallExtException extends Exception {}
  */
 class CallExt {
 	
-	// Keep these
-	protected
-		$cliCache = array(),
-		$searchPaths = array();
+	/**
+	 * Store results of commands here to avoid calling them more than once
+	 * 
+	 * @var array
+	 * @access protected
+	 */
+	protected $cliCache = array();
+
+	/**
+	 * Store paths to look for executables here
+	 * 
+	 * @var array
+	 * @access protected
+	 */
+	protected $searchPaths = array();
 
 	/**
 	 * Say where we'll search for execs
+	 *
 	 * @param array $paths list of paths
 	 */
 	public function setSearchPaths($paths) {
@@ -53,6 +65,8 @@ class CallExt {
 	
 	/**
 	 * Run a command and cache its output for later
+	 *
+	 * @throws CallExtException
 	 * @param string $name name of executable to call
 	 * @param string $switches command arguments
 	 */

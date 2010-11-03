@@ -20,7 +20,6 @@
 /**
  * Keep out hackers...
  */
-
 defined('IN_INFO') or exit;
 
 /**
@@ -29,14 +28,18 @@ defined('IN_INFO') or exit;
  * Totally ignores CallExt class, very deliberately
  * Also deliberately ignores trying to find out the distro. 
  */
-
 class OS_Linux {
 
 	// Keep these tucked away
 	protected
 		$settings, $error;
 
-	// Start us off
+	/**
+	 * Constructor. Localizes settings
+	 * 
+	 * @param array $settings of linfo settings
+	 * @access public
+	 */
 	public function __construct($settings) {
 
 		// Localize settings
