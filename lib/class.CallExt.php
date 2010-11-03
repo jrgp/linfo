@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
  * 
  * Linfo is free software: you can redistribute it and/or modify
@@ -15,20 +15,20 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with Linfo.  If not, see <http://www.gnu.org/licenses/>.
- * 
 */
 
+/**
+ * Keep out hackers...
+ */
 defined('IN_INFO') or exit; 
 
-/*
- * Exception
+/**
+ * Exception for CallExt class
  */
 class CallExtException extends Exception {}
 
-/*
- * Ways of calling external programs
- * NOT TO BE USED FROM LINUX PARSER as its purpose is to only use /proc and /sys
- * This is only for BSD/WIN
+/**
+ * Class used to call external programs 
  */
 class CallExt {
 	
@@ -37,8 +37,9 @@ class CallExt {
 		$cliCache = array(),
 		$searchPaths = array();
 
-	/*
+	/**
 	 * Say where we'll search for execs
+	 * @param array $paths list of paths
 	 */
 	public function setSearchPaths($paths) {
 
@@ -50,8 +51,10 @@ class CallExt {
 		$this->searchPaths = $paths;
 	}
 	
-	/*
+	/**
 	 * Run a command and cache its output for later
+	 * @param string $name name of executable to call
+	 * @param string $switches command arguments
 	 */
 	public function exec($name, $switches = '') {
 		
