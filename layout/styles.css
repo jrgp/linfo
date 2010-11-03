@@ -17,7 +17,7 @@ h2 { font-size: 1.2em; margin: 0;}
 .col2 .col { float: left; width: 50%;}
 #info .center {text-align: center;}
 td.none { text-align: center; font-size: 12px; padding: 10px; color: #666; background-color: #f3f3f3; }
-span.perc {color: #666;}
+span.perc, span.faded {color: #666;}
 span.caption {font-size: 90%;}
 td ul {margin: 0; padding: 0;}
 td ul li {list-style-type: square; padding: 0; margin-left: 15px; margin-top: 0; margin-bottom: 0; margin-right: 0;}
@@ -38,4 +38,6 @@ table.mini th {background-color: inherit;}
 .bar_text { position: absolute; line-height: 18px;
 	font-size: 12px; text-indent: 2px; text-align: center; width: 100%; }
 .alt .bar_inner { background-color: #96b4d5; }
-
+.service_up {color: green;}
+.service_down {color: maroon;}
+.service_zombie {color: orange;}

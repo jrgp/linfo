@@ -1231,11 +1231,9 @@ class OS_Linux {
 				// Go through pid file list. for loops are faster than foreach
 				for ($i = 0; $i < $num_paths; $i++) {
 					// If this one matches, stop here and save it
-					$exec_contents = getContents($potential_paths[$i], false);
-					if ($exec_contents == $exec) {
+					if (getContents($potential_paths[$i], false) == $exec) {
 						// Get pid out of path to cmdline file
-						$pid = explode('/proc/', dirname($potential_paths[$i]));
-						$pids[$service] = $pid[1];
+						$pids[$service] = end(explode('/proc/', dirname($potential_paths[$i])));
 						break;
 					}
 				}

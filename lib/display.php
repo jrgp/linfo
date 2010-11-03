@@ -280,15 +280,19 @@ function showInfo($info, $settings) {
 				';
 
 		// Show them
-		foreach ($info['services'] as $service => $state)
+		foreach ($info['services'] as $service => $state) {
+			$state_parts = explode(' ', $state['state'], 2);
 			echo '
 				<tr>
 					<td>'.$service.'</td>
-					<td>'.$state['state'].'</td>
+					<td>
+						<span class="service_'.lcfirst($state_parts[0]).'">'.$state_parts[0].'</span>
+						'.(array_key_exists(1, $state_parts) ? '<span class="faded">'.$state_parts[1].'</span>' : '').'</td>
 					<td>'.$state['pid'].'</td>
 					<td>'.$state['threads'].'</td>
 				</tr>
 			';
+		}
 
 		echo '
 			</table>
