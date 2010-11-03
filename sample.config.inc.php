@@ -109,6 +109,19 @@ $settings['extensions']['cups'] = false; # Parse output of 'lpq' to get printers
 $settings['extensions']['smb'] = false; # Parse output of 'smbstatus' to get current samba connections
 
 /*
+ * Cache settings for WMI, Windows only
+ * All values as specified in seconds.
+ * Changing the default values is not recommended and can result in higher system loads.
+ */
+$settings['wmi_cache']['active'] = true;
+$settings['wmi_cache']['COMPUTERSYSTEM'] = 1800;
+$settings['wmi_cache']['CPU'] = 20;
+$settings['wmi_cache']['NIC'] = 1800;
+$settings['wmi_cache']['OS'] = 1800;
+$settings['wmi_cache']['PROCESS'] = 30;
+$settings['wmi_cache']['VOLUME'] = 30;
+
+/*
  * Debugging settings
  */
 

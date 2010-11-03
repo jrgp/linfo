@@ -24,10 +24,9 @@
 defined('IN_INFO') or exit;
 
 /**
- * Get info on a usual linux system
- * Works by exclusively looking around /proc and /sys
- * Totally ignores CallExt class, very deliberately
- * Also deliberately ignores trying to find out the distro. 
+ * Get info on Windows systems
+ * Uses the wmic WMI command line client
+ * Written and maintained by Oliver Kuckertz (mologie).
  */
 class OS_Windows {
 
@@ -358,6 +357,14 @@ class OS_Windows {
 	 */
 	private function WMIRequest($name) {
 	
+		$cachefile = CACHE_PATH . "wmic_cache_$name.json";
+		
+		if (file_exists($cachefile) && time() - filemtime($cachefile) < $this->settings['wmi_cache'][$name]) {
+			$cache = file_get_contents($cachefile);
+			$cache = json_decode($cache, true);
+			return $cache;
+		}
+		
 		exec("wmic $name", $results, $errorcode);
 		if ($errorcode != 0) {
 			$this->error->add('Linfo Windows wmic parser', "Failed to execute wmic with parameter $name");
@@ -412,6 +419,8 @@ class OS_Windows {
 			}
 			$table[] = $a;
 		}
+		
+		file_put_contents($cachefile, json_encode($table));
 		return $table;
 	}
 }
