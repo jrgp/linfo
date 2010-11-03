@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
  * 
  * Linfo is free software: you can redistribute it and/or modify
@@ -70,8 +70,9 @@ function showInfo($info, $settings) {
 			$cpus .=
 				(array_key_exists('Vendor', $cpu) ? $cpu['Vendor'] . ' - ' : '') .
 				$cpu['Model'] .
-				(array_key_exists('MHz', $cpu) ? ' ('.$cpu['MHz'].' MHz)' : '') .
-				'<br />';
+				(array_key_exists('MHz', $cpu) ?
+					($cpu['MHz'] < 1000 ? ' ('.$cpu['MHz'].' MHz)' : ' ('.round($cpu['MHz'] / 1000, 3).' GHz)') : '') .
+					'<br />';
 		$core[] = array('CPUs ('.count($info['CPU']).')', $cpus);
 	}
 	if (!empty($settings['show']['load']))
@@ -99,8 +100,7 @@ function showInfo($info, $settings) {
 	}
 
 	// Show
-	$core_num = count($core);
-	for ($i = 0; $i < $core_num; $i++) {
+	for ($i = 0, $core_num = count($core); $i < $core_num; $i++) {
 		echo '
 				<tr>
 					<th>'.$core[$i][0].'</th>
