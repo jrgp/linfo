@@ -66,9 +66,8 @@ class OS_Windows {
 		foreach($required_data as $e) {
 			$this->wmi[$e] = $this->WMIRequest($e);
 		}
-		echo "<!-- ";
-		var_dump($this->wmi);
-		echo " -->";
+		
+		//if($_SERVER['REMOTE_ADDR'] == '127.0.0.1') { var_dump($this->wmi); }
 	}
 
 	/**
@@ -142,15 +141,11 @@ class OS_Windows {
 	 */
 	private function getRam(){
 		
-		$return['type'] = 'Physical';
-		$return['total'] = $this->wmi['COMPUTERSYSTEM'][0]['TotalPhysicalMemory'];
-		$return['free'] = $this->wmi['OS'][0]['FreePhysicalMemory'] * 1024;
-		/*$return['swapTotal'] = $memVals['SwapTotal']*1024;
-		$return['swapFree'] = $memVals['SwapFree']*1024;
-		$return['swapCached'] = $memVals['SwapCached']*1024;
-		$return['swapInfo'] = $swapVals;*/
-		
-		return $return;
+		return array(
+			'type' => 'Physical',
+			'total' => $this->wmi['COMPUTERSYSTEM'][0]['TotalPhysicalMemory'],
+			'free' => $this->wmi['OS'][0]['FreePhysicalMemory'] * 1024
+		);
 	}
 	
 	/**
@@ -160,6 +155,21 @@ class OS_Windows {
 	 * @return array of cpu info
 	 */
 	private function getCPU() {
+		
+		$cpus = array();
+		
+		foreach($this->wmi["CPU"] as $cpu) {
+			$curr = array(
+				'Model' => $cpu['Name'],
+				'Vendor' => $cpu['Manufacturer'],
+				'MHz' => $cpu['CurrentClockSpeed'],
+			);
+			$curr['Model'] = $cpu['Name'];
+			for ($i = 0; $i < $cpu['NumberOfLogicalProcessors']; $i++)
+				$cpus[] = $curr;
+		}
+		
+		return $cpus;
 	}
 	
 	/**
@@ -169,6 +179,12 @@ class OS_Windows {
 	 * @return string uptime
 	 */
 	private function getUpTime () {
+		
+		$booted = $this->wmi['OS'][0]['LastBootUpTime'];
+		$booted = date_parse_from_format("YmdHMS", $booted);
+		$booted = mktime($booted['hour'], $booted['minute'], $booted['second'], $booted['month'], $booted['day'], $booted['year']);
+		
+		return seconds_convert(time() - $booted) . '; booted '.date('m/d/y h:i A', $booted);
 	}
 	
 	/**
