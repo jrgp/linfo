@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
  * 
  * Linfo is free software: you can redistribute it and/or modify
@@ -15,13 +15,15 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with Linfo.  If not, see <http://www.gnu.org/licenses/>.
- * 
 */
 
+/**
+ * Keep out hackers...
+ */
 
 defined('IN_INFO') or exit;
 
-/*
+/**
  * Get info on a usual linux system
  * Works by exclusively looking around /proc and /sys
  * Totally ignores CallExt class, very deliberately
@@ -48,7 +50,12 @@ class OS_Linux {
 			throw new GetInfoException('This needs access to /proc and /sys to work.');
 	}
 
-	// All
+	/**
+	 * getAll 
+	 * 
+	 * @access public
+	 * @return array the info
+	 */
 	public function getAll() {
 
 		// Return everything, whilst obeying display permissions
@@ -73,14 +80,24 @@ class OS_Linux {
 		);
 	}
 
-	// Return OS type
+	/**
+	 * getOS 
+	 * 
+	 * @access private
+	 * @return string Linux
+	 */
 	private function getOS() {
 		
 		// Linux, obviously
 		return 'Linux';
 	}
 
-	// Get linux kernel version
+	/**
+	 * getKernel 
+	 * 
+	 * @access private
+	 * @return string kernel version
+	 */
 	private function getKernel() {
 		
 		// Time?
@@ -109,7 +126,12 @@ class OS_Linux {
 		return $match[1];
 	}
 
-	// Get host name
+	/**
+	 * getHostName 
+	 * 
+	 * @access private
+	 * @return string the host name
+	 */
 	private function getHostName() {
 		
 		// Time?
@@ -134,7 +156,12 @@ class OS_Linux {
 		}
 	}
 
-	// Get ram usage/amount/types
+	/**
+	 * getRam 
+	 * 
+	 * @access private
+	 * @return array the memory information
+	 */
 	private function getRam(){
 		
 		// Time?
@@ -191,7 +218,12 @@ class OS_Linux {
 		return $return;
 	}
 
-	// Get processor info
+	/**
+	 * getCPU 
+	 * 
+	 * @access private
+	 * @return array of cpu info
+	 */
 	private function getCPU() {
 		
 		// Time?
@@ -334,8 +366,12 @@ class OS_Linux {
 		return $uptime . '; booted '.date('m/d/y h:i A', $boot);
 	}
 
-	// Get disk drives
-	// TODO: Possibly more information?
+	/**
+	 * getHD 
+	 * 
+	 * @access private
+	 * @return array the hard drive info
+	 */
 	private function getHD() {
 		
 		// Time?
@@ -400,7 +436,12 @@ class OS_Linux {
 		return $drives;
 	}
 
-	// Get temps/voltages
+	/**
+	 * getTemps 
+	 * 
+	 * @access private
+	 * @return array the temps
+	 */
 	private function getTemps() {
 	
 		// Time?
@@ -537,7 +578,12 @@ class OS_Linux {
 		return $return;
 	}
 
-	// Get mounts
+	/**
+	 * getMounts 
+	 * 
+	 * @access private
+	 * @return array the mounted the file systems
+	 */
 	private function getMounts() {
 		
 		// Time?
@@ -605,11 +651,12 @@ class OS_Linux {
 		return $mounts;
 	}
 
-	// Get device names
-	// TODO optimization. On newer systems this takes only a few fractions of a second,
-	// but on older it can take upwards of 5 seconds, since it parses the entire ids files
-	// looking for device names which resolve to the pci addresses
-	// Also todo: quantity of duplicates. 
+	/**
+	 * getDevs 
+	 * 
+	 * @access private
+	 * @return array of devices
+	 */
 	private function getDevs() {
 		
 		// Time?
@@ -738,8 +785,12 @@ class OS_Linux {
 		return array_merge($pci_dev, $usb_dev);
 	}
 
-	// Get mdadm raid
-	// TODO: Maybe support other methods of Linux raid info?
+	/**
+	 * getRAID 
+	 * 
+	 * @access private
+	 * @return array of raid arrays
+	 */
 	private function getRAID() {
 		
 		// Time?
@@ -829,7 +880,12 @@ class OS_Linux {
 		return $raidinfo;
 	}
 
-	// Get load
+	/**
+	 * getLoad 
+	 * 
+	 * @access private
+	 * @return array of current system load values
+	 */
 	private function getLoad() {
 		
 		// Time?
@@ -859,7 +915,12 @@ class OS_Linux {
 		);
 	}
 
-	// Get network devices
+	/**
+	 * getNet 
+	 * 
+	 * @access private
+	 * @return array of network devices
+	 */
 	private function getNet() {
 		
 		// Time?
@@ -924,7 +985,12 @@ class OS_Linux {
 		return $return;
 	}
 
-	// Useful for things like laptops. I think this might also work for UPS's, but I'm not sure.
+	/**
+	 * getBattery 
+	 * 
+	 * @access private
+	 * @return array of battery status
+	 */
 	private function getBattery() {
 		
 		// Time?
@@ -958,9 +1024,12 @@ class OS_Linux {
 		return $return;
 	}
 
-	// Again useful probably only for things like laptops. Get status on wifi adapters
-	// Parses it successfully, yes. But what should I use this info for? idk
-	// And also, I'm not sure how to interpret the status value
+	/**
+	 * getWifi 
+	 * 
+	 * @access private
+	 * @return array of wifi devices
+	 */
 	private function getWifi() {
 		
 		// Time?
@@ -1003,8 +1072,12 @@ class OS_Linux {
 		return $return;
 	}
 
-	// Yet something else that has no business being enabled on a server system
-	// Sound card stuff
+	/**
+	 * getSoundCards 
+	 * 
+	 * @access private
+	 * @return array of soundcards
+	 */
 	private function getSoundCards() {
 		
 		// Time?
@@ -1040,8 +1113,12 @@ class OS_Linux {
 		return $cards;
 	}
 
-	// Get stats on processes
-	// todo: merge state and thread regexes into one, which might be possible
+	/**
+	 * getProcessStats 
+	 * 
+	 * @access private
+	 * @return array of process stats
+	 */
 	private function getProcessStats() {
 		
 		// Time?
