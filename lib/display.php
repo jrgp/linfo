@@ -139,7 +139,7 @@ function showInfo($info, $settings) {
 					<td>'.byte_convert($info['RAM']['total']).'</td>
 				</tr>';
 				
-				if ($info['OS'] != 'Windows') {
+				if (determineOS() != 'Windows') {
 					// Show detailed swap info?
 					$show_detailed_swap = is_array($info['RAM']['swapInfo']) && count($info['RAM']['swapInfo']) > 0;
 					
