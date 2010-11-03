@@ -1,6 +1,6 @@
 Linfo - PHP server health/information script
 
-Currently runs on: Linux; FreeBSD; NetBSD; OpenBSD; Minix (alpha); Darwin (alpha); SunOS(alpha)
+Currently runs on: Linux; FreeBSD; NetBSD; OpenBSD; Minix (alpha); Darwin (alpha); SunOS(alpha); Windows (very alpha)
 
 Etymology:
  - The name 'Linfo' was decided upon before I intended it to be cross platform.
@@ -61,7 +61,6 @@ Known issues:
  - Getting Linux device names is slow on old systems
  - Getting Linux device names does not work on all distros [yet]
  - Linux Wifi is not finished
- - Windows support does not yet exist and I'm not sure how much I care.
    This is primarily a Unix script
 
 Linux system temps/voltages/etc requirments:
@@ -76,11 +75,11 @@ Experimental new features/extensions:
  - Samba status
 
 Please send suggestions, help requests, comments, complaints, beer, pizza, and hookers to:
- - joe@u13.net / elephanthunter@gmail.com
+ - joe@u13.net / elephanthunter@gmail.com / oliver.kuckertz@mologie.de
  - IRC - jrgp @ freenode
 
 License: GNU General Public License
 Author/copyright holder: Joseph Robert Gillotti <joe@u13.net>
-Additional author(s): Lee Bradley <elephanthunter@gmail.com>
+Additional author(s): Lee Bradley <elephanthunter@gmail.com>, Oliver Kuckertz <oliver.kuckertz@mologie.de>
 URL: http://linfo.sourceforge.net/
 Favicon by: SonSukka 
