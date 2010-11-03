@@ -196,7 +196,42 @@ class OS_Windows {
 	 * @return array the mounted the file systems
 	 */
 	private function getMounts() {
-	
+		
+		$volumes = array();
+		
+		foreach($this->wmi['VOLUME'] as $volume) {
+			if($volume['DriveType'] != 3) { // present but not mounted
+				continue;
+			}
+			$options = array();
+			if ($volume['Automount']) {
+				$options[] = 'automount';
+			}
+			if ($volume['BootVolume']) {
+				$options[] = 'boot';
+			}
+			if ($volume['Compressed']) {
+				$options[] = 'compressed';
+			}
+			if ($volume['IndexingEnabled']) {
+				$options[] = 'indexed';
+			}
+			$options = implode(" ", $options);
+			$volumes[] = array(
+				'device' => false,
+				'label' => $volume['Label'],
+				'mount' => $volume['Caption'],
+				'type' => $volume['FileSystem'],
+				'size' => $volume['Capacity'],
+				'used' => $volume['Capacity'] - $volume['FreeSpace'],
+				'free' => $volume['FreeSpace'],
+				'free_percent' => round($volume['FreeSpace'] / $volume['Capacity'], 2) * 100,
+				'used_percent' => round(($volume['Capacity'] - $volume['FreeSpace']) / $volume['Capacity'], 2) * 100,
+				'options' => $options
+			);
+		}
+		
+		return $volumes;
 	}
 	
 	/**
@@ -288,7 +323,7 @@ class OS_Windows {
 		$header = $results[0];
 		unset($results[0]);
 		
-		// Alright, this is going to get a bit tricky: Parse the WMI table output and turn it as array
+		// Alright, this is going to get a bit tricky: Parse the WMI table output and return it as array
 		$columns = array();
 		$start = 0;
 		while ($start !== false) {
@@ -322,7 +357,14 @@ class OS_Windows {
 				$len = ($c['end'] == -1) ? null : $c['end'] - $start;
 				$s = substr($e, $start, $len);
 				if ($s) {
-					$a[$c['caption']] = trim($s);
+					$s = trim($s);
+					// Convert to bool
+					if ($s == "TRUE") {
+						$s = true;
+					} else if ($s == "FALSE") {
+						$s = false;
+					}
+					$a[$c['caption']] = $s;
 				}
 			}
 			$table[] = $a;
