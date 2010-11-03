@@ -59,6 +59,7 @@ class OS_Windows {
 			//"NIC",
 			"OS",
 			//"PARTITION", // using VOLUME instead
+			"PROCESS",
 			//"TEMPERATURE",
 			//"VOLTAGE",
 			"VOLUME",
@@ -119,7 +120,7 @@ class OS_Windows {
 	 */
 	private function getKernel() {
 	
-		return 'Build ' . $this->wmi['OS'][0]['BuildNumber'];
+		return $this->wmi['PROCESS'][0]['WindowsVersion'];
 	}
 	
 	/**
@@ -274,6 +275,12 @@ class OS_Windows {
 	 * @return array of current system load values
 	 */
 	private function getLoad() {
+		
+		$load = array();
+		foreach ($this->wmi['CPU'] as $cpu) {
+			$load[] = $cpu['LoadPercentage'];
+		}
+		return (array_sum($load) / count($load)) . "%";
 	}
 	
 	/**
@@ -319,6 +326,27 @@ class OS_Windows {
 	 * @return array of process stats
 	 */
 	private function getProcessStats() {
+		
+		$result = array(
+			'exists' => true,
+			'totals' => array(
+				'running' => 0,
+				'zombie' => 0,
+				'sleeping' => 0,
+				'stopped' => 0,
+			),
+			'proc_total' => 0,
+			'threads' => 0
+		);
+		
+		foreach($this->wmi['PROCESS'] as $proc) {
+			$result['threads'] += (int)$proc['ThreadCount'];
+			$result['totals']['running']++;
+		}
+		
+		$result['proc_total'] = $result['totals']['running'];
+		
+		return $result;
 	}
 	
 	/**
