@@ -286,7 +286,7 @@ function showInfo($info, $settings) {
 				<tr>
 					<td>'.$service.'</td>
 					<td>
-						<span class="service_'.lcfirst($state_parts[0]).'">'.$state_parts[0].'</span>
+						<span class="service_'.strtolower($state_parts[0]).'">'.$state_parts[0].'</span>
 						'.(array_key_exists(1, $state_parts) ? '<span class="faded">'.$state_parts[1].'</span>' : '').'</td>
 					<td>'.$state['pid'].'</td>
 					<td>'.$state['threads'].'</td>
