@@ -65,6 +65,8 @@ function determineOS() {
 		case 'Darwin':
 		case 'SunOS':
 			return PHP_OS;
+		case 'WINNT':
+			return 'Windows';
 		break;
 
 		// So anything else isn't
