@@ -39,6 +39,9 @@ $settings['show']['battery'] = false;
 $settings['show']['sound'] = false;
 $settings['show']['wifi'] = false; # Not finished
 
+// Service monitoring
+$settings['show']['services'] = false;
+
 /*
  * Misc settings pertaining to the above follow below:
  */
@@ -76,6 +79,23 @@ $settings['hddtemp']['address'] = array( // Address/Port of hddtemp daemon to co
 $settings['mbmon']['address'] = array( // Address/Port of mbmon daemon to connect to
 	'host' => 'localhost',
 	'port' => 411
+);
+
+/*
+ * Services. It works by specifying locations to PID files, which then get checked
+ * Either that or specifying a path to the executable, which we'll try to find a running
+ * process PID entry for. It'll stop on the first it finds.
+ */
+
+// Format: Label => pid file path
+$settings['services']['pidFiles'] = array(
+	// 'Apache' => '/var/run/apache2.pid', // uncomment to enable
+	// 'SSHd' => '/var/run/sshd.pid'
+);
+
+// Format: Label => path to executable
+$settings['services']['pidFiles'] = array(
+	// 'MySQLd' => '/usr/sbin/mysqld' // uncomment to enable
 );
 
 /*

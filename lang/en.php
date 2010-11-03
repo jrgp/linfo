@@ -92,4 +92,7 @@ $lang = array(
 	'minutes' => 'minutes',
 	'seconds' => 'seconds',
 	'hours' => 'hours',
+	'pid' => 'PID',
+	'service' => 'Service',
+	'services' => 'Services'
 );

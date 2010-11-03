@@ -90,4 +90,7 @@ $lang = array(
 	'days' => 'dni',
 	'minutes' => 'minuta',
 	'hours' => 'godzina',
+	'pid' => 'PID', // todo: make polish
+	'service' => 'Service',
+	'services' => 'Services'
 );

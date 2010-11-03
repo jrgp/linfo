@@ -79,7 +79,8 @@ class OS_Linux {
 			'Raid' => empty($this->settings['show']['raid']) ? array(): $this->getRAID(),
 			'Wifi' => empty($this->settings['show']['wifi']) ? array(): $this->getWifi(),
 			'SoundCards' => empty($this->settings['show']['sound']) ? array(): $this->getSoundCards(),
-			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats()
+			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(),
+			'services' => empty($this->settings['show']['process_stats']) ? array() : $this->getServices()
 		);
 	}
 
@@ -1191,5 +1192,108 @@ class OS_Linux {
 
 		// Give off result
 		return $result;
+	}
+
+	/**
+	 * getServices 
+	 * 
+	 * @access private
+	 * @return array the services
+	 */
+	private function getServices() {
+
+		// We allowed?
+		if (!empty($settings['show']['services']) || !is_array($this->settings['services']) || count($this->settings['services']) == 0)
+			return array();
+
+		// Temporarily keep statuses here
+		$statuses = array();
+
+		// A bit of unfucking potential missing values in config file
+		$this->settings['services']['executables'] = (array) $this->settings['services']['executables'];
+		$this->settings['services']['pidFiles'] = (array) $this->settings['services']['pidFiles'];
+
+		// Convert paths of executables to PID files
+		$pids = array();
+		$do_process_search = false;
+		if (count($this->settings['services']['executables']) > 0) {
+			$potential_paths = @glob('/proc/*/cmdline');
+			if (is_array($potential_paths)) {
+				$num_paths = count($potential_paths);
+				$do_process_search = true;
+			}
+		}
+			
+		// Should we go ahead and do the PID search based on executables?
+		if ($do_process_search) {
+			// Go through the list of executables to search for
+			foreach ($this->settings['services']['executables'] as $service => $exec) {
+				// Go through pid file list. for loops are faster than foreach
+				for ($i = 0; $i < $num_paths; $i++) {
+					// If this one matches, stop here and save it
+					$exec_contents = getContents($potential_paths[$i], false);
+					if ($exec_contents == $exec) {
+						// Get pid out of path to cmdline file
+						$pid = explode('/proc/', dirname($potential_paths[$i]));
+						$pids[$service] = $pid[1];
+						break;
+					}
+				}
+			}
+		}
+
+		// PID files
+		foreach ($this->settings['services']['pidFiles'] as $service => $file) {
+			$pid = getContents($file, false);
+			if ($pid != false && is_numeric($pid))
+				$pids[$service] = $pid;
+		}
+
+		// Deal with PIDs
+		foreach ($pids as $service => $pid) {
+			$path = '/proc/'.$pid.'/status';
+			$status_contents = getContents($path, false);
+			if ($status_contents == false) {
+				$statuses[$service] = array('state' => 'Down', 'threads' => 'N/A', 'pid' => $pid);
+				continue;
+			}
+
+			// Try getting state
+			@preg_match('/^State:\s+(\w)/m', $status_contents, $state_match);
+
+			// Well? Determine state
+			switch ($state_match[1]) {
+				case 'D': // disk sleep? wtf?
+				case 'S':
+					$state = 'Up (Sleeping)';
+				break;
+				case 'Z':
+					$state = 'Zombie';
+				break;
+				// running
+				case 'R':
+					$state = 'Up (Running)';
+				break;
+				// stopped
+				case 'T':
+					$state = 'Up (Stopped)';
+				break;
+				default:
+					continue;
+				break;
+			}
+
+			// Try getting number of threads
+			@preg_match('/^Threads:\s+(\d+)/m', $status_contents, $threads_match);
+
+			// Save info
+			$statuses[$service] = array(
+				'state' => $state,
+				'threads' => is_numeric($threads_match[1]) ? $threads_match[1] : '?',
+				'pid' => $pid
+			);
+		}
+
+		return $statuses;
 	}
 }

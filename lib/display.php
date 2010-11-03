@@ -270,6 +270,32 @@ function showInfo($info, $settings) {
 		</div>';
 	}
 
+	// Show services?
+	if (!empty($settings['show']['services']) && count($info['services']) > 0) {
+		echo '
+		<div class="infoTable">
+			<h2>'.$lang['services'].'</h2>
+			<table>
+				<tr><th>'.$lang['service'].'</th><th>'.$lang['state'].'</th><th>'.$lang['pid'].'</th><th>Threads</th></tr>
+				';
+
+		// Show them
+		foreach ($info['services'] as $service => $state)
+			echo '
+				<tr>
+					<td>'.$service.'</td>
+					<td>'.$state['state'].'</td>
+					<td>'.$state['pid'].'</td>
+					<td>'.$state['threads'].'</td>
+				</tr>
+			';
+
+		echo '
+			</table>
+		</div>';
+
+	}
+
 	echo '
 	</div>
 	<div class="col">';
