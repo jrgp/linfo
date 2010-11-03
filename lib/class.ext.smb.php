@@ -23,7 +23,7 @@ defined('IN_INFO') or exit;
 /*
  * Get info on a samba install by running smbstatus
  */
-class ext_smb {
+class ext_smb implements LinfoExtension {
 	
 	// Store these tucked away here
 	private

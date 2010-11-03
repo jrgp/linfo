@@ -25,7 +25,7 @@ defined('IN_INFO') or exit;
  * Extensions must conform to this
  */
 interface LinfoExtension {
-	public function _construct();
-	public function work();
-	public function result();
+	public function __construct();	// Have them localize useful things
+	public function work();		// Do the job
+	public function result();	// Return the result
 }

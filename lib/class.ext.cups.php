@@ -23,7 +23,7 @@ defined('IN_INFO') or exit;
 /*
  * Get info on a cups install by running lpq
  */
-class ext_cups {
+class ext_cups implements LinfoExtension {
 
 	// Store these tucked away here
 	private
