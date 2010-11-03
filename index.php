@@ -31,6 +31,10 @@ define('IN_INFO', true);
 // Configure absolute path to local directory
 define('LOCAL_PATH', dirname(__FILE__) . '/');
 
+// Configure absolute path to stored info cache, for things that take a while
+// to find and don't change, like hardware devcies
+define('CACHE_PATH', dirname(__FILE__) . '/cache/');
+
 // Configure absolute path to web directory
 $web_path = dirname($_SERVER['SCRIPT_NAME']);
 define('WEB_PATH', substr($web_path, -1) == '/' ? $web_path : $web_path.'/');
