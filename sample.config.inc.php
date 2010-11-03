@@ -94,7 +94,7 @@ $settings['services']['pidFiles'] = array(
 );
 
 // Format: Label => path to executable
-$settings['services']['pidFiles'] = array(
+$settings['services']['executables'] = array(
 	// 'MySQLd' => '/usr/sbin/mysqld' // uncomment to enable
 );
 
