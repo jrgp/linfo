@@ -138,17 +138,16 @@ function showInfo($info, $settings) {
 					<td>'.byte_convert($info['RAM']['total'] - $info['RAM']['free']).'</td>
 					<td>'.byte_convert($info['RAM']['total']).'</td>
 				</tr>';
-				
-				if (determineOS() != 'Windows') {
+				$have_swap = (isset($info['RAM']['swapFree']) || isset($info['RAM']['swapTotal']));
+				if ($have_swap) {
 					// Show detailed swap info?
 					$show_detailed_swap = is_array($info['RAM']['swapInfo']) && count($info['RAM']['swapInfo']) > 0;
-					
 					echo'
 					<tr>
 						<td'.($show_detailed_swap ? ' rowspan="2"' : '').'>Swap</td>
-						<td>'.byte_convert($info['RAM']['swapFree']).'</td>
-						<td>'.byte_convert($info['RAM']['swapTotal'] - $info['RAM']['swapFree']).'</td>
-						<td>'.byte_convert($info['RAM']['swapTotal']).'</td>
+						<td>'.byte_convert(@$info['RAM']['swapFree']).'</td>
+						<td>'.byte_convert(@$info['RAM']['swapTotal'] - $info['RAM']['swapFree']).'</td>
+						<td>'.byte_convert(@$info['RAM']['swapTotal']).'</td>
 					</tr>';
 					
 					if ($show_detailed_swap) {
@@ -370,7 +369,7 @@ function showInfo($info, $settings) {
 							
 					// Each
 					foreach ($drive['partitions'] as $partition)
-						echo '&#9492; '.$drive['device'].$partition['number'].' - '.byte_convert($partition['size']).'<br />';
+						echo '&#9492; '. (isset($partition['number']) ? $drive['device'].$partition['number'] : $partition['name']) .' - '.byte_convert($partition['size']).'<br />';
 
 					echo '
 							</td>

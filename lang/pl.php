@@ -80,6 +80,7 @@ $lang = array(
 	'sound_cards' => 'Karty dźwiękowe',
 	'number' => 'Numer',
 	'card' => 'Karta',
+	'from_where' => 'Source', // TODO: translate
 	'message' => 'Wiadomość',
 	'mount_options' => 'Opcje Montowania',
 	'error_head' => 'Błędy Gromadzenia Danych',

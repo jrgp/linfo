@@ -32,7 +32,7 @@ table.mini th {background-color: inherit;}
 .net_up {color: green;}
 .net_down {color: maroon;}
 .net_unknown {color: purple;}
-#errorList, #timerList {font-size: 70%; margin-top: 15px; margin-bottom: 15px;}
+#errorList, #timerList {font-size: 75%; margin-top: 15px; margin-bottom: 15px;}
 .bar_chart { position: relative; margin: auto;}
 .bar_inner {border-radius: 2px; height: 18px; background-color: #b7cce2; }
 .bar_text { position: absolute; line-height: 18px;

@@ -116,10 +116,13 @@ $settings['extensions']['smb'] = false; # Parse output of 'smbstatus' to get cur
 $settings['wmi_cache']['active'] = true;
 $settings['wmi_cache']['COMPUTERSYSTEM'] = 1800;
 $settings['wmi_cache']['CPU'] = 20;
+$settings['wmi_cache']['DISKDRIVE'] = 1800;
 $settings['wmi_cache']['NIC'] = 1800;
 $settings['wmi_cache']['OS'] = 1800;
+$settings['wmi_cache']['PARTITION'] = 3600;
+$settings['wmi_cache']['PATH Win32_PnPEntity'] = 1800;
 $settings['wmi_cache']['PROCESS'] = 30;
-$settings['wmi_cache']['VOLUME'] = 30;
+$settings['wmi_cache']['VOLUME'] = 120;
 
 /*
  * Debugging settings

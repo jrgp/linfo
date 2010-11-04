@@ -55,9 +55,11 @@ class OS_Windows {
 		$required_data = array(
 			"COMPUTERSYSTEM",
 			"CPU",
+			"DISKDRIVE",
 			//"NIC",
 			"OS",
-			//"PARTITION", // using VOLUME instead
+			"PATH Win32_PnPEntity",
+			"PARTITION",
 			"PROCESS",
 			//"TEMPERATURE",
 			//"VOLTAGE",
@@ -194,6 +196,30 @@ class OS_Windows {
 	 * @return array the hard drive info
 	 */
 	private function getHD() {
+		
+		$drives = array();
+		$partitions = array();
+		
+		foreach ($this->wmi['PARTITION'] as $partition) {
+			$partitions[$partition['DiskIndex']][] = array(
+				'size' => $partition['Size'],
+				'name' => $partition['DeviceID'] . ' (' . $partition['Type'] . ')'
+			);
+		}
+		
+		foreach ($this->wmi['DISKDRIVE'] as $drive) {
+			$drives[] = array(
+				'name' =>  $drive['Caption'],
+				'vendor' => reset(explode(" ", $drive['Caption'])),
+				'device' => $drive['DeviceID'],
+				'reads' => false,
+				'writes' => false,
+				'size' => $drive['Size'],
+				'partitions' => array_key_exists($drive['Index'], $partitions) && is_array($partitions[$drive['Index']]) ? $partitions[$drive['Index']] : false 
+			);
+		}
+		
+		return $drives;
 	}
 	
 	/**
@@ -256,6 +282,25 @@ class OS_Windows {
 	 * @return array of devices
 	 */
 	private function getDevs() {
+		
+		$devs = array();
+		
+		foreach($this->wmi['PATH Win32_PnPEntity'] as $pnpdev) {
+			$type = reset(explode("\\", $pnpdev['DeviceID']));
+			if(($type != 'USB' && $type != 'PCI') || (empty($pnpdev['Caption']) || $pnpdev['Manufacturer'][0] == '(')) {
+				continue;
+			}
+			$devs[] = array(
+				'vendor' => $pnpdev['Manufacturer'],
+				'device' => $pnpdev['Caption'],
+				'type' => $type
+			);
+		}
+		
+		// Sort by 1. Type, 2. Vendor
+		usort($devs, array('OS_Windows', 'compare_devices'));
+		
+		return $devs;
 	}
 	
 	/**
@@ -359,11 +404,13 @@ class OS_Windows {
 	
 		$cachefile = CACHE_PATH . "wmic_cache_$name.json";
 		
-		if (file_exists($cachefile) && time() - filemtime($cachefile) < $this->settings['wmi_cache'][$name]) {
+		if ($this->settings['wmi_cache']['active']  && file_exists($cachefile) && time() - filemtime($cachefile) < @$this->settings['wmi_cache'][$name]) {
 			$cache = file_get_contents($cachefile);
 			$cache = json_decode($cache, true);
 			return $cache;
 		}
+		
+		$this->error->add('Linfo Windows wmic parser', "File not cached: $name");
 		
 		exec("wmic $name", $results, $errorcode);
 		if ($errorcode != 0) {
@@ -379,7 +426,7 @@ class OS_Windows {
 		while ($start !== false) {
 			$end = strpos($header, '  ', $start);
 			if ($end === false) {
-				$columns[] = array("start" => $start, "end" => -1);
+				$columns[] = array("start" => $start, "end" => -1, "caption" => trim(substr($header, $start)));
 				break;
 			}
 			$end = $end + 2;
@@ -404,7 +451,7 @@ class OS_Windows {
 			$a = array();
 			foreach ($columns as $c) {
 				$start = $c['start'];
-				$len = ($c['end'] == -1) ? null : $c['end'] - $start;
+				$len = ($c['end'] == -1) ? strlen($e) - $start : $c['end'] - $start;
 				$s = substr($e, $start, $len);
 				if ($s) {
 					$s = trim($s);
@@ -413,14 +460,41 @@ class OS_Windows {
 						$s = true;
 					} else if ($s == "FALSE") {
 						$s = false;
-					}
+					}/* else if(function_exists('mb_convert_encoding')) {
+						$s = mb_convert_encoding($s, 'CP850');
+					}*/
 					$a[$c['caption']] = $s;
 				}
 			}
 			$table[] = $a;
 		}
 		
-		file_put_contents($cachefile, json_encode($table));
+		if($this->settings['wmi_cache']['active']) {
+			file_put_contents($cachefile, json_encode($table));
+		}
+		
 		return $table;
+	}
+	
+	/**
+	 * compare_devices
+	 * 
+	 * @access private
+	 * @param mixed $a first element
+	 * @param mixed $b second element
+	 * @return integer compare result
+	 */
+	static function compare_devices($a, $b) {
+		
+		if ($a['type'] == $b['type']) {
+			if ($a['vendor'] == $b['vendor']) {
+				if ($a['device'] == $b['device']) {
+					return 0;
+				}
+				return ($a['device'] > $b['device']) ? 1 : -1;
+			}
+			return ($a['vendor'] > $b['vendor']) ? 1 : -1;
+		}
+		return ($a['type'] > $b['type']) ? 1 : -1;
 	}
 }

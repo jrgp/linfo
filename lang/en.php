@@ -82,6 +82,7 @@ $lang = array(
 	'number' => 'Number',
 	'card' => 'Card',
 	'message' => 'Message',
+	'from_where' => 'Source',
 	'mount_options' => 'Mount Options',
 	'error_head' => 'Data Gathering Errors',
 	'timer' => 'Timer',
