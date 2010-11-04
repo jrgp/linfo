@@ -51,25 +51,12 @@ class OS_Windows {
 		// Localize error handler
 		$this->error = LinfoError::Fledging();
 		
-		// Gather some data from WMI!
-		$required_data = array(
-			"COMPUTERSYSTEM",
-			"CPU",
-			"DISKDRIVE",
-			//"NIC",
-			"OS",
-			"PATH Win32_PnPEntity",
-			"PARTITION",
-			"PROCESS",
-			//"TEMPERATURE",
-			//"VOLTAGE",
-			"VOLUME",
-		);
-		foreach($required_data as $e) {
-			$this->wmi[$e] = $this->WMIRequest($e);
-		}
+		// Get WMI instance
+		$this->wmi = new COM('winmgmts:{impersonationLevel=impersonate}//./root/cimv2');
 		
-		//if($_SERVER['REMOTE_ADDR'] == '127.0.0.1') { var_dump($this->wmi); }
+		if (!is_object($this->wmi)) {
+			throw new GetInfoException('This needs access to WMI. Please enable DCOM in php.ini and allow the current user to access the WMI DCOM object.');
+		}
 	}
 
 	/**
@@ -110,7 +97,9 @@ class OS_Windows {
 	 */
 	private function getOS() {
 		
-		return $this->wmi['OS'][0]['Caption'];
+		foreach ($this->wmi->ExecQuery("SELECT Caption FROM Win32_OperatingSystem") as $os) {
+			return $os->Caption;
+		}
 	}
 	
 	/**
@@ -121,7 +110,9 @@ class OS_Windows {
 	 */
 	private function getKernel() {
 	
-		return $this->wmi['PROCESS'][0]['WindowsVersion'];
+		foreach ($this->wmi->ExecQuery("SELECT WindowsVersion FROM Win32_Process WHERE Handle = 0") as $process) {
+			return $process->WindowsVersion;
+		}
 	}
 	
 	/**
@@ -132,7 +123,9 @@ class OS_Windows {
 	 */
 	private function getHostName() {
 		
-		return $this->wmi['COMPUTERSYSTEM'][0]['DNSHostName'];
+		foreach ($this->wmi->ExecQuery("SELECT DNSHostName FROM Win32_ComputerSystem") as $cs) {
+			return $cs->DNSHostName;
+		}
 	}
 	
 	/**
@@ -143,10 +136,23 @@ class OS_Windows {
 	 */
 	private function getRam(){
 		
+		$total_memory = 0;
+		$free_memory = 0;
+		
+		foreach ($this->wmi->ExecQuery("SELECT TotalPhysicalMemory FROM Win32_ComputerSystem") as $cs) {
+			$total_memory = $cs->TotalPhysicalMemory;
+			break;
+		}
+		
+		foreach ($this->wmi->ExecQuery("SELECT FreePhysicalMemory FROM Win32_OperatingSystem") as $os) {
+			$free_memory = $os->FreePhysicalMemory;
+			break;
+		}
+		
 		return array(
 			'type' => 'Physical',
-			'total' => $this->wmi['COMPUTERSYSTEM'][0]['TotalPhysicalMemory'],
-			'free' => $this->wmi['OS'][0]['FreePhysicalMemory'] * 1024
+			'total' => $total_memory,
+			'free' => $free_memory * 1024
 		);
 	}
 	
@@ -160,14 +166,14 @@ class OS_Windows {
 		
 		$cpus = array();
 		
-		foreach($this->wmi["CPU"] as $cpu) {
+		foreach($this->wmi->ExecQuery("SELECT Name, Manufacturer, CurrentClockSpeed, NumberOfLogicalProcessors FROM Win32_Processor") as $cpu) {
 			$curr = array(
-				'Model' => $cpu['Name'],
-				'Vendor' => $cpu['Manufacturer'],
-				'MHz' => $cpu['CurrentClockSpeed'],
+				'Model' => $cpu->Name,
+				'Vendor' => $cpu->Manufacturer,
+				'MHz' => $cpu->CurrentClockSpeed,
 			);
-			$curr['Model'] = $cpu['Name'];
-			for ($i = 0; $i < $cpu['NumberOfLogicalProcessors']; $i++)
+			$curr['Model'] = $cpu->Name;
+			for ($i = 0; $i < $cpu->NumberOfLogicalProcessors; $i++)
 				$cpus[] = $curr;
 		}
 		
@@ -182,7 +188,13 @@ class OS_Windows {
 	 */
 	private function getUpTime () {
 		
-		$booted = $this->wmi['OS'][0]['LastBootUpTime'];
+		$booted = "";
+		
+		foreach ($this->wmi->ExecQuery("SELECT LastBootUpTime FROM Win32_OperatingSystem") as $os) {
+			$booted = $os->LastBootUpTime;
+			break;
+		}
+		
 		$booted = date_parse_from_format("YmdHMS", $booted);
 		$booted = mktime($booted['hour'], $booted['minute'], $booted['second'], $booted['month'], $booted['day'], $booted['year']);
 		
@@ -200,22 +212,22 @@ class OS_Windows {
 		$drives = array();
 		$partitions = array();
 		
-		foreach ($this->wmi['PARTITION'] as $partition) {
-			$partitions[$partition['DiskIndex']][] = array(
-				'size' => $partition['Size'],
-				'name' => $partition['DeviceID'] . ' (' . $partition['Type'] . ')'
+		foreach ($this->wmi->ExecQuery("SELECT DiskIndex, Size, DeviceID, Type FROM Win32_Partition") as $partition) {
+			$partitions[$partition->DiskIndex][] = array(
+				'size' => $partition->Size,
+				'name' => $partition->DeviceID . ' (' . $partition->Type . ')'
 			);
 		}
 		
-		foreach ($this->wmi['DISKDRIVE'] as $drive) {
+		foreach ($this->wmi->ExecQuery("SELECT Caption, DeviceID, Index, Size FROM Win32_DiskDrive") as $drive) {
 			$drives[] = array(
-				'name' =>  $drive['Caption'],
-				'vendor' => reset(explode(" ", $drive['Caption'])),
-				'device' => $drive['DeviceID'],
+				'name' =>  $drive->Caption,
+				'vendor' => reset(explode(" ", $drive->Caption)),
+				'device' => $drive->DeviceID,
 				'reads' => false,
 				'writes' => false,
-				'size' => $drive['Size'],
-				'partitions' => array_key_exists($drive['Index'], $partitions) && is_array($partitions[$drive['Index']]) ? $partitions[$drive['Index']] : false 
+				'size' => $drive->Size,
+				'partitions' => array_key_exists($drive->Index, $partitions) && is_array($partitions[$drive->Index]) ? $partitions[$drive->Index] : false 
 			);
 		}
 		
@@ -243,10 +255,7 @@ class OS_Windows {
 		
 		$volumes = array();
 		
-		foreach($this->wmi['VOLUME'] as $volume) {
-			if($volume['DriveType'] != 3) { // present but not mounted
-				continue;
-			}
+		foreach($this->wmi->ExecQuery("SELECT Automount, BootVolumem, Compressed, IndexingEnabled, Label, Caption, FileSystem, Capacity, FreeSpace FROM Win32_Volume") as $volume) {
 			$options = array();
 			if ($volume['Automount']) {
 				$options[] = 'automount';
@@ -262,14 +271,14 @@ class OS_Windows {
 			}
 			$volumes[] = array(
 				'device' => false,
-				'label' => $volume['Label'],
-				'mount' => $volume['Caption'],
-				'type' => $volume['FileSystem'],
-				'size' => $volume['Capacity'],
-				'used' => $volume['Capacity'] - $volume['FreeSpace'],
-				'free' => $volume['FreeSpace'],
-				'free_percent' => round($volume['FreeSpace'] / $volume['Capacity'], 2) * 100,
-				'used_percent' => round(($volume['Capacity'] - $volume['FreeSpace']) / $volume['Capacity'], 2) * 100,
+				'label' => $volume->Label,
+				'mount' => $volume->Caption,
+				'type' => $volume->FileSystem,
+				'size' => $volume->Capacity,
+				'used' => $volume->Capacity - $volume->FreeSpace,
+				'free' => $volume->FreeSpace,
+				'free_percent' => round($volume->FreeSpace / $volume->Capacity, 2) * 100,
+				'used_percent' => round(($volume->Capacity - $volume->FreeSpace) / $volume->Capacity, 2) * 100,
 				'options' => $options
 			);
 		}
@@ -289,14 +298,14 @@ class OS_Windows {
 		
 		$devs = array();
 		
-		foreach($this->wmi['PATH Win32_PnPEntity'] as $pnpdev) {
-			$type = reset(explode("\\", $pnpdev['DeviceID']));
-			if(($type != 'USB' && $type != 'PCI') || (empty($pnpdev['Caption']) || $pnpdev['Manufacturer'][0] == '(')) {
+		foreach($this->wmi->ExecQuery("SELECT DeviceID, Caption, Manufacturer FROM Win32_PnPEntity") as $pnpdev) {
+			$type = reset(explode("\\", $pnpdev->DeviceID));
+			if(($type != 'USB' && $type != 'PCI') || (empty($pnpdev->Caption) || $pnpdev->Manufacturer[0] == '(')) {
 				continue;
 			}
 			$devs[] = array(
-				'vendor' => $pnpdev['Manufacturer'],
-				'device' => $pnpdev['Caption'],
+				'vendor' => $pnpdev->Manufacturer,
+				'device' => $pnpdev->Caption,
 				'type' => $type
 			);
 		}
@@ -325,8 +334,8 @@ class OS_Windows {
 	private function getLoad() {
 		
 		$load = array();
-		foreach ($this->wmi['CPU'] as $cpu) {
-			$load[] = $cpu['LoadPercentage'];
+		foreach ($this->wmi->ExecQuery("SELECT LoadPercentage FROM Win32_Processor") as $cpu) {
+			$load[] = $cpu->LoadPercentage;
 		}
 		return (array_sum($load) / count($load)) . "%";
 	}
@@ -387,97 +396,14 @@ class OS_Windows {
 			'threads' => 0
 		);
 		
-		foreach($this->wmi['PROCESS'] as $proc) {
-			$result['threads'] += (int)$proc['ThreadCount'];
+		foreach($this->wmi->ExecQuery("SELECT ThreadCount FROM Win32_Process") as $proc) {
+			$result['threads'] += (int)$proc->ThreadCount;
 			$result['totals']['running']++;
 		}
 		
 		$result['proc_total'] = $result['totals']['running'];
 		
 		return $result;
-	}
-	
-	/**
-	 * WMIRequest
-	 * 
-	 * @access private
-	 * @param string $name alias
-	 * @return array results
-	 */
-	private function WMIRequest($name) {
-	
-		$cachefile = CACHE_PATH . "wmic_cache_$name.json";
-		
-		if ($this->settings['wmi_cache']['active']  && file_exists($cachefile) && time() - filemtime($cachefile) < @$this->settings['wmi_cache'][$name]) {
-			$cache = file_get_contents($cachefile);
-			$cache = json_decode($cache, true);
-			return $cache;
-		}
-		
-		$this->error->add('Linfo Windows wmic parser', "File not cached: $name");
-		
-		exec("wmic $name", $results, $errorcode);
-		if ($errorcode != 0) {
-			$this->error->add('Linfo Windows wmic parser', "Failed to execute wmic with parameter $name");
-			return array();
-		}
-		$header = $results[0];
-		unset($results[0]);
-		
-		// Alright, this is going to get a bit tricky: Parse the WMI table output and return it as array
-		$columns = array();
-		$start = 0;
-		while ($start !== false) {
-			$end = strpos($header, '  ', $start);
-			if ($end === false) {
-				$columns[] = array("start" => $start, "end" => -1, "caption" => trim(substr($header, $start)));
-				break;
-			}
-			$end = $end + 2;
-			for ($i = $end; $i < strlen($header); $i++) {
-				if($header[$i] != ' ') {
-					$end = $i;
-					break;
-				}
-			}
-			if ($i == strlen($header)) {
-				$this->error->add('Linfo Windows wmic parser', "Error parsing wmic output for $name");
-				return array();
-			}
-			$columns[] = array("start" => $start, "end" => $end, "caption" => trim(substr($header, $start, $end - $start)));
-			$start = $end;
-		}
-		$table = array();
-		foreach ($results as $e) {
-			if (empty($e)) {
-				continue;
-			}
-			$a = array();
-			foreach ($columns as $c) {
-				$start = $c['start'];
-				$len = ($c['end'] == -1) ? strlen($e) - $start : $c['end'] - $start;
-				$s = substr($e, $start, $len);
-				if ($s) {
-					$s = trim($s);
-					// Convert to bool
-					if ($s == "TRUE") {
-						$s = true;
-					} else if ($s == "FALSE") {
-						$s = false;
-					}/* else if(function_exists('mb_convert_encoding')) {
-						$s = mb_convert_encoding($s, 'CP850');
-					}*/
-					$a[$c['caption']] = $s;
-				}
-			}
-			$table[] = $a;
-		}
-		
-		if($this->settings['wmi_cache']['active']) {
-			file_put_contents($cachefile, json_encode($table));
-		}
-		
-		return $table;
 	}
 	
 	/**
