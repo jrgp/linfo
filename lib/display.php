@@ -85,8 +85,9 @@ function showInfo($info, $settings) {
 		$proc_stats = array();
 		
 		// Load the keys
-		foreach ($info['processStats']['totals'] as $k => $v) 
-			$proc_stats[] = $k . ': ' . number_format($v);
+		if (array_key_exists('totals', $info['processStats']) && is_array($info['processStats']['totals']))
+			foreach ($info['processStats']['totals'] as $k => $v) 
+				$proc_stats[] = $k . ': ' . number_format($v);
 
 		// Total as well
 		$proc_stats[] = 'total: ' . number_format($info['processStats']['proc_total']);
@@ -412,12 +413,16 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['mounts'])) {
 		$has_devices = false;
 		$has_labels = false;
+		$has_types = false;
 		foreach($info['Mounts'] as $mount) {
 			if (!empty($mount['device'])) {
 				$has_devices = true;
 			}
 			if (!empty($mount['label'])) {
 				$has_labels = true;
+			}
+			if (!empty($mount['devtype'])) {
+				$has_types = true;
 			}
 		}
 		$addcolumns = 0;
@@ -427,11 +432,16 @@ function showInfo($info, $settings) {
 			$addcolumns++;
 		if ($has_labels)
 			$addcolumns++;
+		if ($has_types)
+			$addcolumns++;
 		echo '
 <div class="infoTable">
 	<h2>'.$lang['filesystem_mounts'].'</h2>
 	<table>
 		<tr>';
+		if ($has_types) {
+			echo '<th>'.$lang['type'].'</th>';
+		}
 		if ($has_devices) {
 			echo '<th>'.$lang['device'].'</th>';
 		}
@@ -480,6 +490,9 @@ function showInfo($info, $settings) {
 					$mount['device'] .= DIRECTORY_SEPARATOR;
 
 				echo '<tr>';
+				if ($has_types) {
+					echo '<td>'.$mount['devtype'].'</td>';
+				}
 				if ($has_devices) {
 					echo '<td>'.$mount['device'].'</td>';
 				}

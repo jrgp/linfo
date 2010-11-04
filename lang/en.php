@@ -56,6 +56,7 @@ $lang = array(
 	'value' => 'Value',
 	'hardware' => 'Hardware',
 	'vendor' => 'Vendor',
+	'type' => 'Type',
 	'drives' => 'Drives',
 	'name' => 'Name',
 	'reads' => 'Reads',

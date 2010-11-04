@@ -212,7 +212,7 @@ class OS_Windows {
 		$drives = array();
 		$partitions = array();
 		
-		foreach ($this->wmi->ExecQuery("SELECT DiskIndex, Size, DeviceID, Type FROM Win32_Partition") as $partition) {
+		foreach ($this->wmi->ExecQuery("SELECT DiskIndex, Size, DeviceID, Type FROM Win32_DiskPartition") as $partition) {
 			$partitions[$partition->DiskIndex][] = array(
 				'size' => $partition->Size,
 				'name' => $partition->DeviceID . ' (' . $partition->Type . ')'
@@ -255,32 +255,61 @@ class OS_Windows {
 		
 		$volumes = array();
 		
-		foreach($this->wmi->ExecQuery("SELECT Automount, BootVolumem, Compressed, IndexingEnabled, Label, Caption, FileSystem, Capacity, FreeSpace FROM Win32_Volume") as $volume) {
+		foreach($this->wmi->ExecQuery("SELECT Automount, BootVolume, Compressed, IndexingEnabled, Label, Caption, FileSystem, Capacity, FreeSpace, DriveType FROM Win32_Volume") as $volume) {
 			$options = array();
-			if ($volume['Automount']) {
+			if ($volume->Automount) {
 				$options[] = 'automount';
 			}
-			if ($volume['BootVolume']) {
+			if ($volume->BootVolume) {
 				$options[] = 'boot';
 			}
-			if ($volume['Compressed']) {
+			if ($volume->Compressed) {
 				$options[] = 'compressed';
 			}
-			if ($volume['IndexingEnabled']) {
+			if ($volume->IndexingEnabled) {
 				$options[] = 'indexed';
 			}
-			$volumes[] = array(
+			$a = array(
 				'device' => false,
 				'label' => $volume->Label,
+				'devtype' => '',
 				'mount' => $volume->Caption,
 				'type' => $volume->FileSystem,
 				'size' => $volume->Capacity,
 				'used' => $volume->Capacity - $volume->FreeSpace,
 				'free' => $volume->FreeSpace,
-				'free_percent' => round($volume->FreeSpace / $volume->Capacity, 2) * 100,
-				'used_percent' => round(($volume->Capacity - $volume->FreeSpace) / $volume->Capacity, 2) * 100,
+				'free_percent' => 0,
+				'used_percent' => 0,
 				'options' => $options
 			);
+			
+			switch ($volume->DriveType) {
+				case 2:
+					$a['devtype'] = 'Removable drive';
+					break;
+				case 3:
+					$a['devtype'] = 'Fixed drive';
+					break;
+				case 4:
+					$a['devtype'] = 'Remote drive';
+					break;
+				case 5:
+					$a['devtype'] = 'CD-ROM';
+					break;
+				case 6:
+					$a['devtype'] = 'RAM disk';
+					break;
+				default:
+					$a['devtype'] = 'Unknown';
+					break;
+			}
+			
+			if ($volume->Capacity != 0) {
+				$a['free_percent'] = round($volume->FreeSpace / $volume->Capacity, 2) * 100;
+				$a['used_percent'] = round(($volume->Capacity - $volume->FreeSpace) / $volume->Capacity, 2) * 100;
+			}
+			
+			$volumes[] = $a;
 		}
 		
 		usort($volumes, array('OS_Windows', 'compare_mounts'));
@@ -347,6 +376,90 @@ class OS_Windows {
 	 * @return array of network devices
 	 */
 	private function getNet() {
+	
+		$return = array();
+		
+		foreach ($this->wmi->ExecQuery("SELECT AdapterType, Name, NetConnectionStatus, GUID FROM Win32_NetworkAdapter WHERE PhysicalAdapter = TRUE") as $net) {
+			// Save and get info for each
+			$return[$net->Name] = array(
+				// Stats are stored in simple files just containing the number
+				'recieved' => array(
+					'bytes' => 0,
+					'errors' => 0,
+					'packets' => 0
+				),
+				'sent' => array(
+					'bytes' => 0,
+					'errors' => 0,
+					'packets' => 0
+				),
+				// These were determined above
+				'state' => 0,
+				'type' => $net->AdapterType
+			);
+			switch($net->NetConnectionStatus) {
+				case 0:
+					$return[$net->Name]['state'] = 'down';
+					break;
+				case 1:
+					$return[$net->Name]['state'] = 'Connecting';
+					break;
+				case 2:
+					$return[$net->Name]['state'] = 'up';
+					break;
+				case 3:
+					$return[$net->Name]['state'] = 'Disconnecting';
+					break;
+				case 4:
+					$return[$net->Name]['state'] = 'down'; // MSDN 'Hardware not present'
+					break;
+				case 5:
+					$return[$net->Name]['state'] = 'Hardware disabled';
+					break;
+				case 6:
+					$return[$net->Name]['state'] = 'Hardware malfunction';
+					break;
+				case 7:
+					$return[$net->Name]['state'] = 'Media disconnected';
+					break;
+				case 8:
+					$return[$net->Name]['state'] = 'Authenticating';
+					break;
+				case 9:
+					$return[$net->Name]['state'] = 'Authentication succeeded';
+					break;
+				case 10:
+					$return[$net->Name]['state'] = 'Authentication failed';
+					break;
+				case 11:
+					$return[$net->Name]['state'] = 'Invalid address';
+					break;
+				case 12:
+					$return[$net->Name]['state'] = 'Credentials required';
+					break;
+				default:
+					$return[$net->Name]['state'] = 'unknown';
+					break;
+			}
+			// @Microsoft: An index would be nice here indeed.
+			$canonname = preg_replace("/[^A-Za-z0-9- ]/", "_", $net->Name);
+			$isatapname = "isatap." . $net->GUID;
+			$result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname' OR Name = '$isatapname'");
+			foreach ($result as $netspeed) {
+				$return[$net->Name]['recieved'] = array(
+					'bytes' => (int)$netspeed->BytesReceivedPersec,
+					'errors' => (int)$netspeed->PacketsReceivedErrors,
+					'packets' => (int)$netspeed->PacketsReceivedPersec
+				);
+				$return[$net->Name]['sent'] = array(
+					'bytes' => (int)$netspeed->BytesSentPersec,
+					'erros' => 0,
+					'packets' => (int)$netspeed->PacketsSentPersec
+				);
+			}
+		}
+		
+		return $return;
 	}
 	
 	/**
@@ -386,22 +499,15 @@ class OS_Windows {
 		
 		$result = array(
 			'exists' => true,
-			'totals' => array(
-				'running' => 0,
-				'zombie' => 0,
-				'sleeping' => 0,
-				'stopped' => 0,
-			),
 			'proc_total' => 0,
 			'threads' => 0
 		);
 		
 		foreach($this->wmi->ExecQuery("SELECT ThreadCount FROM Win32_Process") as $proc) {
 			$result['threads'] += (int)$proc->ThreadCount;
-			$result['totals']['running']++;
+			$result['proc_total']++;
 		}
 		
-		$result['proc_total'] = $result['totals']['running'];
 		
 		return $result;
 	}
