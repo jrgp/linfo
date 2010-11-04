@@ -41,3 +41,13 @@ table.mini th {background-color: inherit;}
 .service_up {color: green;}
 .service_down {color: maroon;}
 .service_zombie {color: orange;}
+span.toggler {
+	float: right;
+	font-family: monospace;
+	cursor: pointer;
+	font-weight: bold;
+	color: white;
+	font-size: 1.4em;
+	padding-top: .2em;
+	padding-right: .4em;
+}

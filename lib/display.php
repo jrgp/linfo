@@ -43,6 +43,7 @@ function showInfo($info, $settings) {
 	<title>'.AppName.' - '.$info['HostName'].'</title>
 	<link href="'.WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon" />
 	<link href="'.WEB_PATH.'layout/styles.css" type="text/css" rel="stylesheet" />
+	<script src="'.WEB_PATH.'layout/scripts.js" type="text/javascript"></script>
 	<meta name="generator" content="'.VERSION.'" />
 </head>
 <body id="info">
@@ -50,8 +51,9 @@ function showInfo($info, $settings) {
 <div class="col2">
 	<div class="col">
 		<div class="infoTable">
+			<span class="toggler" onclick="toggle_show(\'coreContent\', this);">-</span>
 			<h2>'.$lang['core'].'</h2>
-			<table>';
+			<table id="coreContent">';
 			
 	// Linfo Core. Decide what to show.
 	$core = array();
@@ -119,8 +121,9 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['ram'])) {
 		echo '
 		<div class="infoTable">
+			<span class="toggler" onclick="toggle_show(\'memContent\', this);">-</span>
 			<h2>'.$lang['memory'].'</h2>
-			<table>
+			<table id="memContent">
 				<colgroup>
 					<col style="width: 10%;" />
 					<col style="width: 30%;" />
@@ -193,8 +196,9 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['network'])) {
 		echo '
 		<div class="infoTable">
+			<span class="toggler" onclick="toggle_show(\'netContent\', this);">-</span>
 			<h2>'.$lang['network_devices'].'</h2>
-			<table>
+			<table id="netContent">
 				<tr>
 					<th>'.$lang['device_name'].'</th>
 					<th>'.$lang['type'].'</th>
@@ -225,8 +229,9 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['temps']) && count($info['Temps']) > 0) {
 		echo '
 		<div class="infoTable">
+			<span class="toggler" onclick="toggle_show(\'tempsContent\', this);">-</span>
 			<h2>'.$lang['temps_voltages'].'</h2>
-			<table>
+			<table id="tempsContent">
 				<tr><th>'.$lang['path'].'</th><th>'.$lang['device'].'</th><th>'.$lang['value'].'</th></tr>
 				';
 			$num_temps = count($info['Temps']);
@@ -253,8 +258,9 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['battery']) && count($info['Battery']) > 0) {
 		echo '
 		<div class="infoTable">
+			<span class="toggler" onclick="toggle_show(\'battContent\', this);">-</span>
 			<h2>'.$lang['batteries'].'</h2>
-			<table>
+			<table id="battContent">
 				<tr><th>'.$lang['device'].'</th><th>'.$lang['state'].'</th><th>'.$lang['charge'].' %</th></tr>
 				';
 		foreach ($info['Battery'] as $bat) 
@@ -274,8 +280,9 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['services']) && count($info['services']) > 0) {
 		echo '
 		<div class="infoTable">
+			<span class="toggler" onclick="toggle_show(\'servContent\', this);">-</span>
 			<h2>'.$lang['services'].'</h2>
-			<table>
+			<table id="servContent">
 				<tr><th>'.$lang['service'].'</th><th>'.$lang['state'].'</th><th>'.$lang['pid'].'</th><th>Threads</th></tr>
 				';
 
@@ -308,8 +315,9 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['devices'])) {
 		echo '
 		<div class="infoTable">
+			<span class="toggler" onclick="toggle_show(\'hardContent\', this);">-</span>
 			<h2>'.$lang['hardware'].'</h2>
-			<table>
+			<table id="hardContent">
 				<tr>
 					<th>'.$lang['type'].'</th>
 					<th>'.$lang['vendor'].'</th>
@@ -338,8 +346,9 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['hd'])) {
 		echo '
 		<div class="infoTable">
+			<span class="toggler" onclick="toggle_show(\'driveContent\', this);">-</span>
 			<h2>Drives</h2>
-			<table>
+			<table id="driveContent">
 				<tr>
 					<th>'.$lang['path'].'</th>
 					<th>'.$lang['vendor'].'</th>
@@ -390,8 +399,9 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['sound']) && count($info['SoundCards']) > 0) {
 		echo '
 		<div class="infoTable">
+			<span class="toggler" onclick="toggle_show(\'soundCardsContent\', this);">-</span>
 			<h2>'.$lang['sound_cards'].'</h2>
-			<table>
+			<table id="soundCardsContent">
 				<tr>
 					<th>'.$lang['number'].'</th>
 					<th>'.$lang['vendor'].'</td>
@@ -446,8 +456,9 @@ function showInfo($info, $settings) {
 			$addcolumns++;
 		echo '
 <div class="infoTable">
+	<span class="toggler" onclick="toggle_show(\'mountsContent\', this);">-</span>
 	<h2>'.$lang['filesystem_mounts'].'</h2>
-	<table>
+	<table id="mountsContent">
 		<tr>';
 		if ($has_types) {
 			echo '<th>'.$lang['type'].'</th>';
@@ -559,8 +570,9 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['raid']) && count($info['Raid']) > 0) {
 		echo '
 <div class="infoTable">
+	<span class="toggler" onclick="toggle_show(\'raidsContent\', this);">-</span>
 	<h2>'.$lang['raid_arrays'].'</h2>
-	<table>
+	<table id="raidsContent">
 		<colgroup>
 			<col style="width: 10%;" />
 			<col style="width: 30%;" />
@@ -625,8 +637,9 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show_errors']) && LinfoError::Fledging()->num() > 0) {
 		echo '
 	<div id="errorList" class="infoTable">
+		<span class="toggler" onclick="toggle_show(\'errorsContent\', this);">-</span>
 		<h2>'.$lang['error_head'].'</h2>
-		<table>
+		<table id="errorsContent">
 			<tr>
 				<th>'.$lang['from_where'].'</th>
 				<th>'.$lang['message'].'</th>
@@ -658,8 +671,9 @@ function showInfo($info, $settings) {
 	if (!empty($settings['timer'])) {
 		echo '
 	<div id="timerList" class="infoTable">
+		<span class="toggler" onclick="toggle_show(\'timerContent\', this);">-</span>
 		<h2>'.$lang['timer'].'</h2>
-		<table>
+		<table id="timerContent">
 			<tr>
 				<th>'.$lang['area'].'</th>
 				<th>'.$lang['time_taken'].'</th>

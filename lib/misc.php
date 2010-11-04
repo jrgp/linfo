@@ -148,11 +148,15 @@ function getLines($file) {
 */
 function create_table($structure) {
 
+	// html id
+	$html_id = str_replace(array(' ', '\'', '"'), array('_', '_', '_'), $structure['root_title']);
+
 	// Start it off
 	$html = '
 <div class="infoTable">
+	<span class="toggler" onclick="toggle_show(\''.$html_id.'\', this);">-</span>
 	<h2>'.$structure['root_title'].'</h2>
-	<table>';
+	<table id="'.$html_id.'">';
 	
 	// Go throuch each row
 	foreach ($structure['rows'] as $row) {
