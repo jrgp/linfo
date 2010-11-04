@@ -394,10 +394,20 @@ function showInfo($info, $settings) {
 			<table>
 				<tr>
 					<th>'.$lang['number'].'</th>
+					<th>'.$lang['vendor'].'</td>
 					<th>'.$lang['card'].'</th>
 				</tr>';
-		foreach ($info['SoundCards'] as $card)
-			echo '<tr><td>'.$card['number'].'</td><td>'.$card['card'].'</td></tr>';
+		foreach ($info['SoundCards'] as $card) {
+			if (empty($card['vendor'])) {
+				$card['vendor'] = 'Unknown';
+			}
+			echo '
+				<tr>
+					<td>'.$card['number'].'</td>
+					<td>'.$card['vendor'].'</td>
+					<td>'.$card['card'].'</td>
+				</tr>';
+		}
 		echo '
 			</table>
 		</div>

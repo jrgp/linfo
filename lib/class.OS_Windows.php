@@ -382,7 +382,6 @@ class OS_Windows {
 		foreach ($this->wmi->ExecQuery("SELECT AdapterType, Name, NetConnectionStatus, GUID FROM Win32_NetworkAdapter WHERE PhysicalAdapter = TRUE") as $net) {
 			// Save and get info for each
 			$return[$net->Name] = array(
-				// Stats are stored in simple files just containing the number
 				'recieved' => array(
 					'bytes' => 0,
 					'errors' => 0,
@@ -393,7 +392,6 @@ class OS_Windows {
 					'errors' => 0,
 					'packets' => 0
 				),
-				// These were determined above
 				'state' => 0,
 				'type' => $net->AdapterType
 			);
@@ -487,6 +485,20 @@ class OS_Windows {
 	 * @return array of soundcards
 	 */
 	private function getSoundCards() {
+		
+		$cards = array();
+		$i = 0;
+		
+		foreach ($this->wmi->ExecQuery("SELECT Caption, Manufacturer FROM Win32_SoundDevice") as $card) {
+			$cards[] = array(
+				'number' => $i,
+				'vendor' => $card->Manufacturer,
+				'card' => $card->Caption
+			);
+			$i++;
+		}
+		
+		return $cards;
 	}
 	
 	/**
