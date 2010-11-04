@@ -219,6 +219,8 @@ class OS_Windows {
 			);
 		}
 		
+		usort($drives, array('OS_Windows', 'compare_drives'));
+		
 		return $drives;
 	}
 	
@@ -271,6 +273,8 @@ class OS_Windows {
 				'options' => $options
 			);
 		}
+		
+		usort($volumes, array('OS_Windows', 'compare_mounts'));
 		
 		return $volumes;
 	}
@@ -477,12 +481,7 @@ class OS_Windows {
 	}
 	
 	/**
-	 * compare_devices
-	 * 
-	 * @access private
-	 * @param mixed $a first element
-	 * @param mixed $b second element
-	 * @return integer compare result
+	 * @ignore
 	 */
 	static function compare_devices($a, $b) {
 		
@@ -496,5 +495,27 @@ class OS_Windows {
 			return ($a['vendor'] > $b['vendor']) ? 1 : -1;
 		}
 		return ($a['type'] > $b['type']) ? 1 : -1;
+	}
+	
+	/**
+	 * @ignore
+	 */
+	static function compare_drives($a, $b) {
+		
+		if ($a['device'] == $b['device']) {
+			return 0;
+		}
+		return ($a['device'] > $b['device']) ? 1 : -1;
+	}
+	
+	/**
+	 * @ignore
+	 */
+	static function compare_mounts($a, $b) {
+		
+		if ($a['mount'] == $b['mount']) {
+			return 0;
+		}
+		return ($a['mount'] > $b['mount']) ? 1 : -1;
 	}
 }
