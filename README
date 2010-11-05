@@ -1,6 +1,6 @@
 Linfo - PHP server health/information script
 
-Currently runs on: Linux; FreeBSD; NetBSD; OpenBSD; Minix (alpha); Darwin (alpha); SunOS(alpha); Windows (very alpha)
+Currently runs on: Linux; FreeBSD; NetBSD; OpenBSD; Minix (alpha); Darwin (alpha); SunOS(alpha); Windows (alpha)
 
 Etymology:
  - The name 'Linfo' was decided upon before I intended it to be cross platform.
@@ -13,7 +13,7 @@ Goals:
  - Call very few external programs (like df/load/uptime/etc), if any. (parse
    the file system for info, if possible)
  - Linux version not use external programs *at all* and rely exclusively on
-   /proc and /sys and connecting to locally listening daemons
+   /proc and /sys and connecting to locally listening daemons. (except for extensions, listed below)
  - Don't go nuts with eye candy. Don't use ajax. Make viewing the info on
    text only browsers possible and easy.
  - Any javascript ever used must be *extremely* subtle and degrade gracefully
@@ -22,10 +22,11 @@ Goals:
  - Don't give info that can be exploited and turned into a security risk, especially
    not names and command line arguments given to running programs.
  - Don't use blatantly slow methods such as preg_split(), especially not in loops
+ - Prefer speed over code conciseness. Where possible, use for/while loops instead of foreach.
 
 Usable clients:
  - Any web browser should work, including text only ones
- - Tested with: Firefox 3.x, Chrome, IE, Lynx, Elinks
+ - Tested with: Firefox 3.x, iOS Safari, Chrome, IE, Lynx, Elinks
 
 Global System requirements: 
  - At least PHP 5
@@ -39,29 +40,26 @@ Linux system requirements:
 
 FreeBSD system requirements:
  - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, etc
- - Known to work under 8.0-RELEASE; older versions may work, I'm not sure
+ - Known to work under 8.0-RELEASE; older versions may work
 
 NetBSD system requirements:
  - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, /usr/pkg/bin, etc
- - Known to work under NetBSD 5.0.2; older versions may work, I'm not sure
+ - Known to work under NetBSD 5.0.2; older versions may work
 
 OpenBSD system requirements/notes:
  - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin,  etc
- - Known to work under OpenBSD 4.7; older versions may work, I'm not sure
+ - Known to work under OpenBSD 4.7; older versions may work
  - It will not work under the default httpd chroot
 
 Installation/usage:
  1) Extract tarball contents to somewhere under your web root
  2) Rename sample.config.inc.php to config.inc.php, after optionally changing values in it
  3) Visit page in web browser
- 4) ???
- 5) Profit!
 
 Known issues:
  - Getting Linux device names is slow on old systems
  - Getting Linux device names does not work on all distros [yet]
  - Linux Wifi is not finished
-   This is primarily a Unix script
 
 Linux system temps/voltages/etc requirments:
  - Have hddtemp listening or periodically writing to syslog, and/or
@@ -72,11 +70,16 @@ Linux system temps/voltages/etc requirments:
 
 Experimental new features/extensions:
  - CUPS parsing. 
- - Samba status
+ - Samba status.
+ - Windows support
+
+TODO:
+ - Support for other Unix operating systems (Hurd, IRIX, AIX, HP UX, etc)
+ - Support for strange operating systems: Haiku/BeOS
 
 Please send suggestions, help requests, comments, complaints, beer, pizza, and hookers to:
  - joe@u13.net / elephanthunter@gmail.com / oliver.kuckertz@mologie.de
- - IRC - jrgp @ freenode
+ - IRC - #linfo @ freenode
 
 License: GNU General Public License
 Author/project leader: Joseph Robert Gillotti <joe@u13.net>
