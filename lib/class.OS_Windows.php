@@ -100,6 +100,7 @@ class OS_Windows {
 		foreach ($this->wmi->ExecQuery("SELECT Caption FROM Win32_OperatingSystem") as $os) {
 			return $os->Caption;
 		}
+		return "Unknown";
 	}
 	
 	/**
@@ -113,6 +114,7 @@ class OS_Windows {
 		foreach ($this->wmi->ExecQuery("SELECT WindowsVersion FROM Win32_Process WHERE Handle = 0") as $process) {
 			return $process->WindowsVersion;
 		}
+		return "Unknown";
 	}
 	
 	/**
@@ -123,9 +125,10 @@ class OS_Windows {
 	 */
 	private function getHostName() {
 		
-		foreach ($this->wmi->ExecQuery("SELECT DNSHostName FROM Win32_ComputerSystem") as $cs) {
-			return $cs->DNSHostName;
+		foreach ($this->wmi->ExecQuery("SELECT Name FROM Win32_ComputerSystem") as $cs) {
+			return $cs->Name;
 		}
+		return "Unknown";
 	}
 	
 	/**
