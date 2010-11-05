@@ -1256,39 +1256,72 @@ class OS_Linux {
 				continue;
 			}
 
-			// Try getting state
-			@preg_match('/^State:\s+(\w)/m', $status_contents, $state_match);
+			
+			// Attempt getting info out of it
+			if (!preg_match_all('/^(\w+):\s+(\w+)/m', $status_contents, $status_matches, PREG_SET_ORDER))
+				continue;
 
-			// Well? Determine state
-			switch ($state_match[1]) {
-				case 'D': // disk sleep? wtf?
-				case 'S':
-					$state = 'Up (Sleeping)';
-				break;
-				case 'Z':
-					$state = 'Zombie';
-				break;
-				// running
-				case 'R':
-					$state = 'Up (Running)';
-				break;
-				// stopped
-				case 'T':
-					$state = 'Up (Stopped)';
-				break;
-				default:
-					continue;
-				break;
+			// Initially set these as pointless
+			$state = false;
+			$threads = false;
+			$mem = false;
+
+			// Go through
+			//foreach ($status_matches as $status_match) {
+			for ($i = 0, $num = count($status_matches); $i < $num; $i++) {
+
+				// What have we here?
+				switch ($status_matches[$i][1]) {
+
+					// State section
+					case 'State':
+						switch ($status_matches[$i][2]) {
+							case 'D': // disk sleep? wtf?
+							case 'S':
+								$state = 'Up (Sleeping)';
+							break;
+							case 'Z':
+								$state = 'Zombie';
+							break;
+							// running
+							case 'R':
+								$state = 'Up (Running)';
+							break;
+							// stopped
+							case 'T':
+								$state = 'Up (Stopped)';
+							break;
+							default:
+								continue;
+							break;
+						}
+					break;
+
+					// Mem usage
+					case 'VmSize':
+						if (is_numeric($status_matches[$i][2]))
+							$mem = $status_matches[$i][2] * 1024; // Measured in kilobytes; we want bytes
+					break;
+					
+					// Thread count
+					case 'Threads':
+						if (is_numeric($status_matches[$i][2]))
+							$threads = $status_matches[$i][2];
+
+						// Thread count should be last. Stop here to possibly save time assuming we have the other values
+						if ($state !== false && $mem !== false && $threads !== false)
+							break;
+					break;
+				}
 			}
 
-			// Try getting number of threads
-			@preg_match('/^Threads:\s+(\d+)/m', $status_contents, $threads_match);
 
 			// Save info
 			$statuses[$service] = array(
-				'state' => $state,
-				'threads' => is_numeric($threads_match[1]) ? $threads_match[1] : '?',
-				'pid' => $pid
+				'state' => $state ? $state : '?',
+				'threads' => $threads,
+				'pid' => $pid,
+				'memory_usage' => $mem
 			);
 		}
 

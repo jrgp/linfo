@@ -94,5 +94,6 @@ $lang = array(
 	'hours' => 'godzina',
 	'pid' => 'PID', // todo: translate
 	'service' => 'Service',
-	'services' => 'Services'
+	'services' => 'Services',
+	'memory_usage' => 'Memory Usage' //TODO: translate
 );

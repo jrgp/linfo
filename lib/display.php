@@ -283,7 +283,7 @@ function showInfo($info, $settings) {
 			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['services'].'</h2>
 			<table id="servContent">
-				<tr><th>'.$lang['service'].'</th><th>'.$lang['state'].'</th><th>'.$lang['pid'].'</th><th>Threads</th></tr>
+				<tr><th>'.$lang['service'].'</th><th>'.$lang['state'].'</th><th>'.$lang['pid'].'</th><th>Threads</th><th>'.$lang['memory_usage'].'</th></tr>
 				';
 
 		// Show them
@@ -296,7 +296,8 @@ function showInfo($info, $settings) {
 						<span class="service_'.strtolower($state_parts[0]).'">'.$state_parts[0].'</span>
 						'.(array_key_exists(1, $state_parts) ? '<span class="faded">'.$state_parts[1].'</span>' : '').'</td>
 					<td>'.$state['pid'].'</td>
-					<td>'.$state['threads'].'</td>
+					<td>',$state['threads'] ? $state['threads'] : '?','</td>
+					<td>',$state['memory_usage'] ? byte_convert($state['memory_usage']) : '?','</td>
 				</tr>
 			';
 		}

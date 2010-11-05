@@ -96,5 +96,6 @@ $lang = array(
 	'hours' => 'hours',
 	'pid' => 'PID',
 	'service' => 'Service',
-	'services' => 'Services'
+	'services' => 'Services',
+	'memory_usage' => 'Memory Usage'
 );
