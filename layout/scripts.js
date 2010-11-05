@@ -18,7 +18,7 @@
 
 var Linfo = (function() {
 	function toggleShow(e) {
-		var elButton = e.target,
+		var elButton = e.target || e.srcElement,
 			elInfoTable = elButton.parentNode;
 
 		if (elInfoTable.className === "infoTable") {
