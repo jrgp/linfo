@@ -16,11 +16,21 @@
  * 
 */
 
+var Linfo = (function() {
+	function toggleShow(e) {
+		var elButton = e.target,
+			elInfoTable = elButton.parentNode;
 
-function toggle_show(element_id, fake_link) {
-	document.getElementById(element_id).style.display =
-		document.getElementById(element_id).style.display == 'none' ? '' : 'none';
+		if (elInfoTable.className === "infoTable") {
+			elInfoTable.className = "infoTable collapsed";
+			elButton.innerHTML = "+";
+		} else {
+			elInfoTable.className = "infoTable";
+			elButton.innerHTML = "-";
+		}
+	}
 
-	fake_link.innerHTML =  fake_link.innerHTML == '-' ? '+' : '-';
-}
-
+	return {
+		toggleShow: toggleShow
+	};
+}());

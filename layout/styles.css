@@ -10,6 +10,13 @@ table tr th, table tr.alt td { background-color: #ddd;}
 .infoTable { margin: 5px 5px 10px 5px; }
 .infoTable h2 { color: #fff; margin: 0; padding: 5px; text-shadow: #2665a7 1px 1px 1px;
 	border: 1px solid #4a8fd6; background-color: #5c9ada; border-top-left-radius: 3px; border-top-right-radius: 3px; }
+.collapsed h2 {
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px; 
+}
+.collapsed table {
+	display: none;
+}
 #foot { margin: 15px 0px 20px 15px; color: #444; }
 h1 { font-size: 1.6em; margin: 0; padding: 5px 15px; }
 h2 { font-size: 1.2em; margin: 0;}
@@ -42,11 +49,11 @@ table.mini th {background-color: inherit;}
 .service_down {color: maroon;}
 .service_zombie {color: orange;}
 span.toggler {
+	color: #8ABDF2;
 	float: right;
 	font-family: monospace;
 	cursor: pointer;
 	font-weight: bold;
-	color: white;
 	font-size: 1.4em;
 	padding-top: .2em;
 	padding-right: .4em;
