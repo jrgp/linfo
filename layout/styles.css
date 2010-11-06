@@ -7,12 +7,24 @@ table th, table td {
 	border-right: 1px solid #c3c3c3; border-left: 1px solid #c3c3c3;
 	border-bottom: 1px solid #c3c3c3; padding: 4px; background-color: #eee;}
 table tr th, table tr.alt td { background-color: #ddd;}
-.infoTable { margin: 5px 5px 10px 5px; }
-.infoTable h2 { color: #fff; margin: 0; padding: 5px; text-shadow: #2665a7 1px 1px 1px;
-	border: 1px solid #4a8fd6; background-color: #5c9ada; border-top-left-radius: 3px; border-top-right-radius: 3px; }
+.infoTable { margin: 10px 5px 0px 5px; }
+.infoTable h2 {
+	margin: 0;
+	padding: 5px;
+	color: #fff;
+	text-shadow: #2665a7 1px 1px 1px;
+	border: 1px solid #4a8fd6;
+	background-color: #5c9ada;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+}
 .collapsed h2 {
 	border-bottom-left-radius: 3px;
 	border-bottom-right-radius: 3px; 
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px; 
 }
 .collapsed table {
 	display: none;
@@ -41,7 +53,11 @@ table.mini th {background-color: inherit;}
 .net_unknown {color: purple;}
 #errorList, #timerList {font-size: 75%; margin-top: 15px; margin-bottom: 15px;}
 .bar_chart { position: relative; margin: auto;}
-.bar_inner {border-radius: 2px; height: 18px; background-color: #b7cce2; }
+.bar_inner {
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	height: 18px;
+	background-color: #b7cce2; }
 .bar_text { position: absolute; line-height: 18px;
 	font-size: 12px; text-indent: 2px; text-align: center; width: 100%; }
 .alt .bar_inner { background-color: #96b4d5; }
@@ -49,12 +65,17 @@ table.mini th {background-color: inherit;}
 .service_down {color: maroon;}
 .service_zombie {color: orange;}
 span.toggler {
+	line-height: 24px;
 	color: #8ABDF2;
 	float: right;
-	font-family: monospace;
+	/* "Courier New" is More consistent cross-browser than monospace */
+	font-family: "Courier New";
 	cursor: pointer;
 	font-weight: bold;
 	font-size: 1.4em;
 	padding-top: .2em;
 	padding-right: .4em;
+}
+.infoTable span.toggler:hover {
+	color: white;
 }
