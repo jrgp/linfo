@@ -1298,7 +1298,7 @@ class OS_Linux {
 					break;
 
 					// Mem usage
-					case 'VmSize':
+					case 'VmRSS':
 						if (is_numeric($status_matches[$i][2]))
 							$mem = $status_matches[$i][2] * 1024; // Measured in kilobytes; we want bytes
 					break;
