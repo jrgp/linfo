@@ -53,7 +53,7 @@ function showInfo($info, $settings) {
 		<div class="infoTable">
 			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['core'].'</h2>
-			<table id="coreContent">';
+			<table>';
 			
 	// Linfo Core. Decide what to show.
 	$core = array();
@@ -123,7 +123,7 @@ function showInfo($info, $settings) {
 		<div class="infoTable">
 			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['memory'].'</h2>
-			<table id="memContent">
+			<table>
 				<colgroup>
 					<col style="width: 10%;" />
 					<col style="width: 30%;" />
@@ -198,7 +198,7 @@ function showInfo($info, $settings) {
 		<div class="infoTable">
 			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['network_devices'].'</h2>
-			<table id="netContent">
+			<table>
 				<tr>
 					<th>'.$lang['device_name'].'</th>
 					<th>'.$lang['type'].'</th>
@@ -231,7 +231,7 @@ function showInfo($info, $settings) {
 		<div class="infoTable">
 			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['temps_voltages'].'</h2>
-			<table id="tempsContent">
+			<table>
 				<tr><th>'.$lang['path'].'</th><th>'.$lang['device'].'</th><th>'.$lang['value'].'</th></tr>
 				';
 			$num_temps = count($info['Temps']);
@@ -260,7 +260,7 @@ function showInfo($info, $settings) {
 		<div class="infoTable">
 			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['batteries'].'</h2>
-			<table id="battContent">
+			<table>
 				<tr><th>'.$lang['device'].'</th><th>'.$lang['state'].'</th><th>'.$lang['charge'].' %</th></tr>
 				';
 		foreach ($info['Battery'] as $bat) 
@@ -282,7 +282,7 @@ function showInfo($info, $settings) {
 		<div class="infoTable">
 			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['services'].'</h2>
-			<table id="servContent">
+			<table>
 				<tr><th>'.$lang['service'].'</th><th>'.$lang['state'].'</th><th>'.$lang['pid'].'</th><th>Threads</th><th>'.$lang['memory_usage'].'</th></tr>
 				';
 
@@ -318,7 +318,7 @@ function showInfo($info, $settings) {
 		<div class="infoTable">
 			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['hardware'].'</h2>
-			<table id="hardContent">
+			<table>
 				<tr>
 					<th>'.$lang['type'].'</th>
 					<th>'.$lang['vendor'].'</th>
@@ -349,7 +349,7 @@ function showInfo($info, $settings) {
 		<div class="infoTable">
 			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>Drives</h2>
-			<table id="driveContent">
+			<table>
 				<tr>
 					<th>'.$lang['path'].'</th>
 					<th>'.$lang['vendor'].'</th>
@@ -402,7 +402,7 @@ function showInfo($info, $settings) {
 		<div class="infoTable">
 			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['sound_cards'].'</h2>
-			<table id="soundCardsContent">
+			<table>
 				<tr>
 					<th>'.$lang['number'].'</th>
 					<th>'.$lang['vendor'].'</td>
@@ -459,7 +459,7 @@ function showInfo($info, $settings) {
 <div class="infoTable">
 	<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 	<h2>'.$lang['filesystem_mounts'].'</h2>
-	<table id="mountsContent">
+	<table>
 		<tr>';
 		if ($has_types) {
 			echo '<th>'.$lang['type'].'</th>';
@@ -573,7 +573,7 @@ function showInfo($info, $settings) {
 <div class="infoTable">
 	<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 	<h2>'.$lang['raid_arrays'].'</h2>
-	<table id="raidsContent">
+	<table>
 		<colgroup>
 			<col style="width: 10%;" />
 			<col style="width: 30%;" />
@@ -640,7 +640,7 @@ function showInfo($info, $settings) {
 	<div id="errorList" class="infoTable">
 		<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 		<h2>'.$lang['error_head'].'</h2>
-		<table id="errorsContent">
+		<table>
 			<tr>
 				<th>'.$lang['from_where'].'</th>
 				<th>'.$lang['message'].'</th>
@@ -674,7 +674,7 @@ function showInfo($info, $settings) {
 	<div id="timerList" class="infoTable">
 		<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 		<h2>'.$lang['timer'].'</h2>
-		<table id="timerContent">
+		<table>
 			<tr>
 				<th>'.$lang['area'].'</th>
 				<th>'.$lang['time_taken'].'</th>

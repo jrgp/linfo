@@ -5,7 +5,8 @@ table { border-collapse: collapse; width: 100%; }
 table th { font-weight: normal; color: #444; }
 table th, table td {
 	border-right: 1px solid #c3c3c3; border-left: 1px solid #c3c3c3;
-	border-bottom: 1px solid #c3c3c3; padding: 4px; background-color: #eee;}
+	border-bottom: 1px solid #c3c3c3; padding: 4px; background-color: #eee;
+}
 table tr th, table tr.alt td { background-color: #ddd;}
 .infoTable { margin: 10px 5px 0px 5px; }
 .infoTable h2 {
