@@ -141,6 +141,7 @@ var Linfo = (function() {
 
 			// Slide down, then fade in
 			slideTo(elInfoTable, elInfoTable.fullSize, function() {
+				elInfoTable.style.height = "";
 				fadeIn(elTable, function() {
 					elInfoTable.sliding = false;
 				});
