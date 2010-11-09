@@ -215,10 +215,10 @@ class HW_IDS {
 	 * @access public
 	 */
 	 public function result() {
-		foreach (array_keys($this->_pci_devices) as $v) 
+		foreach (array_keys((array)$this->_pci_devices) as $v) 
 			foreach ($this->_pci_devices[$v] as $d)
 				$this->_result[] = array('vendor' => $d['vendor'], 'device' => $d['device'], 'type' => 'PCI');
-		foreach (array_keys($this->_usb_devices) as $v) 
+		foreach (array_keys((array)$this->_usb_devices) as $v) 
 			foreach ($this->_usb_devices[$v] as $d)
 				$this->_result[] = array('vendor' => $d['vendor'], 'device' => $d['device'], 'type' => 'USB');
 		return $this->_result;
