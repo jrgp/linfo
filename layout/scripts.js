@@ -113,9 +113,8 @@ var Linfo = (function() {
 	 * Toggle the display of a collapsable Linfo bar
 	 * @param e the event object
 	 */
-	function toggleShow(e) {
-		var elButton = e.target || e.srcElement,
-			elInfoTable = elButton.parentNode;
+	function toggleShow() {
+		var elButton = this, elInfoTable = elButton.parentNode;
 
 		// Make sure we're not on already sliding
 		if (elInfoTable.sliding) return;
