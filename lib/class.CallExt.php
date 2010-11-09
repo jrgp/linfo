@@ -31,6 +31,14 @@ class CallExtException extends Exception {}
  * Class used to call external programs 
  */
 class CallExt {
+
+	/**
+	 * Maintain a count of how many external programs we call
+	 * 
+	 * @var int
+	 * @access public
+	 */
+	public static $callCount = 0;
 	
 	/**
 	 * Store results of commands here to avoid calling them more than once
@@ -78,11 +86,26 @@ class CallExt {
 		
 		// Try finding the exec
 		foreach ($this->searchPaths as $path) {
+
+			// Found it; run it
 			if (is_file($path.$name) && is_executable($path.$name)) {
+
+				// Complete command, path switches and all
 				$command = "$path$name $switches";
+
+				// Result of command
 				$result = `$command`;
+
+				// Increment call count
+				self::$callCount++;
+
+				// Cache that
 				$this->cliCache[$name.$switches] = $result;
+
+				// Give result
 				return $result;
+
+				// Redundancy
 				break;
 			}
 		}

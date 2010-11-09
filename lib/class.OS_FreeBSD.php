@@ -111,7 +111,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 		}
 		
 		// Parse it
-		if (preg_match_all('/(.+)\s+on\s+(.+)\s+\((\w+)(?:, (.+)?)\)\n/i', $res, $m, PREG_SET_ORDER) == 0)
+		if (preg_match_all('/^(\S+) on (\S+) \((\w+)(?:, (.+))?\)/m', $res, $m, PREG_SET_ORDER) == 0)
 			return array();
 		
 		// Store them here
