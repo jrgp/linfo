@@ -51,7 +51,6 @@ function showInfo($info, $settings) {
 <div class="col2">
 	<div class="col">
 		<div class="infoTable">
-			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['core'].'</h2>
 			<table>';
 			
@@ -121,7 +120,6 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['ram'])) {
 		echo '
 		<div class="infoTable">
-			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['memory'].'</h2>
 			<table>
 				<colgroup>
@@ -196,7 +194,6 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['network'])) {
 		echo '
 		<div class="infoTable">
-			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['network_devices'].'</h2>
 			<table>
 				<tr>
@@ -229,7 +226,6 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['temps']) && count($info['Temps']) > 0) {
 		echo '
 		<div class="infoTable">
-			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['temps_voltages'].'</h2>
 			<table>
 				<tr><th>'.$lang['path'].'</th><th>'.$lang['device'].'</th><th>'.$lang['value'].'</th></tr>
@@ -258,7 +254,6 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['battery']) && count($info['Battery']) > 0) {
 		echo '
 		<div class="infoTable">
-			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['batteries'].'</h2>
 			<table>
 				<tr><th>'.$lang['device'].'</th><th>'.$lang['state'].'</th><th>'.$lang['charge'].' %</th></tr>
@@ -280,7 +275,6 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['services']) && count($info['services']) > 0) {
 		echo '
 		<div class="infoTable">
-			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['services'].'</h2>
 			<table>
 				<tr><th>'.$lang['service'].'</th><th>'.$lang['state'].'</th><th>'.$lang['pid'].'</th><th>Threads</th><th>'.$lang['memory_usage'].'</th></tr>
@@ -316,7 +310,6 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['devices'])) {
 		echo '
 		<div class="infoTable">
-			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['hardware'].'</h2>
 			<table>
 				<tr>
@@ -347,7 +340,6 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['hd'])) {
 		echo '
 		<div class="infoTable">
-			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>Drives</h2>
 			<table>
 				<tr>
@@ -400,7 +392,6 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['sound']) && count($info['SoundCards']) > 0) {
 		echo '
 		<div class="infoTable">
-			<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 			<h2>'.$lang['sound_cards'].'</h2>
 			<table>
 				<tr>
@@ -457,7 +448,6 @@ function showInfo($info, $settings) {
 			$addcolumns++;
 		echo '
 <div class="infoTable">
-	<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 	<h2>'.$lang['filesystem_mounts'].'</h2>
 	<table>
 		<tr>';
@@ -571,7 +561,6 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show']['raid']) && count($info['Raid']) > 0) {
 		echo '
 <div class="infoTable">
-	<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 	<h2>'.$lang['raid_arrays'].'</h2>
 	<table>
 		<colgroup>
@@ -638,7 +627,6 @@ function showInfo($info, $settings) {
 	if (!empty($settings['show_errors']) && LinfoError::Fledging()->num() > 0) {
 		echo '
 	<div id="errorList" class="infoTable">
-		<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 		<h2>'.$lang['error_head'].'</h2>
 		<table>
 			<tr>
@@ -672,7 +660,6 @@ function showInfo($info, $settings) {
 	if (!empty($settings['timer'])) {
 		echo '
 	<div id="timerList" class="infoTable">
-		<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 		<h2>'.$lang['timer'].'</h2>
 		<table>
 			<tr>
@@ -700,6 +687,7 @@ function showInfo($info, $settings) {
 	'.sprintf($lang['footer_app'], '<a href="http://linfo.sf.net"><em>'.VERSION.'</em></a>',  round(microtime(true) - TIME_START,2)).'<br />
 	<em>'.AppName.'</em> &copy; 2010 Joseph Gillotti &amp; friends. Source code licensed under GPL.
 </div>
+<script>Linfo.init()</script>
 </body>
 </html>';
 

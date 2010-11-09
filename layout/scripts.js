@@ -124,19 +124,8 @@ var Linfo = (function() {
 		// Get the information table
 		var elTable = elInfoTable.getElementsByTagName('table')[0];
 
-		if (elInfoTable.className === "infoTable") {
-			elButton.innerHTML = "+";
-
-			// Fade out, then slide up
-			fadeOut(elTable, function() {
-				elInfoTable.fullSize = elInfoTable.offsetHeight;
-				slideTo(elInfoTable, elInfoTable.offsetHeight - elTable.offsetHeight, function() {
-					elInfoTable.sliding = false;
-				});
-				elInfoTable.className = "infoTable collapsed";
-			});
-		} else {
-			elInfoTable.className = "infoTable";
+		if (hasClass(elInfoTable, 'collapsed')) {
+			removeClass(elInfoTable, 'collapsed');
 			elButton.innerHTML = "-";
 
 			// Slide down, then fade in
@@ -146,10 +135,86 @@ var Linfo = (function() {
 					elInfoTable.sliding = false;
 				});
 			});
+		} else {
+			elButton.innerHTML = "+";
+
+			// Fade out, then slide up
+			fadeOut(elTable, function() {
+				elInfoTable.fullSize = elInfoTable.offsetHeight;
+				slideTo(elInfoTable, elInfoTable.offsetHeight - elTable.offsetHeight, function() {
+					elInfoTable.sliding = false;
+				});
+				addClass(elInfoTable, 'collapsed');
+			});
 		}
 	}
 
+	/**
+	 * Check to see if the element has the specified class
+	 * @param el
+	 * @param strClass
+	 * @return true if the element has the class; otherwise false
+	 */
+	function hasClass(el, strClass) {
+		return el.className.match(new RegExp('(\\s|^)' + strClass + '(\\s|$)'));
+	}
+
+	/**
+	 * Add a class to an element
+	 * @param el
+	 * @param strClass
+	 */
+	function addClass(el, strClass) {
+		if (!hasClass(el, strClass)) el.className += " " + strClass;
+	}
+
+	/**
+	 * Remove a class from an element
+	 * @param el
+	 * @param strClass
+	 */
+	function removeClass(el, strClass) {
+		if (hasClass(el,strClass)) {
+			var reg = new RegExp('(\\s|^)' + strClass + '(\\s|$)');
+			el.className = el.className.replace(reg,' ');
+		}
+	}
+
+	/**
+	 * Loop through each element in an array, calling the specified function
+	 * @param a the array to loop through
+	 * @param fn the function to call
+	 */
+	function each(a, fn) {
+		for (var i = 0; i < a.length; i++) {
+			fn(i, a[i]);
+		}
+	}
+
+	/**
+	 * Initialize Linfo. Called on dom ready
+	 */
+	function init() {
+		// Get a list of divs
+		var aDivs = document.getElementsByTagName('div');
+
+		// Loop through them all
+		each(aDivs, function(i, elDiv) {
+			// If this is an infoTable
+			if (hasClass(elDiv, 'infoTable')) {
+				// Create a new toggler
+				var elToggler = document.createElement('span');
+				elToggler.className = 'toggler';
+				elToggler.onclick = toggleShow;
+				elToggler.innerHTML = '-';
+
+				// Put the toggler at the top of the element
+				elDiv.insertBefore(elToggler, elDiv.firstChild);
+			}
+		});
+	}
+
 	return {
-		toggleShow: toggleShow
+		init: init
 	};
 }());

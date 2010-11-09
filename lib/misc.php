@@ -151,7 +151,6 @@ function create_table($structure) {
 	// Start it off
 	$html = '
 <div class="infoTable">
-	<span class="toggler" onclick="Linfo.toggleShow(event)">-</span>
 	<h2>'.$structure['root_title'].'</h2>
 	<table>';
 	
