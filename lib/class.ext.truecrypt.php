@@ -116,12 +116,6 @@ class ext_truecrypt implements LinfoExtension {
 						$curr['read_only'] = $line_match[2];
 				break;
 				
-				// Type
-				case 'Type':
-					if (is_array($curr))
-						$curr['type'] = $line_match[2];
-				break;
-
 				// We deliberately ignore most keys for security reasons
 				default:
 					continue;
@@ -165,7 +159,6 @@ class ext_truecrypt implements LinfoExtension {
 					'Mount Point',
 					'Size',
 					'Read Only',
-					'Type'
 				)
 			);
 
@@ -184,7 +177,6 @@ class ext_truecrypt implements LinfoExtension {
 							$vol['mount_directory'],
 							$vol['size'],
 							$vol['read_only'],
-							$vol['type'],
 						)
 					);
 			}
