@@ -46,7 +46,7 @@ class ext_truecrypt implements LinfoExtension {
 
 		// Deal with calling it
 		try {
-			$result = $this->_CallExt->exec('truecrypt', '-l');
+			$result = $this->_CallExt->exec('truecrypt', '-l -v');
 		}
 		catch (CallExtException $e) {
 			// messed up somehow
@@ -57,22 +57,81 @@ class ext_truecrypt implements LinfoExtension {
 			return false;
 		}
 
-		// Get matches
-		if (preg_match_all('/^(\d+): (\S+) (\S+) (\S+)/m', $result, $matches, PREG_SET_ORDER) == 0) {
-			$this->_res = false;
-			return false;
-		}
-		else 
-			$this->_res = array();
+		// Store them here
+		$this->_res = array();
 
-		// Save result set
-		foreach ($matches as $m) 
-			$this->_res[] = array(
-				'slot' => $m[1],
-				'volume' => $m[2],
-				'virtual_device' => $m[3],
-				'mount_point' => $m[4]
-			);
+		// Current one
+		$curr = false;
+		
+		// Lines of output
+		$lines = explode("\n", $result);
+
+		// Go through each line
+		for ($i = 0, $num = count($lines); $i < $num; $i++) {
+
+			// Extract juicy shit
+			if (!preg_match('/^([^:]+): ([^$]+)$/', $lines[$i], $line_match))
+				continue;
+
+			// Decide what to do with that
+			switch ($line_match[1]) {
+
+				// It starts here
+				case 'Slot':
+					if ($curr === false)
+						$curr = array('slot' => $line_match[2]);
+					elseif (is_array($curr)) {
+						$this->_res[] = $curr;
+						$curr = false;
+					}
+				break;
+				
+				// Volume. 
+				case 'Volume':
+					if (is_array($curr))
+						$curr['volume'] = $line_match[2];
+				break;
+				
+				// Virtual device
+				case 'Virtual Device':
+					if (is_array($curr))
+						$curr['virtual_device'] = $line_match[2];
+				break;
+				
+				// Where it might be mounted
+				case 'Mount Directory':
+					if (is_array($curr))
+						$curr['mount_directory'] = $line_match[2];
+				break;
+				
+				// Size of it
+				case 'Size':
+					if (is_array($curr))
+						$curr['size'] = $line_match[2];
+				break;
+				
+				// Is it read only?
+				case 'Read-Only':
+					if (is_array($curr))
+						$curr['read_only'] = $line_match[2];
+				break;
+				
+				// Type
+				case 'Type':
+					if (is_array($curr))
+						$curr['type'] = $line_match[2];
+				break;
+
+				// We deliberately ignore most keys for security reasons
+				default:
+					continue;
+				break;
+			}
+		}
+
+		// Save a remaining one
+		if (is_array($curr) && count($curr) > 0)
+			$this->_res[] = $curr;
 
 		// Apparent success
 		return true;
@@ -101,9 +160,12 @@ class ext_truecrypt implements LinfoExtension {
 				'type' => 'header',
 				'columns' => array(
 					'Slot',
-					'Device',
 					'Volume',
+					'Virtual Device',
 					'Mount Point',
+					'Size',
+					'Read Only',
+					'Type'
 				)
 			);
 
@@ -119,7 +181,10 @@ class ext_truecrypt implements LinfoExtension {
 							$vol['slot'],
 							$vol['volume'],
 							$vol['virtual_device'],
-							$vol['mount_point'],
+							$vol['mount_directory'],
+							$vol['size'],
+							$vol['read_only'],
+							$vol['type'],
 						)
 					);
 			}
