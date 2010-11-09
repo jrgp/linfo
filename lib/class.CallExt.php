@@ -62,6 +62,13 @@ class CallExt {
 	 * @param array $paths list of paths
 	 */
 	public function setSearchPaths($paths) {
+		
+		// Gain access to settings
+		global $settings;
+		
+		// Merge in possible custom paths
+		if (is_array($settings['additional_paths']) && count($settings['additional_paths']) > 0)
+			$paths = array_merge($settings['additional_paths'], $paths);
 
 		// Make sure they all have a trailing slash
 		foreach ($paths as $k => $v)

@@ -82,6 +82,15 @@ $settings['mbmon']['address'] = array( // Address/Port of mbmon daemon to connec
 );
 
 /*
+ * For the things that require executing external programs, such as non-linux OS's
+ * and the extensions, you may specify other paths to search for them here:
+ */
+$settings['additional_paths'] = array(
+	 //'/opt/bin' # for example
+);
+
+
+/*
  * Services. It works by specifying locations to PID files, which then get checked
  * Either that or specifying a path to the executable, which we'll try to find a running
  * process PID entry for. It'll stop on the first it finds.
