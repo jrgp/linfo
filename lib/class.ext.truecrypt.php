@@ -38,7 +38,7 @@ class ext_truecrypt implements LinfoExtension {
 		$this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
 	}
 
-	// call lpq and parse it
+	// call truecrypt and parse it
 	private function _call() {
 		
 		// Time this
@@ -165,7 +165,7 @@ class ext_truecrypt implements LinfoExtension {
 
 			// show volumes if we have them
 			if (count($this->_res) == 0)
-				$rows[] = array('type' => 'none', 'columns' => array(array(4, 'None found')));
+				$rows[] = array('type' => 'none', 'columns' => array(array(6, 'None found')));
 			else {
 				foreach ((array)$this->_res as $vol)
 					$rows[] = array(
