@@ -667,9 +667,6 @@ class OS_Linux {
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Hardware Devices');
 
-		// Return array
-		$return = array();
-
 		// Location of useful paths
 		$pci_ids = locate_actual_path(array(
 			'/usr/share/misc/pci.ids',	// debian/ubuntu
@@ -682,111 +679,10 @@ class OS_Linux {
 			'/usr/share/hwdata/usb.ids',	// centos. maybe also redhat/fedora
 		));
 
-		// /sys and /proc are identical across distros
-		$sys_pci_dir = '/sys/bus/pci/devices/';
-		$sys_usb_dir = '/sys/bus/usb/devices/';
-
-		// Store temporary stuff here
-		$pci_dev_id = array();
-		$usb_dev_id = array();
-		$pci_dev = array();
-		$usb_dev = array();
-		$pci_dev_num = 0;
-		$usb_dev_num = 0;
-
-		// Get all PCI ids
-		$pci_paths = (array) @glob($sys_pci_dir.'*/uevent', GLOB_NOSORT);
-		$num_pci_paths = count($pci_paths);
-		for ($i = 0; $i < $num_pci_paths; $i++) {
-			
-			// This path
-			$path = $pci_paths[$i];
-
-			// Usually fetch vendor/device id out of uevent
-			if (is_readable($path) && preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', strtolower(getContents($path)), $match) == 1) {
-				$pci_dev_id[$match[1]][$match[2]] = 1;
-				$pci_dev_num++;
-			}
-
-			// I think only centos forbids read access to uevent and has this instead:
-			else {
-				$path = dirname($path);
-				$vendor = getContents($path.'/subsystem_vendor', false);
-				$device = getContents($path.'/subsystem_device', false);
-				if ($vendor !== false && $device !== false) {
-					$vendor = str_pad(strtoupper(substr($vendor, 2)), 4, '0', STR_PAD_LEFT);
-					$device = str_pad(strtoupper(substr($device, 2)), 4, '0', STR_PAD_LEFT);
-					$pci_dev_id[$vendor][$device] = 1;
-					$pci_dev_num++;
-				}
-			}
-		}
-
-		// Get all USB ids
-		$usb_paths = (array) @glob($sys_usb_dir.'*/uevent', GLOB_NOSORT);
-		$num_usb_paths = count($usb_paths);
-		for ($i = 0; $i < $num_usb_paths; $i++) {
-			
-			// This path
-			$path = $usb_paths[$i];
-
-			// See if this matches
-			if (preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', strtolower(getContents($path)), $match) == 1) {
-				$usb_dev_id[str_pad($match[1], 4, '0', STR_PAD_LEFT)][str_pad($match[2], 4, '0', STR_PAD_LEFT)] = 1;
-				$usb_dev_num++;
-			}
-		}
-
-		// Get PCI vendor/dev names
-		$file = $pci_ids != false ? @fopen($pci_ids, 'rb') : false;
-		$left = $pci_dev_num;
-		if ($file !== false) {
-			do {
-				if (!isset($contents))
-					continue;
-				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
-					$cmid = trim(strtolower($match[1]));
-					$cname = trim($match[2]);
-				}
-				elseif(preg_match('/^	(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
-					if (array_key_exists($cmid, $pci_dev_id) && is_array($pci_dev_id[$cmid]) && array_key_exists($match[1], $pci_dev_id[$cmid])) {
-						$pci_dev[] = array('vendor' => $cname, 'device' => trim($match[2]), 'type' => 'PCI');
-						$left--;
-					}
-				}
-				// Potentially save time by not parsing the rest of the file once we have what we need
-				if ($left == 0)
-					break;
-			} while ($contents = @fgets($file));
-			@fclose($file);
-		}
-
-		// Get USB vendor/dev names
-		$file = $usb_ids ? @fopen($usb_ids, 'rb') : false;
-		$left = $usb_dev_num;
-		if ($file !== false) {
-			do {
-				if (!isset($contents))
-					continue;
-				if (preg_match('/^(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
-					$cmid = trim(strtolower($match[1]));
-					$cname = trim($match[2]);
-				}
-				elseif(preg_match('/^	(\S{4})  ([^$]+)$/', $contents, $match) == 1) {
-					if (array_key_exists($cmid, $usb_dev_id) && is_array($usb_dev_id[$cmid]) && array_key_exists($match[1], $usb_dev_id[$cmid])) {
-						$usb_dev[] = array('vendor' => $cname, 'device' => trim($match[2]), 'type' => 'USB');
-						$left--;
-					}
-				}
-				// Potentially save time by not parsing the rest of the file once we have what we need
-				if ($left == 0)
-					break;
-			} while ($contents = @fgets($file));
-			@fclose($file);
-		}
-
-		// Return it all
-		return array_merge($pci_dev, $usb_dev);
+		// Class that does it
+		$hw = new HW_IDS($usb_ids, $pci_ids);
+		$hw->work();
+		return $hw->result();
 	}
 
 	/**
