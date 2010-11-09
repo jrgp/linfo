@@ -58,23 +58,21 @@ class ext_truecrypt implements LinfoExtension {
 		}
 
 		// Get matches
-		if (preg_match_all('/^(\d+): (\S+) (\S+) (\S+)/m', $result, $matches) == 0) {
+		if (preg_match_all('/^(\d+): (\S+) (\S+) (\S+)/m', $result, $matches, PREG_SET_ORDER) == 0) {
 			$this->_res = false;
 			return false;
 		}
+		else 
+			$this->_res = array();
 
 		// Save result set
-		foreach ($matches as $m) {
+		foreach ($matches as $m) 
 			$this->_res[] = array(
 				'slot' => $m[1],
 				'volume' => $m[2],
 				'virtual_device' => $m[3],
-				'mount_point' => $m[4],
+				'mount_point' => $m[4]
 			);
-		}
-
-		// Wish fullfilment
-		$this->_res = true;
 
 		// Apparent success
 		return true;
@@ -110,11 +108,11 @@ class ext_truecrypt implements LinfoExtension {
 			);
 
 
-			// show printers if we have them
+			// show volumes if we have them
 			if (count($this->_res) == 0)
 				$rows[] = array('type' => 'none', 'columns' => array(array(4, 'None found')));
 			else {
-				foreach ($this->_res as $vol)
+				foreach ((array)$this->_res as $vol)
 					$rows[] = array(
 						'type' => 'values',
 						'columns' => array(
