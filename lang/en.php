@@ -26,7 +26,7 @@ defined('IN_INFO') or exit;
  */
 
 $lang = array(
-	'header' => 'System Health: %s',
+	'header' => 'System Health and Information',
 	'core' => 'Core',
 	'os' => 'OS',
 	'kernel' => 'Kernel',

@@ -47,7 +47,10 @@ function showInfo($info, $settings) {
 	<meta name="generator" content="'.VERSION.'" />
 </head>
 <body id="info">
-<h1>'.sprintf($lang['header'], $info['HostName']).'</h1>
+<div class="header">
+	<h1>'.$info['HostName'].'</h1>
+	<div class="subtitle">'.$lang['header'].'</div>
+</div>
 <div class="col2">
 	<div class="col">
 		<div class="infoTable">

@@ -26,7 +26,7 @@ defined('IN_INFO') or exit;
  */
 
 $lang = array(
-	'header' => 'Systemu Ochrony Zdrowia: %s',
+	'header' => 'Systemu Ochrony Zdrowia i Informacja',
 	'core' => 'Rdzeń',
 	'os' => 'OS',
 	'kernel' => 'Jądra',
