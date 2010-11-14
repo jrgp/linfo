@@ -26,6 +26,30 @@
  */
 var Linfo = (function() {
 	/**
+	 * Set a cookie key/value pair
+	 * @param key
+	 * @param value
+	 */
+	function setCookie(key, value) {
+		document.cookie = [
+			encodeURIComponent(key), '=',
+			encodeURIComponent(value)
+		].join('')
+	}
+
+	/**
+	 * Get the cookie value from the key
+	 * @param key
+	 * @return the cookie value
+	 */
+	function getCookie(key) {
+		var strEncodedKey = encodeURIComponent(key),
+			regex = new RegExp('(?:^|; )' + strEncodedKey + '=([^;]*)'),
+			result = regex.exec(document.cookie);
+		return result ? decodeURIComponent(result[1]) : null;
+	}
+
+	/**
 	 * Set the opacity of an element
 	 * @param el the element to set
 	 * @param opacity the opacity to set it to (0.0 - 1.0)
@@ -108,45 +132,6 @@ var Linfo = (function() {
 			fnCallback
 		);
 	};
-	
-	/**
-	 * Toggle the display of a collapsable Linfo bar
-	 * @param e the event object
-	 */
-	function toggleShow() {
-		var elButton = this, elInfoTable = elButton.parentNode;
-
-		// Make sure we're not on already sliding
-		if (elInfoTable.sliding) return;
-		elInfoTable.sliding = true;
-
-		// Get the information table
-		var elTable = elInfoTable.getElementsByTagName('table')[0];
-
-		if (hasClass(elInfoTable, 'collapsed')) {
-			removeClass(elInfoTable, 'collapsed');
-			elButton.innerHTML = "-";
-
-			// Slide down, then fade in
-			slideTo(elInfoTable, elInfoTable.fullSize, function() {
-				elInfoTable.style.height = "";
-				fadeIn(elTable, function() {
-					elInfoTable.sliding = false;
-				});
-			});
-		} else {
-			elButton.innerHTML = "+";
-
-			// Fade out, then slide up
-			fadeOut(elTable, function() {
-				elInfoTable.fullSize = elInfoTable.offsetHeight;
-				slideTo(elInfoTable, elInfoTable.offsetHeight - elTable.offsetHeight, function() {
-					elInfoTable.sliding = false;
-				});
-				addClass(elInfoTable, 'collapsed');
-			});
-		}
-	}
 
 	/**
 	 * Check to see if the element has the specified class
@@ -191,26 +176,141 @@ var Linfo = (function() {
 	}
 
 	/**
-	 * Initialize Linfo. Called on dom ready
+	 * Represents a graphical "Section" of data
+	 * ex: Core, Memory, etc...
 	 */
-	function init() {
+	var Section = function(elSection) {
+		var m_elToggler, m_elTable;
+
+		/**
+		 * Collapse the section with animation
+		 */
+		function collapseAnimated() {
+			setCookie(elSection.id, '0');
+			m_elToggler.innerHTML = "+";
+
+			// Fade out, then slide up
+			fadeOut(m_elTable, function() {
+				elSection.fullSize = elSection.offsetHeight;
+				slideTo(elSection, elSection.offsetHeight - m_elTable.offsetHeight, function() {
+					elSection.sliding = false;
+				});
+				addClass(elSection, 'collapsed');
+			});
+		}
+
+		/**
+		 * Expand the section with animation
+		 */
+		function expandAnimated() {
+			setCookie(elSection.id, '1');
+			removeClass(elSection, 'collapsed');
+			m_elToggler.innerHTML = "-";
+
+			// Slide down, then fade in
+			slideTo(elSection, elSection.fullSize, function() {
+				elSection.style.height = "";
+				fadeIn(m_elTable, function() {
+					elSection.sliding = false;
+				});
+			});
+		}
+
+		/**
+		 * Toggle the display of a collapsable Linfo bar
+		 */
+		function toggleShow() {
+			// Make sure we're not on already sliding
+			if (elSection.sliding) return;
+			elSection.sliding = true;
+
+			if (hasClass(elSection, 'collapsed')) {
+				expandAnimated();
+			} else {
+				collapseAnimated();
+			}
+		}
+
+		/**
+		 * Collapse a section instantly
+		 */
+		function collapse() {
+			m_elToggler.innerHTML = "+";
+
+			setOpacity(m_elTable, 0);
+
+			elSection.fullSize = elSection.offsetHeight;
+			elSection.style.height = (elSection.offsetHeight - m_elTable.offsetHeight).toString() + 'px';
+
+			addClass(elSection, 'collapsed');
+		}
+
+		/**
+		 * Create a toggler for the specified section
+		 * @param elSection
+		 */
+		function createToggler() {
+			// Create a new toggler
+			m_elToggler = document.createElement('span');
+			m_elToggler.className = 'toggler';
+			m_elToggler.onclick = toggleShow;
+			m_elToggler.innerHTML = '-';
+
+			// Put the toggler at the top of the element
+			elSection.insertBefore(m_elToggler, elSection.firstChild);
+		}
+
+		/**
+		 * Set the section id from the section's title
+		 * @param elSection
+		 */
+		function generateIdFromTitle() {
+			// Get the title
+			var strTitle = elSection.getElementsByTagName('h2')[0].innerHTML;
+
+			// Clean up the title and set it to the div's id
+			elSection.id = strTitle.split(' ').join('_').toLowerCase();
+		}
+
+		/**
+		 * Initialize the section
+		 */
+		function init() {
+			createToggler();
+			generateIdFromTitle();
+
+			// Get the information table
+			m_elTable = elSection.getElementsByTagName('table')[0];
+
+			if (getCookie(elSection.id) == '0') {
+				collapse();
+			}
+		}
+
+		init();
+	};
+
+	/**
+	 * Initialize the sections
+	 */
+	function initializeSections() {
 		// Get a list of divs
 		var aDivs = document.getElementsByTagName('div');
 
 		// Loop through them all
-		each(aDivs, function(i, elDiv) {
+		each(aDivs, function(i, elSection) {
 			// If this is an infoTable
-			if (hasClass(elDiv, 'infoTable')) {
-				// Create a new toggler
-				var elToggler = document.createElement('span');
-				elToggler.className = 'toggler';
-				elToggler.onclick = toggleShow;
-				elToggler.innerHTML = '-';
-
-				// Put the toggler at the top of the element
-				elDiv.insertBefore(elToggler, elDiv.firstChild);
+			if (hasClass(elSection, 'infoTable')) {
+				new Section(elSection);
 			}
 		});
+	}
+
+	/**
+	 * Initialize Linfo. Called on dom ready
+	 */
+	function init() {
+		initializeSections();
 	}
 
 	return {
