@@ -43,7 +43,7 @@ function showInfo($info, $settings) {
 	<title>'.AppName.' - '.$info['HostName'].'</title>
 	<link href="'.WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon" />
 	<link href="'.WEB_PATH.'layout/styles.css" type="text/css" rel="stylesheet" />
-	<script src="'.WEB_PATH.'layout/scripts.js" type="text/javascript"></script>
+	<script src="'.WEB_PATH.'layout/scripts.min.js" type="text/javascript"></script>
 	<meta name="generator" content="'.VERSION.'" />
 </head>
 <body id="info">

@@ -24,7 +24,7 @@
  *  - Keep the global scope squeaky clean (and, as a direct result, compression efficient)
  *  - Keep performance blazing fast
  */
-var Linfo = (function() {
+window['Linfo'] = (function() {
 	/**
 	 * Set a cookie key/value pair
 	 * @param key
@@ -45,8 +45,8 @@ var Linfo = (function() {
 	function getCookie(key) {
 		var strEncodedKey = encodeURIComponent(key),
 			regex = new RegExp('(?:^|; )' + strEncodedKey + '=([^;]*)'),
-			result = regex.exec(document.cookie);
-		return result ? decodeURIComponent(result[1]) : null;
+			aResult = regex.exec(document.cookie);
+		return aResult ? decodeURIComponent(aResult[1]) : null;
 	}
 
 	/**
@@ -183,10 +183,26 @@ var Linfo = (function() {
 		var m_elToggler, m_elTable;
 
 		/**
+		 * Save the collapse state
+		 * @param bCollapsed true if the section is collapsed
+		 */
+		function setCollapseState(bCollapsed) {
+			setCookie(elSection.id, bCollapsed ? '0' : '1');
+		}
+
+		/**
+		 * Load the collapse state
+		 * @return true if the section is collapsed, otherwise false
+		 */
+		function getCollapseState() {
+			return (getCookie(elSection.id) == '0') ? true : false;
+		}
+
+		/**
 		 * Collapse the section with animation
 		 */
 		function collapseAnimated() {
-			setCookie(elSection.id, '0');
+			setCollapseState(true);
 			m_elToggler.innerHTML = "+";
 
 			// Fade out, then slide up
@@ -203,7 +219,7 @@ var Linfo = (function() {
 		 * Expand the section with animation
 		 */
 		function expandAnimated() {
-			setCookie(elSection.id, '1');
+			setCollapseState(false);
 			removeClass(elSection, 'collapsed');
 			m_elToggler.innerHTML = "-";
 
@@ -235,13 +251,13 @@ var Linfo = (function() {
 		 * Collapse a section instantly
 		 */
 		function collapse() {
-			m_elToggler.innerHTML = "+";
+			var iNewHeight = elSection.offsetHeight - m_elTable.offsetHeight; 
 
+			m_elToggler.innerHTML = "+";
 			setOpacity(m_elTable, 0);
 
 			elSection.fullSize = elSection.offsetHeight;
-			elSection.style.height = (elSection.offsetHeight - m_elTable.offsetHeight).toString() + 'px';
-
+			elSection.style.height = iNewHeight.toString() + 'px';
 			addClass(elSection, 'collapsed');
 		}
 
@@ -282,7 +298,7 @@ var Linfo = (function() {
 			// Get the information table
 			m_elTable = elSection.getElementsByTagName('table')[0];
 
-			if (getCookie(elSection.id) == '0') {
+			if (getCollapseState()) {
 				collapse();
 			}
 		}
@@ -314,6 +330,6 @@ var Linfo = (function() {
 	}
 
 	return {
-		init: init
+		'init': init
 	};
 }());
