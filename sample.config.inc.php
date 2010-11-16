@@ -108,25 +108,6 @@ $settings['services']['executables'] = array(
 );
 
 /*
- * Extra extensions which extend the Linfo core, as described above
- * On Linux systems, these do indeed work by calling external programs, 
- * and as such are disabled by default as they may be a security risk if
- * said external programs become compromised
- * Enable at your own risk. 
- */
-$settings['extensions']['cups'] = false; # Parse output of 'lpq' to get printers and current CUPS jobs and their stauses
-$settings['extensions']['smb'] = false; # Parse output of 'smbstatus' to get current samba connections
-$settings['extensions']['truecrypt'] = false; # truecrypt -l and show truecrypt volumes. rather iffy
-$settings['extensions']['soldat'] = false;  # Parse soldat game servers (http://soldat.pl)
-
-/*
- * Paths to soldat server gamestat.txt files
- */
-$settings['soldat_servers'] = array(
-	//'CTF #1' => '/home/soldat/ctf/logs/gamestat.txt' # example usage
-);
-
-/*
  * Cache settings for WMI, Windows only
  * All values as specified in seconds.
  * Changing the default values is not recommended and can result in higher system loads.
