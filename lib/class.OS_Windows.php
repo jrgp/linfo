@@ -191,17 +191,24 @@ class OS_Windows {
 	 */
 	private function getUpTime () {
 		
-		$booted = "";
+		$booted_str = "";
 		
 		foreach ($this->wmi->ExecQuery("SELECT LastBootUpTime FROM Win32_OperatingSystem") as $os) {
-			$booted = $os->LastBootUpTime;
+			$booted_str = $os->LastBootUpTime;
 			break;
 		}
 		
-		$booted = date_parse_from_format("YmdHMS", $booted);
-		$booted = mktime($booted['hour'], $booted['minute'], $booted['second'], $booted['month'], $booted['day'], $booted['year']);
+		$booted = array(
+			'year'   => substr($booted_str, 0, 4),
+			'month'  => substr($booted_str, 4, 2),
+			'day'    => substr($booted_str, 6, 2),
+			'hour'   => substr($booted_str, 8, 2),
+			'minute' => substr($booted_str, 10, 2),
+			'second' => substr($booted_str, 12, 2)
+		);
+		$booted_ts = mktime($booted['hour'], $booted['minute'], $booted['second'], $booted['month'], $booted['day'], $booted['year']);
 		
-		return seconds_convert(time() - $booted) . '; booted '.date('m/d/y h:i A', $booted);
+		return seconds_convert(time() - $booted_ts) . '; booted ' . date('m/d/y h:i A', $booted_ts);
 	}
 	
 	/**
