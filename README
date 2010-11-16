@@ -60,6 +60,7 @@ Known issues:
  - Getting Linux device names is slow on old systems
  - Getting Linux device names does not work on all distros [yet]
  - Linux Wifi is not finished
+ - Windows support might have problems with Pre-Vista/7 versions
 
 Linux system temps/voltages/etc requirments:
  - Have hddtemp listening or periodically writing to syslog, and/or
@@ -67,18 +68,16 @@ Linux system temps/voltages/etc requirments:
  - Have sensord periodically writing to syslog and/or
  - Have hwmon set up in /sys. This is enabled by default and works by default 
    at least on recent ubuntu versions
-
-Experimental new features/extensions:
- - CUPS parsing. 
- - Samba status.
- - Windows support
+ 
+For cups/samba/truecrypt support:
+ - Look at the extensions part of the site
 
 TODO:
  - Support for other Unix operating systems (Hurd, IRIX, AIX, HP UX, etc)
  - Support for strange operating systems: Haiku/BeOS
 
 Please send suggestions, help requests, comments, complaints, beer, pizza, and hookers to:
- - joe@u13.net / elephanthunter@gmail.com / oliver.kuckertz@mologie.de
+ - joe@u13.net / elephanthunter@gmail.com / oliver.kuckertz@mologie.de / ryan@u13.net
  - IRC - #linfo @ freenode
 
 License: GNU General Public License
@@ -87,5 +86,6 @@ Additional author(s):
  - Lee Bradley <elephanthunter@gmail.com>
  - Oliver Kuckertz <oliver.kuckertz@mologie.de>
  - Joe Finney <joe.finney@gmail.com>
+ - Ryan Rawdon (ryan@u13.net)
 URL: http://linfo.sourceforge.net/
 Favicon by: Lee Bradley
