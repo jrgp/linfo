@@ -20,3 +20,8 @@ v1.4 - 10/20/2010
  - Experimental cups/samba status parsing
  - New colorscheme
  - Various improvements
+
+v1.5 - 11/x/2010
+ - Extensions now packaged/developed separately
+ - Windows 7 support 
+ - Various improvements
