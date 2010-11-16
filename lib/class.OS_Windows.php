@@ -35,7 +35,7 @@ class OS_Windows {
 		$settings, $error;
 	
 	private
-		$wmi;
+		$wmi, $windows_version;
 
 	/**
 	 * Constructor. Localizes settings
@@ -112,6 +112,7 @@ class OS_Windows {
 	private function getKernel() {
 	
 		foreach ($this->wmi->ExecQuery("SELECT WindowsVersion FROM Win32_Process WHERE Handle = 0") as $process) {
+			$this->windows_version = $process->WindowsVersion;
 			return $process->WindowsVersion;
 		}
 		return "Unknown";
@@ -153,9 +154,9 @@ class OS_Windows {
 		}
 		
 		return array(
-			'type' => 'Physical',
+			'type'  => 'Physical',
 			'total' => $total_memory,
-			'free' => $free_memory * 1024
+			'free'  => $free_memory * 1024
 		);
 	}
 	
@@ -231,12 +232,12 @@ class OS_Windows {
 		
 		foreach ($this->wmi->ExecQuery("SELECT Caption, DeviceID, Index, Size FROM Win32_DiskDrive") as $drive) {
 			$drives[] = array(
-				'name' =>  $drive->Caption,
+				'name'   =>  $drive->Caption,
 				'vendor' => reset(explode(" ", $drive->Caption)),
 				'device' => $drive->DeviceID,
-				'reads' => false,
+				'reads'  => false,
 				'writes' => false,
-				'size' => $drive->Size,
+				'size'   => $drive->Size,
 				'partitions' => array_key_exists($drive->Index, $partitions) && is_array($partitions[$drive->Index]) ? $partitions[$drive->Index] : false 
 			);
 		}
@@ -265,28 +266,39 @@ class OS_Windows {
 		
 		$volumes = array();
 		
-		foreach($this->wmi->ExecQuery("SELECT Automount, BootVolume, Compressed, IndexingEnabled, Label, Caption, FileSystem, Capacity, FreeSpace, DriveType FROM Win32_Volume") as $volume) {
+		if($this->windows_version > "6.1.0000") {
+			$object = $this->wmi->ExecQuery("SELECT Automount, BootVolume, Compressed, IndexingEnabled, Label, Caption, FileSystem, Capacity, FreeSpace, DriveType FROM Win32_Volume");
+		} else {
+			$object = $this->wmi->ExecQuery("SELECT Compressed, Name, FileSystem, Size, FreeSpace, DriveType FROM Win32_LogicalDisk");
+		}
+		
+		foreach($object as $volume) {
 			$options = array();
-			if ($volume->Automount) {
-				$options[] = 'automount';
-			}
-			if ($volume->BootVolume) {
-				$options[] = 'boot';
+			if($this->windows_version > "6.1.0000") {
+				if ($volume->Automount) {
+					$options[] = 'automount';
+				}
+				if ($volume->BootVolume) {
+					$options[] = 'boot';
+				}
+				if ($volume->IndexingEnabled) {
+					$options[] = 'indexed';
+				}
 			}
 			if ($volume->Compressed) {
 				$options[] = 'compressed';
 			}
-			if ($volume->IndexingEnabled) {
-				$options[] = 'indexed';
-			}
+			$capacity = ($this->windows_version > "6.1.0000") ? $volume->Capacity : $volume->Size;
+			$label    = ($this->windows_version > "6.1.0000") ? $volume->Label : $volume->Name;
+			$mount    = ($this->windows_version > "6.1.0000") ? $volume->Caption : $label . '\\';
 			$a = array(
 				'device' => false,
-				'label' => $volume->Label,
+				'label' => $label,
 				'devtype' => '',
-				'mount' => $volume->Caption,
+				'mount' => $mount,
 				'type' => $volume->FileSystem,
-				'size' => $volume->Capacity,
-				'used' => $volume->Capacity - $volume->FreeSpace,
+				'size' => $capacity,
+				'used' => $capacity - $volume->FreeSpace,
 				'free' => $volume->FreeSpace,
 				'free_percent' => 0,
 				'used_percent' => 0,
@@ -314,9 +326,9 @@ class OS_Windows {
 					break;
 			}
 			
-			if ($volume->Capacity != 0) {
-				$a['free_percent'] = round($volume->FreeSpace / $volume->Capacity, 2) * 100;
-				$a['used_percent'] = round(($volume->Capacity - $volume->FreeSpace) / $volume->Capacity, 2) * 100;
+			if ($capacity != 0) {
+				$a['free_percent'] = round($volume->FreeSpace / $capacity, 2) * 100;
+				$a['used_percent'] = round(($capacity - $volume->FreeSpace) / $capacity, 2) * 100;
 			}
 			
 			$volumes[] = $a;
@@ -388,8 +400,16 @@ class OS_Windows {
 	private function getNet() {
 	
 		$return = array();
+		$i = 0;
 		
-		foreach ($this->wmi->ExecQuery("SELECT AdapterType, Name, NetConnectionStatus, GUID FROM Win32_NetworkAdapter WHERE PhysicalAdapter = TRUE") as $net) {
+		if($this->windows_version > "6.1.0000") {
+			$object = $this->wmi->ExecQuery("SELECT AdapterType, Name, NetConnectionStatus, GUID FROM Win32_NetworkAdapter WHERE PhysicalAdapter = TRUE");
+		} else {
+			$object = $this->wmi->ExecQuery("SELECT AdapterType, Name, NetConnectionStatus FROM Win32_NetworkAdapter WHERE NetConnectionStatus != NULL");
+		}
+		
+		
+		foreach ($object as $net) {
 			// Save and get info for each
 			$return[$net->Name] = array(
 				'recieved' => array(
@@ -450,9 +470,13 @@ class OS_Windows {
 					break;
 			}
 			// @Microsoft: An index would be nice here indeed.
-			$canonname = preg_replace("/[^A-Za-z0-9- ]/", "_", $net->Name);
-			$isatapname = "isatap." . $net->GUID;
-			$result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname' OR Name = '$isatapname'");
+			if($this->windows_version > "6.1.0000") {
+				$canonname = preg_replace("/[^A-Za-z0-9- ]/", "_", $net->Name);
+				$isatapname = "isatap." . $net->GUID;
+				$result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname' OR Name = '$isatapname'");
+			} else {
+				$result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname'");
+			}
 			foreach ($result as $netspeed) {
 				$return[$net->Name]['recieved'] = array(
 					'bytes' => (int)$netspeed->BytesReceivedPersec,
@@ -465,6 +489,7 @@ class OS_Windows {
 					'packets' => (int)$netspeed->PacketsSentPersec
 				);
 			}
+			$i++;
 		}
 		
 		return $return;
