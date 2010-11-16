@@ -475,6 +475,7 @@ class OS_Windows {
 				$isatapname = "isatap." . $net->GUID;
 				$result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname' OR Name = '$isatapname'");
 			} else {
+				$canonname = preg_replace("/[^A-Za-z0-9- ]/", "_", $net->Name);
 				$result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname'");
 			}
 			foreach ($result as $netspeed) {
