@@ -169,7 +169,7 @@ function create_table($structure) {
 		if ($row['type'] == 'header') {
 			foreach ($row['columns'] as $v)
 				$html .= is_array($v) ? '
-			<th colspan="'.$v[0].'">'.$v[1].'</th>' : '
+			<th colspan="'.$v[0].'"'.(array_key_exists('2', $v) ? ' style="width: '.$v[2].';"' : '').'>'.$v[1].'</th>' : '
 			<th>'.$v.'</th>';
 		}
 
