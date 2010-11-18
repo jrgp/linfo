@@ -170,14 +170,14 @@ class OS_Windows {
 		
 		$cpus = array();
 		$alt = false;
-		$object = $this->wmi->ExecQuery("SELECT Name, Manufacturer, CurrentClockSpeed, NumberOfLogicalProcessors FROM Win32_Processor";
+		$object = $this->wmi->ExecQuery("SELECT Name, Manufacturer, CurrentClockSpeed, NumberOfLogicalProcessors FROM Win32_Processor");
 		
 		if (!is_object($object)) {
-			$object = $this->wmi->ExecQuery("SELECT Name, Manufacturer, CurrentClockSpeed FROM Win32_Processor";
+			$object = $this->wmi->ExecQuery("SELECT Name, Manufacturer, CurrentClockSpeed FROM Win32_Processor");
 			$alt = true;
 		}
 
-		foreach($objectas $cpu) {
+		foreach($object as $cpu) {
 			$curr = array(
 				'Model' => $cpu->Name,
 				'Vendor' => $cpu->Manufacturer,
