@@ -169,16 +169,28 @@ class OS_Windows {
 	private function getCPU() {
 		
 		$cpus = array();
+		$alt = false;
+		$object = $this->wmi->ExecQuery("SELECT Name, Manufacturer, CurrentClockSpeed, NumberOfLogicalProcessors FROM Win32_Processor";
 		
-		foreach($this->wmi->ExecQuery("SELECT Name, Manufacturer, CurrentClockSpeed, NumberOfLogicalProcessors FROM Win32_Processor") as $cpu) {
+		if (!is_object($object)) {
+			$object = $this->wmi->ExecQuery("SELECT Name, Manufacturer, CurrentClockSpeed FROM Win32_Processor";
+			$alt = true;
+		}
+
+		foreach($objectas $cpu) {
 			$curr = array(
 				'Model' => $cpu->Name,
 				'Vendor' => $cpu->Manufacturer,
 				'MHz' => $cpu->CurrentClockSpeed,
 			);
 			$curr['Model'] = $cpu->Name;
-			for ($i = 0; $i < $cpu->NumberOfLogicalProcessors; $i++)
+			
+			if (!$alt) {
+				for ($i = 0; $i < $cpu->NumberOfLogicalProcessors; $i++)
+					$cpus[] = $curr;
+			} else {
 				$cpus[] = $curr;
+			}
 		}
 		
 		return $cpus;
@@ -266,7 +278,7 @@ class OS_Windows {
 		
 		$volumes = array();
 		
-		if($this->windows_version > "6.1.0000") {
+		if ($this->windows_version > "6.1.0000") {
 			$object = $this->wmi->ExecQuery("SELECT Automount, BootVolume, Compressed, IndexingEnabled, Label, Caption, FileSystem, Capacity, FreeSpace, DriveType FROM Win32_Volume");
 		} else {
 			$object = $this->wmi->ExecQuery("SELECT Compressed, Name, FileSystem, Size, FreeSpace, DriveType FROM Win32_LogicalDisk");
@@ -274,7 +286,7 @@ class OS_Windows {
 		
 		foreach($object as $volume) {
 			$options = array();
-			if($this->windows_version > "6.1.0000") {
+			if ($this->windows_version > "6.1.0000") {
 				if ($volume->Automount) {
 					$options[] = 'automount';
 				}
@@ -351,7 +363,7 @@ class OS_Windows {
 		
 		foreach($this->wmi->ExecQuery("SELECT DeviceID, Caption, Manufacturer FROM Win32_PnPEntity") as $pnpdev) {
 			$type = reset(explode("\\", $pnpdev->DeviceID));
-			if(($type != 'USB' && $type != 'PCI') || (empty($pnpdev->Caption) || $pnpdev->Manufacturer[0] == '(')) {
+			if (($type != 'USB' && $type != 'PCI') || (empty($pnpdev->Caption) || $pnpdev->Manufacturer[0] == '(')) {
 				continue;
 			}
 			$devs[] = array(
@@ -402,7 +414,7 @@ class OS_Windows {
 		$return = array();
 		$i = 0;
 		
-		if($this->windows_version > "6.1.0000") {
+		if ($this->windows_version > "6.1.0000") {
 			$object = $this->wmi->ExecQuery("SELECT AdapterType, Name, NetConnectionStatus, GUID FROM Win32_NetworkAdapter WHERE PhysicalAdapter = TRUE");
 		} else {
 			$object = $this->wmi->ExecQuery("SELECT AdapterType, Name, NetConnectionStatus FROM Win32_NetworkAdapter WHERE NetConnectionStatus != NULL");
@@ -470,7 +482,7 @@ class OS_Windows {
 					break;
 			}
 			// @Microsoft: An index would be nice here indeed.
-			if($this->windows_version > "6.1.0000") {
+			if ($this->windows_version > "6.1.0000") {
 				$canonname = preg_replace("/[^A-Za-z0-9- ]/", "_", $net->Name);
 				$isatapname = "isatap." . $net->GUID;
 				$result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname' OR Name = '$isatapname'");
