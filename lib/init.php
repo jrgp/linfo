@@ -124,6 +124,19 @@ function runExtensions(&$info, $settings) {
 		// Name of its class
 		$class = 'ext_'.$ext;
 
+		// Make sure it exists
+		if (!class_exists($class)) {
+			LinfoError::Fledging()->add('Extension Loader', 'Cannot find class for "'.$ext.'" extension.');
+			continue;
+		}
+
+		// Handle version checking
+		$min_version = defined($class.'::LINFO_MIN_VERSION') ? constant($class.'::LINFO_MIN_VERSION') : false; 
+		if ($min_version !== false && strtolower(VERSION) != 'svn' && !version_compare(VERSION, $min_version, '>=')) {
+			LinfoError::Fledging()->add('Extension Loader', '"'.$ext.'" extension requires at least Linfo v'.$min_version);
+			continue;
+		}
+
 		// Load it
 		$ext_class = new $class();
 

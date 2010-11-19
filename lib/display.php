@@ -687,7 +687,7 @@ function showInfo($info, $settings) {
 
 	echo '
 <div id="foot">
-	'.sprintf($lang['footer_app'], '<a href="http://linfo.sf.net"><em>'.VERSION.'</em></a>',  round(microtime(true) - TIME_START,2)).'<br />
+	'.sprintf($lang['footer_app'], '<a href="http://linfo.sf.net"><em>'.AppName.' ('.VERSION.')</em></a>',  round(microtime(true) - TIME_START,2)).'<br />
 	<em>'.AppName.'</em> &copy; 2010 Joseph Gillotti &amp; friends. Source code licensed under GPL.
 </div>
 <script>Linfo.init()</script>

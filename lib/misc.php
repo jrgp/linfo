@@ -67,9 +67,10 @@ function byte_convert($size, $precision = 2) {
 
 	// Fixes large disk size overflow issue
 	// Found at http://www.php.net/manual/en/function.disk-free-space.php#81207
-	$types = array( 'B', 'KB', 'MB', 'GB', 'TB' );
-	for( $i = 0; $size >= $notation && $i < ( count( $types ) -1 ); $size /= $notation, $i++ );
-	return( round( $size, $precision ) . ' ' . $types[$i] );
+	$types = array('B', 'KB', 'MB', 'GB', 'TB');
+	$types_i = array('B', 'KiB', 'MiB', 'GiB', 'TiB');
+	for($i = 0; $size >= $notation && $i < (count($types) -1 ); $size /= $notation, $i++);
+	return(round($size, $precision) . ' ' . ($notation == 1000 ? $types[$i] : $types_i[$i]));
 }
 
 // Like above, but for seconds
