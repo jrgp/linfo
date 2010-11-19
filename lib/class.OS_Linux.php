@@ -302,25 +302,37 @@ class OS_Linux {
 			// Save info for this one here temporarily
 			$curr = array();
 
-			// Try getting brand/vendor
-			if (array_key_exists('vendor_id', $cpus[$i]))
-				$curr['Vendor'] = $cpus[$i]['vendor_id'];
+			// Default to unknown
+			$curr['Model'] = 'Unknown';
 
-			// Speed in MHz
-			if (array_key_exists('cpu MHz', $cpus[$i]))
-				$curr['MHz'] = $cpus[$i]['cpu MHz'];
-			elseif (array_key_exists('Cpu0ClkTck', $cpus[$i])) // Old Sun boxes
-				$curr['MHz'] = hexdec($cpus[$i]['Cpu0ClkTck']) / 1000000;
+			// Go through keys to find stuff like model, speed, brand
+			foreach ($cpus[$i] as $k => $v) {
 
-			// CPU Model
-			if (array_key_exists('model name', $cpus[$i]))
-				$curr['Model'] = $cpus[$i]['model name'];
-			elseif (array_key_exists('cpu', $cpus[$i])) // Again, old Sun boxes
-				$curr['Model'] = $cpus[$i]['cpu'];
-			elseif (array_key_exists('Processor', $cpus[$i])) // Android/ARM
-				$curr['Model'] = $cpus[$i]['Processor'];
-			else
-				$curr['Model'] = 'unknown';
+				// Deal with each section
+				switch ($k) {
+					
+					// CPU model
+					case 'model name':
+					case 'cpu':
+					case 'Processor':
+						$curr['Model'] = $v;
+					break;
+
+					// Speed in MHz
+					case 'cpu MHz':
+						$curr['MHz'] = $v;
+					break;
+
+					case 'Cpu0ClkTck': // Old sun boxes
+						$curr['MHz'] = hexdec($v) / 1000000;
+					break;
+
+					// Brand/vendor
+					case 'vendor_id':
+						$curr['Vendor'] = $v;
+					break;
+				}
+			}
 
 			// Save this one
 			$return[] = $curr;
@@ -940,11 +952,11 @@ class OS_Linux {
 		$return = array();
 
 		// In here
-		$contents = getContents('/proc/self/net/wireless');
+		$contents = getContents('/proc/net/wireless');
 
 		// Oi
 		if ($contents == false) {
-			$this->error->add('Linux WiFi info parser', '/proc/self/net/wireless does not exist');
+			$this->error->add('Linux WiFi info parser', '/proc/net/wireless does not exist');
 			return $return;
 		}
 
