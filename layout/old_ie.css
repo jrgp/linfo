@@ -1,0 +1,5 @@
+/* Versions of IE under 8 suck */
+
+/* This make the columns actually appear side by side. */
+.col2 .col {width: 49%;}
+
