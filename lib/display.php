@@ -44,7 +44,7 @@ function showInfo($info, $settings) {
 	<link href="'.WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon" />
 	<link href="'.WEB_PATH.'layout/styles.css" type="text/css" rel="stylesheet" />
 	<script src="'.WEB_PATH.'layout/scripts.min.js" type="text/javascript"></script>
-	<meta name="generator" content="'.VERSION.'" />
+	<meta name="generator" content="'.AppName.' ('.VERSION.')" />
 	<!--[if lt IE 8]>
 	<link href="'.WEB_PATH.'layout/old_ie.css" type="text/css" rel="stylesheet" />
 	<![endif]-->
