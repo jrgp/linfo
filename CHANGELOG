@@ -21,7 +21,12 @@ v1.4 - 10/20/2010
  - New colorscheme
  - Various improvements
 
-v1.5 - 11/x/2010
+v1.5 - 11/16/2010
  - Extensions now packaged/developed separately
  - Windows 7 support 
+ - Various improvements
+
+v1.6 - 11/22/2010
+ - Windows XP support
+ - More mature extension support
  - Various improvements

@@ -60,7 +60,6 @@ Known issues:
  - Getting Linux device names is slow on old systems
  - Getting Linux device names does not work on all distros [yet]
  - Linux Wifi is not finished
- - Windows support might have problems with Pre-Vista/7 versions
 
 Linux system temps/voltages/etc requirments:
  - Have hddtemp listening or periodically writing to syslog, and/or
@@ -77,7 +76,7 @@ TODO:
  - Support for strange operating systems: Haiku/BeOS
 
 Please send suggestions, help requests, comments, complaints, beer, pizza, and hookers to:
- - joe@u13.net / elephanthunter@gmail.com / oliver.kuckertz@mologie.de / ryan@u13.net
+ - joe@u13.net 
  - IRC - #linfo @ freenode
 
 License: GNU General Public License
@@ -85,7 +84,5 @@ Author/project leader: Joseph Robert Gillotti <joe@u13.net>
 Additional author(s):
  - Lee Bradley <elephanthunter@gmail.com>
  - Oliver Kuckertz <oliver.kuckertz@mologie.de>
- - Joe Finney <joe.finney@gmail.com>
- - Ryan Rawdon (ryan@u13.net)
 URL: http://linfo.sourceforge.net/
 Favicon by: Lee Bradley
