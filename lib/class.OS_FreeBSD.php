@@ -69,7 +69,13 @@ class OS_FreeBSD extends OS_BSD_Common{
 			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # lacks thread stats
 			'Battery' => empty($this->settings['show']) ? array(): $this->getBattery(),  	# works
 			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# works
-			'Temps' => empty($this->settings['show']) ? array(): $this->getTemps(), 	# TODO
+			'Temps' => empty($this->settings['show']) ? array(): $this->getTemps(), 	# TODO,
+
+			// Columns we should leave out. (because finding them out is either impossible or requires root access)
+			'contains' => array(
+				'hw_vendor' => false,
+				'drives_rw_stats' => false
+			)
 		);
 	}
 

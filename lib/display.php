@@ -314,13 +314,17 @@ function showInfo($info, $settings) {
 
 	// Show hardware?
 	if (!empty($settings['show']['devices'])) {
+
+		// Don't show vendor?
+		$show_vendor = array_key_exists('hw_vendor', $info['contains']) ? ($info['contains']['hw_vendor'] === false ? false : true) : true;
+
 		echo '
 		<div class="infoTable">
 			<h2>'.$lang['hardware'].'</h2>
 			<table>
 				<tr>
 					<th>'.$lang['type'].'</th>
-					<th>'.$lang['vendor'].'</th>
+					',($show_vendor ? '<th>'.$lang['vendor'].'</th>' : ''),'
 					<th>'.$lang['device'].'</th>
 				</tr>
 				';
@@ -330,7 +334,7 @@ function showInfo($info, $settings) {
 				echo '
 						<tr>
 							<td class="center">'.$info['Devices'][$i]['type'].'</td>
-							<td>',$info['Devices'][$i]['vendor'] ? $info['Devices'][$i]['vendor'] : 'Unknown' ,'</td>
+							',$show_vendor ? '<td>'.($info['Devices'][$i]['vendor'] ? $info['Devices'][$i]['vendor'] : 'Unknown').'</td>' : '','
 							<td>'.$info['Devices'][$i]['device'].'</td>
 						</tr>';
 			}
@@ -344,6 +348,11 @@ function showInfo($info, $settings) {
 
 	// Show drives?
 	if (!empty($settings['show']['hd'])) {
+
+		// Should we not show the Reads and Writes columns?
+		$show_stats = array_key_exists('drives_rw_stats', $info['contains']) ? ($info['contains']['drives_rw_stats'] === false ? false : true) : true;
+
+
 		echo '
 		<div class="infoTable">
 			<h2>Drives</h2>
@@ -352,8 +361,8 @@ function showInfo($info, $settings) {
 					<th>'.$lang['path'].'</th>
 					<th>'.$lang['vendor'].'</th>
 					<th>'.$lang['name'].'</th>
-					<th>'.$lang['reads'].'</th>
-					<th>'.$lang['writes'].'</th>
+					',$show_stats ? '<th>'.$lang['reads'].'</th>
+					<th>'.$lang['writes'].'</th>' : '','
 					<th>'.$lang['size'].'</th>
 				</tr>
 				';
@@ -364,8 +373,8 @@ function showInfo($info, $settings) {
 							<td>'.$drive['device'].'</td>
 							<td>',$drive['vendor'] ? $drive['vendor'] : $lang['unknown'],'</td>
 							<td>'.$drive['name'].'</td>
-							<td>',$drive['reads'] !== false ? number_format($drive['reads']) : $lang['unknown'],'</td>
-							<td>',$drive['writes'] !== false ? number_format($drive['writes']) : $lang['unknown'],'</td>
+							', $show_stats ? '<td>'.($drive['reads'] !== false ? number_format($drive['reads']) : $lang['unknown']).'</td>
+							<td>'.($drive['writes'] !== false ? number_format($drive['writes']) : $lang['unknown']).'</td>' : '','
 							<td>',$drive['size'] ? byte_convert($drive['size']) : $lang['unknown'],'</td>
 						</tr>';
 
