@@ -30,6 +30,9 @@ defined('IN_INFO') or exit;
  */
 function showInfo($info, $settings) {
 	global $lang;
+
+	// Make sure we have the array of what not to show
+	$info['contains'] = array_key_exists('contains', $info) ? (array) $info['contains'] : array();
 	
 	// Start compressed output buffering
 	ob_start('ob_gzhandler');
