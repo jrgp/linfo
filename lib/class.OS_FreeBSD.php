@@ -47,7 +47,20 @@ class OS_FreeBSD extends OS_BSD_Common{
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
 		
 		// sysctl values we'll access below
-		$this->GetSysCTL(array('kern.boottime', 'vm.vmtotal', 'vm.loadavg'), false);
+		$this->GetSysCTL(array(
+
+			// Has unix timestamp of boot time
+			'kern.boottime',
+
+			// Ram stuff
+			'vm.vmtotal',
+			'vm.loadavg',
+
+			// CPU related
+			'hw.model',
+			'hw.ncpu',
+			'hw.clockrate'
+		), false);
 	}
 	
 	// This function will likely be shared among all the info classes
@@ -450,21 +463,13 @@ class OS_FreeBSD extends OS_BSD_Common{
 		// Store them here
 		$cpus = array();
 		
-		// Get cpu type
-		if (preg_match('/^CPU: ([^(]+) \(([\d\.]+)\-MHz.+\).*\n\s+Origin = "(\w+)"/m', $this->dmesg, $cpu_m) == 0)
-			return $cpus;
-		
-		// I don't like how this is done. It implies that if you have more than one CPU they're all identical
-		$num = preg_match('/^FreeBSD\/SMP\: Multiprocessor System Detected\: (\d+) CPUs/m', $contents, $num_m) ? $num_m[1] : 1;	
-		
 		// Stuff it with identical cpus
-		for ($i = 1; $i <= $num; $i++)
+		for ($i = 1; $i <= $this->sysctl['hw.ncpu']; $i++)
 			
 			// Save each
 			$cpus[] = array(
-				'Model' => $cpu_m[1],
-				'MHz' => $cpu_m[2],
-				'Vendor' => $cpu_m[3]
+				'Model' => $this->sysctl['hw.model'],
+				'MHz' => $this->sysctl['hw.clockrate']
 			);
 		
 		// Return
