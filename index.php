@@ -50,6 +50,10 @@ elseif(!is_file(LOCAL_PATH . 'config.inc.php'))
 // It exists; just include it
 require_once LOCAL_PATH . 'config.inc.php';
 
+// This is essentially the only extension we need, so make sure we have it
+if (!extension_loaded('pcre'))
+	exit(AppName.' needs the `pcre\' extension to be loaded. http://us2.php.net/manual/en/book.pcre.php');
+
 // Make sure these are arrays
 $settings['hide']['filesystems'] = is_array($settings['hide']['filesystems']) ? $settings['hide']['filesystems'] : array();
 $settings['hide']['storage_devices'] = is_array($settings['hide']['storage_devices']) ? $settings['hide']['storage_devices'] : array();
