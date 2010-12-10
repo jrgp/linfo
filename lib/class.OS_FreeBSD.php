@@ -68,21 +68,21 @@ class OS_FreeBSD extends OS_BSD_Common{
 
 		// Return everything, whilst obeying display permissions
 		return array(
-			'OS' => empty($this->settings['show']) ? '' : $this->getOS(), 			# done
-			'Kernel' => empty($this->settings['show']) ? '' : $this->getKernel(), 		# done
-			'HostName' => empty($this->settings['show']) ? '' : $this->getHostName(), 	# done
-			'Mounts' => empty($this->settings['show']) ? array() : $this->getMounts(), 	# done
-			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(), 		# done
-			'Load' => empty($this->settings['show']) ? array() : $this->getLoad(), 		# done
-			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# done
-			'HD' => empty($this->settings['show']) ? '' : $this->getHD(), 			# done
-			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(), 		# done
-			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),# done 
-			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# done (gmirror only)
+			'OS' => empty($this->settings['show']['os']) ? '' : $this->getOS(), 			# done
+			'Kernel' => empty($this->settings['show']['kernel']) ? '' : $this->getKernel(), 		# done
+			'HostName' => empty($this->settings['show']['hostname']) ? '' : $this->getHostName(), 	# done
+			'Mounts' => empty($this->settings['show']['mounts']) ? array() : $this->getMounts(), 	# done
+			'RAM' => empty($this->settings['show']['ram']) ? array() : $this->getRam(), 		# done
+			'Load' => empty($this->settings['show']['load']) ? array() : $this->getLoad(), 		# done
+			'Devices' => empty($this->settings['show']['devices']) ? array() : $this->getDevs(), 	# done
+			'HD' => empty($this->settings['show']['hd']) ? '' : $this->getHD(), 			# done
+			'UpTime' => empty($this->settings['show']['uptime']) ? '' : $this->getUpTime(), 		# done
+			'Network Devices' => empty($this->settings['show']['network']) ? array() : $this->getNet(),# done 
+			'RAID' => empty($this->settings['show']['raid']) ? '' : $this->getRAID(),	 	# done (gmirror only)
 			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # lacks thread stats
-			'Battery' => empty($this->settings['show']) ? array(): $this->getBattery(),  	# works
-			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# works
-			'Temps' => empty($this->settings['show']) ? array(): $this->getTemps(), 	# TODO,
+			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(),  	# works
+			'CPU' => empty($this->settings['show']['cpu']) ? array() : $this->getCPU(), 		# works
+			'Temps' => empty($this->settings['show']['temps']) ? array(): $this->getTemps(), 	# TODO,
 
 			// Columns we should leave out. (because finding them out is either impossible or requires root access)
 			'contains' => array(
