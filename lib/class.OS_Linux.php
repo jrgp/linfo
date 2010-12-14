@@ -614,7 +614,7 @@ class OS_Linux {
 			$this->error->add('Linfo Core', '/proc/mounts does not exist');
 
 		// Parse
-		if (@preg_match_all('/^(\S+) (\S+) (\S+) (\S+) \d \d$/m', $contents, $match, PREG_SET_ORDER) === false)
+		if (@preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $match, PREG_SET_ORDER) === false)
 			$this->error->add('Linfo Core', 'Error parsing /proc/mounts');
 
 		// Return these
