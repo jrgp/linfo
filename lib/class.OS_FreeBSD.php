@@ -464,7 +464,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 		$cpus = array();
 		
 		// Stuff it with identical cpus
-		for ($i = 1; $i <= $this->sysctl['hw.ncpu']; $i++)
+		for ($i = 0; $i < $this->sysctl['hw.ncpu']; $i++)
 			
 			// Save each
 			$cpus[] = array(
