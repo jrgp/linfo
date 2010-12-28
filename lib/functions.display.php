@@ -24,16 +24,13 @@
 defined('IN_INFO') or exit;
 
 /**
- * Show it all...
+ * Show it all... in very minimal HTML
  * @param array $info the system information
  * @param array $settings linfo settings
  */
-function showInfo($info, $settings) {
+function showInfoHTML($info, $settings) {
 	global $lang;
 
-	// Make sure we have the array of what not to show
-	$info['contains'] = array_key_exists('contains', $info) ? (array) $info['contains'] : array();
-	
 	// Start compressed output buffering
 	ob_start('ob_gzhandler');
 
@@ -712,3 +709,320 @@ function showInfo($info, $settings) {
 	// End output buffering
 	ob_end_flush();
 }
+
+
+/**
+ * Show it all... in simplexml
+ * @param array $info the system information
+ * @param array $settings linfo settings
+ */
+
+ function showInfoSimpleXML($info, $settings) {
+ 	global $lang;
+
+ 	try {
+		// Start it up
+		$xml = new SimpleXMLElement('<?xml version="1.0"?><linfo></linfo>');
+
+		// Deal with core stuff
+		$core_elem = $xml->addChild('core');
+		$core = array();
+		if (!empty($settings['show']['os']))
+			$core[] = array('os', $info['OS']);
+		if (!empty($settings['show']['kernel']))
+			$core[] = array('kernel', $info['Kernel']);
+		$core[] = array('accessed_ip', (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
+		if (!empty($settings['show']['uptime']))
+			$core[] = array('uptime', $info['UpTime']);
+		if (!empty($settings['show']['hostname']))
+			$core[] = array('hostname', $info['HostName']);
+		if (!empty($settings['show']['cpu'])) {
+			$cpus = '';
+			foreach ((array) $info['CPU'] as $cpu) 
+				$cpus .=
+					(array_key_exists('Vendor', $cpu) ? $cpu['Vendor'] . ' - ' : '') .
+					$cpu['Model'] .
+					(array_key_exists('MHz', $cpu) ?
+						($cpu['MHz'] < 1000 ? ' ('.$cpu['MHz'].' MHz)' : ' ('.round($cpu['MHz'] / 1000, 3).' GHz)') : '') .
+						'<br />';
+			$core[] = array('CPU', $cpus);
+		}
+		if (!empty($settings['show']['load']))
+			$core[] = array('load', implode(' ', (array) $info['Load']));
+		if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
+			$proc_stats = array();
+			if (array_key_exists('totals', $info['processStats']) && is_array($info['processStats']['totals']))
+				foreach ($info['processStats']['totals'] as $k => $v) 
+					$proc_stats[] = $k . ': ' . number_format($v);
+			$proc_stats[] = 'total: ' . number_format($info['processStats']['proc_total']);
+			$core[] = array('processes', implode('; ', $proc_stats));
+			if ($info['processStats']['threads'] !== false)
+				$core[] = array('threads', number_format($info['processStats']['threads']));
+		}
+		for ($i = 0, $core_num = count($core); $i < $core_num; $i++) 
+			$core_elem->addChild($core[$i][0], $core[$i][1]);
+
+		// RAM
+		if (!empty($settings['show']['ram'])) {
+			$mem = $xml->addChild('memory');
+			$core_mem = $mem->addChild($info['RAM']['type']);
+			$core_mem->addChild('free', $info['RAM']['free']);
+			$core_mem->addChild('total', $info['RAM']['total']);
+			$core_mem->addChild('used', $info['RAM']['total'] - $info['RAM']['free']);
+			if (isset($info['RAM']['swapFree']) || isset($info['RAM']['swapTotal'])){
+				$swap = $mem->addChild('swap');
+				$swap_core = $swap->addChild('core');
+				$swap_core->addChild('free', $info['RAM']['swapFree']);
+				$swap_core->addChild('total', $info['RAM']['swapTotal']);
+				$swap_core->addChild('used', $info['RAM']['swapTotal'] - $info['RAM']['swapFree']);
+				if (is_array($info['RAM']['swapInfo']) && count($info['RAM']['swapInfo']) > 0) {
+					$swap_devices = $swap->addChild('devices');
+					foreach($info['RAM']['swapInfo'] as $swap_dev) {
+						$swap_dev_elem = $swap_devices->addChild('device');
+						$swap_dev_elem->addAttribute('device', $swap_dev['device']);
+						$swap_dev_elem->addAttribute('type', $swap_dev['type']);
+						$swap_dev_elem->addAttribute('size', $swap_dev['size']);
+						$swap_dev_elem->addAttribute('used', $swap_dev['used']);
+					}
+				}
+			}
+		}
+	
+		// NET
+		if (!empty($settings['show']['network'])) {
+			$net = $xml->addChild('net');
+			foreach ($info['Network Devices'] as $device => $stats) {
+				$nic = $net->addChild('interface');
+				$nic->addAttribute('device', $device);
+				$nic->addAttribute('type', $stats['type']);
+				$nic->addAttribute('sent', $stats['sent']['bytes']);
+				$nic->addAttribute('recieved', $stats['recieved']['bytes']);
+			}
+		}
+
+		// TEMPS
+		if (!empty($settings['show']['temps']) && count($info['Temps']) > 0) {
+			$temps = $xml->addChild('temps');
+			for($i = 0, $num_temps = count($info['Temps']); $i < $num_temps; $i++) {
+				$temp = $temps->addChild('temp');
+				$temp->addAttribute('path', $info['Temps'][$i]['path']);
+				$temp->addAttribute('name', $info['Temps'][$i]['name']);
+				$temp->addAttribute('temp', $info['Temps'][$i]['temp'].' '.$info['Temps'][$i]['unit']);
+			}
+		}
+
+		// Batteries
+		if (!empty($settings['show']['battery']) && count($info['Battery']) > 0) {
+			$bats = $xml->addChild('batteries');
+			foreach ($info['Battery'] as $bat)  {
+				$bat = $bats->addChild('battery');
+				$bat->addAttribute('device', $bat['device']);
+				$bat->addAttribute('state', $bat['state']);
+				$bat->addAttribute('percentage', $bat['percentage']);
+			}
+		}
+
+		// SERVICES
+		if (!empty($settings['show']['services']) && count($info['services']) > 0) {
+			$services = $xml->addChild('services');
+			foreach ($info['services'] as $service => $state) {
+				$state_parts = explode(' ', $state['state'], 2);
+				$service_elem = $services->addChild('service');
+				$service_elem->addAttribute('name', $service);
+				$service_elem->addAttribute('state', $state_parts[0] . (array_key_exists(1, $state_parts) ? ' '.$state_parts[1] : ''));
+				$service_elem->addAttribute('pid', $state['pid']);
+				$service_elem->addAttribute('threads', $state['threads'] ? $state['threads'] : '?');
+				$service_elem->addAttribute('mem_usage', $state['memory_usage'] ? $state['memory_usage'] : '?');
+			}
+		}
+
+		// DEVICES
+		if (!empty($settings['show']['devices'])) {
+			$show_vendor = array_key_exists('hw_vendor', $info['contains']) ? ($info['contains']['hw_vendor'] === false ? false : true) : true;
+			$devices = $xml->addChild('devices');
+			for ($i = 0, $num_devs = count($info['Devices']); $i < $num_devs; $i++) {
+				$device = $devices->addChild('device');
+				$device->addAttribute('type', $info['Devices'][$i]['type']);
+				if ($show_vendor)
+					$device->addAttribute('vendor', $info['Devices'][$i]['vendor']);
+				$device->addAttribute('name', $info['Devices'][$i]['device']);
+			}
+		}
+
+		// DRIVES
+		if (!empty($settings['show']['hd'])) {
+			$show_stats = array_key_exists('drives_rw_stats', $info['contains']) ? ($info['contains']['drives_rw_stats'] === false ? false : true) : true;
+			$drives = $xml->addChild('drives');
+			foreach($info['HD'] as $drive) {
+				$drive_elem = $drives->addChild('drive');
+				$drive_elem->addAttribute('device', $drive['device']);
+				$drive_elem->addAttribute('vendor', $drive['vendor'] ? $drive['vendor'] : $lang['unknown']);
+				$drive_elem->addAttribute('name', $drive['name']);
+				if ($show_stats) {
+					$drive_elem->addAttribute('reads', $drive['reads'] ? $drive['reads'] : 'unknown');
+					$drive_elem->addAttribute('writes', $drive['writes'] ? $drive['writes'] : 'unknown');
+				}
+				$drive_elem->addAttribute('size', $drive['size'] ? $drive['size'] : 'unknown');
+				if (is_array($drive['partitions']) && count($drive['partitions']) > 0) {
+					$partitions = $drive_elem->addChild('partitions');
+					foreach ($drive['partitions'] as $partition) {
+						$partition_elem = $partitions->addChild('partition');
+						$partition_elem->addAttribute('name', isset($partition['number']) ? $drive['device'].$partition['number'] : $partition['name']);
+						$partition_elem->addAttribute('size', $partition['size']);
+					}
+				}
+			}
+
+		}
+
+		// Sound cards? lol
+		if (!empty($settings['show']['sound']) && count($info['SoundCards']) > 0) {
+			$cards = $xml->addChild('soundcards');
+			foreach ($info['SoundCards'] as $card) {
+				$card_elem = $cards->addChild('card');
+				$card_elem->addAttribute('number', $card['number']);
+				$card_elem->addAttribute('vendor', empty($card['vendor']) ? 'unknown' : $card['vendor']);
+				$card_elem->addAttribute('card', $card['card']);
+			}
+		}
+
+		// File system mounts
+		if (!empty($settings['show']['mounts'])) {
+			$has_devices = false;
+			$has_labels = false;
+			$has_types = false;
+			foreach($info['Mounts'] as $mount) {
+				if (!empty($mount['device'])) {
+					$has_devices = true;
+				}
+				if (!empty($mount['label'])) {
+					$has_labels = true;
+				}
+				if (!empty($mount['devtype'])) {
+					$has_types = true;
+				}
+			}
+			$addcolumns = 0;
+			if ($settings['show']['mounts_options'])
+				$addcolumns++;
+			if ($has_devices)
+				$addcolumns++;
+			if ($has_labels)
+				$addcolumns++;
+			if ($has_types)
+				$addcolumns++;
+			$mounts = $xml->addChild('mounts');
+			foreach ($info['Mounts'] as $mount) {
+				$mount_elem = $mounts->addChild('mount');
+				if (preg_match('/^.+:$/', $mount['device']) == 1)
+					$mount['device'] .= DIRECTORY_SEPARATOR;
+				if ($has_types) 
+					$mount_elem->addAttribute('type', $mount['devtype']);
+				if ($has_devices) 
+					$mount_elem->addAttribute('device', $mount['device']);
+				$mount_elem->addAttribute('mountpoint', $mount['mount']);
+				if ($has_labels) 
+					$mount_elem->addAttribute('label', $mount['label']);
+				$mount_elem->addAttribute('type', $mount['type']);
+				if ($settings['show']['mounts_options'] && !empty($mount['options'])) {
+					$options_elem = $mount_elem->addChild('mount_options');
+					foreach ($mount['options'] as $option)
+						$options_elem->addChild($option);
+				}
+				$mount_elem->addAttribute('size', $mount['size']);
+				$mount_elem->addAttribute('used', $mount['used']);
+				$mount_elem->addAttribute('free', $mount['free']);
+			}
+		}
+
+		// RAID arrays
+		if (!empty($settings['show']['raid']) && count($info['Raid']) > 0) {
+			$raid_elem = $xml->addChild('raid');
+			foreach ($info['Raid'] as $raid) {
+				$array = $raid_elem->addChild('array');
+				$active = explode('/', $raid['count']);
+				$array->addAttribute('device', $raid['device']);
+				$array->addAttribute('level', $raid['level']);
+				$array->addAttribute('status', $raid['status']);
+				$array->addAttribute('size', $raid['size']);
+				$array->addAttribute('active', $active[1].'/'.$active[0]);
+				$drives = $array->addChild('drives');
+				foreach ($raid['drives'] as $drive) {
+					$drive_elem = $drives->addChild('drive');
+					$drive_elem->addAttribute('drive', $drive['drive']);
+					$drive_elem->addAttribute('state', $drive['state']);
+				}
+				
+			}
+		}
+
+		// Extensions
+		if (count($info['extensions']) > 0) {
+			$extensions = $xml->addChild('extensions');
+			foreach ($info['extensions'] as $ext) {
+				$header = false;
+				if (is_array($ext) && count($ext) > 0) {
+					$this_ext = $extensions->addChild(string_xml_tag_unfuck($ext['root_title']));
+					foreach ((array) $ext['rows'] as $i => $row) {
+						if ($row['type'] == 'header') {
+							$header = $i;
+						}
+						elseif ($row['type'] == 'values') {
+							$this_row = $this_ext->addChild('row');
+							if ($header !== false && array_key_exists($header, $ext['rows'])) {
+								foreach ($ext['rows'][$header]['columns'] as $ri => $rc) {
+									$this_row->addChild(
+										string_xml_tag_unfuck($rc),
+										$ext['rows'][$i]['columns'][$ri]
+									);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// Out it
+		header('Content-type: text/xml');
+		echo $xml->asXML();
+	}
+	catch (Exception $e) {
+		exit('Creation of XML error: '.$e->getMessage());
+	}
+ }
+
+/**
+ * Show it all... in XMLWriter
+ * @param array $info the system information
+ * @param array $settings linfo settings
+ */
+
+ function showInfoXMLWriter($info, $settings) {
+ 	exit ('So far only php\'s simple xml library is supported. Sorry!');
+ }
+
+/**
+ * Show it all... in JSON
+ * @param array $info the system information
+ * @param array $settings linfo settings
+ */
+
+ function showInfoJSON($info, $settings) {
+
+ 	// Make sure we have JSON
+ 	if (!function_exists('json_encode'))  {
+		exit('JSON extension not loaded');
+		return;
+	}
+
+	// Output buffering, along with compression (if supported)
+	ob_start('ob_gzhandler');
+
+	// Give it
+	echo json_encode($info);
+
+	// Send it all out
+	ob_end_flush();
+ }
+

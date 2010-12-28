@@ -63,9 +63,9 @@ $settings['hide']['filesystems'][] = 'rootfs';
 $settings['hide']['filesystems'][] = 'binfmt_misc';
 
 // Load libs
-require_once LOCAL_PATH . 'lib/init.php';
-require_once LOCAL_PATH . 'lib/misc.php';
-require_once LOCAL_PATH . 'lib/display.php';
+require_once LOCAL_PATH . 'lib/functions.init.php';
+require_once LOCAL_PATH . 'lib/functions.misc.php';
+require_once LOCAL_PATH . 'lib/functions.display.php';
 require_once LOCAL_PATH . 'lib/class.LinfoTimer.php';
 require_once LOCAL_PATH . 'lib/interface.LinfoExtension.php';
 
@@ -94,13 +94,46 @@ $info = $getter->getAll();
 // Extensions
 runExtensions($info, $settings);
 
+// Make sure we have an array of what not to show
+$info['contains'] = array_key_exists('contains', $info) ? (array) $info['contains'] : array();
+
 // Show
-if (array_key_exists('json', $_GET))
-	// Allow json'ing the info, which might be helpful for
-	// using linfo to be an ajax source for some other app
-	echo json_encode($info);
+if (array_key_exists('out', $_GET)) {
+
+	// Something extra requested
+	switch ($_GET['out']) {
+
+		// nah, just regular html 
+		case 'html':
+		default:
+			showInfoHTML($info, $settings);
+		break;
+
+		// JSON
+		case 'json':
+			showInfoJSON($info, $settings);
+		break;
+
+		// XML
+		case 'xml':
+
+			// Try using SimpleXML
+			if (extension_loaded('SimpleXML')) 
+				showInfoSimpleXML($info, $settings);
+			
+
+			// If not that, then try XMLWriter
+			elseif (extension_loaded('XMLWriter')) 
+				showInfoXMLWriter($info, $settings);	
+
+			// Can't generate XML anywhere :-/
+			else 
+				exit('Cannot generate XML. Install either php\'s SimpleXML or XMLWriter extension');
+		break;
+	}
+}
 else
-	// Otherwise, extremely minimal html 
-	showInfo($info, $settings);
+	// Just regular html if nothing extra is requested
+	showInfoHTML($info, $settings);
 
 // "This is where it ends, Commander"

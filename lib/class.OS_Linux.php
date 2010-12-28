@@ -547,7 +547,7 @@ class OS_Linux {
 		if (array_key_exists('hwmon', (array)$this->settings['temps']) && !empty($this->settings['temps']['hwmon'])) {
 
 			// Store them here
-			$hdmon_vals = array();
+			$hwmon_vals = array();
 
 			// Wacky location
 			$hwmon_paths = (array) @glob('/sys/class/hwmon/hwmon*/*_label', GLOB_NOSORT);
