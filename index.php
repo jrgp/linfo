@@ -114,6 +114,11 @@ if (array_key_exists('out', $_GET)) {
 			showInfoJSON($info, $settings);
 		break;
 
+		// Serialized php array
+		case 'php_array':
+			echo serialize($info);
+		break;
+
 		// XML
 		case 'xml':
 
