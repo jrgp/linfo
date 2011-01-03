@@ -3,12 +3,14 @@
 // Don't touch this. It attempts to thwart attempts of reading this file by another php script
 defined('IN_INFO') or exit;
 
+// If you experience timezone errors, uncomment (remove //) the following line and change the timezone to your liking
+// date_default_timezone_set('America/New_York');
+
 /*
  * Usual configuration
  */
 $settings['byte_notation'] = 1024; // Either 1024 or 1000; defaults to 1024
 $settings['language'] = 'en'; // Refer to the lang/ folder for supported lanugages
-
 
 /*
  * Possibly don't show stuff

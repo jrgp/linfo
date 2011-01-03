@@ -26,7 +26,7 @@ Goals:
 
 Usable clients:
  - Any web browser should work, including text only ones
- - Tested with: Firefox 3.x, iOS Safari, Chrome, IE, Lynx, Elinks
+ - Tested with: Firefox (1.x, 2.x, 3.x), iOS Safari, Chrome, IE (6+), Opera, Lynx, Elinks, Dillo
 
 Global System requirements: 
  - At least PHP 5
@@ -56,6 +56,12 @@ Installation/usage:
  2) Rename sample.config.inc.php to config.inc.php, after optionally changing values in it
  3) Visit page in web browser
 
+For other forms of output, aside from usual HTML, append the following to the URL:
+ - ?out=xml - XML output (requires SimpleXML extension)
+ - ?out=json - JSON output
+ - ?out=php_array - PHP serialized associative array
+ - ?out=html - Usual lightweight HTML (default)
+
 Known issues:
  - Getting Linux device names is slow on old systems
  - Getting Linux device names does not work on all distros [yet]
@@ -74,6 +80,7 @@ For cups/samba/truecrypt support:
 TODO:
  - Support for other Unix operating systems (Hurd, IRIX, AIX, HP UX, etc)
  - Support for strange operating systems: Haiku/BeOS
+ - More superfluous features
 
 Please send suggestions, help requests, comments, complaints, beer, pizza, and hookers to:
  - joe@u13.net 

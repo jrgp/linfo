@@ -30,3 +30,10 @@ v1.6 - 11/22/2010
  - Windows XP support
  - More mature extension support
  - Various improvements
+
+v1.7 - 1/?/2011
+ - XML/JSON/PHP array output format support
+ - Moved list of authors from README to THANKS
+ - Various improvements
+ - Information on how to fix timezone is now in sample config file
+
