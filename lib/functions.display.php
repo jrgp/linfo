@@ -716,7 +716,6 @@ function showInfoHTML($info, $settings) {
  * @param array $info the system information
  * @param array $settings linfo settings
  */
-
  function showInfoSimpleXML($info, $settings) {
  	global $lang;
 
@@ -952,7 +951,6 @@ function showInfoHTML($info, $settings) {
 					$drive_elem->addAttribute('drive', $drive['drive']);
 					$drive_elem->addAttribute('state', $drive['state']);
 				}
-				
 			}
 		}
 
@@ -997,9 +995,8 @@ function showInfoHTML($info, $settings) {
  * @param array $info the system information
  * @param array $settings linfo settings
  */
-
  function showInfoXMLWriter($info, $settings) {
- 	exit ('So far only php\'s simple xml library is supported. Sorry!');
+ 	exit ('So far only php\'s simple xml library is supported for XML output. Sorry!');
  }
 
 /**
@@ -1007,7 +1004,6 @@ function showInfoHTML($info, $settings) {
  * @param array $info the system information
  * @param array $settings linfo settings
  */
-
  function showInfoJSON($info, $settings) {
 
  	// Make sure we have JSON
@@ -1025,4 +1021,3 @@ function showInfoHTML($info, $settings) {
 	// Send it all out
 	ob_end_flush();
  }
-

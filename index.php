@@ -97,48 +97,41 @@ runExtensions($info, $settings);
 // Make sure we have an array of what not to show
 $info['contains'] = array_key_exists('contains', $info) ? (array) $info['contains'] : array();
 
-// Show
-if (array_key_exists('out', $_GET)) {
+// Decide what format to output in
+switch (array_key_exists('out', $_GET) ? $_GET['out'] : 'html') {
 
-	// Something extra requested
-	switch ($_GET['out']) {
+	// Just regular html 
+	case 'html':
+	default:
+		showInfoHTML($info, $settings);
+	break;
 
-		// nah, just regular html 
-		case 'html':
-		default:
-			showInfoHTML($info, $settings);
-		break;
+	// JSON
+	case 'json':
+		showInfoJSON($info, $settings);
+	break;
 
-		// JSON
-		case 'json':
-			showInfoJSON($info, $settings);
-		break;
+	// Serialized php array
+	case 'php_array':
+		echo serialize($info);
+	break;
 
-		// Serialized php array
-		case 'php_array':
-			echo serialize($info);
-		break;
+	// XML
+	case 'xml':
 
-		// XML
-		case 'xml':
+		// Try using SimpleXML
+		if (extension_loaded('SimpleXML')) 
+			showInfoSimpleXML($info, $settings);
+		
 
-			// Try using SimpleXML
-			if (extension_loaded('SimpleXML')) 
-				showInfoSimpleXML($info, $settings);
-			
+		// If not that, then try XMLWriter
+		elseif (extension_loaded('XMLWriter')) 
+			showInfoXMLWriter($info, $settings);	
 
-			// If not that, then try XMLWriter
-			elseif (extension_loaded('XMLWriter')) 
-				showInfoXMLWriter($info, $settings);	
-
-			// Can't generate XML anywhere :-/
-			else 
-				exit('Cannot generate XML. Install either php\'s SimpleXML or XMLWriter extension');
-		break;
-	}
+		// Can't generate XML anywhere :-/
+		else 
+			exit('Cannot generate XML. Install either php\'s SimpleXML or XMLWriter extension');
+	break;
 }
-else
-	// Just regular html if nothing extra is requested
-	showInfoHTML($info, $settings);
 
 // "This is where it ends, Commander"
