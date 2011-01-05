@@ -65,7 +65,7 @@ function showInfoHTML($info, $settings) {
 	if (!empty($settings['show']['os']))
 		$core[] = array($lang['os'], $info['OS']);
 	if (!empty($settings['show']['distro']) && is_array($info['Distro']))
-		$core[] = array($lang['distro'], $info['Distro']['name'] . ' - ' . $info['Distro']['version']);
+		$core[] = array($lang['distro'], $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
 	if (!empty($settings['show']['kernel']))
 		$core[] = array($lang['kernel'], $info['Kernel']);
 	$core[] = array($lang['accessed_ip'], (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));

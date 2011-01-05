@@ -1250,19 +1250,44 @@ class OS_Linux {
 		// - Allows multiple files of the same name for different distros/versions of distros, provided each
 		// - uses different regular expression syntax.
 		// - Also permits files that contain only the distro release version and nothing else,
-		// - in which case passing false instead of a regex string snags the contents
+		// - in which case passing false instead of a regex string snags the contents.
+		// - And even also supports empty files, and just uses said file to identify the distro and ignore version
 
 		// Store the distribution's files we check for, optional regex parsing string, and name of said distro here:
 		$distros = array(
-			array('/etc/lsb-release','/^DISTRIB_RELEASE=([\d\.]+)$(?:\n^DISTRIB_CODENAME=(\w+)$)?/m', 'Ubuntu'),
+			
+			// These working snag versions
+			array('/etc/lsb-release','/^DISTRIB_ID=Ubuntu$\n^DISTRIB_RELEASE=([\d\.]+)$(?:\n^DISTRIB_CODENAME=(\w+)$)?/m', 'Ubuntu'),
+			array('/etc/lsb-release','/^DISTRIB_ID=Mandrakelinux$\n^DISTRIB_RELEASE=([\d\.]+)$(?:\n^DISTRIB_CODENAME=(\w+)$)?/m', 'Mandrake'),
 			array('/etc/redhat-release', '/^CentOS release ([\d\.]+)/', 'CentOS'),
 			array('/etc/redhat-release', '/^Red Hat.+release (\S+) \(([^)]+)\)$/', 'RedHat'),
-			array('/etc/fedora-release', '/^Fedora( Core)? release (\d+) \(([^)]+)\)$/', 'Fedora'),
-			array('/etc/gentoo-release', ' ([\d\.]+)$/', 'Gentoo'),
+			array('/etc/fedora-release', '/^Fedora(?: Core)? release (\d+) \(([^)]+)\)$/', 'Fedora'),
+			array('/etc/gentoo-release', '([\d\.]+)$/', 'Gentoo'),
 			array('/etc/SuSE-release', '/^VERSION = ([\d\.]+)$/m', 'openSUSE'),
-			array('/etc/debian_version', false, 'Debian')
+			array('/etc/slackware-version', '/([\d\.]+)$/', 'Slackware'),
 
-			// More to come!
+			// These don't because they're empty 
+			array('/etc/arch-release', false, 'Arch'),
+
+			// I'm unaware of the structure of these files, so versions are not picked up
+			array('/etc/mklinux-release', false, 'MkLinux'),
+			array('/etc/tinysofa-release ', false, 'TinySofa'),
+			array('/etc/turbolinux-release ', false, 'TurboLinux'),
+			array('/etc/yellowdog-release ', false, 'YellowDog'),
+			array('/etc/annvix-release ', false, 'Annvix'),
+			array('/etc/arklinux-release ', false, 'Arklinux'),
+			array('/etc/aurox-release ', false, 'AuroxLinux'),
+			array('/etc/blackcat-release ', false, 'BlackCat'),
+			array('/etc/cobalt-release ', false, 'Cobalt'),
+			array('/etc/immunix-release ', false, 'Immunix'),
+			array('/etc/lfs-release ', false, 'Linux-From-Scratch'),
+			array('/etc/linuxppc-release ', false, 'Linux-PPC'),
+			array('/etc/mklinux-release ', false, 'MkLinux'),
+			array('/etc/nld-release ', false, 'NovellLinuxDesktop'),
+
+			// Leave this since debian derivitives might have it in addition to their own file
+			// If it's last it ensures nothing else has it and thus it should be normal debian
+			array('/etc/debian_version', false, 'Debian'),
 		);
 
 		// Hunt
@@ -1278,7 +1303,7 @@ class OS_Linux {
 				if ($distro[1] === false) {
 					return array(
 						'name' => $distro[2],
-						'version' => $contents
+						'version' => $contents == '' ? false : $contents
 					);
 				}
 
