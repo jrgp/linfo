@@ -95,5 +95,7 @@ $lang = array(
 	'pid' => 'PID', // todo: translate
 	'service' => 'Service',
 	'services' => 'Services',
-	'memory_usage' => 'Memory Usage' //TODO: translate
+	'memory_usage' => 'Memory Usage', //TODO: translate
+	'distro' => 'Distribution' //TODO: translate
+
 );

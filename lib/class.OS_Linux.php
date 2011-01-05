@@ -65,6 +65,7 @@ class OS_Linux {
 		return array(
 			'OS' => empty($this->settings['show']['os']) ? '' : $this->getOS(),
 			'Kernel' => empty($this->settings['show']['kernel']) ? '' : $this->getKernel(),
+			'Distro' => empty($this->settings['show']['distro']) ? '' : $this->getDistro(),
 			'RAM' => empty($this->settings['show']['ram']) ? array() : $this->getRam(),
 			'HD' => empty($this->settings['show']['hd']) ? '' : $this->getHD(),
 			'Mounts' => empty($this->settings['show']['mounts']) ? array() : $this->getMounts(),
@@ -1234,5 +1235,64 @@ class OS_Linux {
 		}
 
 		return $statuses;
+	}
+	
+	/**
+	 * getDistro
+	 * 
+	 * @access private
+	 * @return array the distro,version or false
+	 */
+	private function getDistro() {
+
+		// Seems the best way of doing it, as opposed to calling 'lsb_release -a', parsing /etc/issue, or 
+		// just checking if distro specific version files exist without actually parsing them: 
+		// - Allows multiple files of the same name for different distros/versions of distros, provided each
+		// - uses different regular expression syntax.
+		// - Also permits files that contain only the distro release version and nothing else,
+		// - in which case passing false instead of a regex string snags the contents
+
+		// Store the distribution's files we check for, optional regex parsing string, and name of said distro here:
+		$distros = array(
+			array('/etc/lsb-release','/^DISTRIB_RELEASE=([\d\.]+)$(?:\n^DISTRIB_CODENAME=(\w+)$)?/m', 'Ubuntu'),
+			array('/etc/redhat-release', '/^CentOS release ([\d\.]+)/', 'CentOS'),
+			array('/etc/redhat-release', '/^Red Hat.+release (\S+) \(([^)]+)\)$/', 'RedHat'),
+			array('/etc/fedora-release', '/^Fedora( Core)? release (\d+) \(([^)]+)\)$/', 'Fedora'),
+			array('/etc/gentoo-release', ' ([\d\.]+)$/', 'Gentoo'),
+			array('/etc/SuSE-release', '/^VERSION = ([\d\.]+)$/m', 'openSUSE'),
+			array('/etc/debian_version', false, 'Debian')
+
+			// More to come!
+		);
+
+		// Hunt
+		foreach ($distros as $distro) {
+
+			// File we're checking for exists and is readable
+			if (file_exists($distro[0]) && is_readable($distro[0])) {
+
+				// Get it
+				$contents = getContents($distro[0], '');
+
+				// Don't use regex, this is enough; say version is the file's contents
+				if ($distro[1] === false) {
+					return array(
+						'name' => $distro[2],
+						'version' => $contents
+					);
+				}
+
+				// Our regex match it?
+				elseif(preg_match($distro[1], $contents, $m)) {
+					return array(
+						'name' => $distro[2],
+						'version' => $m[1] . (isset($m[2]) ? ' ('.$m[2].')' : '')
+					);
+				}
+			}
+		}
+
+		// Return lack of result of we didn't find it
+		return false;
 	}
 }

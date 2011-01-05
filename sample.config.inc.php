@@ -30,6 +30,7 @@ $settings['show']['uptime'] = true;
 $settings['show']['cpu'] = true;
 $settings['show']['process_stats'] = true; 
 $settings['show']['hostname'] = true;
+$settings['show']['distro'] = true; # Attempt finding name and version of distribution on Linux systems
 $settings['show']['devices'] = true; # Slow on old systems
 
 // Disabled by default as they require extra config below

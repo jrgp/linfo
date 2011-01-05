@@ -96,5 +96,6 @@ $lang = array(
 	'pid' => 'PID',
 	'service' => 'Service',
 	'services' => 'Services',
-	'memory_usage' => 'Memory Usage'
+	'memory_usage' => 'Memory Usage',
+	'distro' => 'Distribution'
 );
