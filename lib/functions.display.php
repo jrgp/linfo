@@ -63,7 +63,7 @@ function showInfoHTML($info, $settings) {
 	// Linfo Core. Decide what to show.
 	$core = array();
 	if (!empty($settings['show']['os']))
-		$core[] = array($lang['os'], $info['OS']);
+		$core[] = array($lang['os'], (file_exists(LOCAL_PATH . 'layout/icons/icon_'.strtolower($info['OS'].'.gif')) ? '<span class="icon_os_'.strtolower($info['OS']).'"></span>' : '') . $info['OS']);
 	if (!empty($settings['show']['distro']) && is_array($info['Distro']))
 		$core[] = array($lang['distro'], $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
 	if (!empty($settings['show']['kernel']))

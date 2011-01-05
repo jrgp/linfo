@@ -87,3 +87,10 @@ span.toggler {
 	color: #999;
 	font-size: 12px;
 }
+.icon_os_linux {
+	background-image: url('icons/icon_linux.gif');
+	width: 14px;
+	height: 16px;
+	display: block;
+	float: left;
+}
