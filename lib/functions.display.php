@@ -33,6 +33,8 @@ function showInfoHTML($info, $settings) {
 
 	// Fun icons
 	$show_icons = array_key_exists('icons', $settings) ? !empty($settings['icons']) : true;
+	$os_icon = defined(IS_WINDOWS) ? 'windows' : strtolower($info['OS']);
+	$distro_icon = $info['OS'] == 'Linux' && is_array($info['Distro']) && $info['Distro']['name'] ? strtolower($info['Distro']['name']) : false;
 
 	// Start compressed output buffering
 	ob_start('ob_gzhandler');
@@ -45,7 +47,9 @@ function showInfoHTML($info, $settings) {
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>'.AppName.' - '.$info['HostName'].'</title>
 	<link href="'.WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon" />
-	<link href="'.WEB_PATH.'layout/styles.css" type="text/css" rel="stylesheet" />
+	<link href="'.WEB_PATH.'layout/styles.css" type="text/css" rel="stylesheet" />'.( $show_icons ? '
+	<link href="'.WEB_PATH.'layout/icons.css" type="text/css" rel="stylesheet" />' : ''
+	).'
 	<script src="'.WEB_PATH.'layout/scripts.min.js" type="text/javascript"></script>
 	<meta name="generator" content="'.AppName.' ('.VERSION.')" />
 	<!--[if lt IE 8]>
@@ -66,9 +70,9 @@ function showInfoHTML($info, $settings) {
 	// Linfo Core. Decide what to show.
 	$core = array();
 	if (!empty($settings['show']['os']))
-		$core[] = array($lang['os'], ($show_icons && file_exists(LOCAL_PATH . 'layout/icons/icon_'.strtolower($info['OS'].'.gif')) ? '<span class="icon_os_'.strtolower($info['OS']).'"></span>' : '') . $info['OS']);
+		$core[] = array($lang['os'], ($show_icons && (file_exists(LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.png')) ? '<span class="icon_os_'.$os_icon.'"></span>' : '') . $info['OS']);
 	if (!empty($settings['show']['distro']) && is_array($info['Distro']))
-		$core[] = array($lang['distro'], $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
+		$core[] = array($lang['distro'], ($show_icons && $distro_icon && (file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.png')) ? '<span class="icon_distro_'.$distro_icon.'"></span>' : '') . $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
 	if (!empty($settings['show']['kernel']))
 		$core[] = array($lang['kernel'], $info['Kernel']);
 	$core[] = array($lang['accessed_ip'], (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
