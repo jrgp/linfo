@@ -31,6 +31,9 @@ defined('IN_INFO') or exit;
 function showInfoHTML($info, $settings) {
 	global $lang;
 
+	// Fun icons
+	$show_icons = array_key_exists('icons', $settings) ? !empty($settings['icons']) : true;
+
 	// Start compressed output buffering
 	ob_start('ob_gzhandler');
 
@@ -63,7 +66,7 @@ function showInfoHTML($info, $settings) {
 	// Linfo Core. Decide what to show.
 	$core = array();
 	if (!empty($settings['show']['os']))
-		$core[] = array($lang['os'], (file_exists(LOCAL_PATH . 'layout/icons/icon_'.strtolower($info['OS'].'.gif')) ? '<span class="icon_os_'.strtolower($info['OS']).'"></span>' : '') . $info['OS']);
+		$core[] = array($lang['os'], ($show_icons && file_exists(LOCAL_PATH . 'layout/icons/icon_'.strtolower($info['OS'].'.gif')) ? '<span class="icon_os_'.strtolower($info['OS']).'"></span>' : '') . $info['OS']);
 	if (!empty($settings['show']['distro']) && is_array($info['Distro']))
 		$core[] = array($lang['distro'], $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
 	if (!empty($settings['show']['kernel']))

@@ -11,6 +11,7 @@ defined('IN_INFO') or exit;
  */
 $settings['byte_notation'] = 1024; // Either 1024 or 1000; defaults to 1024
 $settings['language'] = 'en'; // Refer to the lang/ folder for supported lanugages
+$settings['icons'] = true; // simple icons 
 
 /*
  * Possibly don't show stuff
