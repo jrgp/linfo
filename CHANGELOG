@@ -36,4 +36,5 @@ v1.7 - 1/?/2011
  - Moved list of authors from README to THANKS
  - Various improvements
  - Information on how to fix timezone is now in sample config file
+ - Ability to find distribution name/version on Linux on major distros
 
