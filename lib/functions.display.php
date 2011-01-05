@@ -70,9 +70,9 @@ function showInfoHTML($info, $settings) {
 	// Linfo Core. Decide what to show.
 	$core = array();
 	if (!empty($settings['show']['os']))
-		$core[] = array($lang['os'], ($show_icons && (file_exists(LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.png')) ? '<span class="icon_os_'.$os_icon.'"></span>' : '') . $info['OS']);
+		$core[] = array($lang['os'], ($show_icons && (file_exists(LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.png')) ? '<span class="icon icon_os_'.$os_icon.'"></span>' : '') . $info['OS']);
 	if (!empty($settings['show']['distro']) && is_array($info['Distro']))
-		$core[] = array($lang['distro'], ($show_icons && $distro_icon && (file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.png')) ? '<span class="icon_distro_'.$distro_icon.'"></span>' : '') . $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
+		$core[] = array($lang['distro'], ($show_icons && $distro_icon && (file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.png')) ? '<span class="icon icon_distro_'.$distro_icon.'"></span>' : '') . $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
 	if (!empty($settings['show']['kernel']))
 		$core[] = array($lang['kernel'], $info['Kernel']);
 	$core[] = array($lang['accessed_ip'], (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));

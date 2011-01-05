@@ -1,6 +1,6 @@
 
 /* All icons conform to this */
-.icon_os_linux, .icon_os_windows, .icon_os_freebsd, .icon_distro_ubuntu {
+.icon {
 	height: 16px;
 	display: block;
 	float: left;
