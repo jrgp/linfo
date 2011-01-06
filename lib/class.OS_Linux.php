@@ -73,6 +73,7 @@ class OS_Linux {
 			'HostName' => empty($this->settings['show']['hostname']) ? '' : $this->getHostName(),
 			'UpTime' => empty($this->settings['show']['uptime']) ? '' : $this->getUpTime(),
 			'CPU' => empty($this->settings['show']['cpu']) ? array() : $this->getCPU(),
+			'CPUArchitecture' => empty($this->settings['show']['cpu']) ? array() : $this->getCPUArchitecture(),
 			'Network Devices' => empty($this->settings['show']['network']) ? array() : $this->getNet(),
 			'Devices' => empty($this->settings['show']['devices']) ? array() : $this->getDevs(),
 			'Temps' => empty($this->settings['show']['temps']) ? array(): $this->getTemps(),
@@ -1319,5 +1320,15 @@ class OS_Linux {
 
 		// Return lack of result of we didn't find it
 		return false;
+	}
+
+	/**
+	 * getCPUArchitecture
+	 * 
+	 * @access private
+	 * @return string the arch
+	 */
+	private function getCPUArchitecture() {
+		return php_uname('m');
 	}
 }

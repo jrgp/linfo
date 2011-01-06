@@ -96,6 +96,7 @@ $lang = array(
 	'service' => 'Service',
 	'services' => 'Services',
 	'memory_usage' => 'Memory Usage', //TODO: translate
-	'distro' => 'Distribution' //TODO: translate
+	'distro' => 'Distribution', //TODO: translate
+	'cpu_arch' => 'Architecture' //TODO: translate
 
 );

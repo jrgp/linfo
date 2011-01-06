@@ -6,6 +6,7 @@
 	float: left;
 	margin-right: 4px;
 	background-repeat: no-repeat;
+	min-width: 16px;
 }
 
 /* Set individual icons here. Notice not all have the same width. */

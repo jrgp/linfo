@@ -81,6 +81,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 			'RAID' => empty($this->settings['show']['raid']) ? '' : $this->getRAID(),	 	# done (gmirror only)
 			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # lacks thread stats
 			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(),  	# works
+			'CPUArchitecture' => empty($this->settings['show']['cpu']) ? array() : $this->getCPUArchitecture(), # done
 			'CPU' => empty($this->settings['show']['cpu']) ? array() : $this->getCPU(), 		# works
 			'Temps' => empty($this->settings['show']['temps']) ? array(): $this->getTemps(), 	# TODO,
 
@@ -668,5 +669,15 @@ class OS_FreeBSD extends OS_BSD_Common{
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Temperature');
 	
+	}
+	
+	/**
+	 * getCPUArchitecture
+	 * 
+	 * @access private
+	 * @return string the arch
+	 */
+	private function getCPUArchitecture() {
+		return php_uname('m');
 	}
 }

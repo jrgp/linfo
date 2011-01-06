@@ -91,6 +91,9 @@ function showInfoHTML($info, $settings) {
 					'<br />';
 		$core[] = array('CPUs ('.count($info['CPU']).')', $cpus);
 	}
+	if (!empty($settings['show']['cpu']) && array_key_exists('CPUArchitecture', $info)) 
+		$core[] = array($lang['cpu_arch'], $info['CPUArchitecture']);
+	
 	if (!empty($settings['show']['load']))
 		$core[] = array($lang['load'], implode(' ', (array) $info['Load']));
 	
