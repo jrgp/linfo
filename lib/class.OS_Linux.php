@@ -1268,23 +1268,23 @@ class OS_Linux {
 			array('/etc/slackware-version', '/([\d\.]+)$/', 'Slackware'),
 
 			// These don't because they're empty 
-			array('/etc/arch-release', false, 'Arch'),
+			array('/etc/arch-release', '', 'Arch'),
 
 			// I'm unaware of the structure of these files, so versions are not picked up
-			array('/etc/mklinux-release', false, 'MkLinux'),
-			array('/etc/tinysofa-release ', false, 'TinySofa'),
-			array('/etc/turbolinux-release ', false, 'TurboLinux'),
-			array('/etc/yellowdog-release ', false, 'YellowDog'),
-			array('/etc/annvix-release ', false, 'Annvix'),
-			array('/etc/arklinux-release ', false, 'Arklinux'),
-			array('/etc/aurox-release ', false, 'AuroxLinux'),
-			array('/etc/blackcat-release ', false, 'BlackCat'),
-			array('/etc/cobalt-release ', false, 'Cobalt'),
-			array('/etc/immunix-release ', false, 'Immunix'),
-			array('/etc/lfs-release ', false, 'Linux-From-Scratch'),
-			array('/etc/linuxppc-release ', false, 'Linux-PPC'),
-			array('/etc/mklinux-release ', false, 'MkLinux'),
-			array('/etc/nld-release ', false, 'NovellLinuxDesktop'),
+			array('/etc/mklinux-release', '', 'MkLinux'),
+			array('/etc/tinysofa-release ', '', 'TinySofa'),
+			array('/etc/turbolinux-release ', '', 'TurboLinux'),
+			array('/etc/yellowdog-release ', '', 'YellowDog'),
+			array('/etc/annvix-release ', '', 'Annvix'),
+			array('/etc/arklinux-release ', '', 'Arklinux'),
+			array('/etc/aurox-release ', '', 'AuroxLinux'),
+			array('/etc/blackcat-release ', '', 'BlackCat'),
+			array('/etc/cobalt-release ', '', 'Cobalt'),
+			array('/etc/immunix-release ', '', 'Immunix'),
+			array('/etc/lfs-release ', '', 'Linux-From-Scratch'),
+			array('/etc/linuxppc-release ', '', 'Linux-PPC'),
+			array('/etc/mklinux-release ', '', 'MkLinux'),
+			array('/etc/nld-release ', '', 'NovellLinuxDesktop'),
 
 			// Leave this since debian derivitives might have it in addition to their own file
 			// If it's last it ensures nothing else has it and thus it should be normal debian
@@ -1298,13 +1298,21 @@ class OS_Linux {
 			if (file_exists($distro[0]) && is_readable($distro[0])) {
 
 				// Get it
-				$contents = getContents($distro[0], '');
+				$contents = $distro[1] !== '' ? getContents($distro[0], '') : '';
 
 				// Don't use regex, this is enough; say version is the file's contents
 				if ($distro[1] === false) {
 					return array(
 						'name' => $distro[2],
 						'version' => $contents == '' ? false : $contents
+					);
+				}
+				
+				// No fucking idea what the version is. Don't use the file's contents for anything
+				elseif($distro[1] === '') {
+					return array(
+						'name' => $distro[2],
+						'version' => false
 					);
 				}
 
@@ -1326,9 +1334,11 @@ class OS_Linux {
 	 * getCPUArchitecture
 	 * 
 	 * @access private
-	 * @return string the arch
+	 * @return string the arch and bits
 	 */
 	private function getCPUArchitecture() {
-		return php_uname('m');
+		$contents = getContents('/proc/cpuinfo', false);
+		$bit = $contents ? (preg_match('/^flags\s+:.* lm .*/m', $contents) ? ' (64 bit)' : ' (32 bit)') : '';
+		return php_uname('m') . $bit;
 	}
 }
