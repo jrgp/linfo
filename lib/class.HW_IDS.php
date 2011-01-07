@@ -73,13 +73,15 @@ class HW_IDS {
 			$path = $usb_paths[$i];
 
 			// First try uevent
-			if (is_readable($path.'/uevent') && preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', strtolower(getContents($path.'/uevent')), $match) == 1) {
+			if (is_readable($path.'/uevent') && 
+				preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', strtolower(getContents($path.'/uevent')), $match)) {
 				$this->_usb_entries[str_pad($match[1], 4, '0', STR_PAD_LEFT)][str_pad($match[2], 4, '0', STR_PAD_LEFT)] = 1;
 			}
 
 			// And next modalias 
-			elseif (is_readable($path.'/modalias')) {
-
+			elseif (is_readable($path.'/modalias') && 
+				preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', getContents($path.'/modalias'), $match)) {
+				$this->_usb_entries[strtolower($match[1])][strtolower($match[2])] = 1;
 			}
 		}
 	}
