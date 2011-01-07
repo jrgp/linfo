@@ -38,4 +38,7 @@ v1.7 - ?/?/2011
  - Information on how to fix timezone is now in sample config file
  - Ability to find distribution name/version on Linux on major distros
  - Icons of OS's and popular Linux distros
+ - Hardware detection (USB, PCI) now works on CentOS, among other linux distros
+ - Kernel architecture is shown on Linux
+ - FreeBSD soft-raid detection improved
 
