@@ -157,6 +157,9 @@ function create_table($structure) {
 	// Go throuch each row
 	foreach ($structure['rows'] as $row) {
 
+		// Let shit be killed
+		$row['columns'] = array_filter($row['columns']);
+
 		// Ignore this if it's empty
 		if (empty($row['columns']))
 			continue;
