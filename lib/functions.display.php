@@ -35,7 +35,7 @@ function showInfoHTML($info, $settings) {
 
 	// Fun icons
 	$show_icons = array_key_exists('icons', $settings) ? !empty($settings['icons']) : true;
-	$os_icon = defined(IS_WINDOWS) ? 'windows' : strtolower(str_replace(' ', '', $info['OS']));
+	$os_icon = defined(IS_WINDOWS) ? 'windows' : strtolower(str_replace(' ', '', current(explode('(', $info['OS']))));
 	$distro_icon = $info['OS'] == 'Linux' && is_array($info['Distro']) && $info['Distro']['name'] ? strtolower(str_replace(' ', '', $info['Distro']['name'])) : false;
 
 	// Start compressed output buffering
