@@ -1245,6 +1245,10 @@ class OS_Linux {
 	 * @return array the distro,version or false
 	 */
 	private function getDistro() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Determining Distrobution');
 
 		// Seems the best way of doing it, as opposed to calling 'lsb_release -a', parsing /etc/issue, or 
 		// just checking if distro specific version files exist without actually parsing them: 
@@ -1326,7 +1330,7 @@ class OS_Linux {
 			}
 		}
 
-		// Return lack of result of we didn't find it
+		// Return lack of result if we didn't find it
 		return false;
 	}
 
@@ -1337,8 +1341,6 @@ class OS_Linux {
 	 * @return string the arch and bits
 	 */
 	private function getCPUArchitecture() {
-		$contents = getContents('/proc/cpuinfo', false);
-		$bit = $contents ? (preg_match('/^flags\s+:.* lm .*/m', $contents) ? ' (64 bit)' : ' (32 bit)') : '';
-		return php_uname('m') . $bit;
+		return php_uname('m');
 	}
 }

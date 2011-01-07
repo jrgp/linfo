@@ -29,12 +29,14 @@ defined('IN_INFO') or exit;
  * @param array $settings linfo settings
  */
 function showInfoHTML($info, $settings) {
+
+	// Gain access to language array
 	global $lang;
 
 	// Fun icons
 	$show_icons = array_key_exists('icons', $settings) ? !empty($settings['icons']) : true;
-	$os_icon = defined(IS_WINDOWS) ? 'windows' : strtolower($info['OS']);
-	$distro_icon = $info['OS'] == 'Linux' && is_array($info['Distro']) && $info['Distro']['name'] ? strtolower($info['Distro']['name']) : false;
+	$os_icon = defined(IS_WINDOWS) ? 'windows' : strtolower(str_replace(' ', '', $info['OS']));
+	$distro_icon = $info['OS'] == 'Linux' && is_array($info['Distro']) && $info['Distro']['name'] ? strtolower(str_replace(' ', '', $info['Distro']['name'])) : false;
 
 	// Start compressed output buffering
 	ob_start('ob_gzhandler');
@@ -69,17 +71,31 @@ function showInfoHTML($info, $settings) {
 			
 	// Linfo Core. Decide what to show.
 	$core = array();
+
+	// OS? (with icon, if we have it)
 	if (!empty($settings['show']['os']))
 		$core[] = array($lang['os'], ($show_icons && (file_exists(LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.png')) ? '<span class="icon icon_os_'.$os_icon.'"></span>' : '') . $info['OS']);
+	
+	// Distribution? (with icon, if we have it)
 	if (!empty($settings['show']['distro']) && is_array($info['Distro']))
 		$core[] = array($lang['distro'], ($show_icons && $distro_icon && (file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.png')) ? '<span class="icon icon_distro_'.$distro_icon.'"></span>' : '') . $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
+	
+	// Kernel
 	if (!empty($settings['show']['kernel']))
 		$core[] = array($lang['kernel'], $info['Kernel']);
-	$core[] = array($lang['accessed_ip'], (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
+
+	// IP
+	$core[] = array($lang['accessed_ip'], isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown');
+
+	// Uptime
 	if (!empty($settings['show']['uptime']))
 		$core[] = array($lang['uptime'], $info['UpTime']);
+	
+	// Hostname
 	if (!empty($settings['show']['hostname']))
 		$core[] = array($lang['hostname'], $info['HostName']);
+	
+	// The CPUs
 	if (!empty($settings['show']['cpu'])) {
 		$cpus = '';
 		foreach ((array) $info['CPU'] as $cpu) 
@@ -91,9 +107,12 @@ function showInfoHTML($info, $settings) {
 					'<br />';
 		$core[] = array('CPUs ('.count($info['CPU']).')', $cpus);
 	}
+
+	// CPU architecture. Permissions goes hand in hand with normal CPU
 	if (!empty($settings['show']['cpu']) && array_key_exists('CPUArchitecture', $info)) 
 		$core[] = array($lang['cpu_arch'], $info['CPUArchitecture']);
 	
+	// System Load
 	if (!empty($settings['show']['load']))
 		$core[] = array($lang['load'], implode(' ', (array) $info['Load']));
 	
@@ -170,6 +189,7 @@ function showInfoHTML($info, $settings) {
 						<td>'.byte_convert(@$info['RAM']['swapTotal']).'</td>
 					</tr>';
 					
+					// As in we have at least one swap device present. Show them.
 					if ($show_detailed_swap) {
 						echo '
 						<tr>

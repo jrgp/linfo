@@ -31,10 +31,11 @@ v1.6 - 11/22/2010
  - More mature extension support
  - Various improvements
 
-v1.7 - 1/?/2011
+v1.7 - ?/?/2011
  - XML/JSON/PHP array output format support
- - Moved list of authors from README to THANKS
+ - Moved list of other authors from README to THANKS
  - Various improvements
  - Information on how to fix timezone is now in sample config file
  - Ability to find distribution name/version on Linux on major distros
+ - Icons of OS's and popular Linux distros
 
