@@ -78,7 +78,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 			'HD' => empty($this->settings['show']['hd']) ? '' : $this->getHD(), 			# done
 			'UpTime' => empty($this->settings['show']['uptime']) ? '' : $this->getUpTime(), 		# done
 			'Network Devices' => empty($this->settings['show']['network']) ? array() : $this->getNet(),# done 
-			'RAID' => empty($this->settings['show']['raid']) ? '' : $this->getRAID(),	 	# done (gmirror only)
+			'Raid' => empty($this->settings['show']['raid']) ? '' : $this->getRAID(),	 	# done (gmirror only)
 			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # lacks thread stats
 			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(),  	# works
 			'CPUArchitecture' => empty($this->settings['show']['cpu']) ? array() : $this->getCPUArchitecture(), # done
@@ -303,12 +303,36 @@ class OS_FreeBSD extends OS_BSD_Common{
 					if (preg_match('/^(\w+)\/(\w+)\s+(\w+)\s+(\w+)$/', $content, $m)) {
 						$i++;
 
+						switch ($m[1]) {
+							case 'mirror':
+								$m[1] = 1;
+								break;
+							case 'stripe':
+								$m[1] = 0;
+								break;
+							default:
+								$m[1] = 'unknown';
+								break;
+						}
+
+						switch ($m[3]) {
+						    case 'COMPLETE':
+							$m[3] = 'normal';
+							break;
+						    case 'DEGRADED':
+							$m[3] = 'failed';
+							break;
+						    default:
+							$m[3] = 'unknown';
+							break;
+						}
+
 						// Save result set
 						$return[$i] = array(
 							'device' => $m[2],
 							'level' => $m[1],
 							'status' => $m[3],
-							'drives' => array($m[4]),
+							'drives' => array(array('drive' => $m[4], 'state' => 'unknown')),
 							'size' => 'unknown',
 							'count' => '?/?'
 						);
@@ -318,8 +342,8 @@ class OS_FreeBSD extends OS_BSD_Common{
 					elseif (preg_match('/^                      (\w+)$/', $content, $m)) {
 
 						// This migh be part of a raid dev; save it if it is
-						if (array_key_exists($i, $info))
-							$return[$i]['devices'][] = array('drive' => $m[1], 'state' => 'unknown');
+						if (array_key_exists($i, $return))
+							$return[$i]['drives'][] = array('drive' => $m[1], 'state' => 'unknown');
 					}
 				}
 			}
