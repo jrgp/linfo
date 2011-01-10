@@ -388,6 +388,9 @@ function showInfoHTML($info, $settings) {
 		// Should we not show the Reads and Writes columns?
 		$show_stats = array_key_exists('drives_rw_stats', $info['contains']) ? ($info['contains']['drives_rw_stats'] === false ? false : true) : true;
 
+		// Or vendor columns?
+		$show_vendor = array_key_exists('drives_vendor', $info['contains']) ? ($info['contains']['drives_vendor'] === false ? false : true) : true;
+
 
 		echo '
 		<div class="infoTable">
@@ -395,7 +398,7 @@ function showInfoHTML($info, $settings) {
 			<table>
 				<tr>
 					<th>'.$lang['path'].'</th>
-					<th>'.$lang['vendor'].'</th>
+					',$show_vendor ? '<th>'.$lang['vendor'] : '','</th>
 					<th>'.$lang['name'].'</th>
 					',$show_stats ? '<th>'.$lang['reads'].'</th>
 					<th>'.$lang['writes'].'</th>' : '','
@@ -407,8 +410,8 @@ function showInfoHTML($info, $settings) {
 				echo '
 						<tr>
 							<td>'.$drive['device'].'</td>
-							<td>',$drive['vendor'] ? $drive['vendor'] : $lang['unknown'],'</td>
-							<td>'.$drive['name'].'</td>
+							',$show_vendor ? '<td>'.($drive['vendor'] ? $drive['vendor'] : $lang['unknown']).'</td>' : '','
+							<td>',$drive['name'] ? $drive['name'] : $lang['unknown'],'</td>
 							', $show_stats ? '<td>'.($drive['reads'] !== false ? number_format($drive['reads']) : $lang['unknown']).'</td>
 							<td>'.($drive['writes'] !== false ? number_format($drive['writes']) : $lang['unknown']).'</td>' : '','
 							<td>',$drive['size'] ? byte_convert($drive['size']) : $lang['unknown'],'</td>

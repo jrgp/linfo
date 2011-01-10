@@ -74,14 +74,21 @@ class OS_Darwin extends OS_BSD_Common{
 			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# done
 			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(), 		# done
 			'Model' => empty($this->settings['show']) ? false : $this->getModel(), 		# done
-			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(),
+			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(), # done
+			'HD' => empty($this->settings['show']['hd']) ? '' : $this->getHD(),
 			/*
 			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# todo
-			'HD' => empty($this->settings['show']) ? '' : $this->getHD(), 			# todo
 			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# todo(
 			'Battery' => empty($this->settings['show']) ? array(): $this->getBattery(),  	# todo
 			'Temps' => empty($this->settings['show']) ? array(): $this->getTemps(), 	# TODO
 			*/
+			
+			// Columns we should leave out.
+			'contains' => array(
+				'hw_vendor' => false,
+				'drives_rw_stats' => false,
+				'drives_vendor' => false
+			)
 		);
 	}
 
@@ -485,10 +492,115 @@ class OS_Darwin extends OS_BSD_Common{
 				'charge_now' => $bat['charge_now'],
 				'percentage' => $bat['charge_full'] > 0 && $bat['charge_now'] > 0 ? round($bat['charge_now'] / $bat['charge_full'], 4) * 100 . '%' : '?',
 				'device' => $bat['vendor'].' - '.$bat['name'],
-				'state' => $bat['charging'] ? 'Charging' : ($bat['charged'] ? 'Fully Charged' : 'N/A')
+				'state' => $bat['charging'] ? 'Charging' : ($bat['charged'] ? 'Fully Charged' : 'Discharging, probably')
 			);
 		
 		// Give
 		return $batteries;
+	}
+
+	// drives
+	private function getHD() {
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Drives');
+		
+		// Store disks here
+		$disks = array();
+		
+		// Use system profiler to get info
+		try {
+			$res = $this->exec->exec('diskutil', ' list');
+		}
+		catch(CallExtException $e) {
+			$this->error->add('Linfo drives', 'Error using `diskutil list` to get drives');
+			return array();
+		}
+
+		// Get it into lines
+		$lines = explode("\n", $res);
+
+		// Keep drives here
+		$drives = array();
+
+		// Work on tmp drive here
+		$tmp = false;
+		
+		// Parse teh fucka
+		for ($i = 0, $num_lines = count($lines); $i < $num_lines; $i++) {
+
+			// A drive or partition entry
+			if(preg_match('/^\s+(\d+):\s+([a-zA-Z0-9\_]+)\s+([\s\w]*) \*?(\d+(?:\.\d+)? [A-Z])B\s+([a-z0-9]+)/', $lines[$i], $m)) {
+
+				// Get size sorted out
+				$size_parts = explode(' ', $m[4]);
+				switch($size_parts[1]) {
+					case 'K':
+						$size = $size_parts[0] * 1000;
+					break;
+					case 'M':
+						$size = $size_parts[0] * 1000000;
+					break;
+					case 'G':
+						$size = $size_parts[0] * 1000000000;
+					break;
+					case 'T':
+						$size = $size_parts[0] * 1000000000000;
+					break;
+					case 'P':
+						$size = $size_parts[0] * 1000000000000000;
+					break;
+					default:
+						$size = false;
+					break;
+				}
+
+				// A drive?
+				if ($m[1] == 0) {
+
+					// Finish prior drive
+					if (is_array($tmp))
+						$drives[] = $tmp;
+
+					// Try getting the name
+					$drive_name = false; // I'm fucking pessimistic
+					try {
+						$drive_res = $this->exec->exec('diskutil', ' info /dev/'.$m[5]); 
+						if (preg_match('/^\s+Device \/ Media Name:\s+(.+)/m', $drive_res, $drive_m))
+							$drive_name = $drive_m[1];
+					}
+					catch(CallExtException $e) {
+					}
+
+					// Start this one off
+					$tmp = array(
+						'name' =>  $drive_name,
+						'vendor' => 'Unknown',
+						'device' => '/dev/'.$m[5],
+						'reads' => false,
+						'writes' => false,
+						'size' => $size,
+						'partitions' =>  array()
+					);
+				}
+
+				// Or a partition
+				elseif($m[1] > 0) {
+
+					// Save it
+					$tmp['partitions'][] = array(
+						'size' => $size,
+						'name' => '/dev/'.$m[5]
+					);
+				}
+			}
+		}
+		
+		// Save a drive
+		if (is_array($tmp))
+			$drives[] = $tmp;
+
+		// Give
+		return $drives;
 	}
 }
