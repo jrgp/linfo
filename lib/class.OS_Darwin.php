@@ -52,6 +52,8 @@ class OS_Darwin extends OS_BSD_Common{
 			'hw.cpufrequency',
 			'hw.ncpu',
 			'vm.swapusage',
+			'hw.memsize',
+			'hw.usermem',
 			'kern.boottime',
 			'vm.loadavg',
 			'hw.model'
@@ -405,15 +407,17 @@ class OS_Darwin extends OS_BSD_Common{
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Memory');
 
+		// Start us off
 		$return = array();
-		$return['type'] = 'Virtual';
-		$return['total'] = 0;
-		$return['free'] = 0;
+		$return['type'] = 'Physical';
+		$return['total'] = $this->sysctl['hw.memsize'];
+		$return['free'] =  $this->sysctl['hw.memsize'] - $this->sysctl['hw.usermem'];
 		$return['swapTotal'] = 0;
 		$return['swapFree'] = 0;
 		$return['swapInfo'] = array();
 
 
+		// Sort out swap
 		if (preg_match('/total = ([\d\.]+)M\s+used = ([\d\.]+)M\s+free = ([\d\.]+)M/', $this->sysctl['vm.swapusage'], $swap_match)) {
 			list(, $swap_total, $swap_used, $swap_free) = $swap_match;
 			$return['swapTotal'] = $swap_total * 1000000;
@@ -421,7 +425,7 @@ class OS_Darwin extends OS_BSD_Common{
 		}
 
 		
-
+		// Return ram info
 		return $return;
 	
 	}
@@ -564,6 +568,7 @@ class OS_Darwin extends OS_BSD_Common{
 
 					// Try getting the name
 					$drive_name = false; // I'm fucking pessimistic
+	//			/*	
 					try {
 						$drive_res = $this->exec->exec('diskutil', ' info /dev/'.$m[5]); 
 						if (preg_match('/^\s+Device \/ Media Name:\s+(.+)/m', $drive_res, $drive_m))
@@ -571,6 +576,7 @@ class OS_Darwin extends OS_BSD_Common{
 					}
 					catch(CallExtException $e) {
 					}
+	//			*/
 
 					// Start this one off
 					$tmp = array(
