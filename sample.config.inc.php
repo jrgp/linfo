@@ -33,6 +33,7 @@ $settings['show']['process_stats'] = true;
 $settings['show']['hostname'] = true;
 $settings['show']['distro'] = true; # Attempt finding name and version of distribution on Linux systems
 $settings['show']['devices'] = true; # Slow on old systems
+$settings['show']['model'] = true; # Model of system. Supported on certain OS's. ex: Macbook Pro
 
 // Disabled by default as they require extra config below
 $settings['show']['temps'] = false;
