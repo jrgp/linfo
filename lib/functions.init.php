@@ -59,6 +59,7 @@ function determineOS() {
 		// These are supported
 		case 'Linux':
 		case 'FreeBSD':
+		case 'DragonFly':
 		case 'OpenBSD':
 		case 'NetBSD':
 		case 'Minix':
