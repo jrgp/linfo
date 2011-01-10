@@ -234,13 +234,14 @@ function showInfoHTML($info, $settings) {
 
 	// Network Devices?
 	if (!empty($settings['show']['network'])) {
+		$show_type = array_key_exists('nic_type', $info['contains']) ? ($info['contains']['nic_type'] === false ? false : true) : true;
 		echo '
 		<div class="infoTable">
 			<h2>'.$lang['network_devices'].'</h2>
 			<table>
 				<tr>
-					<th>'.$lang['device_name'].'</th>
-					<th>'.$lang['type'].'</th>
+					<th>'.$lang['device_name'].'</th>',$show_type ? '
+					<th>'.$lang['type'].'</th>' : '','
 					<th>'.$lang['amount_sent'].'</th>
 					<th>'.$lang['amount_received'].'</th>
 					<th>'.$lang['state'].'</th>
@@ -251,8 +252,8 @@ function showInfoHTML($info, $settings) {
 				foreach($info['Network Devices'] as $device => $stats)
 					echo '
 						<tr>
-							<td>'.$device.'</td>
-							<td>'.$stats['type'].'</td>
+							<td>'.$device.'</td>', $show_type ? '
+							<td>'.$stats['type'].'</td>' : '','
 							<td>'.byte_convert($stats['sent']['bytes']).'</td>
 							<td>'.byte_convert($stats['recieved']['bytes']).'</td>
 							<td class="net_'.$stats['state'].'">'.ucfirst($stats['state']).'</td>

@@ -42,11 +42,8 @@ class OS_DragonFly extends OS_BSD_Common{
 		
 		// sysctl values we'll access below
 		$this->GetSysCTL(array(
-
-			// Has unix timestamp of boot time
 			'kern.boottime',
-
-			// CPU related
+			'vm.loadavg',
 			'hw.model',
 			'hw.ncpu',
 			'hw.clockrate'
@@ -76,7 +73,8 @@ class OS_DragonFly extends OS_BSD_Common{
 			// Columns we should leave out. (because finding them out is either impossible or requires root access)
 			'contains' => array(
 				'hw_vendor' => false,
-				'drives_rw_stats' => false
+				'drives_rw_stats' => false,
+				'nic_type' => false
 			)
 		);
 	}
@@ -85,7 +83,7 @@ class OS_DragonFly extends OS_BSD_Common{
 	private function getOS() {
 
 		// Obviously
-		return 'DragonFlyBSD';	
+		return 'DragonFly BSD';	
 	}
 	
 	// Get kernel version
@@ -235,7 +233,89 @@ class OS_DragonFly extends OS_BSD_Common{
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Network Devices');
+		
+		// Use netstat to get nic names and stats
+		try {
+			$netstat = $this->exec->exec('netstat', '-nibd');
+		}
+		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'error using netstat');
+			return array();
+		}
 
+		// Store nics here
+		$nets = array();
+
+		// Match that up
+		if (!preg_match_all('/^([\da-z]+\*?)\s+\d+\s+<Link#\d+>(?:\s+[a-z0-9:]+)?\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/m', $netstat, $netstat_m, PREG_SET_ORDER)) 
+			return array();
+
+		// Go through each match
+		foreach ($netstat_m as $m) 
+			$nets[$m[1]] = array(
+				'recieved' => array(
+					'bytes' => $m[4],
+					'errors' => $m[3],
+					'packets' => $m[2] 
+				),
+				'sent' => array(
+					'bytes' => $m[7],
+					'errors' =>  $m[6],
+					'packets' => $m[5] 
+				),
+				'state' => 'unknown',
+				'type' => 'N/A'
+			);
+
+		// Try getting the statuses with ifconfig
+		try {
+			
+			// Store current nic here
+			$current_nic = false;
+
+			// Run teh shit
+			$ifconfig = $this->exec->exec('ifconfig', '-a');
+
+			// Go through each line
+			foreach (explode("\n", $ifconfig) as $line) {
+
+				// Approaching new nic?
+				if (preg_match('/^([a-z0-9]+):/', $line, $m)) {
+
+					// Only give a shit about nics we detected above
+					if (array_key_exists($m[1], $nets))
+						$current_nic = $m[1];
+					else
+						$current_nic = false;
+				}
+
+				// In a nick and found a status entry
+				elseif ($current_nic && preg_match('/^\s+status: ([a-z]+)$/', $line, $m)) {
+					
+					// Decide what it is and save it
+					switch ($m[1]) {
+						case 'active':
+							$nets[$current_nic]['state'] = 'up';
+						break;
+						case 'inactive':
+							$nets[$current_nic]['state'] = 'down';
+						break;
+						default:
+							$nets[$current_nic]['state'] = 'unknown';
+						break;
+					}
+
+					// Don't waste further time until we find another nic entry
+					$current_nic = false; 
+				}
+			}
+		}
+		catch (CallExtException $e) {
+			$this->error->add('Linfo Core', 'error using ifconfig to get nic statuses');
+		}
+
+		// Give nets
+		return $nets;
 	}
 
 	// Get CPU's

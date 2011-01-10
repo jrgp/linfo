@@ -18,6 +18,7 @@
 .icon_os_minix { background-image: url('icons/os_minix.png'); width: 18px; }
 .icon_os_solaris { background-image: url('icons/os_solaris.png'); width: 31px; }
 .icon_os_darwin { background-image: url('icons/os_darwin.png'); width: 14px; }
+.icon_os_dragonflybsd { background-image: url('icons/os_dragonflybsd.png'); width: 16px; }
 .icon_distro_ubuntu { background-image: url('icons/distro_ubuntu.png'); width: 16px; }
 .icon_distro_debian { background-image: url('icons/distro_debian.png'); width: 16px; }
 .icon_distro_centos { background-image: url('icons/distro_centos.png'); width: 16px; }
