@@ -53,6 +53,8 @@ class OS_Darwin extends OS_BSD_Common{
 			'hw.ncpu',
 			'vm.swapusage',
 			'kern.boottime',
+			'vm.loadavg',
+			'hw.model'
 		),false);
 	}
 	
@@ -71,6 +73,8 @@ class OS_Darwin extends OS_BSD_Common{
 			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # lacks thread stats
 			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# done
 			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(), 		# done
+			'Model' => empty($this->settings['show']) ? false : $this->getModel(), 		# done
+			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(),
 			/*
 			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# todo
 			'HD' => empty($this->settings['show']) ? '' : $this->getHD(), 			# todo
@@ -289,18 +293,9 @@ class OS_Darwin extends OS_BSD_Common{
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Load Averages');
-		
-		// Use uptime, since it also has load values
-		try {
-			$res = $this->exec->exec('uptime');
-		}
-		catch (CallExtException $e) {
-			$this->error->add('Linfo Core', 'Error using `uptime` to get system load');
-			return array();
-		}
 
 		// Parse it
-		if (preg_match('/^.+load averages: ([\d\.]+) ([\d\.]+) ([\d\.]+)$/', $res, $m) == 0)
+		if (preg_match('/([\d\.]+) ([\d\.]+) ([\d\.]+)/', $this->sysctl['vm.loadavg'], $m) == 0)
 			return array();
 		
 		// Give
@@ -423,5 +418,77 @@ class OS_Darwin extends OS_BSD_Common{
 		return $return;
 	
 	}
+
+	// Model of mac
+	private function getModel() {
+		if (preg_match('/^([a-zA-Z]+)/', $this->sysctl['hw.model'], $m))
+			return $m[1];
+		else
+			return $this->sysctl['hw.model'];
+	}
 	
+	// Battery
+	private function getBattery() {
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Battery');
+		
+		// Store any we find here
+		$batteries = array();
+		
+		// Use system profiler to get info
+		try {
+			$res = $this->exec->exec('system_profiler', ' SPPowerDataType');
+		}
+		catch(CallExtException $e) {
+			$this->error->add('Linfo Batteries', 'Error using `system_profiler SPPowerDataType` to get battery info');
+			return array();
+		}
+
+		// Lines
+		$lines = explode("\n", $res);
+
+		// Hunt
+		$bat = array();
+		$in_bat_field = false;
+
+		// Parse teh fucka
+		for ($i = 0, $num_lines = count($lines); $i < $num_lines; $i++) {
+			if (preg_match('/^\s+Battery Information/', $lines[$i])) {
+				$in_bat_field = true;
+				continue;
+			}
+			elseif(preg_match('/^\s+System Power Settings/', $m)) {
+				$in_bat_field = false;
+				break;
+			}
+			elseif ($in_bat_field && preg_match('/^\s+Fully charged: ([a-zA-Z]+)/', $lines[$i], $m)) 
+				$bat['charged'] = $m[1] == 'Yes';
+			elseif ($in_bat_field && preg_match('/^\s+Charging: ([a-zA-Z]+)/', $lines[$i], $m)) 
+				$bat['charging'] = $m[1] == 'Yes';
+			elseif($in_bat_field && preg_match('/^\s+Charge remaining \(mAh\): (\d+)/', $lines[$i], $m)) 
+				$bat['charge_now'] = (int) $m[1];
+			elseif($in_bat_field && preg_match('/^\s+Full charge capacity \(mAh\): (\d+)/', $lines[$i], $m)) 
+				$bat['charge_full'] = (int) $m[1];
+			elseif($in_bat_field && preg_match('/^\s+Serial Number: ([A-Z0-9]+)/', $lines[$i], $m)) 
+				$bat['serial'] = $m[1];
+			elseif($in_bat_field && preg_match('/^\s+Manufacturer: (\w+)/', $lines[$i], $m)) 
+				$bat['vendor'] = $m[1];
+			elseif($in_bat_field && preg_match('/^\s+Device name: (\w+)/', $lines[$i], $m)) 
+				$bat['name'] = $m[1];
+		}
+
+		// If we have what we need, append
+		if (isset($bat['charge_full']) && isset($bat['charge_now']) && isset($bat['charged']) && isset($bat['charging'])) 
+			$batteries[] = array(
+				'charge_full' => $bat['charge_full'],
+				'charge_now' => $bat['charge_now'],
+				'percentage' => $bat['charge_full'] > 0 && $bat['charge_now'] > 0 ? round($bat['charge_now'] / $bat['charge_full'], 4) * 100 . '%' : '?',
+				'device' => $bat['vendor'].' - '.$bat['name'],
+				'state' => $bat['charging'] ? 'Charging' : ($bat['charged'] ? 'Fully Charged' : 'N/A')
+			);
+		
+		// Give
+		return $batteries;
+	}
 }

@@ -98,5 +98,6 @@ $lang = array(
 	'services' => 'Services',
 	'memory_usage' => 'Memory Usage',
 	'distro' => 'Distribution',
-	'cpu_arch' => 'Architecture'
+	'cpu_arch' => 'Architecture',
+	'model' => 'Model',
 );

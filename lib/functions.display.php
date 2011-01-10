@@ -84,6 +84,10 @@ function showInfoHTML($info, $settings) {
 	if (!empty($settings['show']['kernel']))
 		$core[] = array($lang['kernel'], $info['Kernel']);
 
+	// Model?
+	if (!empty($settings['show']['model']) && array_key_exists('Model', $info) && !empty($info['Model']))
+		$core[] = array($lang['model'], $info['Model']);
+
 	// IP
 	$core[] = array($lang['accessed_ip'], isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown');
 
