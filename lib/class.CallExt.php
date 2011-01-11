@@ -87,6 +87,12 @@ class CallExt {
 	 */
 	public function exec($name, $switches = '') {
 		
+		// Need settings 
+		global $settings;
+
+		// Sometimes it is necessary to call a program with sudo 
+		$attempt_sudo = array_key_exists('sudo_apps', $settings) && in_array($name, $settings['sudo_apps']);
+		
 		// Have we gotten it before?
 		if (array_key_exists($name.$switches, $this->cliCache))
 			return $this->cliCache[$name.$switches];
@@ -99,6 +105,9 @@ class CallExt {
 
 				// Complete command, path switches and all
 				$command = "$path$name $switches";
+
+				// Sudoing?
+				$command = $attempt_sudo ? locate_actual_path(array_append_string($this->searchPaths, 'sudo', '%2s%1s')) . ' ' . $command : $command;
 
 				// Result of command
 				$result = `$command`;
