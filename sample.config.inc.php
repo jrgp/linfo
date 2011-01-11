@@ -138,3 +138,18 @@ $settings['show_errors'] = false;
 // Show results from timing ourselves? Similar to above.
 // Lets you see how much time getting each bit of info takes.
 $settings['timer'] = false;
+
+/*
+ * Occasional sudo
+ * Sometimes you may want to have one of the external commands here be ran as root with
+ * sudo. This requires the web server user be set to "NOPASS" in your sudoers so the sudo 
+ * command just works without a prompt.
+ *
+ * Add names of commands to the array if this is what you want. Just the name of the command;
+ * not the complete path. This also applies to commands called by extensions.
+ *
+ * Note: this is extremely dangerous if done wrong
+ */
+$settings['sudo_apps'] = array(
+	//'ps' // For example
+);

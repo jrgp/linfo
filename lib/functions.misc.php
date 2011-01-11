@@ -39,6 +39,17 @@ function locate_actual_path($paths) {
 	return false;
 }
 
+// Append a string to the end of each element in a 2d array
+function array_append_string($array, $string = '', $format = '%1s%2s') {
+
+	// Get to it
+	foreach ($array as $k => $v)
+		$array[$k] = is_string($v) ? sprintf($format, $v, $string) : $v;
+	
+	// Give
+	return $array;
+}
+
 // Get a file who's contents should just be an int. Returns zero on failure.
 function get_int_from_file($file) {
 	if (!file_exists($file))
