@@ -31,7 +31,7 @@ v1.6 - 11/22/2010
  - More mature extension support
  - Various improvements
 
-v1.7 - ?/?/2011
+v1.7 - 1/07/2011
  - XML/JSON/PHP array output format support
  - Moved list of other authors from README to THANKS
  - Various improvements
@@ -42,3 +42,8 @@ v1.7 - ?/?/2011
  - Kernel architecture is shown on Linux
  - FreeBSD soft-raid detection improved
 
+v1.8 - ?/?/2011
+ - DragonFly BSD support
+ - Better Darwin (Mac) support
+ - Reporting of Mac model
+ - Ability to run certain commands as root (via nopasswd sudo)
