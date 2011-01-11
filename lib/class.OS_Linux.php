@@ -868,6 +868,15 @@ class OS_Linux {
 				break;
 			}
 
+			// motherfucker
+			if ($state = 'unknown' && file_exists($path.'/carrier')) {
+				 $carrier = getContents($path.'/carrier', false);
+				if (!empty($carrier)) 
+					$state = 'up'; 
+				else
+					$state = 'down'; 
+			}
+
 			// Type
 			$type_contents = strtoupper(getContents($path.'/device/modalias'));
 			list($type) = explode(':', $type_contents, 2);
