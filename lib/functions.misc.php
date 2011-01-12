@@ -118,12 +118,12 @@ function seconds_convert($uptime) {
 
 // Get a file's contents, or default to second param
 function getContents($file, $default = '') {
-	return !is_file($file) || !($contents = @file_get_contents($file)) ? $default : trim($contents);
+	return !is_file($file) || !is_readable($file) || !($contents = @file_get_contents($file)) ? $default : trim($contents);
 }
 
 // Like above, but in lines instead of a big string
 function getLines($file) {
-	return !is_file($file) || !($lines = @file($file, FILE_SKIP_EMPTY_LINES)) ? array() : $lines;
+	return !is_file($file) || !is_readable($file) || !($lines = @file($file, FILE_SKIP_EMPTY_LINES)) ? array() : $lines;
 }
 
 // Make a string safe for being in an xml tag name

@@ -97,8 +97,14 @@ class HW_IDS {
 		for ($i = 0; $i < $num_pci_paths; $i++) {
 			$path = $pci_paths[$i];
 			
-			// Try uevent firstly
-			if (is_readable($path.'/uevent') &&
+			// See if we can use simple vendor/device files and avoid taking time with regex
+			if (($f_device = getContents($path.'/device', '')) && ($f_vend = getContents($path.'/vendor', '')) &&
+				$f_device != '' && $f_vend != '') {
+				$this->_pci_entries[next(explode('x', $f_vendor, 2))] = next(explode('x', $f_device, 2));
+			}
+
+			// Try uevent nextly
+			elseif (is_readable($path.'/uevent') &&
 				preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', strtolower(getContents($path.'/uevent')), $match)) {
 				$this->_pci_entries[$match[1]][$match[2]] = 1;
 			}
@@ -106,9 +112,7 @@ class HW_IDS {
 			// Now for modalias
 			elseif (is_readable($path.'/modalias') &&
 				preg_match('/^pci:v0{4}([0-9A-Z]{4})d0{4}([0-9A-Z]{4})/', getContents($path.'/modalias'), $match)) {
-				$vendor = strtolower($match[1]);
-				$device = strtolower($match[2]);
-				$this->_pci_entries[$vendor][$device] = 1;
+				$this->_pci_entries[strtolower($match[1])][strtolower($match[2])] = 1;
 			}
 		}
 	}
