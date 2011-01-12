@@ -47,7 +47,7 @@ class HW_IDS {
 	public function __construct($usb_file, $pci_file) {
 		$this->_pci_file = $pci_file;
 		$this->_usb_file = $usb_file;
-		$this->_cache_file = CACHE_PATH.'/ids_cache.json';
+		$this->_cache_file = CACHE_PATH.'/ids_cache';
 		$this->_populate_cache();
 	}
 
@@ -57,8 +57,8 @@ class HW_IDS {
 	 * @access private
 	 */
 	private function _populate_cache() {
-		if (function_exists('json_decode') && is_readable($this->_cache_file))
-			$this->_existing_cache_vals = (array) @json_decode(getContents($this->_cache_file, ''), true);
+		if (is_readable($this->_cache_file) && ($loaded = @unserialize(getContents($this->_cache_file, false))) && is_array($loaded)) 
+			$this->_existing_cache_vals = $loaded;
 	}
 	
 	/**
@@ -98,13 +98,13 @@ class HW_IDS {
 			$path = $pci_paths[$i];
 			
 			// See if we can use simple vendor/device files and avoid taking time with regex
-			/*if (($f_device = getContents($path.'/device', '')) && ($f_vend = getContents($path.'/vendor', '')) &&
+			if (($f_device = getContents($path.'/device', '')) && ($f_vend = getContents($path.'/vendor', '')) &&
 				$f_device != '' && $f_vend != '') {
-				$this->_pci_entries[next(explode('x', $f_vendor, 2))] = next(explode('x', $f_device, 2));
+				$this->_pci_entries[next(explode('x', $f_vend, 2))][next(explode('x', $f_device, 2))] = 1;
 			}
 
 			// Try uevent nextly
-			else*/if (is_readable($path.'/uevent') &&
+			elseif (is_readable($path.'/uevent') &&
 				preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', strtolower(getContents($path.'/uevent')), $match)) {
 				$this->_pci_entries[$match[1]][$match[2]] = 1;
 			}
@@ -188,8 +188,8 @@ class HW_IDS {
 	 * @access private
 	 */
 	private function _write_cache() {
-		if (function_exists('json_encode') && is_writable(CACHE_PATH))
-			@file_put_contents($this->_cache_file, json_encode(array(
+		if (is_writable(CACHE_PATH))
+			@file_put_contents($this->_cache_file, serialize(array(
 				'hw' => array(
 					'pci' => $this->_pci_devices,
 					'usb' => $this->_usb_devices
