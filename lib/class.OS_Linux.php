@@ -1270,10 +1270,11 @@ class OS_Linux {
 		// Store the distribution's files we check for, optional regex parsing string, and name of said distro here:
 		$distros = array(
 			
+			// This snags ubuntu and other distros which use the lsb method of identifying themselves
+			array('/etc/lsb-release','/^DISTRIB_ID=([^$]+)$\n^DISTRIB_RELEASE=([^$]+)$\n^DISTRIB_CODENAME=([^$]+)$\n/m', false),
+			
 			// These working snag versions
-			array('/etc/lsb-release','/^DISTRIB_ID=Ubuntu$\n^DISTRIB_RELEASE=([\d\.]+)$(?:\n^DISTRIB_CODENAME=(\w+)$)?/m', 'Ubuntu'),
-			array('/etc/lsb-release','/^DISTRIB_ID=Mandrakelinux$\n^DISTRIB_RELEASE=([\d\.]+)$(?:\n^DISTRIB_CODENAME=(\w+)$)?/m', 'Mandrake'),
-			array('/etc/redhat-release', '/^CentOS release ([\d\.]+)/', 'CentOS'),
+			array('/etc/redhat-release', '/^CentOS release ([\d\.]+) \(([^)]+)\)$/', 'CentOS'),
 			array('/etc/redhat-release', '/^Red Hat.+release (\S+) \(([^)]+)\)$/', 'RedHat'),
 			array('/etc/fedora-release', '/^Fedora(?: Core)? release (\d+) \(([^)]+)\)$/', 'Fedora'),
 			array('/etc/gentoo-release', '([\d\.]+)$/', 'Gentoo'),
@@ -1326,6 +1327,14 @@ class OS_Linux {
 					return array(
 						'name' => $distro[2],
 						'version' => false
+					);
+				}
+
+				// Get the distro out of the regex as well?
+				elseif($distro[2] === false && preg_match($distro[1], $contents, $m)) {
+					return array(
+						'name' => $m[1],
+						'version' => $m[2] . (isset($m[3]) ? ' ('.$m[3].')' : '')
 					);
 				}
 

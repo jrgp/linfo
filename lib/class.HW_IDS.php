@@ -29,6 +29,7 @@ defined('IN_INFO') or exit;
 class HW_IDS {
 
 	private
+		$_use_json = false,
 		$_usb_file = '',
 		$_pci_file = '',
 		$_cache_file = '',
@@ -45,9 +46,23 @@ class HW_IDS {
 	 * @access public
 	 */
 	public function __construct($usb_file, $pci_file) {
+
+		// Localize paths to the ids files
 		$this->_pci_file = $pci_file;
 		$this->_usb_file = $usb_file;
-		$this->_cache_file = CACHE_PATH.'/ids_cache';
+
+		// Prefer json, but check for it
+		$this->_use_json = function_exists('json_encode') && function_exists('json_decode');
+
+		// Allow the same web root to be used for multiple insances of linfo, across multiple machines using 
+		// nfs or whatever, and to have a different cache file for each
+		$sys_id = is_readable('/proc/sys/kernel/hostname') ?
+			'_'.substr(md5(getContents('/proc/sys/kernel/hostname')), 0, 10) : '_x';
+
+		// Path to the cache file
+		$this->_cache_file = CACHE_PATH.'/ids_cache'.$sys_id.($this->_use_json ? '.json' : '');
+
+		// Load contents of cache
 		$this->_populate_cache();
 	}
 
@@ -57,8 +72,17 @@ class HW_IDS {
 	 * @access private
 	 */
 	private function _populate_cache() {
-		if (is_readable($this->_cache_file) && ($loaded = @unserialize(getContents($this->_cache_file, false))) && is_array($loaded)) 
-			$this->_existing_cache_vals = $loaded;
+		if ($this->_use_json) {
+			if (is_readable($this->_cache_file) &&
+			($loaded = @json_decode(getContents($this->_cache_file, ''), true)) && is_array($loaded))
+				$this->_existing_cache_vals = $loaded;
+		}
+		else {
+			if (is_readable($this->_cache_file) &&
+			($loaded = @unserialize(getContents($this->_cache_file, false))) && is_array($loaded)) 
+				$this->_existing_cache_vals = $loaded;
+		}
+
 	}
 	
 	/**
@@ -188,12 +212,19 @@ class HW_IDS {
 	 * @access private
 	 */
 	private function _write_cache() {
-		if (is_writable(CACHE_PATH))
-			@file_put_contents($this->_cache_file, serialize(array(
-				'hw' => array(
-					'pci' => $this->_pci_devices,
-					'usb' => $this->_usb_devices
-				)
+		if (is_writable(CACHE_PATH)) 
+			@file_put_contents($this->_cache_file, $this->_use_json ? 
+				json_encode(array(
+					'hw' => array(
+						'pci' => $this->_pci_devices,
+						'usb' => $this->_usb_devices
+					)
+				))
+				:serialize(array(
+					'hw' => array(
+						'pci' => $this->_pci_devices,
+						'usb' => $this->_usb_devices
+					)
 			)));
 	}
 
