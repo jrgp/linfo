@@ -98,13 +98,13 @@ class HW_IDS {
 			$path = $pci_paths[$i];
 			
 			// See if we can use simple vendor/device files and avoid taking time with regex
-			if (($f_device = getContents($path.'/device', '')) && ($f_vend = getContents($path.'/vendor', '')) &&
+			/*if (($f_device = getContents($path.'/device', '')) && ($f_vend = getContents($path.'/vendor', '')) &&
 				$f_device != '' && $f_vend != '') {
 				$this->_pci_entries[next(explode('x', $f_vendor, 2))] = next(explode('x', $f_device, 2));
 			}
 
 			// Try uevent nextly
-			elseif (is_readable($path.'/uevent') &&
+			else*/if (is_readable($path.'/uevent') &&
 				preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', strtolower(getContents($path.'/uevent')), $match)) {
 				$this->_pci_entries[$match[1]][$match[2]] = 1;
 			}
