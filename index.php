@@ -21,6 +21,10 @@
 // Timer
 define('TIME_START', microtime(true));
 
+// Are we running from the CLI?
+if (isset($argc) && is_array($argv))
+	define('LINFO_CLI', true);
+
 // Version
 define('AppName', 'Linfo');
 define('VERSION', 'svn');
@@ -85,7 +89,7 @@ $os = determineOS();
 
 // Cannot?
 if ($os == false)
-	exit('Unknown/unsupported operating system');
+	exit("Unknown/unsupported operating system\n");
 
 // Get info
 $getter = parseSystem($os, $settings);
@@ -97,43 +101,52 @@ runExtensions($info, $settings);
 // Make sure we have an array of what not to show
 $info['contains'] = array_key_exists('contains', $info) ? (array) $info['contains'] : array();
 
-// Decide what format to output in
-switch (array_key_exists('out', $_GET) ? $_GET['out'] : 'html') {
 
-	// Just regular html 
-	case 'html':
-	default:
-		showInfoHTML($info, $settings);
-	break;
-
-	// JSON
-	case 'json':
-		showInfoJSON($info, $settings);
-	break;
-
-	// Serialized php array
-	case 'php_array':
-		echo serialize($info);
-	break;
-
-	// XML
-	case 'xml':
-
-		// Try using SimpleXML
-		if (extension_loaded('SimpleXML')) 
-			showInfoSimpleXML($info, $settings);
-		
-
-		// If not that, then try XMLWriter
-		elseif (extension_loaded('XMLWriter')) 
-			showInfoXMLWriter($info, $settings);	
-
-		// Can't generate XML anywhere :-/
-		else 
-			exit('Cannot generate XML. Install either php\'s SimpleXML or XMLWriter extension');
-	break;
+// From the command prompt? Ncurses motha fucka!
+if (defined('LINFO_CLI')) {
+	$out = new out_ncurses();
+	$out->work($info, $settings);
 }
 
+// Coming from a web server
+else {
+	// Decide what web format to output in
+	switch (array_key_exists('out', $_GET) ? $_GET['out'] : 'html') {
+
+		// Just regular html 
+		case 'html':
+		default:
+			showInfoHTML($info, $settings);
+		break;
+
+		// JSON
+		case 'json':
+			showInfoJSON($info, $settings);
+		break;
+
+		// Serialized php array
+		case 'php_array':
+			echo serialize($info);
+		break;
+
+		// XML
+		case 'xml':
+
+			// Try using SimpleXML
+			if (extension_loaded('SimpleXML')) 
+				showInfoSimpleXML($info, $settings);
+			
+
+			// If not that, then try XMLWriter
+			elseif (extension_loaded('XMLWriter')) 
+				showInfoXMLWriter($info, $settings);	
+
+			// Can't generate XML anywhere :-/
+			else 
+				exit('Cannot generate XML. Install either php\'s SimpleXML or XMLWriter extension');
+		break;
+	}
+}
 // "This is where it ends, Commander"
 
 
