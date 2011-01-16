@@ -145,12 +145,16 @@ function runExtensions(&$info, $settings) {
 
 		// Deal with it
 		$ext_class->work();
+		
+		// Does this edit the $info directly, instead of creating a separate output table type thing?
+		if (!defined($class.'::LINFO_INTEGRATE')) {
 
-		// Result
-		$result = $ext_class->result();
+			// Result
+			$result = $ext_class->result();
 
-		// Save result if it's good
-		if ($result != false)
-			$info['extensions'][$ext] = $result;
+			// Save result if it's good
+			if ($result != false)
+				$info['extensions'][$ext] = $result;
+		}
 	}
 }
