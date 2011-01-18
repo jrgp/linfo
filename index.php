@@ -107,7 +107,7 @@ $info['contains'] = array_key_exists('contains', $info) ? (array) $info['contain
 // From the command prompt? Ncurses motha fucka!
 if (defined('LINFO_CLI')) {
 	$out = new out_ncurses();
-	$out->work($info, $settings);
+	$out->work($info, $settings, $getter);
 }
 
 // Coming from a web server
