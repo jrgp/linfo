@@ -87,3 +87,8 @@ span.toggler {
 	color: #999;
 	font-size: 12px;
 }
+
+/* For extensions that have extra stuff to the right */
+.col2_side {overflow: hidden;}
+.col2_side_left {float: left; width: 80%;}
+.col2_side_right {float: left; width: 20%;}
