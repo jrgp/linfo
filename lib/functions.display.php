@@ -451,13 +451,12 @@ function showInfoHTML($info, $settings) {
 			<table>
 				<tr>
 					<th>'.$lang['number'].'</th>
-					<th>'.$lang['vendor'].'</td>
+					<th>'.$lang['vendor'].'</th>
 					<th>'.$lang['card'].'</th>
 				</tr>';
 		foreach ($info['SoundCards'] as $card) {
-			if (empty($card['vendor'])) {
+			if (empty($card['vendor'])) 
 				$card['vendor'] = 'Unknown';
-			}
 			echo '
 				<tr>
 					<td>'.$card['number'].'</td>
@@ -707,8 +706,46 @@ function showInfoHTML($info, $settings) {
 	// Additional extensions
 	if (count($info['extensions']) > 0) {
 		foreach ($info['extensions'] as $ext)
-			if (is_array($ext) && count($ext) > 0)
-				echo create_table($ext);
+			if (is_array($ext) && count($ext) > 0) {
+				
+				// Decide how to show something extra
+				switch (array_key_exists('extra_type', $ext) && !empty($ext['extra_vals']) ? $ext['extra_type'] : false) {
+					
+					// Table with a key->value table to the right of it
+					// Useful for stats or other stuff pertaining to  
+					// the main info to the left
+					case 'k->v':
+						echo '
+<div class="col2_side">
+	<div class="col2_side_left">
+	'.create_table($ext).'
+	</div>
+	<div class="col2_side_right">
+		<div class="infoTable">
+			<h2>'.$ext['extra_vals']['title'].'</h2>
+			<table>';
+
+			// Give each value
+			foreach(array_filter($ext['extra_vals']['values']) as $v)
+				echo '
+				<tr>
+					<th>'.$v[0].'</th>
+					<td>'.$v[1].'</td>
+				</tr>';
+			echo'
+			</table>
+		</div>
+	</div>
+</div>
+						';
+					break;
+
+					// Nothing extra; just the table
+					default:
+						echo create_table($ext);
+					break;
+				}
+			}
 	}
 
 	// Feel like showing timed results?
