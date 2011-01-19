@@ -90,7 +90,15 @@ class out_ncurses {
 
 					array($lang['load'], implode(' ', (array) $info['Load']))
 				)
-			) 
+			),
+			array(
+				'name' => $lang['memory'],
+				'content' => array(
+					array($lang['size'], byte_convert($info['RAM']['total'])),
+					array($lang['used'], byte_convert($info['RAM']['total'] - $info['RAM']['free'])),
+					array($lang['free'], byte_convert($info['RAM']['free'])),
+				)
+			)
 		);
 
 		// Show them

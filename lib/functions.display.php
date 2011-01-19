@@ -54,6 +54,7 @@ function showInfoHTML($info, $settings) {
 	).'
 	<script src="'.WEB_PATH.'layout/scripts.min.js" type="text/javascript"></script>
 	<meta name="generator" content="'.AppName.' ('.VERSION.')" />
+	<meta name="author" content="Joseph Gillotti &amp; friends" />
 	<!--[if lt IE 8]>
 	<link href="'.WEB_PATH.'layout/old_ie.css" type="text/css" rel="stylesheet" />
 	<![endif]-->
@@ -805,6 +806,8 @@ function showInfoHTML($info, $settings) {
 		$core = array();
 		if (!empty($settings['show']['os']))
 			$core[] = array('os', $info['OS']);
+		if (!empty($settings['show']['distro']) && is_array($info['Distro']))
+			$core[] = array($lang['distro'],  $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
 		if (!empty($settings['show']['kernel']))
 			$core[] = array('kernel', $info['Kernel']);
 		$core[] = array('accessed_ip', (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
@@ -823,6 +826,8 @@ function showInfoHTML($info, $settings) {
 						'<br />';
 			$core[] = array('CPU', $cpus);
 		}
+		if (!empty($settings['show']['model']) && array_key_exists('Model', $info) && !empty($info['Model']))
+			$core[] = array($lang['model'], $info['Model']);
 		if (!empty($settings['show']['load']))
 			$core[] = array('load', implode(' ', (array) $info['Load']));
 		if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
@@ -1061,6 +1066,9 @@ function showInfoHTML($info, $settings) {
 		// Out it
 		header('Content-type: text/xml');
 		echo $xml->asXML();
+
+		// Comment which has stats and generator
+		echo '<!-- Generated in '.round(microtime(true) - TIME_START,2).' seconds by '.AppName.' ('.VERSION.')-->';
 	}
 	catch (Exception $e) {
 		exit('Creation of XML error: '.$e->getMessage());
