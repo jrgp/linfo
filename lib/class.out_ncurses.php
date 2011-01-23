@@ -80,7 +80,7 @@ class out_ncurses {
 				'name' => $lang['core'],
 				'content' => array(
 					array($lang['os'], $info['OS']),
-					is_array($info['Distro']) ? array($lang['distro'], $info['Distro']['name'] . ($info['Distro']['version'] ? ' '.$info['Distro']['version'] : '') ) : false,
+					array_key_exists('Distro', $info) ? array($lang['distro'], $info['Distro']['name'] . ($info['Distro']['version'] ? ' '.$info['Distro']['version'] : '') ) : false,
 					array($lang['kernel'], $info['Kernel']),
 					array_key_exists('Model', $info) && !empty($info['Model']) ? array($lang['model'], $info['Model']) : false,
 					array($lang['uptime'], str_ireplace(array(' ', 'days', 'minutes', 'hours', 'seconds'), array('', 'd', 'm', 'h', 's'), reset(explode(';', $info['UpTime'])))),
