@@ -613,13 +613,19 @@ class OS_Windows {
 			$t = new LinfoTimerStart('Sound cards');
 		
 		$cards = array();
-		$i = 0;
+		$i = 1;
 		
 		foreach ($this->wmi->ExecQuery("SELECT Caption, Manufacturer FROM Win32_SoundDevice") as $card) {
+			$manufacturer = $card->Manufacturer;
+			$caption = $card->Caption;
+			if (function_exists('iconv')) {
+				$manufacturer = iconv("Windows-1252", "UTF-8//TRANSLIT", $manufacturer);
+				$caption = iconv("Windows-1252", "UTF-8//TRANSLIT", $caption);
+			}
 			$cards[] = array(
 				'number' => $i,
-				'vendor' => $card->Manufacturer,
-				'card' => $card->Caption
+				'vendor' => $manufacturer,
+				'card' => $caption
 			);
 			$i++;
 		}
