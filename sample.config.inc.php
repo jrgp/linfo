@@ -113,22 +113,6 @@ $settings['services']['executables'] = array(
 );
 
 /*
- * Cache settings for WMI, Windows only
- * All values as specified in seconds.
- * Changing the default values is not recommended and can result in higher system loads.
- */
-$settings['wmi_cache']['active'] = true;
-$settings['wmi_cache']['COMPUTERSYSTEM'] = 1800;
-$settings['wmi_cache']['CPU'] = 20;
-$settings['wmi_cache']['DISKDRIVE'] = 1800;
-$settings['wmi_cache']['NIC'] = 1800;
-$settings['wmi_cache']['OS'] = 1800;
-$settings['wmi_cache']['PARTITION'] = 3600;
-$settings['wmi_cache']['PATH Win32_PnPEntity'] = 1800;
-$settings['wmi_cache']['PROCESS'] = 30;
-$settings['wmi_cache']['VOLUME'] = 120;
-
-/*
  * Debugging settings
  */
 
@@ -138,6 +122,9 @@ $settings['show_errors'] = false;
 // Show results from timing ourselves? Similar to above.
 // Lets you see how much time getting each bit of info takes.
 $settings['timer'] = false;
+
+// Compress content, can be turned off to view error messages in browser
+$settings['compress_content'] = true;
 
 /*
  * Occasional sudo

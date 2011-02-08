@@ -43,7 +43,7 @@ class LinfoError {
 	 * @access public
 	 * @return object LinfoError instance
 	 */
-	public function Fledging($settings = null) {
+	static public function Fledging($settings = null) {
 		$c = __CLASS__;
 		if (!isset(self::$_fledging))
 			self::$_fledging = new $c($settings);
@@ -65,7 +65,7 @@ class LinfoError {
 	 * @param string $whence name of error message source
 	 * @param string $message error message text
 	 */
-	public function add($whence, $message) {
+	static public function add($whence, $message) {
 		$this->_errors[] = array($whence, $message);
 	}
 
@@ -75,7 +75,7 @@ class LinfoError {
 	 * @access public
 	 * @return array of errors
 	 */
-	public function show() {
+	static public function show() {
 		return $this->_errors;
 	}
 
@@ -85,7 +85,7 @@ class LinfoError {
 	 * @access public
 	 * @return int number of errors
 	 */
-	 public function num() {
+	static public function num() {
 		return count($this->_errors);
-	 }
+	}
 }

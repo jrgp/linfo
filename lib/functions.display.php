@@ -39,7 +39,9 @@ function showInfoHTML($info, $settings) {
 	$distro_icon = $info['OS'] == 'Linux' && is_array($info['Distro']) && $info['Distro']['name'] ? strtolower(str_replace(' ', '', $info['Distro']['name'])) : false;
 
 	// Start compressed output buffering
-	ob_start('ob_gzhandler');
+	if (!isset($settings['compress_content']) || $settings['compress_content']) {
+		ob_start('ob_gzhandler');
+	}
 
 	// Proceed to letting it all out
 	echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -785,7 +787,9 @@ function showInfoHTML($info, $settings) {
 </html>';
 
 	// End output buffering
-	ob_end_flush();
+	if (!isset($settings['compress_content']) || $settings['compress_content']) {
+		ob_end_flush();
+	}
 }
 
 

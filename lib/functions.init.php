@@ -106,6 +106,11 @@ function runExtensions(&$info, $settings) {
 
 	// Info array is passed by reference so we can edit it directly
 	$info['extensions'] = array();
+	
+	// Are there any extensions configured?
+	if(empty($settings['extensions'])) {
+		return;
+	}
 
 	// Go through each enabled extension
 	foreach((array)$settings['extensions'] as $ext => $enabled) {
