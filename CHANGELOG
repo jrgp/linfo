@@ -47,3 +47,4 @@ v1.8 - ?/?/2011
  - Better Darwin (Mac) support
  - Reporting of Mac model
  - Ability to run certain commands as root (via nopasswd sudo)
+ - Display CPU architecture on Windows
