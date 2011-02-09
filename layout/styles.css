@@ -30,7 +30,8 @@ table tr th, table tr.alt td { background-color: #ddd;}
 .collapsed table {
 	display: none;
 }
-#foot { margin: 15px 0px 20px 15px; color: #444; }
+#foot { margin: 15px 0px 20px 15px; color: #444; float: left; }
+#foot_time { margin: 15px 15px 20px 0px; color: #444; float: right; vertical-align: bottom; }
 h1 { font-size: 1.6em; margin: 0; padding: 0; }
 h2 { font-size: 1.2em; margin: 0;}
 .col2 { overflow: hidden;}
@@ -82,10 +83,17 @@ span.toggler {
 }
 .header {
 	padding: 5px 0px 0px 15px;
+	float: left;
 }
 .subtitle {
 	color: #999;
 	font-size: 12px;
+}
+.time {
+	padding: 5px 15px 0px 0px;
+	color: #999;
+	float: right;
+	text-align: right;
 }
 
 /* For extensions that have extra stuff to the right */
