@@ -66,6 +66,11 @@ function showInfoHTML($info, $settings) {
 	<h1>'.$info['HostName'].'</h1>
 	<div class="subtitle">'.$lang['header'].'</div>
 </div>
+<!--<div class="time">
+	<h1>'.date('H:i:s').'</h1>
+	<div class="subtitle">'.date('Y-m-d, T').'</div>
+</div>-->
+<br clear="all" />
 <div class="col2">
 	<div class="col">
 		<div class="infoTable">
@@ -248,19 +253,18 @@ function showInfoHTML($info, $settings) {
 					<th>'.$lang['amount_sent'].'</th>
 					<th>'.$lang['amount_received'].'</th>
 					<th>'.$lang['state'].'</th>
-				</tr>
-			';
+				</tr>';
 
 			if (count($info['Network Devices']) > 0)
 				foreach($info['Network Devices'] as $device => $stats)
 					echo '
-						<tr>
-							<td>'.$device.'</td>', $show_type ? '
-							<td>'.$stats['type'].'</td>' : '','
-							<td>'.byte_convert($stats['sent']['bytes']).'</td>
-							<td>'.byte_convert($stats['recieved']['bytes']).'</td>
-							<td class="net_'.$stats['state'].'">'.ucfirst($stats['state']).'</td>
-						</tr>';
+				<tr>
+					<td>'.$device.'</td>', $show_type ? '
+					<td>'.$stats['type'].'</td>' : '','
+					<td>'.byte_convert($stats['sent']['bytes']).'</td>
+					<td>'.byte_convert($stats['recieved']['bytes']).'</td>
+					<td class="net_'.$stats['state'].'">'.ucfirst($stats['state']).'</td>
+				</tr>';
 			else
 				echo '<tr><td colspan="5" class="none">'.$lang['none_found'].'</td></tr>';
 			echo '
@@ -323,7 +327,9 @@ function showInfoHTML($info, $settings) {
 		<div class="infoTable">
 			<h2>'.$lang['services'].'</h2>
 			<table>
-				<tr><th>'.$lang['service'].'</th><th>'.$lang['state'].'</th><th>'.$lang['pid'].'</th><th>Threads</th><th>'.$lang['memory_usage'].'</th></tr>
+				<tr>
+					<th>'.$lang['service'].'</th><th>'.$lang['state'].'</th><th>'.$lang['pid'].'</th><th>Threads</th><th>'.$lang['memory_usage'].'</th>
+				</tr>
 				';
 
 		// Show them
@@ -372,11 +378,11 @@ function showInfoHTML($info, $settings) {
 		if ($num_devs > 0) {
 			for ($i = 0; $i < $num_devs; $i++) {
 				echo '
-						<tr>
-							<td class="center">'.$info['Devices'][$i]['type'].'</td>
-							',$show_vendor ? '<td>'.($info['Devices'][$i]['vendor'] ? $info['Devices'][$i]['vendor'] : 'Unknown').'</td>' : '','
-							<td>'.$info['Devices'][$i]['device'].'</td>
-						</tr>';
+				<tr>
+					<td class="center">'.$info['Devices'][$i]['type'].'</td>
+					',$show_vendor ? '<td>'.($info['Devices'][$i]['vendor'] ? $info['Devices'][$i]['vendor'] : 'Unknown').'</td>' : '','
+					<td>'.$info['Devices'][$i]['device'].'</td>
+				</tr>';
 			}
 		}
 		else
@@ -407,35 +413,34 @@ function showInfoHTML($info, $settings) {
 					',$show_stats ? '<th>'.$lang['reads'].'</th>
 					<th>'.$lang['writes'].'</th>' : '','
 					<th>'.$lang['size'].'</th>
-				</tr>
-				';
+				</tr>';
 		if (count($info['HD']) > 0)
 			foreach($info['HD'] as $drive) {
 				echo '
-						<tr>
-							<td>'.$drive['device'].'</td>
-							',$show_vendor ? '<td>'.($drive['vendor'] ? $drive['vendor'] : $lang['unknown']).'</td>' : '','
-							<td>',$drive['name'] ? $drive['name'] : $lang['unknown'],'</td>
-							', $show_stats ? '<td>'.($drive['reads'] !== false ? number_format($drive['reads']) : $lang['unknown']).'</td>
-							<td>'.($drive['writes'] !== false ? number_format($drive['writes']) : $lang['unknown']).'</td>' : '','
-							<td>',$drive['size'] ? byte_convert($drive['size']) : $lang['unknown'],'</td>
-						</tr>';
+				<tr>
+					<td>'.$drive['device'].'</td>
+					',$show_vendor ? '<td>'.($drive['vendor'] ? $drive['vendor'] : $lang['unknown']).'</td>' : '','
+					<td>',$drive['name'] ? $drive['name'] : $lang['unknown'],'</td>
+					', $show_stats ? '<td>'.($drive['reads'] !== false ? number_format($drive['reads']) : $lang['unknown']).'</td>
+					<td>'.($drive['writes'] !== false ? number_format($drive['writes']) : $lang['unknown']).'</td>' : '','
+					<td>',$drive['size'] ? byte_convert($drive['size']) : $lang['unknown'],'</td>
+				</tr>';
 
 				// If we've got partitions for this drive, show them too
 				if (is_array($drive['partitions']) && count($drive['partitions']) > 0) {
 					echo '
-						<tr>
-							<td colspan="6">
-							';
-							
+				<tr>
+					<td colspan="6">';
+					
 					// Each
 					foreach ($drive['partitions'] as $partition)
-						echo '&#9492; '. (isset($partition['number']) ? $drive['device'].$partition['number'] : $partition['name']) .' - '.byte_convert($partition['size']).'<br />';
+						echo '
+						&#9492; '. (isset($partition['number']) ? $drive['device'].$partition['number'] : $partition['name']) .' - '.byte_convert($partition['size']).'<br />';
 
 					echo '
-							</td>
-						</tr>
-						';
+					</td>
+				</tr>
+				';
 					}
 				}
 			else
@@ -781,6 +786,10 @@ function showInfoHTML($info, $settings) {
 <div id="foot">
 	'.sprintf($lang['footer_app'], '<a href="http://linfo.sf.net"><em>'.AppName.' ('.VERSION.')</em></a>',  round(microtime(true) - TIME_START,2)).'<br />
 	<em>'.AppName.'</em> &copy; 2010 &ndash; 2011 Joseph Gillotti &amp; friends. Source code licensed under GPL.
+</div>
+<div id="foot_time">
+	<br />
+	Generated on 2011-02-09 16:56:40, CET
 </div>
 <script type="text/javascript">Linfo.init()</script>
 </body>
