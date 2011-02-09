@@ -996,15 +996,6 @@ function showInfoHTML($info, $settings) {
 					$has_types = true;
 				}
 			}
-			$addcolumns = 0;
-			if ($settings['show']['mounts_options'])
-				$addcolumns++;
-			if ($has_devices)
-				$addcolumns++;
-			if ($has_labels)
-				$addcolumns++;
-			if ($has_types)
-				$addcolumns++;
 			$mounts = $xml->addChild('mounts');
 			foreach ($info['Mounts'] as $mount) {
 				$mount_elem = $mounts->addChild('mount');
@@ -1017,7 +1008,7 @@ function showInfoHTML($info, $settings) {
 				$mount_elem->addAttribute('mountpoint', $mount['mount']);
 				if ($has_labels) 
 					$mount_elem->addAttribute('label', $mount['label']);
-				$mount_elem->addAttribute('type', $mount['type']);
+				$mount_elem->addAttribute('fstype', $mount['type']);
 				if ($settings['show']['mounts_options'] && !empty($mount['options'])) {
 					$options_elem = $mount_elem->addChild('mount_options');
 					foreach ($mount['options'] as $option)
@@ -1048,6 +1039,9 @@ function showInfoHTML($info, $settings) {
 				}
 			}
 		}
+		
+		// Timestamp
+		$xml->addChild('timestamp', $info['timestamp']);
 
 		// Extensions
 		if (count($info['extensions']) > 0) {
@@ -1106,16 +1100,22 @@ function showInfoHTML($info, $settings) {
 
  	// Make sure we have JSON
  	if (!function_exists('json_encode'))  {
-		exit('JSON extension not loaded');
+		exit('{error:\'JSON extension not loaded\'}');
 		return;
 	}
+	
+	header("Content-Type: application/json");
 
 	// Output buffering, along with compression (if supported)
-	ob_start('ob_gzhandler');
+	if (!isset($settings['compress_content']) || $settings['compress_content']) {
+		ob_start('ob_gzhandler');
+	}
 
 	// Give it
 	echo json_encode($info);
 
 	// Send it all out
-	ob_end_flush();
+	if (!isset($settings['compress_content']) || $settings['compress_content']) {
+		ob_end_flush();
+	}
  }

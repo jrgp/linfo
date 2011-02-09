@@ -97,6 +97,9 @@ if ($os == false)
 $getter = parseSystem($os, $settings);
 $info = $getter->getAll();
 
+// Store current timestamp for alternative output formats
+$info['timestamp'] = date("c");
+
 // Extensions
 runExtensions($info, $settings);
 
