@@ -65,7 +65,7 @@ class LinfoError {
 	 * @param string $whence name of error message source
 	 * @param string $message error message text
 	 */
-	static public function add($whence, $message) {
+	public function add($whence, $message) {
 		$this->_errors[] = array($whence, $message);
 	}
 
@@ -75,7 +75,7 @@ class LinfoError {
 	 * @access public
 	 * @return array of errors
 	 */
-	static public function show() {
+	public function show() {
 		return $this->_errors;
 	}
 
@@ -85,7 +85,7 @@ class LinfoError {
 	 * @access public
 	 * @return int number of errors
 	 */
-	static public function num() {
+	public function num() {
 		return count($this->_errors);
 	}
 }

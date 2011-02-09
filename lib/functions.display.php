@@ -789,7 +789,7 @@ function showInfoHTML($info, $settings) {
 </div>
 <div id="foot_time">
 	<br />
-	Generated on 2011-02-09 16:56:40, CET
+	Generated on '.date('m/d/y h:i A').'
 </div>
 <script type="text/javascript">Linfo.init()</script>
 </body>
