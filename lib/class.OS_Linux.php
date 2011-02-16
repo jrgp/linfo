@@ -695,7 +695,7 @@ class OS_Linux {
 
 		// Class that does it
 		$hw = new HW_IDS($usb_ids, $pci_ids);
-		$hw->work();
+		$hw->work('linux');
 		return $hw->result();
 	}
 

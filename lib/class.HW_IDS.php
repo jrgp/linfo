@@ -38,7 +38,9 @@ class HW_IDS {
 		$_pci_entries = array(),
 		$_usb_devices = array(),
 		$_pci_devices = array(),
-		$_result = array();
+		$_result = array(),
+		$exec,
+		$error;
 
 	/**
 	 * Constructor
@@ -64,6 +66,11 @@ class HW_IDS {
 
 		// Load contents of cache
 		$this->_populate_cache();
+		
+		// Might need these
+		$this->exec = new CallExt;
+		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
+		$this->error = LinfoError::Fledging();
 	}
 
 	/**
@@ -90,7 +97,7 @@ class HW_IDS {
 	 *
 	 * @access private
 	 */
-	private function _fetchUsbIds() {
+	private function _fetchUsbIdsLinux() {
 		$usb_paths = (array) @glob('/sys/bus/usb/devices/*', GLOB_NOSORT);
 		$num_usb_paths = count($usb_paths);
 		for ($i = 0; $i < $num_usb_paths; $i++) {
@@ -115,7 +122,7 @@ class HW_IDS {
 	 *
 	 * @access private
 	 */
-	private function _fetchPciIds() {
+	private function _fetchPciIdsLinux() {
 		$pci_paths = (array) @glob('/sys/bus/pci/devices/*', GLOB_NOSORT);
 		$num_pci_paths = count($pci_paths);
 		for ($i = 0; $i < $num_pci_paths; $i++) {
@@ -228,14 +235,45 @@ class HW_IDS {
 			)));
 	}
 
+	/*
+	 * Parse pciconf to get pci ids
+	 *
+	 * @access private
+	 */
+	private function _fetchPciIdsPciConf() {
+		try {
+			$pciconf = $this->exec->exec('pciconf', '-l');
+		}
+		catch(CallExtException $e) {
+			$this->error->add('Linfo Core', 'Error using `pciconf -l` to get hardware info');
+			return;
+		}
+
+		if (preg_match_all('/^.+chip=0x([a-z0-9]{4})([a-z0-9]{4})/m', $pciconf, $devs, PREG_SET_ORDER) == 0)
+			return;
+
+		foreach ($devs as $dev)
+			$this->_pci_entries[$dev[2]][$dev[1]] = 1;
+	}
+
 	/**
 	 * Do its goddam job
 	 *
 	 * @access public
 	 */
-	public function work() {
-		$this->_fetchPciIds();
-		$this->_fetchUsbIds();
+	public function work($os) {
+		switch ($os) {
+			case 'linux':
+				$this->_fetchPciIdsLinux();
+				$this->_fetchUsbIdsLinux();
+			break;
+			case 'freebsd':
+				$this->_fetchPciIdsPciConf();
+			break;
+			default:
+				return;
+			break;	
+		}
 		$worthiness = $this->_is_cache_worthy();
 		$save_cache = false;
 		if (!$worthiness['pci']) {

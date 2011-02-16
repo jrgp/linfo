@@ -376,7 +376,6 @@ class OS_FreeBSD extends OS_BSD_Common{
 		$return = array();
 		
 		// Use netstat to get info
-		// TODO: This is reallllyyyy slow. Alternative?
 		try {
 			$netstat = $this->exec->exec('netstat', '-nbdi');
 		}
@@ -546,35 +545,10 @@ class OS_FreeBSD extends OS_BSD_Common{
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Hardware Devices');
 		
-		// Get all devices detected during boot
-		if (preg_match_all('/^(\w+\d+): <(.+)>.* on (\w+)\d+$/m', $this->dmesg, $m, PREG_SET_ORDER) == 0)
-			return array();
-
-		// Keep them here
-		$devices = array();
-
-		// Store the type column for each key
-		$sort_type = array();
-		
-		// Stuff it
-		foreach ($m as $device) {
-
-			// Only call this once
-			$type = strtoupper($device[3]);
-
-			// Stuff entry
-			$devices[] = array(
-				'vendor' => false, // Maybe todo? 
-				'device' => $device[2],
-				'type' => $type
-			);
-
-			// For the sorting of this entry
-			$sort_type[] = $type;
-		}
-		
-		// Sort
-		array_multisort($devices, SORT_STRING, $sort_type);
+		// Class that does it
+		$hw = new HW_IDS($usb_ids, '/usr/local/share/pciids/pci.ids');
+		$hw->work('freebsd');
+		return $hw->result();
 
 		// Return
 		return $devices;
