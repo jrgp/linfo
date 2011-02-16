@@ -35,7 +35,8 @@ class OS_FreeBSD extends OS_BSD_Common{
 		$settings,
 		$exec,
 		$error,
-		$dmesg;
+		$dmesg,
+		$version;
 
 	// Start us off
 	public function __construct($settings) {
@@ -61,6 +62,12 @@ class OS_FreeBSD extends OS_BSD_Common{
 			'hw.ncpu',
 			'hw.clockrate'
 		), false);
+
+		// Save version
+		if (preg_match('/^([\d\.]+)/', php_uname('r'), $vm) != 0)
+			$this->version = (float) $vm[1];
+		
+	//	var_dump($this->version); exit;
 	}
 	
 	// This function will likely be shared among all the info classes
@@ -450,15 +457,16 @@ class OS_FreeBSD extends OS_BSD_Common{
 
 			// Save info
 			$return[$net[1]] = array(
+
 				
 				// These came from netstat
 				'recieved' => array(
-					'bytes' => $net[4],
+					'bytes' => (int) $net[$this->version >= 8 ? 5 : 4],
 					'errors' => $net[3],
 					'packets' => $net[2] 
 				),
 				'sent' => array(
-					'bytes' => $net[7],
+					'bytes' => (int)$net[$this->version >= 8 ? 8 : 7],
 					'errors' =>  $net[6],
 					'packets' => $net[5] 
 				),
