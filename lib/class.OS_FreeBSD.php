@@ -548,9 +548,6 @@ class OS_FreeBSD extends OS_BSD_Common{
 		$hw = new HW_IDS($usb_ids, '/usr/share/misc/pci_vendors');
 		$hw->work('freebsd');
 		return $hw->result();
-
-		// Return
-		return $devices;
 	}
 		
 	// APM? Seems to only support either one battery of them all collectively

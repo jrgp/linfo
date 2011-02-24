@@ -268,6 +268,7 @@ class HW_IDS {
 				$this->_fetchUsbIdsLinux();
 			break;
 			case 'freebsd':
+			case 'dragonfly':
 				$this->_fetchPciIdsPciConf();
 			break;
 			default:
