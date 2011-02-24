@@ -33,7 +33,10 @@ class out_ncurses {
 
 		// Store our windows here
 		$_windows = array(),
-		$_max_dims = array();
+		$_max_dims = array(),
+		
+		// ncurses loaded?
+		$loaded = true;
 
 	// Start us off by checking important shit and starting it
 	public function __construct() {
@@ -41,6 +44,7 @@ class out_ncurses {
 		// We obviously need this
 		if (!extension_loaded('ncurses')) {
 			echo "ncurses extension not loaded\n";
+			$this->loaded = false;
 			exit(1);
 		}
 
@@ -53,7 +57,8 @@ class out_ncurses {
 	// not doing so will leave the terminal messed up until the user 
 	// runs 'reset'
 	public function __destruct() {
-		ncurses_end();
+		if ($this->loaded)
+			ncurses_end();	
 	}
 
 	// Handle the shit
