@@ -1,6 +1,6 @@
 Linfo - PHP server health/information script
 
-Currently runs on: Linux; FreeBSD; NetBSD; OpenBSD; Minix (alpha); Darwin (alpha); SunOS(alpha); Windows (alpha)
+Currently runs on: Linux; FreeBSD; NetBSD; OpenBSD; Minix (alpha); Darwin/Mac OSX (alpha); SunOS/Solaris(alpha); Windows
 
 Etymology:
  - The name 'Linfo' was decided upon before I intended it to be cross platform.
@@ -26,7 +26,7 @@ Goals:
 
 Usable clients:
  - Any web browser should work, including text only ones
- - Tested with: Firefox (1.x, 2.x, 3.x), iOS Safari, Chrome, IE (6+), Opera, Lynx, Elinks, Dillo
+ - Tested with: Firefox (1.x+), iOS Safari, Chrome, IE (6+), Opera, Lynx, Elinks, Dillo
 
 Global System requirements: 
  - At least PHP 5
@@ -35,7 +35,7 @@ Global System requirements:
  - note: PCRE is Linfo's only php requirement :)
 
 Linux system requirements:
- - /proc and /sys mounted appropriately
+ - /proc and /sys mounted appropriately, and readable by php
  - Tested with the 2.6 series of kernels. I'm not sure if it works with older ones.
 
 FreeBSD system requirements:
@@ -55,17 +55,17 @@ Installation/usage:
  1) Extract tarball contents to somewhere under your web root
  2) Rename sample.config.inc.php to config.inc.php, after optionally changing values in it
  3) Visit page in web browser
+ 4) Pass URL to your friends to show off
 
 For other forms of output, aside from usual HTML, append the following to the URL:
  - ?out=xml - XML output (requires SimpleXML extension)
  - ?out=json - JSON output
  - ?out=php_array - PHP serialized associative array
  - ?out=html - Usual lightweight HTML (default)
+ - ncurses - call ./linfo from the CLI. It will attempt to use http://php.net/manual/en/book.ncurses.php
 
 Known issues:
- - Getting Linux device names is slow on old systems
- - Getting Linux device names does not work on all distros [yet]
- - Linux Wifi is not finished
+ - OS support other than Linux/Windows is relatively meager at times
 
 Linux system temps/voltages/etc requirments:
  - Have hddtemp listening or periodically writing to syslog, and/or
@@ -80,14 +80,14 @@ For cups/samba/truecrypt support:
 TODO:
  - Support for other Unix operating systems (Hurd, IRIX, AIX, HP UX, etc)
  - Support for strange operating systems: Haiku/BeOS
- - More superfluous features
+ - More superfluous features/extensions
 
-Please send suggestions, help requests, comments, complaints, beer, pizza, and hookers to:
+Please send suggestions, patches (diff's), help requests, comments, complaints, beer, pizza, and hookers to:
  - joe@u13.net 
  - IRC - #linfo @ freenode
 
 License: GNU General Public License
 Author/project leader: Joseph Robert Gillotti <joe@u13.net>
-Additional author(s): (See THANKS)
+Additional author(s): (See AUTHORS)
 URL: http://linfo.sourceforge.net/
 Favicon by: Lee Bradley
