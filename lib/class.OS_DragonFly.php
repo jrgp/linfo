@@ -71,8 +71,7 @@ class OS_DragonFly extends OS_BSD_Common{
 			'Temps' => empty($this->settings['show']['temps']) ? array(): $this->getTemps(), 	
 
 			// Columns we should leave out. (because finding them out is either impossible or requires root access)
-			'contains' => array(
-				'hw_vendor' => false,
+			'contains' => array (
 				'drives_rw_stats' => false,
 				'nic_type' => false
 			)
@@ -290,7 +289,7 @@ class OS_DragonFly extends OS_BSD_Common{
 				}
 
 				// In a nick and found a status entry
-				elseif ($current_nic && preg_match('/^\s+status: ([a-z]+)$/', $line, $m)) {
+				elseif ($current_nic && preg_match('/^\s+status: ([^$]+)$/', $line, $m)) {
 					
 					// Decide what it is and save it
 					switch ($m[1]) {
@@ -298,6 +297,7 @@ class OS_DragonFly extends OS_BSD_Common{
 							$nets[$current_nic]['state'] = 'up';
 						break;
 						case 'inactive':
+						case 'no carrier':
 							$nets[$current_nic]['state'] = 'down';
 						break;
 						default:
@@ -358,8 +358,10 @@ class OS_DragonFly extends OS_BSD_Common{
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Hardware Devices');
-	
-		return array();
+
+		$hw = new HW_IDS($usb_ids, '/usr/share/misc/pci_vendors');
+		$hw->work('dragonfly');
+		return $hw->result();
 	}
 		
 	// APM? Seems to only support either one battery of them all collectively
