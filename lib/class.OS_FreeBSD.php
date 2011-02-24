@@ -94,7 +94,6 @@ class OS_FreeBSD extends OS_BSD_Common{
 
 			// Columns we should leave out. (because finding them out is either impossible or requires root access)
 			'contains' => array(
-				'hw_vendor' => false,
 				'drives_rw_stats' => false
 			)
 		);
@@ -546,7 +545,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 			$t = new LinfoTimerStart('Hardware Devices');
 		
 		// Class that does it
-		$hw = new HW_IDS($usb_ids, '/usr/local/share/pciids/pci.ids');
+		$hw = new HW_IDS($usb_ids, '/usr/share/misc/pci_vendors');
 		$hw->work('freebsd');
 		return $hw->result();
 
