@@ -53,8 +53,12 @@ class GetInfoException extends Exception{}
  * @return string|false if the OS is found, returns the name; Otherwise false
  */
 function determineOS() {
+
+
+	list($os) = explode('_', PHP_OS, 2);
+
 	// This magical constant knows all
-	switch (PHP_OS) {
+	switch ($os) {
 
 		// These are supported
 		case 'Linux':
@@ -70,6 +74,10 @@ function determineOS() {
 		case 'WINNT':
 			define('IS_WINDOWS', true);
 			return 'Windows';
+		break;
+		case 'CYGWIN':
+			define('IS_CYGWIN', true);
+			return 'CYGWIN';
 		break;
 
 		// So anything else isn't
