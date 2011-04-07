@@ -1276,7 +1276,7 @@ class OS_Linux {
 			array('/etc/redhat-release', '/^CentOS release ([\d\.]+) \(([^)]+)\)$/', 'CentOS'),
 			array('/etc/redhat-release', '/^Red Hat.+release (\S+) \(([^)]+)\)$/', 'RedHat'),
 			array('/etc/fedora-release', '/^Fedora(?: Core)? release (\d+) \(([^)]+)\)$/', 'Fedora'),
-			array('/etc/gentoo-release', '([\d\.]+)$/', 'Gentoo'),
+			array('/etc/gentoo-release', '/([\d\.]+)$/', 'Gentoo'),
 			array('/etc/SuSE-release', '/^VERSION = ([\d\.]+)$/m', 'openSUSE'),
 			array('/etc/slackware-version', '/([\d\.]+)$/', 'Slackware'),
 
