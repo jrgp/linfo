@@ -42,10 +42,11 @@ v1.7 - 1/07/2011
  - Kernel architecture is shown on Linux
  - FreeBSD soft-raid detection improved
 
-v1.8 - ?/?/20??
+v1.8 - 4/7/2011
  - DragonFly BSD support
  - Better Darwin (Mac) support
  - Reporting of Mac model
  - Ability to run certain commands as root (via nopasswd sudo)
  - Display CPU architecture on Windows
  - Better FreeBSD device detection
+ - Bugfixes
