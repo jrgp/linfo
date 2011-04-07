@@ -131,7 +131,9 @@ class HW_IDS {
 			// See if we can use simple vendor/device files and avoid taking time with regex
 			if (($f_device = getContents($path.'/device', '')) && ($f_vend = getContents($path.'/vendor', '')) &&
 				$f_device != '' && $f_vend != '') {
-				$this->_pci_entries[next(explode('x', $f_vend, 2))][next(explode('x', $f_device, 2))] = 1;
+				list(, $v_id) = explode('x', $f_vend, 2);
+				list(, $d_id) = explode('x', $f_device, 2);
+				$this->_pci_entries[$v_id][$d_id] = 1;
 			}
 
 			// Try uevent nextly

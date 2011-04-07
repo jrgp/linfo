@@ -43,7 +43,7 @@ class LinfoTimer {
 	 * @access public
 	 * @return object LinfoError instance
 	 */
-	public function Fledging($settings = null) {
+	public static function Fledging($settings = null) {
 		$c = __CLASS__;
 		if (!isset(self::$_fledging))
 			self::$_fledging = new $c($settings);

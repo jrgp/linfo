@@ -881,10 +881,9 @@ class OS_Linux {
 			$type_contents = strtoupper(getContents($path.'/device/modalias'));
 			list($type) = explode(':', $type_contents, 2);
 			$type = $type != 'USB' && $type != 'PCI' ? 'N/A' : $type;
-			
 
 			// Save and get info for each
-			$return[end(explode('/', $path))] = array(
+			$return[basename($path)] = array(
 
 				// Stats are stored in simple files just containing the number
 				'recieved' => array(
