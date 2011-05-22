@@ -82,7 +82,8 @@ class OS_Linux {
 			'Wifi' => empty($this->settings['show']['wifi']) ? array(): $this->getWifi(),
 			'SoundCards' => empty($this->settings['show']['sound']) ? array(): $this->getSoundCards(),
 			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(),
-			'services' => empty($this->settings['show']['process_stats']) ? array() : $this->getServices()
+			'services' => empty($this->settings['show']['process_stats']) ? array() : $this->getServices(),
+			'numLoggedIn' => empty($this->settings['show']['numLoggedIn']) ? array() : $this->getNumLoggedIn()
 		);
 	}
 
@@ -1359,5 +1360,42 @@ class OS_Linux {
 	 */
 	private function getCPUArchitecture() {
 		return php_uname('m');
+	}
+
+	/**
+	 * getNumLoggedIn
+	 * 
+	 * @access private
+	 * @return number of logged in users with shells
+	 */
+	 private function getNumLoggedIn() {
+
+		// Snag command line of every process in system
+		$procs = glob('/proc/*/cmdline', GLOB_NOSORT);
+		
+		// Store unqiue users here
+		$users = array();
+
+		// Each process
+		foreach ($procs as $proc) {
+
+			// Does the process match a popular shell, such as bash, csh, etc?
+			if (preg_match('/(?:bash|csh|zsh|ksh)$/', getContents($proc, ''))) {
+
+				// Who the fuck owns it, anyway? 
+				$owner = fileowner(dirname($proc));
+
+				// Careful..
+				if (!is_numeric($owner))
+					continue;
+
+				// Have we not seen this user before?
+				if (!in_array($owner, $users))
+					$users[] = $owner;
+			}
+		}
+		
+		// Give number of unique users with shells running
+		return count($users);
 	}
 }

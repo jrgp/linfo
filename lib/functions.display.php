@@ -149,6 +149,10 @@ function showInfoHTML($info, $settings) {
 		if ($info['processStats']['threads'] !== false)
 			$core[] = array($lang['threads'], number_format($info['processStats']['threads']));
 	}
+	
+	// Users with active shells
+	if (!empty($settings['show']['numLoggedIn']) && array_key_exists('numLoggedIn', $info))
+		$core[] = array($lang['numLoggedIn'], $info['numLoggedIn']);
 
 	// Show
 	for ($i = 0, $core_num = count($core); $i < $core_num; $i++) {

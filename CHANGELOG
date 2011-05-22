@@ -50,3 +50,10 @@ v1.8 - 4/7/2011
  - Display CPU architecture on Windows
  - Better FreeBSD device detection
  - Bugfixes
+
+v1.8.1 - 4/7/2011
+ - Bugfix
+
+v1.9 - ?/?/????
+ - Number of users logged in (with active shells)
+ - Bugfixes
