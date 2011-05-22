@@ -96,6 +96,6 @@ $lang = array(
 	'services' => 'Usługi',
 	'memory_usage' => 'Zużycie pamięci',
 	'distro' => 'Dystrybucja',
-	'cpu_arch' => 'Architektura'
-
+	'cpu_arch' => 'Architektura',
+	'numLoggedIn' => 'Active Users' //todo
 );
