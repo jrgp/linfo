@@ -513,24 +513,64 @@ class OS_FreeBSD extends OS_BSD_Common{
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Drives');
-		
-		// Get hard drives detected at boot
-		if (preg_match_all('/^((?:ad|da|acd|cd)\d+)\: ((?:\w+|\d+\w+)) \<(\S+)\s+([^>]+)\>/m', $this->dmesg, $m, PREG_SET_ORDER) == 0)
-			return array();
 
 		// Keep them here
 		$drives = array();
+		
+		// Must they change the format of everything with each fucking release?!?!?!?!
+		switch ($this->version) {
 
-		// Stuff array
-		foreach ($m as $drive) {
-			$drives[] = array(
-				'name' => $drive[4],
-				'vendor' => $drive[3],
-				'device' => '/dev/'.$drive[1],
-				'size' => preg_match('/^(\d+)MB$/', $drive[2], $m) == 1 ? $m[1] * 1048576 : false,
-				'reads' => false,
-				'writes' => false
-			);
+			case 8.2:
+				$cur = false;
+
+				// Each line of dmesg boot log
+				foreach ((array) explode("\n", $this->dmesg) as $line) {
+					
+					// Start of a drive entry which spans multiple lines
+					if (preg_match('/^((?:ad|da|acd|cd)\d+) at/', $line, $m)) {
+						$cur = array('device' => '/dev/'.$m[1]);	
+					}
+
+					// Branding of this drive
+					elseif ($cur && preg_match('/^((?:ad|da|acd|cd)\d+): \<([^>]+)\>/', $line, $m)) {
+						if ('/dev/'.$m[1] != $cur['device'])
+							continue;
+						$halves = explode(' ', $m[2]);
+						if (count($halves) > 1) {
+							$cur['vendor'] = $halves[0];
+							$cur['name'] = $halves[1];
+						}
+						else {
+							$cur['vendor'] = false;
+							$cur['name'] = $m[1];
+						}
+					}
+
+					// Lastly the size; gather it and save it
+					elseif ($cur && preg_match('/^((?:ad|da|acd|cd)\d+): (\d+)MB/', $line, $m)) {
+						if ('/dev/'.$m[1] != $cur['device']) {
+							$cur = false;
+							continue;
+						}	
+						$cur['size'] = $m[2] * 1048576;
+						$drives[] = $cur;
+						$cur = false;
+					}
+				}
+			break;
+
+			default:
+				if (preg_match_all('/^((?:ad|da|acd|cd)\d+)\: ((?:\w+|\d+\w+)) \<(\S+)\s+([^>]+)\>/m', $this->dmesg, $m, PREG_SET_ORDER) > 0)
+					foreach ($m as $drive) 
+						$drives[] = array(
+							'name' => $drive[4],
+							'vendor' => $drive[3],
+							'device' => '/dev/'.$drive[1],
+							'size' => preg_match('/^(\d+)MB$/', $drive[2], $m) == 1 ? $m[1] * 1048576 : false,
+							'reads' => false,
+							'writes' => false
+						);
+			break;
 		}
 
 		// Return
@@ -545,7 +585,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 			$t = new LinfoTimerStart('Hardware Devices');
 		
 		// Class that does it
-		$hw = new HW_IDS($usb_ids, '/usr/share/misc/pci_vendors');
+		$hw = new HW_IDS(false, '/usr/share/misc/pci_vendors');
 		$hw->work('freebsd');
 		return $hw->result();
 	}
