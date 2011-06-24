@@ -85,7 +85,7 @@ function showInfoHTML($info, $settings) {
 		$core[] = array($lang['os'], ($show_icons && (file_exists(LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.png')) ? '<span class="icon icon_os_'.$os_icon.'"></span>' : '') . $info['OS']);
 	
 	// Distribution? (with icon, if we have it)
-	if (!empty($settings['show']['distro']) && is_array($info['Distro']))
+	if (!empty($settings['show']['distro']) && array_key_exists('Distro', $info) && is_array($info['Distro']))
 		$core[] = array($lang['distro'], ($show_icons && $distro_icon && (file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.png')) ? '<span class="icon icon_distro_'.$distro_icon.'"></span>' : '') . $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
 	
 	// Kernel
@@ -431,7 +431,7 @@ function showInfoHTML($info, $settings) {
 				</tr>';
 
 				// If we've got partitions for this drive, show them too
-				if (is_array($drive['partitions']) && count($drive['partitions']) > 0) {
+				if (array_key_exists('partitions', $drive) && is_array($drive['partitions']) && count($drive['partitions']) > 0) {
 					echo '
 				<tr>
 					<td colspan="6">';
