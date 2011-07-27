@@ -108,9 +108,11 @@ $settings['services']['pidFiles'] = array(
 	// 'SSHd' => '/var/run/sshd.pid'
 );
 
-// Format: Label => path to executable
+// Format: Label => path to executable or array containing arguments to be checked
 $settings['services']['executables'] = array(
 	// 'MySQLd' => '/usr/sbin/mysqld' // uncomment to enable
+	// 'BuildSlave' => array('/usr/bin/python', // executable
+	//						1 => '/usr/local/bin/buildslave') // argv[1]
 );
 
 /*

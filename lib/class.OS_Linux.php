@@ -1120,6 +1120,10 @@ class OS_Linux {
 	 * @return array the services
 	 */
 	private function getServices() {
+		
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Services');
 
 		// We allowed?
 		if (!empty($settings['show']['services']) || !is_array($this->settings['services']) || count($this->settings['services']) == 0)
@@ -1145,14 +1149,31 @@ class OS_Linux {
 			
 		// Should we go ahead and do the PID search based on executables?
 		if ($do_process_search) {
+			// Precache all process cmdlines
+			for ($i = 0; $i < $num_paths; $i++)
+				$cmdline_cache[$i] = explode("\x00", getContents($potential_paths[$i]));
+			
 			// Go through the list of executables to search for
 			foreach ($this->settings['services']['executables'] as $service => $exec) {
 				// Go through pid file list. for loops are faster than foreach
 				for ($i = 0; $i < $num_paths; $i++) {
+					$cmdline = $cmdline_cache[$i];
+					$match = false;
+					if (is_array($exec)) {
+						$match = true;
+						foreach ($exec as $argn => $argv) {
+							if($cmdline[$argn] != $argv)
+								$match = false;
+						}
+					}
+					else if ($cmdline[0] == $exec) {
+						$match = true;
+					}
 					// If this one matches, stop here and save it
-					if (getContents($potential_paths[$i], false) == $exec) {
+					if ($match) {
 						// Get pid out of path to cmdline file
-						$pids[$service] = end(explode('/proc/', dirname($potential_paths[$i])));
+						$pids[$service] = substr($potential_paths[$i], 6 /*strlen('/proc/')*/,
+												strpos($potential_paths[$i], '/', 7)-6);
 						break;
 					}
 				}
