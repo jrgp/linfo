@@ -12,7 +12,7 @@ Goals:
  - Be very fast; generation in under a second is most desired.
  - Call very few external programs (like df/load/uptime/etc), if any. (parse
    the file system for info, if possible)
- - Linux version not use external programs *at all* and rely exclusively on
+ - Linux version don't use external programs *at all* and rely exclusively on
    /proc and /sys and connecting to locally listening daemons. (except for extensions, listed below)
  - Don't go nuts with eye candy. Don't use ajax. Make viewing the info on
    text only browsers possible and easy.
@@ -35,7 +35,7 @@ Global System requirements:
  - note: PCRE is Linfo's only php requirement :)
 
 Linux system requirements:
- - /proc and /sys mounted appropriately, and readable by php
+ - /proc and /sys mounted appropriately, and readable by PHP
  - Tested with the 2.6 series of kernels. I'm not sure if it works with older ones.
 
 FreeBSD system requirements:
@@ -82,7 +82,7 @@ TODO:
  - Support for strange operating systems: Haiku/BeOS
  - More superfluous features/extensions
 
-Please send suggestions, patches (diff's), help requests, comments, complaints, beer, pizza, and hookers to:
+Please send suggestions, patches (diffs), help requests, comments, complaints, beer, pizza, and hookers to:
  - joe@u13.net 
  - IRC - #linfo @ freenode
 
