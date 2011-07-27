@@ -60,7 +60,7 @@ function get_int_from_file($file) {
 
 	$int = trim($contents);
 
-	return (int) $int;
+	return $int;
 }
 
 // Convert bytes to stuff like KB MB GB TB etc
