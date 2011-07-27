@@ -256,34 +256,59 @@ class OS_Linux {
 		// Lines
 		$lines = explode("\n", $contents);
 
-		// Store CPU's here
+		// Store CPUs here
 		$cpus = array();
 
-		// Holder for current cpu info
+		// Holder for current CPU info
 		$cur_cpu = array();
 
 		// Go through lines in file
 		$num_lines = count($lines);
+		
+		// We use the key of the first line to separate CPUs
+		$first_line = substr($lines[0], 0, strpos($lines[0], ' '));
+		
 		for ($i = 0; $i < $num_lines; $i++) {
 			
 			// Approaching new CPU? Save current and start new info for this
-			if ($lines[$i] == '' && count($cur_cpu) > 0) {
+			if (strpos($lines[$i], $first_line) === 0 && count($cur_cpu) > 0) {
 				$cpus[] = $cur_cpu;
 				$cur_cpu = array();
-				continue;
+				
+				// Default to unknown
+				$cur_cpu['Model'] = 'Unknown';
 			}
 
 			// Info here
-			$m = explode(':', $lines[$i], 2);
-			$m[0] = trim($m[0]);
-			$m[1] = trim($m[1]);
+			$line = explode(':', $lines[$i], 2);
+			$key = trim($line[0]);
+			$value = trim($line[1]);
 
-			// Pointless?
-			if ($m[0] == '' || $m[1] == '')
-				continue;
+			
+			// What we want are MHZ, Vendor, and Model.
+			switch ($key) {
+				
+				// CPU model
+				case 'model name':
+				case 'cpu':
+				case 'Processor':
+					$cur_cpu['Model'] = $value;
+				break;
 
-			// Save this one
-			$cur_cpu[$m[0]] = $m[1];
+				// Speed in MHz
+				case 'cpu MHz':
+					$cur_cpu['MHz'] = $value;
+				break;
+
+				case 'Cpu0ClkTck': // Old sun boxes
+					$cur_cpu['MHz'] = hexdec($value) / 1000000;
+				break;
+
+				// Brand/vendor
+				case 'vendor_id':
+					$cur_cpu['Vendor'] = $value;
+				break;
+			}
 
 		}
 
@@ -291,58 +316,8 @@ class OS_Linux {
 		if (count($cur_cpu) > 0)
 			$cpus[] = $cur_cpu;
 
-		/*
-		 * What we want are MHZ, Vendor, and Model.
-		 */
-
-		// Store them here
-		$return = array();
-
-		// See if we have what we want
-		$num_cpus = count($cpus);
-		for ($i = 0; $i < $num_cpus; $i++) {
-			
-			// Save info for this one here temporarily
-			$curr = array();
-
-			// Default to unknown
-			$curr['Model'] = 'Unknown';
-
-			// Go through keys to find stuff like model, speed, brand
-			foreach ($cpus[$i] as $k => $v) {
-
-				// Deal with each section
-				switch ($k) {
-					
-					// CPU model
-					case 'model name':
-					case 'cpu':
-					case 'Processor':
-						$curr['Model'] = $v;
-					break;
-
-					// Speed in MHz
-					case 'cpu MHz':
-						$curr['MHz'] = $v;
-					break;
-
-					case 'Cpu0ClkTck': // Old sun boxes
-						$curr['MHz'] = hexdec($v) / 1000000;
-					break;
-
-					// Brand/vendor
-					case 'vendor_id':
-						$curr['Vendor'] = $v;
-					break;
-				}
-			}
-
-			// Save this one
-			$return[] = $curr;
-		}
-
 		// Return them
-		return $return;
+		return $cpus;
 	}
 
 	// Famously interesting uptime
