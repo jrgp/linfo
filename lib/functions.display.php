@@ -317,7 +317,17 @@ function showInfoHTML($info, $settings) {
 					<tr>
 						<td>'.$bat['device'].'</td>
 						<td>'.$bat['state'].'</td>
-						<td>'.$bat['percentage'].($bat['percentage'] < 0 ? ' <span class="caption">(wtf?)</span>' : '').'</td>
+						<td>
+						
+							<div class="bar_chart">
+								<div class="bar_inner" style="width: '.(int) $bat['percentage'].'%;">
+									<div class="bar_text">
+										'.($bat['percentage'] > 0 ? $bat['percentage']: '?').'
+									</div>
+								</div>
+							</div>
+						
+						</td>
 					</tr>
 					';
 		echo '
