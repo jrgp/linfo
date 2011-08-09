@@ -12,7 +12,7 @@ Goals:
  - Be very fast; generation in under a second is most desired.
  - Call very few external programs (like df/load/uptime/etc), if any. (parse
    the file system for info, if possible)
- - Linux version don't use external programs *at all* and rely exclusively on
+ - Linux version doesn't use external programs *at all* and rely exclusively on
    /proc and /sys and connecting to locally listening daemons. (except for extensions, listed below)
  - Don't go nuts with eye candy. Don't use ajax. Make viewing the info on
    text only browsers possible and easy.
