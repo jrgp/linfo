@@ -1,6 +1,38 @@
 Linfo - PHP server health/information script
 
-Currently runs on: Linux; FreeBSD; NetBSD; OpenBSD; Minix (alpha); Darwin/Mac OSX (alpha); SunOS/Solaris(alpha); Windows
+Currently runs on:
+ - Linux
+ - FreeBSD
+ - NetBSD
+ - OpenBSD
+ - DragonflyBSD
+ - Darwin/Mac OSX (alpha)
+ - SunOS/Solaris(alpha)
+ - Minix (alpha/pointless)
+ - CYGWIN (useless proof of concept)
+ - Windows
+
+Stuff it reports (all 100% optional; see config file):
+ - CPU type/speed; Architecture
+ - Mount point usage
+ - Hard/optical/flash drives
+ - Hardware Devices
+ - Network devices and stats
+ - Uptime/date booted
+ - Hostname
+ - Memory usage (physical and swap, if possible)
+ - Temperatures/voltages/fan speeds
+ - RAID arrays
+ - Via official extensions:
+   - Truecrypt mounts
+   - DHCPD leases
+   - Samba status
+   - APC UPS status
+   - Transmission torrents status
+   - Soldat server status
+   - CUPS printer status
+   - IPMI
+   - more
 
 Etymology:
  - The name 'Linfo' was decided upon before I intended it to be cross platform.
@@ -16,13 +48,10 @@ Goals:
    /proc and /sys and connecting to locally listening daemons. (except for extensions, listed below)
  - Don't go nuts with eye candy. Don't use ajax. Make viewing the info on
    text only browsers possible and easy.
- - Any javascript ever used must be *extremely* subtle and degrade gracefully
- - Don't bother finding Linux distro since it's irrelevant; the kernel and
-   other specs are what matters most
+ - Any javascript ever used must degrade gracefully
  - Don't give info that can be exploited and turned into a security risk, especially
    not names and command line arguments given to running programs.
  - Don't use blatantly slow methods such as preg_split(), especially not in loops
- - Prefer speed over code conciseness. Where possible, use for/while loops instead of foreach.
 
 Usable clients:
  - Any web browser should work, including text only ones
@@ -62,7 +91,7 @@ For other forms of output, aside from usual HTML, append the following to the UR
  - ?out=json - JSON output
  - ?out=php_array - PHP serialized associative array
  - ?out=html - Usual lightweight HTML (default)
- - ncurses - call ./linfo from the CLI. It will attempt to use http://php.net/manual/en/book.ncurses.php
+ - ncurses (very alpha) - call ./linfo from the CLI. It will attempt to use http://php.net/manual/en/book.ncurses.php 
 
 Known issues:
  - OS support other than Linux/Windows is relatively meager at times
@@ -82,7 +111,7 @@ TODO:
  - Support for strange operating systems: Haiku/BeOS
  - More superfluous features/extensions
 
-Please send suggestions, patches (diffs), help requests, comments, complaints, beer, pizza, and hookers to:
+Please send suggestions, patches (diffs), translations, help requests, comments, complaints, beer, pizza, and hookers to:
  - joe@u13.net 
  - IRC - #linfo @ freenode
 
@@ -90,4 +119,4 @@ License: GNU General Public License
 Author/project leader: Joseph Robert Gillotti <joe@u13.net>
 Additional author(s): (See AUTHORS)
 URL: http://linfo.sourceforge.net/
-Favicon by: Lee Bradley
+Favicon and sexy colors by: Lee Bradley
