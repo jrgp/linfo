@@ -44,17 +44,16 @@ function showInfoHTML($info, $settings) {
 	}
 
 	// Proceed to letting it all out
-	echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	echo '<!DOCTYPE html>
+<html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta charset="UTF-8" />
 	<title>'.AppName.' - '.$info['HostName'].'</title>
 	<link href="'.WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon" />
-	<link href="'.WEB_PATH.'layout/styles.css" type="text/css" rel="stylesheet" />'.( $show_icons ? '
-	<link href="'.WEB_PATH.'layout/icons.css" type="text/css" rel="stylesheet" />' : ''
+	<link href="'.WEB_PATH.'layout/styles.css" rel="stylesheet" />'.( $show_icons ? '
+	<link href="'.WEB_PATH.'layout/icons.css" rel="stylesheet" />' : ''
 	).'
-	<script src="'.WEB_PATH.'layout/scripts.min.js" type="text/javascript"></script>
+	<script src="'.WEB_PATH.'layout/scripts.min.js"></script>
 	<meta name="generator" content="'.AppName.' ('.VERSION.')" />
 	<meta name="author" content="Joseph Gillotti &amp; friends" />
 	<!--[if lt IE 8]>
@@ -62,15 +61,10 @@ function showInfoHTML($info, $settings) {
 	<![endif]-->
 </head>
 <body id="info">
-<div class="header">
+<div id="header">
 	<h1>'.$info['HostName'].'</h1>
 	<div class="subtitle">'.$lang['header'].'</div>
 </div>
-<!--<div class="time">
-	<h1>'.date('H:i:s').'</h1>
-	<div class="subtitle">'.date('Y-m-d, T').'</div>
-</div>-->
-<br clear="all" />
 <div class="col2">
 	<div class="col">
 		<div class="infoTable">
@@ -798,14 +792,14 @@ function showInfoHTML($info, $settings) {
 
 	echo '
 <div id="foot">
-	'.sprintf($lang['footer_app'], '<a href="http://linfo.sf.net"><em>'.AppName.' ('.VERSION.')</em></a>',  round(microtime(true) - TIME_START,2)).'<br />
+	'.sprintf($lang['footer_app'], '<a href="http://linfo.sf.net"><em>'.AppName.' ('.VERSION.')</em></a>',  round(microtime(true) - TIME_START,2)).'<br>
 	<em>'.AppName.'</em> &copy; 2010 &ndash; 2011 Joseph Gillotti &amp; friends. Source code licensed under GPL.
 </div>
 <div id="foot_time">
 	<br />
 	Generated on '.date('m/d/y h:i A').'
 </div>
-<script type="text/javascript">Linfo.init()</script>
+<script>Linfo.init()</script>
 </body>
 </html>';
 
