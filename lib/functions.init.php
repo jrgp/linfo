@@ -116,9 +116,8 @@ function runExtensions(&$info, $settings) {
 	$info['extensions'] = array();
 	
 	// Are there any extensions configured?
-	if(empty($settings['extensions'])) {
+	if(!array_key_exists('extensions', $settings) || count($settings['extensions']) == 0) 
 		return;
-	}
 
 	// Go through each enabled extension
 	foreach((array)$settings['extensions'] as $ext => $enabled) {
