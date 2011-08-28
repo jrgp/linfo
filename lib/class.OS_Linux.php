@@ -669,6 +669,10 @@ class OS_Linux {
 			'/usr/share/hwdata/usb.ids',	// centos. maybe also redhat/fedora
 		));
 
+		// Did we not get them?
+		$pci_ids || $this->error->add('Linux Device Finder', 'Cannot find pci.ids; ensure pciutils is installed.');
+		$usb_ids || $this->error->add('Linux Device Finder', 'Cannot find usb.ids; ensure usbutils is installed.');
+
 		// Class that does it
 		$hw = new HW_IDS($usb_ids, $pci_ids);
 		$hw->work('linux');

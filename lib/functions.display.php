@@ -39,9 +39,8 @@ function showInfoHTML($info, $settings) {
 	$distro_icon = $info['OS'] == 'Linux' && is_array($info['Distro']) && $info['Distro']['name'] ? strtolower(str_replace(' ', '', $info['Distro']['name'])) : false;
 
 	// Start compressed output buffering
-	if (!isset($settings['compress_content']) || $settings['compress_content']) {
+	if (!isset($settings['compress_content']) || $settings['compress_content']) 
 		ob_start('ob_gzhandler');
-	}
 
 	// Proceed to letting it all out
 	echo '<!DOCTYPE html>

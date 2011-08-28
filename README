@@ -96,6 +96,10 @@ For other forms of output, aside from usual HTML, append the following to the UR
 Known issues:
  - OS support other than Linux/Windows is relatively meager at times
 
+Troubleshooting:
+ - Try setting $settings['show_errors'] to true in the config file to yield 
+   useful error messages. 
+
 Linux system temps/voltages/etc requirments:
  - Have hddtemp listening or periodically writing to syslog, and/or
  - Have mbmon listening, and/or
