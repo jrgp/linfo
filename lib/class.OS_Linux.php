@@ -281,6 +281,10 @@ class OS_Linux {
 
 			// Info here
 			$line = explode(':', $lines[$i], 2);
+
+			if (!array_key_exists(1, $line))
+				continue;
+
 			$key = trim($line[0]);
 			$value = trim($line[1]);
 
@@ -567,6 +571,25 @@ class OS_Linux {
 			if (count($hwmon_vals) > 0)
 				$return = array_merge($return, $hwmon_vals);
 		}
+
+		// Additional weird bullshit? In this case, laptop backlight percentage. lolwtf, right?
+		foreach ((array) @glob('/sys/devices/virtual/backlight/*/max_brightness', GLOB_NOSORT) as $bl) {
+			$dir = dirname($bl);
+			if (!is_file($dir.'/actual_brightness'))
+				continue;
+			$max = get_int_from_file($bl);
+			$cur = get_int_from_file($dir.'/actual_brightness');
+			if ($max < 0 || $cur < 0)
+				continue;
+			$return[] = array(
+				'name' => 'Backlight brightness',
+				'temp' => round($cur/$max, 2)*100,
+				'unit' => '%',
+				'path' => 'N/A',
+				'bar' => true
+			);
+		}
+
 
 		// Done
 		return $return;

@@ -285,7 +285,17 @@ function showInfoHTML($info, $settings) {
 					<tr>
 						<td>'.$stat['path'].'</td>
 						<td>'.$stat['name'].'</td>
-						<td>'.$stat['temp'].' '.$stat['unit'].'</td>
+						<td>'.(
+							array_key_exists('bar', $stat) && $stat['bar'] && $stat['unit'] == '%' ?
+							'<div class="bar_chart">
+								<div class="bar_inner" style="width: '.$stat['temp'].'%;">
+									<div class="bar_text">
+										'.($stat['temp'] > -1 ? $stat['temp']: '?').'%
+									</div>
+								</div>
+							</div>
+							': 
+						$stat['temp'].' '.$stat['unit']).'</td>
 					</tr>
 					';
 					}
@@ -315,7 +325,7 @@ function showInfoHTML($info, $settings) {
 							<div class="bar_chart">
 								<div class="bar_inner" style="width: '.(int) $bat['percentage'].'%;">
 									<div class="bar_text">
-										'.($bat['percentage'] > 0 ? $bat['percentage']: '?').'
+										'.($bat['percentage'] > -1 ? $bat['percentage']: '?').'
 									</div>
 								</div>
 							</div>
