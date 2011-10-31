@@ -82,8 +82,15 @@ if (empty($settings['language']) || !preg_match('/^[a-z]{2}$/', $settings['langu
 if (!is_file(LOCAL_PATH . 'lang/'.$settings['language'].'.php'))
 	$settings['language'] = 'en';
 	
-// Load translation
-require_once LOCAL_PATH . 'lang/'.$settings['language'].'.php';
+// Load translation, defaulting to english of keys are missing (assuming
+// we're not using english anyway and the english translation indeed exists)
+if (is_file(LOCAL_PATH . 'lang/en.php') && $settings['language'] != 'en') 
+	$lang = array_merge(get_var_from_file(LOCAL_PATH . 'lang/en.php', 'lang'), 
+		get_var_from_file(LOCAL_PATH . 'lang/'.$settings['language'].'.php', 'lang'));
+
+// Otherwise snag desired translation, be it english or a non-english without english to fall back on	
+else	
+	require_once LOCAL_PATH . 'lang/'.$settings['language'].'.php';
 
 // Bullshit happens if date.timezone isn't set in php 5.3+
 if (!ini_get('date.timezone')) 
