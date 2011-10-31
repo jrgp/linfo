@@ -86,6 +86,7 @@ $lang = array(
 	'area' => 'Area',
 	'time_taken' => 'Time taken to fetch',
 	'days' => 'days',
+	'years' => 'years',
 	'hours' => 'hours',
 	'minutes' => 'minutes',
 	'seconds' => 'seconds',
