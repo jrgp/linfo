@@ -384,7 +384,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 		}
 		
 		// Initially get interfaces themselves along with numerical stats
-		if (preg_match_all('/^(\w+\w)\s*\w+\s+<Link\#\w+>(?:\D+|\s+\w+:\w+:\w+:\w+:\w+:\w+\s+)(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+/m', $netstat, $netstat_match, PREG_SET_ORDER) == 0)
+		if (preg_match_all('/^(\w+\w)\*?\s*\w+\s+<Link\#\w+>(?:\D+|\s+\w+:\w+:\w+:\w+:\w+:\w+\s+)(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+/m', $netstat, $netstat_match, PREG_SET_ORDER) == 0)
 			return $return;
 
 		// Try using ifconfig to get states of the network interfaces
@@ -404,7 +404,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 					$current_nic = $m[1];
 
 				// Hopefully match its status
-				elseif ($current_nic && preg_match('/^\s+status: (\w+)$/', $line, $m) == 1) {
+				elseif ($current_nic && preg_match('/^\s+status: ([^\$]+)/', $line, $m) == 1) {
 					$statuses[$current_nic] = $m[1];
 					$current_nic = false;
 				}
@@ -445,6 +445,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 				break;
 				
 				case 'inactive':
+				case 'no carrier':
 					$state = 'down';
 				break;
 
