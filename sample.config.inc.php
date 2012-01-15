@@ -36,6 +36,10 @@ $settings['show']['devices'] = true; # Slow on old systems
 $settings['show']['model'] = true; # Model of system. Supported on certain OS's. ex: Macbook Pro
 $settings['show']['numLoggedIn'] = true; # Number of unqiue users with shells running (on Linux)
 
+// Sometimes a filesystem mount is mounted more than once. Only list the first one I see? 
+// (note, duplicates are not shown twice in the file system totals)
+$settings['show']['duplicate_mounts'] = true;
+
 // Disabled by default as they require extra config below
 $settings['show']['temps'] = false;
 $settings['show']['raid'] = false; 
