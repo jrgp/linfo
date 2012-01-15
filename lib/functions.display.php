@@ -569,10 +569,13 @@ function showInfoHTML($info, $settings) {
 					$total_size += $mount['size'];
 					$total_used += $mount['used'];
 					$total_free += $mount['free'];
-					if (!empty($mount['device'])) {
+					if (!empty($mount['device'])) 
 						$done_devices[] = $mount['device'];
-					}
 				}
+
+				// Possibly don't show this twice
+				else if (array_key_exists('duplicate_mounts', $settings['show']) && empty($settings['show']['duplicate_mounts']))
+					continue;
 
 				// If it's an NFS mount it's likely in the form of server:path (without a trailing slash), 
 				// but if the path is just / it likely just shows up as server:,
