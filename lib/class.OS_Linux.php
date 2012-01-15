@@ -215,9 +215,9 @@ class OS_Linux {
 		// Get individual vals
 		$return['type'] = 'Physical';
 		$return['total'] = $memVals['MemTotal']*1024;
-		$return['free'] = $memVals['MemFree']*1024;
+		$return['free'] = $memVals['MemFree']*1024 + $memVals['Cached']*1024+ $memVals['Buffers']*1024;
 		$return['swapTotal'] = $memVals['SwapTotal']*1024;
-		$return['swapFree'] = $memVals['SwapFree']*1024;
+		$return['swapFree'] = $memVals['SwapFree']*1024 + $memVals['SwapCached']*1024;
 		$return['swapCached'] = $memVals['SwapCached']*1024;
 		$return['swapInfo'] = $swapVals;
 
