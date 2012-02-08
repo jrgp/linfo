@@ -937,7 +937,7 @@ class OS_Linux {
 					continue 2;
 
 			// Get these from the simple text files
-			$charge_full = is_file($b.'/charge_full_design') ? get_int_from_file($b.'/charge_full_design') : get_int_from_file($b.'/charge_full');
+			$charge_full = get_int_from_file($b.'/charge_full');
 			$charge_now = get_int_from_file($b.'/charge_now');
 
 
