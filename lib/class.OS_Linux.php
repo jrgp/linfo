@@ -934,18 +934,20 @@ class OS_Linux {
 			// Fuck pointless cuntshit
 			foreach(array($b.'/manufacturer', $b.'/status', $b.'/charge_now') as $f)
 				if (!is_file($f))
-					continue 2;
+					continue 2; // Continue out of two nested loops
 
 			// Get these from the simple text files
 			$charge_full = get_int_from_file($b.'/charge_full');
 			$charge_now = get_int_from_file($b.'/charge_now');
 
+			// Alleged percentage
+			$percentage = $charge_now != 0 && $charge_full != 0 ? (round($charge_now / $charge_full, 4) * 100) : '?';
 
 			// Save result set
 			$return[] = array(
 				'charge_full' => $charge_full,
 				'charge_now' => $charge_now,
-				'percentage' => ($charge_now != 0 && $charge_full != 0 ? (round($charge_now / $charge_full, 4) * 100) : '?').'%',
+				'percentage' => (is_numeric($percentage) && $percentage > 100 ? 100 : $percentage ).'%',
 				'device' => getContents($b.'/manufacturer') . ' ' . getContents($b.'/model_name', 'Unknown'),
 				'state' => getContents($b.'/status', 'Unknown')
 			);
