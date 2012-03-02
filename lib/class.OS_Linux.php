@@ -931,10 +931,15 @@ class OS_Linux {
 		// Get vals for each battery
 		foreach ($bats as $b) {
 
+			$go_for_it = true;
+
 			// Fuck pointless cuntshit
 			foreach(array($b.'/manufacturer', $b.'/status', $b.'/charge_now') as $f)
 				if (!is_file($f))
-					continue 2; // Continue out of two nested loops
+					$go_for_it = false; // Continue out of two nested loops
+
+			if (!$go_for_it) 
+				continue;
 
 			// Get these from the simple text files
 			$charge_full = get_int_from_file($b.'/charge_full');
