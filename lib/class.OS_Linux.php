@@ -573,7 +573,7 @@ class OS_Linux {
 		}
 
 		// Additional weird bullshit? In this case, laptop backlight percentage. lolwtf, right?
-		foreach ((array) @glob('/sys/devices/virtual/backlight/*/max_brightness', GLOB_NOSORT) as $bl) {
+		foreach ((array) @glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', GLOB_NOSORT | GLOB_BRACE) as $bl) {
 			$dir = dirname($bl);
 			if (!is_file($dir.'/actual_brightness'))
 				continue;
@@ -589,7 +589,6 @@ class OS_Linux {
 				'bar' => true
 			);
 		}
-
 
 		// Done
 		return $return;
