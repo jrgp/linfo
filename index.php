@@ -136,6 +136,7 @@ else {
 
 		// JSON
 		case 'json':
+		case 'jsonp':	// To use JSON-P, pass the GET arg - callback=function_name
 			showInfoJSON($info, $settings);
 		break;
 
