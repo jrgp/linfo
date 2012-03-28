@@ -1124,18 +1124,19 @@ function showInfoHTML($info, $settings) {
 		return;
 	}
 	
-	header("Content-Type: application/json");
+	header('Content-Type: application/json');
 
 	// Output buffering, along with compression (if supported)
-	if (!isset($settings['compress_content']) || $settings['compress_content']) {
+	if (!isset($settings['compress_content']) || $settings['compress_content']) 
 		ob_start('ob_gzhandler');
-	}
+	
 
-	// Give it
-	echo json_encode($info);
+	// Give it. Support JSON-P like functionality if the ?callback param looks like a valid javascript
+	// function name, including object traversal.
+	echo array_key_exists('callback', $_GET) && preg_match('/^[a-z0-9\_\.]+$/i', $_GET['callback']) ?
+		$_GET['callback'].'('.json_encode($info).')' : json_encode($info);
 
 	// Send it all out
-	if (!isset($settings['compress_content']) || $settings['compress_content']) {
+	if (!isset($settings['compress_content']) || $settings['compress_content']) 
 		ob_end_flush();
-	}
  }
