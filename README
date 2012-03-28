@@ -89,12 +89,10 @@ Installation/usage:
 For other forms of output, aside from usual HTML, append the following to the URL:
  - ?out=xml - XML output (requires SimpleXML extension)
  - ?out=json - JSON output
+ - ?out=jsonp&callback=functionName - JSON output with a function callback. (Look here: http://www.json-p.org/ )
  - ?out=php_array - PHP serialized associative array
  - ?out=html - Usual lightweight HTML (default)
  - ncurses (very alpha) - call ./linfo from the CLI. It will attempt to use http://php.net/manual/en/book.ncurses.php 
-
-Known issues:
- - OS support other than Linux/Windows is relatively meager at times
 
 Troubleshooting:
  - Try setting $settings['show_errors'] to true in the config file to yield 
@@ -118,6 +116,7 @@ TODO:
 Please send suggestions, patches (diffs), translations, help requests, comments, complaints, beer, pizza, and hookers to:
  - joe@u13.net 
  - IRC - #linfo @ freenode
+ - Please email to joe@u13.net instead of contacting me over SourceForge.
 
 License: GNU General Public License
 Author/project leader: Joseph Robert Gillotti <joe@u13.net>
