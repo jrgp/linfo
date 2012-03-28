@@ -805,7 +805,7 @@ function showInfoHTML($info, $settings) {
 	echo '
 <div id="foot">
 	'.sprintf($lang['footer_app'], '<a href="http://linfo.sf.net"><em>'.AppName.' ('.VERSION.')</em></a>',  round(microtime(true) - TIME_START,2)).'<br>
-	<em>'.AppName.'</em> &copy; 2010 &ndash; '.date('Y').' Joseph Gillotti &amp; friends. Source code licensed under GPL.
+	<em>'.AppName.'</em> &copy; 2010 &ndash; '.(date('Y') > 2011 ? date('Y') : 2011).' Joseph Gillotti &amp; friends. Source code licensed under GPL.
 </div>
 <div id="foot_time">
 	<br />
@@ -816,9 +816,8 @@ function showInfoHTML($info, $settings) {
 </html>';
 
 	// End output buffering
-	if (!isset($settings['compress_content']) || $settings['compress_content']) {
+	if (!isset($settings['compress_content']) || $settings['compress_content']) 
 		ob_end_flush();
-	}
 }
 
 
