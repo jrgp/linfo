@@ -305,7 +305,7 @@ class OS_Darwin extends OS_BSD_Common{
 			return '';
 
 		// Get it textual, as in days/minutes/hours/etc
-		return seconds_convert(time() - $m[1]) . '; booted ' . date('m/d/y h:i A', $booted);
+		return seconds_convert(time() - $m[1]) . '; booted ' . date('m/d/y h:i A', $m[1]);
 	}
 	
 	// Get system load
