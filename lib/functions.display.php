@@ -105,7 +105,7 @@ function showInfoHTML($info, $settings) {
 		$cpus = '';
 		foreach ((array) $info['CPU'] as $cpu) 
 			$cpus .=
-				(array_key_exists('Vendor', $cpu) ? $cpu['Vendor'] . ' - ' : '') .
+				(array_key_exists('Vendor', $cpu) && !empty($cpu['Vendor']) ? $cpu['Vendor'] . ' - ' : '') .
 				$cpu['Model'] .
 				(array_key_exists('MHz', $cpu) ?
 					($cpu['MHz'] < 1000 ? ' ('.$cpu['MHz'].' MHz)' : ' ('.round($cpu['MHz'] / 1000, 3).' GHz)') : '') .
@@ -239,7 +239,7 @@ function showInfoHTML($info, $settings) {
 
 	// Network Devices?
 	if (!empty($settings['show']['network'])) {
-		$show_type = array_key_exists('nic_type', $info['contains']) ? ($info['contains']['nic_type'] === false ? false : true) : true;
+		$show_type = array_key_exists('nic_type', $info['contains']) ? $info['contains']['nic_type'] : true;
 		echo '
 		<div class="infoTable">
 			<h2>'.$lang['network_devices'].'</h2>
@@ -851,7 +851,7 @@ function showInfoHTML($info, $settings) {
 			$cpus = '';
 			foreach ((array) $info['CPU'] as $cpu) 
 				$cpus .=
-					(array_key_exists('Vendor', $cpu) ? $cpu['Vendor'] . ' - ' : '') .
+					(array_key_exists('Vendor', $cpu) && empty($cpu['Vendor']) ? $cpu['Vendor'] . ' - ' : '') .
 					$cpu['Model'] .
 					(array_key_exists('MHz', $cpu) ?
 						($cpu['MHz'] < 1000 ? ' ('.$cpu['MHz'].' MHz)' : ' ('.round($cpu['MHz'] / 1000, 3).' GHz)') : '') .
