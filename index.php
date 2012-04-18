@@ -96,6 +96,10 @@ else
 if (!ini_get('date.timezone')) 
 	@ini_set('date.timezone', 'Etc/UTC');
 
+// Don't just blindly assume we have the ob_* functions...
+if (!function_exists('ob_start'))
+	$settings['compress_content'] = false;
+
 // Determine our OS
 $os = determineOS();
 

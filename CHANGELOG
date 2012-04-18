@@ -62,3 +62,4 @@ v1.9 - ?/?/????
  - HTML 5
  - More accurate memory usage since caches are omitted
  - JSON-P
+ - Won't barf if ob_start or ob_gzhandler don't exist
