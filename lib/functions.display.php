@@ -40,7 +40,7 @@ function showInfoHTML($info, $settings) {
 
 	// Start compressed output buffering
 	if (!isset($settings['compress_content']) || $settings['compress_content']) 
-		ob_start('ob_gzhandler');
+		ob_start(function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
 
 	// Proceed to letting it all out
 	echo '<!DOCTYPE html>
@@ -1127,7 +1127,7 @@ function showInfoHTML($info, $settings) {
 
 	// Output buffering, along with compression (if supported)
 	if (!isset($settings['compress_content']) || $settings['compress_content']) 
-		ob_start('ob_gzhandler');
+		ob_start(function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
 	
 
 	// Give it. Support JSON-P like functionality if the ?callback param looks like a valid javascript
