@@ -200,7 +200,7 @@ class OS_Linux {
 			$memVals[$memInfo[1]] = $memInfo[2];
 
 		// Get swapContents
-		@preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)[^$]*$/m', getContents($procFileSwap), $matches, PREG_SET_ORDER);
+		@preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)/m', getContents($procFileSwap), $matches, PREG_SET_ORDER);
 		foreach ((array)$matches as $swapDevice) {
 			
 			// Append each swap device
