@@ -46,17 +46,17 @@ function showInfoHTML($info, $settings) {
 	echo '<!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8" />
+	<meta charset="UTF-8">
 	<title>'.AppName.' - '.$info['HostName'].'</title>
-	<link href="'.WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon" />
-	<link href="'.WEB_PATH.'layout/styles.css" rel="stylesheet" />'.( $show_icons ? '
-	<link href="'.WEB_PATH.'layout/icons.css" rel="stylesheet" />' : ''
+	<link href="'.WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon">
+	<link href="'.WEB_PATH.'layout/styles.css" rel="stylesheet">'.( $show_icons ? '
+	<link href="'.WEB_PATH.'layout/icons.css" rel="stylesheet">' : ''
 	).'
 	<script src="'.WEB_PATH.'layout/scripts.min.js"></script>
-	<meta name="generator" content="'.AppName.' ('.VERSION.')" />
-	<meta name="author" content="Joseph Gillotti &amp; friends" />
+	<meta name="generator" content="'.AppName.' ('.VERSION.')">
+	<meta name="author" content="Joseph Gillotti &amp; friends">
 	<!--[if lt IE 8]>
-	<link href="'.WEB_PATH.'layout/old_ie.css" type="text/css" rel="stylesheet" />
+	<link href="'.WEB_PATH.'layout/old_ie.css" type="text/css" rel="stylesheet">
 	<![endif]-->
 </head>
 <body id="info">

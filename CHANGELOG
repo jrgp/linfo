@@ -64,3 +64,4 @@ v1.9 - ?/?/????
  - JSON-P
  - Won't barf if ob_start or ob_gzhandler don't exist
  - Better OpenBSD support
+ - Added Chinese/Finish/Italian tarnslations
