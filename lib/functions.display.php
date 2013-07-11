@@ -805,11 +805,12 @@ function showInfoHTML($info, $settings) {
 	echo '
 <div id="foot">
 	'.sprintf($lang['footer_app'], '<a href="http://linfo.sf.net"><em>'.AppName.' ('.VERSION.')</em></a>',  round(microtime(true) - TIME_START,2)).'<br>
-	<em>'.AppName.'</em> &copy; 2010 &ndash; '.(date('Y') > 2011 ? date('Y') : 2011).' Joseph Gillotti &amp; friends. Source code licensed under GPL.
+	<em>'.AppName.'</em> &copy; 2010 &ndash; '.(date('Y') > 2011 ? date('Y') : 2011).'
+	Joseph Gillotti '.(date('m/d') == '06/03' ? ' (who turns '.(date('Y') - 1993).' today!)' : '').'&amp; friends. Source code licensed under GPL.
 </div>
 <div id="foot_time">
 	<br />
-	Generated on '.date('m/d/y h:i A').'
+	Generated on '.date($settings['dates']).'
 </div>
 <script>Linfo.init()</script>
 </body>

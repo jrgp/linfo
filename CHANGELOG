@@ -54,7 +54,7 @@ v1.8 - 4/7/2011
 v1.8.1 - 4/7/2011
  - Bugfix
 
-v1.9 - ?/?/????
+v1.9 - 7/10/2013
  - Number of users logged in (with active shells)
  - Bugfixes
  - Default to UTC if timezone isn't set, instead of letting php5.3
@@ -64,4 +64,5 @@ v1.9 - ?/?/????
  - JSON-P
  - Won't barf if ob_start or ob_gzhandler don't exist
  - Better OpenBSD support
- - Added Chinese/Finish/Italian tarnslations
+ - Added Chinese/Finish/Italian translations
+ - Date format customizable in config

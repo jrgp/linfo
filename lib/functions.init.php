@@ -38,8 +38,12 @@ function __autoload($class) {
 		exit('File for '.$file.' not found');
 	
 	// Make sure we have it
-	if (!class_exists($class))
-		exit('Class '.$class.' not found in '.$file);
+	if (!class_exists($class)) {
+		if ($class == 'COM')
+			exit('You need to enable PHP\'s COM extension');
+		else
+			exit('Class '.$class.' not found in '.$file);
+	}
 }
 
 
