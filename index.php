@@ -74,6 +74,9 @@ require_once LOCAL_PATH . 'lib/functions.display.php';
 require_once LOCAL_PATH . 'lib/class.LinfoTimer.php';
 require_once LOCAL_PATH . 'lib/interface.LinfoExtension.php';
 
+// Default timeformat
+$settings['dates'] = array_key_exists('dates', $settings) ? $settings['dates'] : 'm/d/y h:i A (T)';
+
 // Default to english translation if garbage is passed
 if (empty($settings['language']) || !preg_match('/^[a-z]{2}$/', $settings['language']))
 	$settings['language'] = 'en';

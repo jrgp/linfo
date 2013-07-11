@@ -63,6 +63,9 @@ Global System requirements:
    and preg_match_all(). You most likely already have this.
  - note: PCRE is Linfo's only php requirement :)
 
+Windows system requirements:
+ - You need to have COM enabled - http://www.php.net/manual/en/class.com.php
+
 Linux system requirements:
  - /proc and /sys mounted appropriately, and readable by PHP
  - Tested with the 2.6 series of kernels. I'm not sure if it works with older ones.

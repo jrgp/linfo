@@ -361,7 +361,7 @@ class OS_Linux {
 		list(, $boot) = $boot;
 
 		// Return
-		return $uptime . '; booted '.date('m/d/y h:i A', $boot);
+		return $uptime . '; booted '.date($this->settings['dates'], $boot);
 	}
 
 	/**
