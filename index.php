@@ -27,7 +27,7 @@ if (isset($argc) && is_array($argv))
 
 // Version
 define('AppName', 'Linfo');
-define('VERSION', 'svn');
+define('VERSION', 'git');
 
 // Anti hack, as in allow included files to ensure they were included
 define('IN_INFO', true);

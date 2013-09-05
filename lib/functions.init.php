@@ -151,7 +151,7 @@ function runExtensions(&$info, $settings) {
 
 		// Handle version checking
 		$min_version = defined($class.'::LINFO_MIN_VERSION') ? constant($class.'::LINFO_MIN_VERSION') : false; 
-		if ($min_version !== false && strtolower(VERSION) != 'svn' && !version_compare(VERSION, $min_version, '>=')) {
+		if ($min_version !== false && strtolower(VERSION) != 'git' && !version_compare(VERSION, $min_version, '>=')) {
 			LinfoError::Fledging()->add('Extension Loader', '"'.$ext.'" extension requires at least Linfo v'.$min_version);
 			continue;
 		}
