@@ -1,6 +1,6 @@
-Linfo - PHP server health/information script
+# Linfo - PHP server health/information script 
 
-Currently runs on:
+### Currently runs on:
  - Linux
  - FreeBSD
  - NetBSD
@@ -12,7 +12,7 @@ Currently runs on:
  - CYGWIN (useless proof of concept)
  - Windows
 
-Stuff it reports (all 100% optional; see config file):
+### Stuff it reports (all 100% optional; see config file):
  - CPU type/speed; Architecture
  - Mount point usage
  - Hard/optical/flash drives
@@ -34,12 +34,12 @@ Stuff it reports (all 100% optional; see config file):
    - IPMI
    - more
 
-Etymology:
+### Etymology:
  - The name 'Linfo' was decided upon before I intended it to be cross platform.
    It was originally only going to be for Linux, and hence I called it Linux-Info,
    and Linfo sounded really catchy. It stuck.
 
-Goals: 
+### Goals: 
  - Provide info such as disk space, temperatures, cpu, ram, etc
  - Be very fast; generation in under a second is most desired.
  - Call very few external programs (like df/load/uptime/etc), if any. (parse
@@ -53,11 +53,11 @@ Goals:
    not names and command line arguments given to running programs.
  - Don't use blatantly slow methods such as preg_split(), especially not in loops
 
-Usable clients:
+### Usable clients:
  - Any web browser should work, including text only ones
  - Tested with: Firefox (1.x+), iOS Safari, Chrome, IE (6+), Opera, Lynx, Elinks, Dillo
 
-Global System requirements: 
+### Global System requirements: 
  - At least PHP 5
  - Access to php's preg (PCRE) library, specifically preg_match() 
    and preg_match_all(). You most likely already have this.
@@ -83,7 +83,7 @@ OpenBSD system requirements/notes:
  - Known to work under OpenBSD 4.7; older versions may work
  - It will not work under the default httpd chroot
 
-Installation/usage:
+### Installation/usage:
  1) Extract tarball contents to somewhere under your web root
  2) Rename sample.config.inc.php to config.inc.php, after optionally changing values in it
  3) Visit page in web browser
@@ -111,7 +111,7 @@ Linux system temps/voltages/etc requirments:
 For cups/samba/truecrypt support:
  - Look at the extensions part of the site
 
-TODO:
+### TODO:
  - Support for other Unix operating systems (Hurd, IRIX, AIX, HP UX, etc)
  - Support for strange operating systems: Haiku/BeOS
  - More superfluous features/extensions
