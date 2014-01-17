@@ -42,6 +42,18 @@ function showInfoHTML($info, $settings) {
 	if (!isset($settings['compress_content']) || $settings['compress_content']) 
 		ob_start(function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
 
+	// See if we have a specific theme file installed
+	if (isset($settings['theme']) && strpos($settings['theme'], '..') === false && file_exists('layout/theme_'.$settings['theme'].'.css'))
+		$theme_css = 'theme_'.$settings['theme'].'.css';
+
+	// Does default exist?? Don't bitch at me for assigning an array key in an if-then
+	elseif (($settings['theme'] = 'default') && file_exists('layout/theme_'.$settings['theme'].'.css'))
+		$theme_css = 'theme_'.$settings['theme'].'.css';
+
+	// if not, do the old way
+	else
+		$theme_css = 'styles.css';
+
 	// Proceed to letting it all out
 	echo '<!DOCTYPE html>
 <html>
@@ -49,7 +61,7 @@ function showInfoHTML($info, $settings) {
 	<meta charset="UTF-8">
 	<title>'.AppName.' - '.$info['HostName'].'</title>
 	<link href="'.WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon">
-	<link href="'.WEB_PATH.'layout/styles.css" rel="stylesheet">'.( $show_icons ? '
+	<link href="'.WEB_PATH.'layout/'.$theme_css.'" rel="stylesheet">'.( $show_icons ? '
 	<link href="'.WEB_PATH.'layout/icons.css" rel="stylesheet">' : ''
 	).'
 	<script src="'.WEB_PATH.'layout/scripts.min.js"></script>

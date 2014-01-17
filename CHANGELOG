@@ -66,3 +66,8 @@ v1.9 - 7/10/2013
  - Better OpenBSD support
  - Added Chinese/Finish/Italian translations
  - Date format customizable in config
+
+v1.10 ?/?/????
+ - Regex filtering for filesystem mountpoints
+ - Fixed redhat icon
+ - Multiple color scheme support
