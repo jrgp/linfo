@@ -63,6 +63,9 @@ $settings['hide']['filesystems'] = array(
 	'usbfs', 'devpts', 'fusectl', 'securityfs', 'fuse.truecrypt');
 $settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none');
 
+// filter mountpoints based on PCRE regex, eg '@^/proc@', '@^/sys@', '@^/dev@'
+$settings['hide']['mountpoints_regex'] = array();
+
 // Hide mount options for these file systems. (very, very suggested, especially the ecryptfs ones)
 $settings['hide']['fs_mount_options'] = array('ecryptfs');
 

@@ -1,2 +1,4 @@
 config.inc.php
 *.swo
+*.swp
+cache/*.json

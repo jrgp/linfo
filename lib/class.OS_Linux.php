@@ -630,6 +630,14 @@ class OS_Linux {
 			// Should we not show this?
 			if (in_array($mount[1], $this->settings['hide']['storage_devices']) || in_array($mount[3], $this->settings['hide']['filesystems']))
 				continue;
+
+			// Should we not show this? (regex)
+			if (is_array($this->settings['hide']['mountpoints_regex'])) {
+				foreach ($this->settings['hide']['mountpoints_regex'] as $regex) {
+					if (@preg_match($regex, $mount[2])) 
+						continue 2;
+				}
+			}
 			
 			// Spaces and other things in the mount path are escaped C style. Fix that.
 			$mount[2] = stripcslashes($mount[2]);
