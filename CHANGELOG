@@ -67,7 +67,7 @@ v1.9 - 7/10/2013
  - Added Chinese/Finish/Italian translations
  - Date format customizable in config
 
-v1.10 ?/?/????
+v1.10 1/17/2014
  - Regex filtering for filesystem mountpoints
  - Fixed redhat icon
  - Multiple color scheme support

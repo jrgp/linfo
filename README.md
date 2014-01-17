@@ -41,7 +41,7 @@
 
 ### Goals: 
  - Provide info such as disk space, temperatures, cpu, ram, etc
- - Be very fast; generation in under a second is most desired.
+ - Be very fast on very old hardware; generation in under a second is most desired.
  - Call very few external programs (like df/load/uptime/etc), if any. (parse
    the file system for info, if possible)
  - Linux version doesn't use external programs *at all* and rely exclusively on
