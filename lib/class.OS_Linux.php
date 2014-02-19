@@ -1315,7 +1315,7 @@ class OS_Linux {
 			
 			// This snags ubuntu and other distros which use the lsb method of identifying themselves
 			array('/etc/lsb-release','/^DISTRIB_ID=([^$]+)$\n^DISTRIB_RELEASE=([^$]+)$\n^DISTRIB_CODENAME=([^$]+)$\n/m', false),
-			
+
 			// These working snag versions
 			array('/etc/redhat-release', '/^CentOS release ([\d\.]+) \(([^)]+)\)$/', 'CentOS'),
 			array('/etc/redhat-release', '/^Red Hat.+release (\S+) \(([^)]+)\)$/', 'RedHat'),
@@ -1342,6 +1342,11 @@ class OS_Linux {
 			array('/etc/linuxppc-release ', '', 'Linux-PPC'),
 			array('/etc/mklinux-release ', '', 'MkLinux'),
 			array('/etc/nld-release ', '', 'NovellLinuxDesktop'),
+
+			// Shut up; I know this is fugly as all shit. I'd use a closure but that kills php <5.4
+			array('/etc/os-release', create_function('$ini', '
+				$info = @parse_ini_string($ini); return $info && isset($info["ID"]) && isset($info["VERSION"]) ?
+					array("distro" => ucfirst($info["ID"]), "version" => $info["VERSION"]) : false;'), false),
 
 			// Leave this since debian derivitives might have it in addition to their own file
 			// If it's last it ensures nothing else has it and thus it should be normal debian
@@ -1386,6 +1391,14 @@ class OS_Linux {
 					return array(
 						'name' => $distro[2],
 						'version' => $m[1] . (isset($m[2]) ? ' ('.$m[2].')' : '')
+					);
+				}
+
+				// Closure shit
+				elseif(is_callable($distro[1]) && ($info = $distro[1](getContents($distro[0]))) && is_array($info)) {
+					return array(
+						'name' => $info['distro'],
+						'version' => $info['version']
 					);
 				}
 			}
