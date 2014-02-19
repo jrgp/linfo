@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Linfo (c) 2010-2013 Joseph Gillotti.
+ * This file is part of Linfo (c) 2010-2015 Joseph Gillotti.
  * 
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ define('LOCAL_PATH', dirname(__FILE__) . '/');
 define('CACHE_PATH', dirname(__FILE__) . '/cache/');
 
 // Configure absolute path to web directory
-define('WEB_PATH', substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '/')+1));
+define('WEB_PATH', !defined('LINFO_CLI') ? substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '/')+1) : './');
 
 // If configuration file does not exist but the sample does, say so
 if (!is_file(LOCAL_PATH . 'config.inc.php') && is_file(LOCAL_PATH . 'sample.config.inc.php'))
