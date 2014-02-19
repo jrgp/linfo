@@ -38,8 +38,8 @@ function showInfoHTML($info, $settings) {
 	$os_icon = defined('IS_WINDOWS') ? 'windows' : strtolower(str_replace(' ', '', current(explode('(', $info['OS']))));
 	$distro_icon = $info['OS'] == 'Linux' && is_array($info['Distro']) && $info['Distro']['name'] ? strtolower(str_replace(' ', '', $info['Distro']['name'])) : false;
 
-	// Start compressed output buffering
-	if (!isset($settings['compress_content']) || $settings['compress_content']) 
+	// Start compressed output buffering. Try to not do this if we've had errors or otherwise already outputted stuff
+	if ((!function_exists('error_get_last') || !error_get_last()) && (!isset($settings['compress_content']) || $settings['compress_content']))
 		ob_start(function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
 
 	// See if we have a specific theme file installed
@@ -828,9 +828,6 @@ function showInfoHTML($info, $settings) {
 </body>
 </html>';
 
-	// End output buffering
-	if (!isset($settings['compress_content']) || $settings['compress_content']) 
-		ob_end_flush();
 }
 
 
