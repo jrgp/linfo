@@ -477,8 +477,8 @@ class OS_Darwin extends OS_BSD_Common{
 		$bat = array();
 		$in_bat_field = false;
 
-		for ($i = 0, $num_lines = count($lines); $i < $num_lines; $i++) {
-			if (preg_match('/^\s+Battery Information/', $lines[$i])) {
+		foreach ($lines as $line) {
+			if (preg_match('/^\s+Battery Information/', $line)) {
 				$in_bat_field = true;
 				continue;
 			}
@@ -486,19 +486,19 @@ class OS_Darwin extends OS_BSD_Common{
 				$in_bat_field = false;
 				break;
 			}
-			elseif ($in_bat_field && preg_match('/^\s+Fully charged: ([a-zA-Z]+)/i', $lines[$i], $m)) 
+			elseif ($in_bat_field && preg_match('/^\s+Fully charged: ([a-zA-Z]+)/i', $line, $m))
 				$bat['charged'] = $m[1] == 'Yes';
-			elseif ($in_bat_field && preg_match('/^\s+Charging: ([a-zA-Z]+)/i', $lines[$i], $m)) 
+			elseif ($in_bat_field && preg_match('/^\s+Charging: ([a-zA-Z]+)/i', $line, $m))
 				$bat['charging'] = $m[1] == 'Yes';
-			elseif($in_bat_field && preg_match('/^\s+Charge remaining \(mAh\): (\d+)/i', $lines[$i], $m)) 
+			elseif($in_bat_field && preg_match('/^\s+Charge remaining \(mAh\): (\d+)/i', $line, $m))
 				$bat['charge_now'] = (int) $m[1];
-			elseif($in_bat_field && preg_match('/^\s+Full charge capacity \(mAh\): (\d+)/i', $lines[$i], $m)) 
+			elseif($in_bat_field && preg_match('/^\s+Full charge capacity \(mAh\): (\d+)/i', $line, $m))
 				$bat['charge_full'] = (int) $m[1];
-			elseif($in_bat_field && preg_match('/^\s+Serial Number: ([A-Z0-9]+)/i', $lines[$i], $m)) 
+			elseif($in_bat_field && preg_match('/^\s+Serial Number: ([A-Z0-9]+)/i', $line, $m))
 				$bat['serial'] = $m[1];
-			elseif($in_bat_field && preg_match('/^\s+Manufacturer: (\w+)/i', $lines[$i], $m)) 
+			elseif($in_bat_field && preg_match('/^\s+Manufacturer: (\w+)/i', $line, $m))
 				$bat['vendor'] = $m[1];
-			elseif($in_bat_field && preg_match('/^\s+Device name: (\w+)/i', $lines[$i], $m)) 
+			elseif($in_bat_field && preg_match('/^\s+Device name: (\w+)/i', $line, $m))
 				$bat['name'] = $m[1];
 		}
 
