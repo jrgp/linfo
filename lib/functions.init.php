@@ -130,6 +130,12 @@ function runExtensions(&$info, $settings) {
 		if (empty($enabled)) 
 			continue;
 
+		// Anti hack
+		if (!preg_match('/^[a-z0-9-_]+$/i', $ext)) {
+			LinfoError::Fledging()->add('Extension Loader', 'Not going to load "'.$ext.'" extension as only characters allowed in name are letters/numbers/-_');
+			continue;
+		}
+
 		// Does the file exist? load it then
 		if (file_exists(LOCAL_PATH . 'lib/class.ext.'.$ext.'.php'))
 			require_once LOCAL_PATH . 'lib/class.ext.'.$ext.'.php';

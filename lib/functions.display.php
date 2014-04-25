@@ -160,11 +160,11 @@ function showInfoHTML($info, $settings) {
 		$core[] = array($lang['numLoggedIn'], $info['numLoggedIn']);
 
 	// Show
-	for ($i = 0, $core_num = count($core); $i < $core_num; $i++) {
+	foreach ($core as $val) {
 		echo '
 				<tr>
-					<th>'.$core[$i][0].'</th>
-					<td>'.$core[$i][1].'</td>
+					<th>'.$val[0].'</th>
+					<td>'.$val[1].'</td>
 				</tr>
 				';
 	}
@@ -611,9 +611,9 @@ function showInfoHTML($info, $settings) {
 					<td>'.(empty($mount['options']) ? '<em>unknown</em>' : '<ul><li>'.implode('</li><li>', $mount['options']).'</li></ul>').'</td>' : '','
 					<td>'.byte_convert($mount['size']).'</td>
 					<td>'.byte_convert($mount['used']).
-					' <span class="perc">('.($mount['used_percent'] !== false ? $mount['used_percent'] : 'N/A').'%)</span></td>
+					($mount['used_percent'] !== false ? ' <span class="perc">('.$mount['used_percent'].'%)</span>' : '').'</td>
 					<td>'.byte_convert($mount['free']).
-					' <span class="perc">('.($mount['free_percent'] !== false ? $mount['free_percent'] : 'N/A').'%)</span></td>	
+					($mount['free_percent'] !== false ? ' <span class="perc">('.$mount['free_percent'].'%)</span>' : '').'</td>
 					<td>
 						<div class="bar_chart">
 							<div class="bar_inner" style="width: '.(int) $mount['used_percent'].'%;">
