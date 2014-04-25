@@ -289,10 +289,8 @@ function showInfoHTML($info, $settings) {
 			<table>
 				<tr><th>'.$lang['path'].'</th><th>'.$lang['device'].'</th><th>'.$lang['value'].'</th></tr>
 				';
-			$num_temps = count($info['Temps']);
-			if ($num_temps > 0) {
-					for($i = 0; $i < $num_temps; $i++) {
-					$stat = $info['Temps'][$i];
+			if (count($info['Temps']) > 0) {
+					foreach ($info['Temps'] as $stat) {
 					echo '
 					<tr>
 						<td>'.$stat['path'].'</td>
@@ -926,11 +924,11 @@ function showInfoHTML($info, $settings) {
 		// TEMPS
 		if (!empty($settings['show']['temps']) && count($info['Temps']) > 0) {
 			$temps = $xml->addChild('temps');
-			for($i = 0, $num_temps = count($info['Temps']); $i < $num_temps; $i++) {
+			foreach ($info['Temps'] as $stat) {
 				$temp = $temps->addChild('temp');
-				$temp->addAttribute('path', $info['Temps'][$i]['path']);
-				$temp->addAttribute('name', $info['Temps'][$i]['name']);
-				$temp->addAttribute('temp', $info['Temps'][$i]['temp'].' '.$info['Temps'][$i]['unit']);
+				$temp->addAttribute('path', $stat['path']);
+				$temp->addAttribute('name', $stat['name']);
+				$temp->addAttribute('temp', $stat['temp'].' '.$stat['unit']);
 			}
 		}
 

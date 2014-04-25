@@ -118,12 +118,13 @@ For cups/samba/truecrypt/extension support:
  - More superfluous features/extensions
 
 Please send suggestions, patches (diffs), translations, help requests, comments, complaints, beer, pizza, and hookers to:
- - joe@u13.net 
+ - joe@u13.net  (I promise I'll reply)
  - IRC - #linfo @ freenode
  - Please email to joe@u13.net instead of contacting me over SourceForge.
 
 License: GNU General Public License
-Author/project leader: Joseph Robert Gillotti <joe@u13.net>
-Additional author(s): (See AUTHORS)
-URL: https://github.com/jrgp/linfo
-Favicon and sexy colors by: Lee Bradley
+Author/project leader: Joe Gillotti <joe@u13.net>
+Additional author(s): See AUTHORS
+Github URL: https://github.com/jrgp/linfo
+Sourceforge Project: https://sourceforge.net/projects/linfo
+Favicon and default colors by: Lee Bradley

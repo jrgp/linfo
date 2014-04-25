@@ -85,11 +85,7 @@ class GetHddTemp {
 		$return = array();
 
 		// Go through each
-		$num_drives = count($drives);
-		for($i = 0; $i < $num_drives; $i++) {
-
-			// This drive
-			$drive = $drives[$i];
+		foreach ($drives as $drive) {
 
 			// Extract stuff from it
 			list($path, $name, $temp, $unit) = explode('|', trim($drive));

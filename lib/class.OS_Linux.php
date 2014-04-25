@@ -381,26 +381,18 @@ class OS_Linux {
 		$partitions_contents = getContents('/proc/partitions');
 		if (@preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, PREG_SET_ORDER) > 0) {
 			// Go through each match
-			$num_partitions = count($partitions_match);
-			for ($i = 0; $i < $num_partitions; $i++) {
-				$partition = $partitions_match[$i];
+			foreach ($partitions_match as $partition)
 				$partitions[$partition[2]][] = array(
 					'size' => $partition[1] * 1024,
 					'number' => $partition[3]
 				);
-			}
 		}
 		
 		// Store drives here
 		$drives = array();
 		
 		// Get actual drives
-		$drive_paths = (array) @glob('/sys/block/*/device/model', GLOB_NOSORT);
-		$num_drives = count($drive_paths);
-		for ($i = 0; $i < $num_drives; $i++) {
-			
-			// Path
-			$path = $drive_paths[$i];
+		foreach ((array) @glob('/sys/block/*/device/model', GLOB_NOSORT) as $path) {
 
 			// Dirname of the drive's sys entry
 			$dirname = dirname(dirname($path));
@@ -532,12 +524,7 @@ class OS_Linux {
 			$hwmon_vals = array();
 
 			// Wacky location
-			$hwmon_paths = (array) @glob('/sys/class/hwmon/hwmon*/*_label', GLOB_NOSORT);
-			$num_paths = count($hwmon_paths);
-			for ($i = 0; $i < $num_paths; $i++) {
-
-				// The path
-				$path = $hwmon_paths[$i];
+			foreach ((array) @glob('/sys/class/hwmon/hwmon*/*_label', GLOB_NOSORT) as $path) {
 
 				// Get info here
 				$section = rtrim($path, 'label');
@@ -621,11 +608,7 @@ class OS_Linux {
 		$mounts = array();
 
 		// Populate
-		$num_matches = count($match);
-		for ($i = 0; $i < $num_matches; $i++) {
-
-			// This mount
-			$mount = $match[$i];
+		foreach ($match as $mount) {
 			
 			// Should we not show this?
 			if (in_array($mount[1], $this->settings['hide']['storage_devices']) || in_array($mount[3], $this->settings['hide']['filesystems']))
@@ -854,15 +837,9 @@ class OS_Linux {
 		// Hold our return values
 		$return = array();
 
-		// Use glob to get paths
-		$nets = (array) @glob('/sys/class/net/*', GLOB_NOSORT);
-
 		// Get values for each device
 		$num_nets = count($nets);
-		for ($i = 0; $i < $num_nets; $i++) {
-			
-			// Path
-			$path = $nets[$i];
+		foreach ((array) @glob('/sys/class/net/*', GLOB_NOSORT) as $path) {
 
 			// States
 			$operstate_contents = getContents($path.'/operstate');
@@ -1088,14 +1065,14 @@ class OS_Linux {
 		$result['proc_total'] = count($processes);
 
 		// Go through each
-		for ($i = 0; $i < $result['proc_total']; $i++) {
+		foreach ($processes as $process) {
 			
 			// Don't waste time if we can't use it
-			if (!is_readable($processes[$i]))
+			if (!is_readable($process))
 				continue;
 			
 			// Get that file's contents
-			$status_contents = getContents($processes[$i]);
+			$status_contents = getContents($process);
 
 			// Try getting state
 			@preg_match('/^State:\s+(\w)/m', $status_contents, $state_match);
