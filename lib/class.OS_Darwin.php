@@ -486,19 +486,19 @@ class OS_Darwin extends OS_BSD_Common{
 				$in_bat_field = false;
 				break;
 			}
-			elseif ($in_bat_field && preg_match('/^\s+Fully charged: ([a-zA-Z]+)/', $lines[$i], $m)) 
+			elseif ($in_bat_field && preg_match('/^\s+Fully charged: ([a-zA-Z]+)/i', $lines[$i], $m)) 
 				$bat['charged'] = $m[1] == 'Yes';
-			elseif ($in_bat_field && preg_match('/^\s+Charging: ([a-zA-Z]+)/', $lines[$i], $m)) 
+			elseif ($in_bat_field && preg_match('/^\s+Charging: ([a-zA-Z]+)/i', $lines[$i], $m)) 
 				$bat['charging'] = $m[1] == 'Yes';
-			elseif($in_bat_field && preg_match('/^\s+Charge remaining \(mAh\): (\d+)/', $lines[$i], $m)) 
+			elseif($in_bat_field && preg_match('/^\s+Charge remaining \(mAh\): (\d+)/i', $lines[$i], $m)) 
 				$bat['charge_now'] = (int) $m[1];
-			elseif($in_bat_field && preg_match('/^\s+Full charge capacity \(mAh\): (\d+)/', $lines[$i], $m)) 
+			elseif($in_bat_field && preg_match('/^\s+Full charge capacity \(mAh\): (\d+)/i', $lines[$i], $m)) 
 				$bat['charge_full'] = (int) $m[1];
-			elseif($in_bat_field && preg_match('/^\s+Serial Number: ([A-Z0-9]+)/', $lines[$i], $m)) 
+			elseif($in_bat_field && preg_match('/^\s+Serial Number: ([A-Z0-9]+)/i', $lines[$i], $m)) 
 				$bat['serial'] = $m[1];
-			elseif($in_bat_field && preg_match('/^\s+Manufacturer: (\w+)/', $lines[$i], $m)) 
+			elseif($in_bat_field && preg_match('/^\s+Manufacturer: (\w+)/i', $lines[$i], $m)) 
 				$bat['vendor'] = $m[1];
-			elseif($in_bat_field && preg_match('/^\s+Device name: (\w+)/', $lines[$i], $m)) 
+			elseif($in_bat_field && preg_match('/^\s+Device name: (\w+)/i', $lines[$i], $m)) 
 				$bat['name'] = $m[1];
 		}
 
@@ -509,7 +509,7 @@ class OS_Darwin extends OS_BSD_Common{
 				'charge_now' => $bat['charge_now'],
 				'percentage' => $bat['charge_full'] > 0 && $bat['charge_now'] > 0 ? round($bat['charge_now'] / $bat['charge_full'], 4) * 100 . '%' : '?',
 				'device' => $bat['vendor'].' - '.$bat['name'],
-				'state' => $bat['charging'] ? 'Charging' : ($bat['charged'] ? 'Fully Charged' : 'Discharging, probably')
+				'state' => $bat['charging'] ? 'Charging' : ($bat['charged'] ? 'Fully Charged' : 'Discharging')
 			);
 		
 		// Give
