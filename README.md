@@ -95,7 +95,7 @@ For other forms of output, aside from usual HTML, append the following to the UR
  - ?out=jsonp&callback=functionName - JSON output with a function callback. (Look here: http://www.json-p.org/ )
  - ?out=php_array - PHP serialized associative array
  - ?out=html - Usual lightweight HTML (default)
- - ncurses (very alpha) - call ./linfo from the CLI. It will attempt to use http://php.net/manual/en/book.ncurses.php 
+ - ncurses (very alpha) - call ./linfo from the CLI. --nocurses to disable
 
 Troubleshooting:
  - Try setting $settings['show_errors'] to true in the config file to yield 
@@ -108,8 +108,9 @@ Linux system temps/voltages/etc requirments:
  - Have hwmon set up in /sys. This is enabled by default and works by default 
    at least on recent ubuntu versions
  
-For cups/samba/truecrypt support:
- - Look at the extensions part of the site
+For cups/samba/truecrypt/extension support:
+ - Look for files named class.ext_something_.php in the lib/ folder and open them up in a text editor
+   to see their instructions for use
 
 ### TODO:
  - Support for other Unix operating systems (Hurd, IRIX, AIX, HP UX, etc)

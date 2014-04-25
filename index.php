@@ -123,14 +123,13 @@ runExtensions($info, $settings);
 // Make sure we have an array of what not to show
 $info['contains'] = array_key_exists('contains', $info) ? (array) $info['contains'] : array();
 
-
-// From the command prompt? Ncurses motha fucka!
-if (defined('LINFO_CLI')) {
+// From the command prompt, we have ncurses, and we aren't being given --nocurses?
+if (defined('LINFO_CLI') && extension_loaded('ncurses') && !in_array('--nocurses', $argv)) {
 	$out = new out_ncurses();
 	$out->work($info, $settings, $getter);
 }
 
-// Coming from a web server
+// Coming from a web server or we don't want curses
 else {
 	// Decide what web format to output in
 	switch (array_key_exists('out', $_GET) ? $_GET['out'] : 'html') {
