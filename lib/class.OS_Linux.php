@@ -572,7 +572,7 @@ class OS_Linux {
 				$return = array_merge($return, $hwmon_vals);
 		}
 
-		// Additional weird bullshit? In this case, laptop backlight percentage. lolwtf, right?
+		// Laptop backlight percentage
 		foreach ((array) @glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', GLOB_NOSORT | GLOB_BRACE) as $bl) {
 			$dir = dirname($bl);
 			if (!is_file($dir.'/actual_brightness'))
@@ -878,7 +878,6 @@ class OS_Linux {
 				break;
 			}
 
-			// motherfucker
 			if ($state = 'unknown' && file_exists($path.'/carrier')) {
 				 $carrier = getContents($path.'/carrier', false);
 				if (!empty($carrier)) 
@@ -940,7 +939,6 @@ class OS_Linux {
 
 			$go_for_it = true;
 
-			// Fuck pointless cuntshit
 			foreach(array($b.'/manufacturer', $b.'/status', $b.'/charge_now') as $f)
 				if (!is_file($f))
 					$go_for_it = false; // Continue out of two nested loops
@@ -1154,7 +1152,6 @@ class OS_Linux {
 		// Temporarily keep statuses here
 		$statuses = array();
 
-		// A bit of unfucking potential missing values in config file
 		$this->settings['services']['executables'] = (array) $this->settings['services']['executables'];
 		$this->settings['services']['pidFiles'] = (array) $this->settings['services']['pidFiles'];
 
@@ -1343,7 +1340,7 @@ class OS_Linux {
 			array('/etc/mklinux-release ', '', 'MkLinux'),
 			array('/etc/nld-release ', '', 'NovellLinuxDesktop'),
 
-			// Shut up; I know this is fugly as all shit. I'd use a closure but that kills php <5.4
+			// I know this is gross; I'd use a closure but that kills php <5.4
 			array('/etc/os-release', create_function('$ini', '
 				$info = @parse_ini_string($ini); return $info && isset($info["ID"]) && isset($info["VERSION"]) ?
 					array("distro" => ucfirst($info["ID"]), "version" => $info["VERSION"]) : false;'), false),
@@ -1370,7 +1367,7 @@ class OS_Linux {
 					);
 				}
 				
-				// No fucking idea what the version is. Don't use the file's contents for anything
+				// No idea what the version is. Don't use the file's contents for anything
 				elseif($distro[1] === '') {
 					return array(
 						'name' => $distro[2],
@@ -1394,7 +1391,7 @@ class OS_Linux {
 					);
 				}
 
-				// Closure shit
+				// Closure 
 				elseif(is_callable($distro[1]) && ($info = $distro[1](getContents($distro[0]))) && is_array($info)) {
 					return array(
 						'name' => $info['distro'],
@@ -1438,7 +1435,7 @@ class OS_Linux {
 			// Does the process match a popular shell, such as bash, csh, etc?
 			if (preg_match('/(?:bash|csh|zsh|ksh)$/', getContents($proc, ''))) {
 
-				// Who the fuck owns it, anyway? 
+				// Who owns it, anyway? 
 				$owner = fileowner(dirname($proc));
 
 				// Careful..

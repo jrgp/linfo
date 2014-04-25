@@ -255,7 +255,6 @@ class OS_NetBSD extends OS_BSD_Common {
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('CPU');
 
-		// Temp shit
 		$drives = array();
 		$curr_hd = false;
 
@@ -449,7 +448,6 @@ class OS_NetBSD extends OS_BSD_Common {
 		// Stuff it
 		foreach ($devices_match as $device) {
 
-			// Ignore shit I can't decipher with
 			if ($device[2] == 'ppb' || strpos($device[3], 'vendor') !== false)
 				continue;
 

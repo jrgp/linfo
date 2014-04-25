@@ -79,7 +79,7 @@ class ext_truecrypt implements LinfoExtension {
 		// Go through each line
 		for ($i = 0, $num = count($lines); $i < $num; $i++) {
 
-			// Extract juicy shit
+			// Extract juicy info
 			if (!preg_match('/^([^:]+): ([^$]+)$/', $lines[$i], $line_match))
 				continue;
 

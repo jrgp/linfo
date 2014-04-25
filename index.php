@@ -95,7 +95,7 @@ if (is_file(LOCAL_PATH . 'lang/en.php') && $settings['language'] != 'en')
 else	
 	require_once LOCAL_PATH . 'lang/'.$settings['language'].'.php';
 
-// Bullshit happens if date.timezone isn't set in php 5.3+
+// Warnings usually displayed to browser happen if date.timezone isn't set in php 5.3+
 if (!ini_get('date.timezone')) 
 	@ini_set('date.timezone', 'Etc/UTC');
 

@@ -272,7 +272,6 @@ class OS_DragonFly extends OS_BSD_Common{
 			// Store current nic here
 			$current_nic = false;
 
-			// Run teh shit
 			$ifconfig = $this->exec->exec('ifconfig', '-a');
 
 			// Go through each line
@@ -281,7 +280,6 @@ class OS_DragonFly extends OS_BSD_Common{
 				// Approaching new nic?
 				if (preg_match('/^([a-z0-9]+):/', $line, $m)) {
 
-					// Only give a shit about nics we detected above
 					if (array_key_exists($m[1], $nets))
 						$current_nic = $m[1];
 					else

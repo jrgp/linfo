@@ -518,7 +518,7 @@ class OS_FreeBSD extends OS_BSD_Common{
 		// Keep them here
 		$drives = array();
 		
-		// Must they change the format of everything with each fucking release?!?!?!?!
+		// Must they change the format of everything with each release?!?!?!?!
 		switch ($this->version) {
 
 			case 8.2:

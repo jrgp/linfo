@@ -159,7 +159,6 @@ class OS_OpenBSD extends OS_BSD_Common {
 	// Get memory usage statistics
 	private function getRam() {
 		
-		// Store our shit here
 		$return = array();
 		$return['swapTotal'] = 0;
 		$return['swapFree'] = 0;
@@ -266,7 +265,6 @@ class OS_OpenBSD extends OS_BSD_Common {
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('CPU');
 
-		// Temp shit
 		$drives = array();
 		$curr_hd = false;
 
@@ -307,7 +305,6 @@ class OS_OpenBSD extends OS_BSD_Common {
 		// Short and sweet
 		$booted = $this->sysctl['kern.boottime'];
 
-		// Well fuck?
 		if ($booted == false)
 			return 'Unknown';
 
