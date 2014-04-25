@@ -71,3 +71,7 @@ v1.10 1/17/2014
  - Regex filtering for filesystem mountpoints
  - Fixed redhat icon
  - Multiple color scheme support
+
+v.11 ?/??/20??
+ - Intelligent output handling when running from cli
+ - Adding some extentions to main git tree instead of packaging them separately

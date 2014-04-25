@@ -120,9 +120,6 @@ class CallExt {
 
 				// Give result
 				return $result;
-
-				// Redundancy
-				break;
 			}
 		}
 
