@@ -216,7 +216,7 @@ class HW_IDS {
 	}
 
 	/*
-	 * Write cache file with latest shit
+	 * Write cache file with latest info
 	 *
 	 * @access private
 	 */

@@ -104,7 +104,6 @@ class OS_SunOS {
 
 		// Go through each
 		foreach ($keys as $k => $v) {
-			// unfuck evil shit, such as malicious shell injection
 			$keys[$k] = escapeshellarg($v);
 			
 			// Check and see if we have any of these already. If so, use previous 

@@ -59,7 +59,7 @@ class OS_Darwin extends OS_BSD_Common{
 			'hw.model'
 		),false);
 
-		// And get this shit for when the above fails like a fucking douche
+		// And get this info for when the above fails 
 		try {
 			$this->systemProfiler = $this->exec->exec('system_profiler', 'SPHardwareDataType SPSoftwareDataType SPPowerDataType');
 		}
@@ -397,7 +397,7 @@ class OS_Darwin extends OS_BSD_Common{
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('CPUs');
 
-		// Was machdep a cunt to us? Likely on ppc macs
+		// Was machdep mean to us? Likely on ppc macs
 		if (empty($this->sysctl['machdep.cpu.brand_string']) && preg_match('/^\s+Processor Name:\s+(.+)(?= \([\d\.]+\))/m', $this->systemProfiler, $m)) {
 			$this->sysctl['machdep.cpu.brand_string'] = $m[1];
 		}
@@ -477,7 +477,6 @@ class OS_Darwin extends OS_BSD_Common{
 		$bat = array();
 		$in_bat_field = false;
 
-		// Parse teh fucka
 		for ($i = 0, $num_lines = count($lines); $i < $num_lines; $i++) {
 			if (preg_match('/^\s+Battery Information/', $lines[$i])) {
 				$in_bat_field = true;
@@ -544,7 +543,6 @@ class OS_Darwin extends OS_BSD_Common{
 		// Work on tmp drive here
 		$tmp = false;
 		
-		// Parse teh fucka
 		for ($i = 0, $num_lines = count($lines); $i < $num_lines; $i++) {
 
 			// A drive or partition entry
@@ -581,7 +579,7 @@ class OS_Darwin extends OS_BSD_Common{
 						$drives[] = $tmp;
 
 					// Try getting the name
-					$drive_name = false; // I'm fucking pessimistic
+					$drive_name = false; // I'm pessimistic
 	//			/*	
 					try {
 						$drive_res = $this->exec->exec('diskutil', ' info /dev/'.$m[5]); 

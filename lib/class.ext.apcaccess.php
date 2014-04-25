@@ -125,7 +125,7 @@ class ext_apcaccess implements LinfoExtension {
 			';
 		}
 
-		// Attempt getting wattage shit
+		// Attempt getting wattage 
 		if (isset($load) && preg_match('/^NOMPOWER\s+:\s+(\d+)/m', $result, $m)) {
 			$watts = (int) $m['1'];
 			$this->_res['watts_used'] = $load * round($watts / 100);

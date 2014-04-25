@@ -583,7 +583,6 @@ class OS_CYGWIN {
 				break;
 			}
 
-			// motherfucker
 			if ($state = 'unknown' && file_exists($path.'/carrier')) {
 				 $carrier = getContents($path.'/carrier', false);
 				if (!empty($carrier)) 
@@ -795,7 +794,6 @@ class OS_CYGWIN {
 		// Temporarily keep statuses here
 		$statuses = array();
 
-		// A bit of unfucking potential missing values in config file
 		$this->settings['services']['executables'] = (array) $this->settings['services']['executables'];
 		$this->settings['services']['pidFiles'] = (array) $this->settings['services']['pidFiles'];
 

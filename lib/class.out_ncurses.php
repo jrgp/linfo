@@ -28,7 +28,6 @@ defined('IN_INFO') or exit;
  */
 class out_ncurses {
 
-	// Localize fun shit
 	private 
 
 		// Store our windows here
@@ -38,7 +37,6 @@ class out_ncurses {
 		// ncurses loaded?
 		$loaded = true;
 
-	// Start us off by checking important shit and starting it
 	public function __construct() {
 
 		// We obviously need this
@@ -61,7 +59,6 @@ class out_ncurses {
 			ncurses_end();	
 	}
 
-	// Handle the shit
 	public function work($info, $settings, $getter) {
 		
 		// Gain access to translations

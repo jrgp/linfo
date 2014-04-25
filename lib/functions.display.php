@@ -136,7 +136,7 @@ function showInfoHTML($info, $settings) {
 	// We very well may not have process stats
 	if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
 
-		// Different os' have different keys of shit
+		// Different os' have different keys of info
 		$proc_stats = array();
 		
 		// Load the keys
@@ -1078,7 +1078,7 @@ function showInfoHTML($info, $settings) {
 			foreach ($info['extensions'] as $ext) {
 				$header = false;
 				if (is_array($ext) && count($ext) > 0) {
-					$this_ext = $extensions->addChild(string_xml_tag_unfuck($ext['root_title']));
+					$this_ext = $extensions->addChild(xml_string_sanitize($ext['root_title']));
 					foreach ((array) $ext['rows'] as $i => $row) {
 						if ($row['type'] == 'header') {
 							$header = $i;
@@ -1088,7 +1088,7 @@ function showInfoHTML($info, $settings) {
 							if ($header !== false && array_key_exists($header, $ext['rows'])) {
 								foreach ($ext['rows'][$header]['columns'] as $ri => $rc) {
 									$this_row->addChild(
-										string_xml_tag_unfuck($rc),
+										xml_string_sanitize($rc),
 										$ext['rows'][$i]['columns'][$ri]
 									);
 								}

@@ -132,7 +132,7 @@ function getLines($file) {
 }
 
 // Make a string safe for being in an xml tag name
-function string_xml_tag_unfuck($string) {
+function xml_string_sanitize($string) {
 	return strtolower(preg_replace('/([^a-zA-Z]+)/', '_', $string));
 }
 
@@ -173,7 +173,7 @@ function create_table($structure) {
 	// Go throuch each row
 	foreach ($structure['rows'] as $row) {
 
-		// Let shit be killed
+		// Let stuff be killed
 		$row['columns'] = array_filter($row['columns']);
 
 		// Ignore this if it's empty
@@ -233,7 +233,6 @@ function get_var_from_file ($file, $variable) {
 	if (!is_file($file))
 		return false;
 
-	// Snag that mother fucker!	
 	require_once $file;
 
 	// Double dollar sign means treat variable contents 
@@ -241,6 +240,5 @@ function get_var_from_file ($file, $variable) {
 	if (isset($$variable))
 		return $$variable;
 
-	// We fucked up	
 	return false;	
 }
