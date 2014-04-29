@@ -83,7 +83,8 @@ class OS_Linux {
 			'SoundCards' => empty($this->settings['show']['sound']) ? array(): $this->getSoundCards(),
 			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(),
 			'services' => empty($this->settings['show']['process_stats']) ? array() : $this->getServices(),
-			'numLoggedIn' => empty($this->settings['show']['numLoggedIn']) ? array() : $this->getNumLoggedIn()
+			'numLoggedIn' => empty($this->settings['show']['numLoggedIn']) ? array() : $this->getNumLoggedIn(),
+			'virtualization' => empty($this->settings['show']['virtualization']) ? array() : $this->getVirtualization(),
 		);
 	}
 
@@ -1428,4 +1429,43 @@ class OS_Linux {
 		// Give number of unique users with shells running
 		return count($users);
 	}
+
+	/**
+	 * getVirtualization. Potentially not very accurate especially since you can virtualize hypervisors,
+	 * kernel module names change frequently, you can load (some of) these modules if you aren't a host/guest, etc
+	 *
+	 * @access private
+	 * @return array('type' => 'guest', 'method' => kvm or vmware or xen or openvz) or array('type' => 'host', 'methods' = ['intel', 'amd'])
+	 */
+	 private function getVirtualization() {
+
+	 	// Some easy ones first...
+		if (is_file('/proc/vz/veinfo'))
+			return array('type' => 'guest', 'method' => 'OpenVZ');
+
+		// Try getting kernel modules
+		$modules = array();
+		if (preg_match_all('/^(\S+)/m', getContents('/proc/modules', ''), $matches, PREG_SET_ORDER)) {
+			foreach ($matches as $match)	
+				$modules[] = $match[1];
+		}
+
+		// VMware modules. Tested on vmware fusion for mac...
+		if (any_in_array(array('vmw_balloon', 'vmwgfx', 'vmw_vmci'), $modules))
+			return array('type' => 'guest', 'method' => 'VMWare');
+
+		// Looks like it might be xen...
+		if (any_in_array(array('xen_blkfront', 'xen_netfront'), $modules) || count((array) @glob('/dev/xvd*')) > 0) {
+
+			// Guest or host?
+			return array('type' => 'guest', 'method' => 'Xen');
+		}
+
+		// Looks like it might be KVM or QEMU!
+		if (any_in_array(array('virtio', 'virtio_balloon', 'virtio_pci', 'virtio_blk', 'virtio_net')))
+			return array('type' => 'guest', 'method' => 'Qemu/KVM');
+
+		// idk
+		return false;
+	 }
 }

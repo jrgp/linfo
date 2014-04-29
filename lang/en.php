@@ -97,5 +97,7 @@ $lang = array(
 	'distro' => 'Distribution',
 	'cpu_arch' => 'Architecture',
 	'model' => 'Model',
-	'numLoggedIn' => 'Active Users'
+	'numLoggedIn' => 'Active Users',
+	'virtualization' => 'Virtualization',
+	'guest' => 'Guest',
 );
