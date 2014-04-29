@@ -1465,6 +1465,10 @@ class OS_Linux {
 		if (any_in_array(array('virtio', 'virtio_balloon', 'virtio_pci', 'virtio_blk', 'virtio_net'), $modules))
 			return array('type' => 'guest', 'method' => 'Qemu/KVM');
 
+		// Looks like it might be KVM HOST!
+		if (in_array('kvm', $modules))
+			return array('type' => 'host', 'method' => 'KVM');
+
 		// idk
 		return false;
 	 }
