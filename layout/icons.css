@@ -27,4 +27,4 @@
 .icon_distro_arch { background-image: url('icons/distro_arch.png'); width: 16px; }
 .icon_distro_redhat { background-image: url('icons/distro_redhat.png'); width: 16px; }
 .icon_vm_vmware { background-image: url('icons/vm_vmware.png'); width: 16px; }
-
+.icon_vm_qemu_kvm { background-image: url('icons/vm_kvm.png'); width: 52px; } 
