@@ -100,4 +100,5 @@ $lang = array(
 	'numLoggedIn' => 'Active Users',
 	'virtualization' => 'Virtualization',
 	'guest' => 'Guest',
+	'host' => 'Host',
 );

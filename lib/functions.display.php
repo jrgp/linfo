@@ -100,7 +100,7 @@ function showInfoHTML($info, $settings) {
 		if ($info['virtualization']['type'] == 'guest')
 			$vmval = '<span class="icon icon_vm_'.str_replace('/', '_', strtolower($info['virtualization']['method'])).'"></span>'.$info['virtualization']['method'].' '.$lang['guest'];
 		elseif ($info['virtualization']['type'] == 'host') 
-			$vmval = '';
+			$vmval = '<span class="icon icon_vm_'.str_replace('/', '_', strtolower($info['virtualization']['method'])).'"></span>'.$info['virtualization']['method'].' '.$lang['host'];
 
 		if ($vmval)
 			$core[] = array($lang['virtualization'], $vmval);
