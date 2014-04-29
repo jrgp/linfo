@@ -242,3 +242,17 @@ function get_var_from_file ($file, $variable) {
 
 	return false;	
 }
+
+// Prevent silly conditionals like if (in_array() || in_array() || in_array())
+// Poor man's python's any() on a list comprehension kinda
+function any_in_array($needles, $haystack) {
+	if (!is_array($needles) || !is_array($haystack))
+		return false;
+
+	foreach ($needles as $needle) {
+		if (in_array($needle, $haystack))
+			return true;
+	}
+
+	return false;
+}

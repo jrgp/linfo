@@ -92,6 +92,19 @@ function showInfoHTML($info, $settings) {
 	// Distribution? (with icon, if we have it)
 	if (!empty($settings['show']['distro']) && array_key_exists('Distro', $info) && is_array($info['Distro']))
 		$core[] = array($lang['distro'], ($show_icons && $distro_icon && (file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.png')) ? '<span class="icon icon_distro_'.$distro_icon.'"></span>' : '') . $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
+
+	// Virtualization
+	if (!empty($settings['show']['virtualization']) && isset($info['virtualization']) && !empty($info['virtualization'])) {
+		$vmval = false;
+
+		if ($info['virtualization']['type'] == 'guest')
+			$vmval = '<span class="icon icon_vm_'.str_replace('/', '_', strtolower($info['virtualization']['method'])).'"></span>'.$info['virtualization']['method'].' '.$lang['guest'];
+		elseif ($info['virtualization']['type'] == 'host') 
+			$vmval = '';
+
+		if ($vmval)
+			$core[] = array($lang['virtualization'], $vmval);
+	}
 	
 	// Kernel
 	if (!empty($settings['show']['kernel']))
