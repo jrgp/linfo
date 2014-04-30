@@ -169,5 +169,3 @@ else {
 		break;
 	}
 }
-
-// "This is where it ends, Commander"

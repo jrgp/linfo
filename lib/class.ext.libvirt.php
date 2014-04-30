@@ -94,11 +94,11 @@ class ext_libvirt implements LinfoExtension {
 		}
 
 		foreach ($doms as $name) {
-		    
+				
 			if (!($domain = libvirt_domain_lookup_by_name($this->connection, $name)))
 				continue;
 
-			if (!($info =  libvirt_domain_get_info($domain)) || !is_array($info))
+			if (!($info = libvirt_domain_get_info($domain)) || !is_array($info))
 				continue;
 
 			$info['storage'] = array();
@@ -109,6 +109,9 @@ class ext_libvirt implements LinfoExtension {
 
 				if (!($blockInfo = libvirt_domain_get_block_info($domain, $blockName)) || !is_array($blockInfo))
 					continue;
+
+				if (isset($blockInfo['partition']) && !isset($blockInfo['file']))
+					$blockInfo['file'] = $blockInfo['partition'];
 
 				$info['storage'][] = $blockInfo;
 			}

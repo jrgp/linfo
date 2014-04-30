@@ -81,7 +81,7 @@ class GetHddTemp {
 		// Kill surounding ||'s and split it by pipes
 		$drives = explode('||', trim($data, '|'));
 
-		// Return oour stuff here
+		// Return our stuff here
 		$return = array();
 
 		// Go through each
@@ -153,15 +153,12 @@ class GetHddTemp {
 
 			// Connect to daemon mode
 			case 'daemon':
-				$sockResult = $this->getSock();
-				$temps = $this->parseSockData($sockResult);
-				return $temps;
+				return $this->parseSockData($this->getSock());
 			break;
 
 			// Syslog every n seconds
 			case 'syslog':
-				$temps = $this->parseSysLogData();
-				return $temps;
+				return $this->parseSysLogData();
 			break;
 
 			// Some other mode
