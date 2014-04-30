@@ -1455,10 +1455,13 @@ class OS_Linux {
 			return array('type' => 'guest', 'method' => 'VMWare');
 
 		// Looks like it might be xen...
-		if (any_in_array(array('xen_blkfront', 'xen_netfront'), $modules) || count((array) @glob('/dev/xvd*')) > 0) {
+		if (any_in_array(array('xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'), $modules) || is_dir('/proc/xen')) {
 
 			// Guest or host?
-			return array('type' => 'guest', 'method' => 'Xen');
+			if (any_in_array(array('xen-netback', 'xen_blkback'), $modules) || strpos('control_d', getContents('/proc/xen/capabilities', '')) !== false) 
+				return array('type' => 'host', 'method' => 'Xen');
+			else
+				return array('type' => 'guest', 'method' => 'Xen');
 		}
 
 		// Looks like it might be KVM or QEMU!
