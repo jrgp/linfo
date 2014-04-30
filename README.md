@@ -1,4 +1,10 @@
-# Linfo - PHP server health/information script 
+# Linfo - PHP server health/stats script 
+
+ - License: GNU General Public License
+ - Author: Joe Gillotti <joe@u13.net>
+ - Additional author(s): See AUTHORS
+ - Github URL: https://github.com/jrgp/linfo
+ - Sourceforge Project: https://sourceforge.net/projects/linfo
 
 ### Currently runs on:
  - Linux
@@ -118,14 +124,8 @@ For cups/samba/truecrypt/extension support:
  - Support for strange operating systems: Haiku/BeOS
  - More superfluous features/extensions
 
-### Contact:
- - joe@u13.net  (I promise I'll reply)
+### Contact (diffs/translations/etc):
+ - Joe Gillotti <joe@u13.net>  (I promise I'll reply)
  - IRC - #linfo @ freenode
  - Please email to joe@u13.net instead of contacting me over SourceForge.
 
- - License: GNU General Public License
- - Author: Joe Gillotti <joe@u13.net>
- - Additional author(s): See AUTHORS
- - Github URL: https://github.com/jrgp/linfo
- - Sourceforge Project: https://sourceforge.net/projects/linfo
- - Favicon and default colors by: Lee Bradley
