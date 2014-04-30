@@ -31,7 +31,8 @@
    - Transmission torrents status
    - Soldat server status
    - CUPS printer status
-   - IPMI
+   - IPMI 
+   - libvirt VMs
    - more
 
 ### Etymology:
@@ -84,10 +85,10 @@ OpenBSD system requirements/notes:
  - It will not work under the default httpd chroot
 
 ### Installation/usage:
- 1) Extract tarball contents to somewhere under your web root
- 2) Rename sample.config.inc.php to config.inc.php, after optionally changing values in it
- 3) Visit page in web browser
- 4) Pass URL to your friends to show off
+ 1. Extract tarball contents to somewhere under your web root
+ 2. Rename sample.config.inc.php to config.inc.php, after optionally changing values in it
+ 3. Visit page in web browser
+ 4. Pass URL to your friends to show off
 
 For other forms of output, aside from usual HTML, append the following to the URL:
  - ?out=xml - XML output (requires SimpleXML extension)
@@ -117,14 +118,14 @@ For cups/samba/truecrypt/extension support:
  - Support for strange operating systems: Haiku/BeOS
  - More superfluous features/extensions
 
-Please send suggestions, patches (diffs), translations, help requests, comments, complaints, beer, pizza, and hookers to:
+### Contact:
  - joe@u13.net  (I promise I'll reply)
  - IRC - #linfo @ freenode
  - Please email to joe@u13.net instead of contacting me over SourceForge.
 
-License: GNU General Public License
-Author/project leader: Joe Gillotti <joe@u13.net>
-Additional author(s): See AUTHORS
-Github URL: https://github.com/jrgp/linfo
-Sourceforge Project: https://sourceforge.net/projects/linfo
-Favicon and default colors by: Lee Bradley
+ - License: GNU General Public License
+ - Author: Joe Gillotti <joe@u13.net>
+ - Additional author(s): See AUTHORS
+ - Github URL: https://github.com/jrgp/linfo
+ - Sourceforge Project: https://sourceforge.net/projects/linfo
+ - Favicon and default colors by: Lee Bradley
