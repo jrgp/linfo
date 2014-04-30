@@ -482,7 +482,7 @@ class OS_Darwin extends OS_BSD_Common{
 				$in_bat_field = true;
 				continue;
 			}
-			elseif(preg_match('/^\s+System Power Settings/', $m)) {
+			elseif(preg_match('/^\s+System Power Settings/', $line)) {
 				$in_bat_field = false;
 				break;
 			}
