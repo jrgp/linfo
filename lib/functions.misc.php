@@ -27,15 +27,10 @@ defined('IN_INFO') or exit;
 // possible file location, picks the first it finds and returns it. When
 // none are found, it returns false
 function locate_actual_path($paths) {
-	
-	// Make absolutely sure that's an array
-	$paths = (array) $paths;
-
-	$num_paths = count($paths);
-	for ($i = 0; $i < $num_paths; $i++)
-		if (is_file($paths[$i]))
-			return $paths[$i];
-
+	foreach ((array) $paths as $path) {
+		if (is_file($path))
+			return $path;
+	}
 	return false;
 }
 
