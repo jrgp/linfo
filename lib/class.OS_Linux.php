@@ -1464,13 +1464,21 @@ class OS_Linux {
 				return array('type' => 'guest', 'method' => 'Xen');
 		}
 
-		// Looks like it might be KVM or QEMU!
-		if (any_in_array(array('virtio', 'virtio_balloon', 'virtio_pci', 'virtio_blk', 'virtio_net'), $modules))
-			return array('type' => 'guest', 'method' => 'Qemu/KVM');
+		// VirtualBox Host! Tested on lucid running vbox..
+		if (in_array('vboxdrv', $modules))
+			return array('type' => 'host', 'method' => 'VirtualBox');
+
+		// VirtualBox Guest! Tested on wheezy under mac vbox
+		if (in_array('vboxguest', $modules))
+			return array('type' => 'guest', 'method' => 'VirtualBox');
 
 		// Looks like it might be KVM HOST!
 		if (in_array('kvm', $modules))
 			return array('type' => 'host', 'method' => 'KVM');
+
+		// Looks like it might be a  KVM or QEMU guest! This is a bit lame since Xen can also use virtio but its less likely (?)
+		if (any_in_array(array('virtio', 'virtio_balloon', 'virtio_pci', 'virtio_blk', 'virtio_net'), $modules))
+			return array('type' => 'guest', 'method' => 'Qemu/KVM');
 
 		// idk
 		return false;
