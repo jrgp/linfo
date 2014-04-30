@@ -98,10 +98,7 @@ class HW_IDS {
 	 * @access private
 	 */
 	private function _fetchUsbIdsLinux() {
-		$usb_paths = (array) @glob('/sys/bus/usb/devices/*', GLOB_NOSORT);
-		$num_usb_paths = count($usb_paths);
-		for ($i = 0; $i < $num_usb_paths; $i++) {
-			$path = $usb_paths[$i];
+		foreach ((array) @glob('/sys/bus/usb/devices/*', GLOB_NOSORT) as $path) {
 
 			// First try uevent
 			if (is_readable($path.'/uevent') && 
@@ -123,10 +120,7 @@ class HW_IDS {
 	 * @access private
 	 */
 	private function _fetchPciIdsLinux() {
-		$pci_paths = (array) @glob('/sys/bus/pci/devices/*', GLOB_NOSORT);
-		$num_pci_paths = count($pci_paths);
-		for ($i = 0; $i < $num_pci_paths; $i++) {
-			$path = $pci_paths[$i];
+    foreach ((array) @glob('/sys/bus/pci/devices/*', GLOB_NOSORT) as $path) {
 			
 			// See if we can use simple vendor/device files and avoid taking time with regex
 			if (($f_device = getContents($path.'/device', '')) && ($f_vend = getContents($path.'/vendor', '')) &&
