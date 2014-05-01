@@ -134,9 +134,14 @@ function showInfoHTML($info, $settings) {
 				$cpu['Model'] .
 				(array_key_exists('MHz', $cpu) ?
 					($cpu['MHz'] < 1000 ? ' ('.$cpu['MHz'].' MHz)' : ' ('.round($cpu['MHz'] / 1000, 3).' GHz)') : '') .
+						(array_key_exists('usage_percentage', $cpu) ? ' ('.$cpu['usage_percentage'].'%)' : '') .
 					'<br />';
 		$core[] = array('CPUs ('.count($info['CPU']).')', $cpus);
 	}
+
+	// CPU Usage?
+	if (!empty($settings['cpu_usage']) && isset($info['cpuUsage']) && $info['cpuUsage'] !== false)
+		$core[] = array($lang['cpu_usage'], $info['cpuUsage'].'%');
 
 	// CPU architecture. Permissions goes hand in hand with normal CPU
 	if (!empty($settings['show']['cpu']) && array_key_exists('CPUArchitecture', $info)) 

@@ -39,6 +39,11 @@ $settings['show']['model'] = true; # Model of system. Supported on certain OS's.
 $settings['show']['numLoggedIn'] = true; # Number of unqiue users with shells running (on Linux)
 $settings['show']['virtualization'] = true; # whether this is a VPS/VM and what kind
 
+// CPU Usage on Linux (per core and overall). This requires running sleep(1) once so it slows
+// the entire page load down. Enable at your own inconvenience, especially since the load averages
+// are more useful.
+$settings['cpu_usage'] = false; 
+
 // Sometimes a filesystem mount is mounted more than once. Only list the first one I see? 
 // (note, duplicates are not shown twice in the file system totals)
 $settings['show']['duplicate_mounts'] = true;

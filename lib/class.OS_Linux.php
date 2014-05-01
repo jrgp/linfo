@@ -34,6 +34,10 @@ class OS_Linux {
 	protected
 		$settings, $error;
 
+	// Generally disabled as it's slowww
+	protected
+		$cpu_percent = array('overall' => false, 'cpus' => array());
+
 	/**
 	 * Constructor. Localizes settings
 	 * 
@@ -61,6 +65,9 @@ class OS_Linux {
 	 */
 	public function getAll() {
 
+		if (isset($this->settings['cpu_usage']) && !empty($this->settings['cpu_usage']))
+			$this->determineCPUPercentage();
+
 		// Return everything, whilst obeying display permissions
 		return array(
 			'OS' => empty($this->settings['show']['os']) ? '' : $this->getOS(),
@@ -85,6 +92,7 @@ class OS_Linux {
 			'services' => empty($this->settings['show']['process_stats']) ? array() : $this->getServices(),
 			'numLoggedIn' => empty($this->settings['show']['numLoggedIn']) ? array() : $this->getNumLoggedIn(),
 			'virtualization' => empty($this->settings['show']['virtualization']) ? array() : $this->getVirtualization(),
+      'cpuUsage' => empty($this->settings['cpu_usage']) || $this->cpu_percent['overall'] === false ? false : $this->cpu_percent['overall']
 		);
 	}
 
@@ -313,6 +321,12 @@ class OS_Linux {
 				case 'vendor_id':
 					$cur_cpu['Vendor'] = $value;
 				break;
+
+				// ID. Corresponds to percentage if enabled below
+				case 'processor':
+					if (isset($this->cpu_percent['cpus'][$value]))
+						$cur_cpu['usage_percentage'] = $this->cpu_percent['cpus'][$value];
+				break;
 			}
 
 		}
@@ -413,7 +427,7 @@ class OS_Linux {
 
 			// Append this drive on
 			$drives[] = array(
-				'name' =>  getContents($path, 'Unknown'),
+				'name' => getContents($path, 'Unknown'),
 				'vendor' => getContents(dirname($path).'/vendor', 'Unknown'),
 				'device' => '/dev/'.$parts[3],
 				'reads' => $reads,
@@ -537,7 +551,7 @@ class OS_Linux {
 				if (strpos($filename, 'fan') !== false)
 					$unit = 'RPM';
 				elseif (strpos($filename, 'temp') !== false) {
-					$unit = 'C';  // Always seems to be in celsius
+					$unit = 'C'; // Always seems to be in celsius
 					$value = strlen($value) == 5 ? substr($value, 0, 2) : $value;  // Pointless extra 0's
 				}
 				elseif (preg_match('/^in\d_label$/', $filename)) {
@@ -772,7 +786,7 @@ class OS_Linux {
 					'status' => $array[2],
 					'level' => $array[3],
 					'drives' => $drives,
-					'size' =>  byte_convert($array[5]*1024),
+					'size' => byte_convert($array[5]*1024),
 					'algorithm' => $array[6],
 					'count' => $array[7],
 					'chart' => $array[8]
@@ -1439,6 +1453,10 @@ class OS_Linux {
 	 */
 	 private function getVirtualization() {
 
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Determining virtualization type');
+
 	 	// Some easy ones first...
 		if (is_file('/proc/vz/veinfo'))
 			return array('type' => 'guest', 'method' => 'OpenVZ');
@@ -1476,11 +1494,86 @@ class OS_Linux {
 		if (in_array('kvm', $modules))
 			return array('type' => 'host', 'method' => 'KVM');
 
-		// Looks like it might be a  KVM or QEMU guest! This is a bit lame since Xen can also use virtio but its less likely (?)
+		// Looks like it might be a KVM or QEMU guest! This is a bit lame since Xen can also use virtio but its less likely (?)
 		if (any_in_array(array('virtio', 'virtio_balloon', 'virtio_pci', 'virtio_blk', 'virtio_net'), $modules))
 			return array('type' => 'guest', 'method' => 'Qemu/KVM');
 
 		// idk
 		return false;
+	 }
+
+	 /**
+		* Most controersial and different function in linfo. Updates $this->cpu_percent array. Sleeps 1 second
+		* to do this which is how it gets accurate details. Code stolen from procps' source for the Linux top command
+		*
+		* @access private
+		* @void
+		*/
+	 private function determineCPUPercentage() {
+			// Time?
+			if (!empty($this->settings['timer']))
+				$t = new LinfoTimerStart('Determining CPU usage');
+
+			$iterations = 2;
+
+			// Probably only inline function here. Only used once so it makes sense.
+			function cpuPercent($key, $line) {
+				
+				// With each iteration we compare what we got to last time's version
+				// as the file changes every milisecond or something
+				static $prev = array();
+
+				// Using regex/explode is excessive here, not unlike rest of linfo :/ 
+				$ret = sscanf($line, '%Lu %Lu %Lu %Lu %Lu %Lu %Lu %Lu');
+
+				// Negative? That's crazy talk now
+				foreach ($ret as $k => $v) {
+					if ($v < 0)
+						$ret[$k] = 0;
+				}
+
+				// First time; set our vals
+				if (!isset($prev[$key]))
+					$prev[$key] = $ret;
+
+				// Subsequent time; difference with last time
+				else {
+					$orig = $ret;
+					foreach ($ret as $k => $v)
+						$ret[$k] -= $prev[$key][$k];
+					$prev[$key] = $orig;
+				}
+				
+				// Refer back to top.c for the reasoning here. I just copied the algorithm without
+				// trying to understand why. 
+				$scale = 100.0 / (float)array_sum($ret);
+				$cpu_percent = $ret[0] * $scale;
+				
+				return round($cpu_percent, 2);
+			}
+
+			for ($i = 0; $i < $iterations; $i++) {
+				$contents = getContents('/proc/stat', false);
+
+				// Yay we can't read it so we won't sleep below!
+				if (!$contents)
+					continue;
+
+				// Overall system CPU usage
+				if (preg_match('/^cpu\s+(.+)/', $contents, $m))
+					$this->cpu_percent['overall'] = cpuPercent('overall', $m[1]);
+
+				// CPU usage per CPU
+				if (preg_match_all('/^cpu(\d+)\s+(.+)/m', $contents, $cpus, PREG_SET_ORDER)) {
+					foreach ($cpus as $cpu)
+						$this->cpu_percent['cpus'][$cpu[1]] = cpuPercent('c'.$cpu[1], $cpu[2]);
+				}
+
+				// Following two lines make me want to puke as they go against everything linfo stands for
+				// this functionality will always be disabled by default
+				// Sleep *between* iterations and only if we're doing at least two of them
+				if ($iterations > 1 && $i != $iterations - 1)
+					sleep(1);
+			}
 	 }
 }
