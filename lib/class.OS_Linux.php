@@ -92,7 +92,7 @@ class OS_Linux {
 			'services' => empty($this->settings['show']['process_stats']) ? array() : $this->getServices(),
 			'numLoggedIn' => empty($this->settings['show']['numLoggedIn']) ? array() : $this->getNumLoggedIn(),
 			'virtualization' => empty($this->settings['show']['virtualization']) ? array() : $this->getVirtualization(),
-      'cpuUsage' => empty($this->settings['cpu_usage']) || $this->cpu_percent['overall'] === false ? false : $this->cpu_percent['overall']
+			'cpuUsage' => empty($this->settings['cpu_usage']) || $this->cpu_percent['overall'] === false ? false : $this->cpu_percent['overall']
 		);
 	}
 
