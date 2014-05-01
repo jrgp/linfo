@@ -1218,7 +1218,6 @@ class OS_Linux {
 			$mem = false;
 
 			// Go through
-			//foreach ($status_matches as $status_match) {
 			for ($i = 0, $num = count($status_matches); $i < $num; $i++) {
 
 				// What have we here?
@@ -1502,78 +1501,78 @@ class OS_Linux {
 		return false;
 	 }
 
-	 /**
-		* Most controersial and different function in linfo. Updates $this->cpu_percent array. Sleeps 1 second
-		* to do this which is how it gets accurate details. Code stolen from procps' source for the Linux top command
-		*
-		* @access private
-		* @void
-		*/
+	/**
+	 * Most controersial and different function in linfo. Updates $this->cpu_percent array. Sleeps 1 second
+	 * to do this which is how it gets accurate details. Code stolen from procps' source for the Linux top command
+	 *
+	 * @access private
+	 * @void
+	 */
 	 private function determineCPUPercentage() {
-			// Time?
-			if (!empty($this->settings['timer']))
-				$t = new LinfoTimerStart('Determining CPU usage');
+		 // Time?
+		 if (!empty($this->settings['timer']))
+			 $t = new LinfoTimerStart('Determining CPU usage');
 
-			$iterations = 2;
+		 $iterations = 2;
 
-			// Probably only inline function here. Only used once so it makes sense.
-			function cpuPercent($key, $line) {
-				
-				// With each iteration we compare what we got to last time's version
-				// as the file changes every milisecond or something
-				static $prev = array();
+		 // Probably only inline function here. Only used once so it makes sense.
+		 function cpuPercent($key, $line) {
 
-				// Using regex/explode is excessive here, not unlike rest of linfo :/ 
-				$ret = sscanf($line, '%Lu %Lu %Lu %Lu %Lu %Lu %Lu %Lu');
+			 // With each iteration we compare what we got to last time's version
+			 // as the file changes every milisecond or something
+			 static $prev = array();
 
-				// Negative? That's crazy talk now
-				foreach ($ret as $k => $v) {
-					if ($v < 0)
-						$ret[$k] = 0;
-				}
+			 // Using regex/explode is excessive here, not unlike rest of linfo :/ 
+			 $ret = sscanf($line, '%Lu %Lu %Lu %Lu %Lu %Lu %Lu %Lu');
 
-				// First time; set our vals
-				if (!isset($prev[$key]))
-					$prev[$key] = $ret;
+			 // Negative? That's crazy talk now
+			 foreach ($ret as $k => $v) {
+				 if ($v < 0)
+					 $ret[$k] = 0;
+			 }
 
-				// Subsequent time; difference with last time
-				else {
-					$orig = $ret;
-					foreach ($ret as $k => $v)
-						$ret[$k] -= $prev[$key][$k];
-					$prev[$key] = $orig;
-				}
-				
-				// Refer back to top.c for the reasoning here. I just copied the algorithm without
-				// trying to understand why. 
-				$scale = 100.0 / (float)array_sum($ret);
-				$cpu_percent = $ret[0] * $scale;
-				
-				return round($cpu_percent, 2);
-			}
+			 // First time; set our vals
+			 if (!isset($prev[$key]))
+				 $prev[$key] = $ret;
 
-			for ($i = 0; $i < $iterations; $i++) {
-				$contents = getContents('/proc/stat', false);
+			 // Subsequent time; difference with last time
+			 else {
+				 $orig = $ret;
+				 foreach ($ret as $k => $v)
+					 $ret[$k] -= $prev[$key][$k];
+				 $prev[$key] = $orig;
+			 }
 
-				// Yay we can't read it so we won't sleep below!
-				if (!$contents)
-					continue;
+			 // Refer back to top.c for the reasoning here. I just copied the algorithm without
+			 // trying to understand why. 
+			 $scale = 100.0 / (float)array_sum($ret);
+			 $cpu_percent = $ret[0] * $scale;
 
-				// Overall system CPU usage
-				if (preg_match('/^cpu\s+(.+)/', $contents, $m))
-					$this->cpu_percent['overall'] = cpuPercent('overall', $m[1]);
+			 return round($cpu_percent, 2);
+		 }
 
-				// CPU usage per CPU
-				if (preg_match_all('/^cpu(\d+)\s+(.+)/m', $contents, $cpus, PREG_SET_ORDER)) {
-					foreach ($cpus as $cpu)
-						$this->cpu_percent['cpus'][$cpu[1]] = cpuPercent('c'.$cpu[1], $cpu[2]);
-				}
+		 for ($i = 0; $i < $iterations; $i++) {
+			 $contents = getContents('/proc/stat', false);
 
-				// Following two lines make me want to puke as they go against everything linfo stands for
-				// this functionality will always be disabled by default
-				// Sleep *between* iterations and only if we're doing at least two of them
-				if ($iterations > 1 && $i != $iterations - 1)
-					sleep(1);
-			}
+			 // Yay we can't read it so we won't sleep below!
+			 if (!$contents)
+				 continue;
+
+			 // Overall system CPU usage
+			 if (preg_match('/^cpu\s+(.+)/', $contents, $m))
+				 $this->cpu_percent['overall'] = cpuPercent('overall', $m[1]);
+
+			 // CPU usage per CPU
+			 if (preg_match_all('/^cpu(\d+)\s+(.+)/m', $contents, $cpus, PREG_SET_ORDER)) {
+				 foreach ($cpus as $cpu)
+					 $this->cpu_percent['cpus'][$cpu[1]] = cpuPercent('c'.$cpu[1], $cpu[2]);
+			 }
+
+			 // Following two lines make me want to puke as they go against everything linfo stands for
+			 // this functionality will always be disabled by default
+			 // Sleep *between* iterations and only if we're doing at least two of them
+			 if ($iterations > 1 && $i != $iterations - 1)
+				 sleep(1);
+		 }
 	 }
-}
+ }
