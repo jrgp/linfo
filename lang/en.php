@@ -101,4 +101,5 @@ $lang = array(
 	'virtualization' => 'Virtualization',
 	'guest' => 'Guest',
 	'host' => 'Host',
+	'cpu_usage' => 'Overall CPU Usage',
 );
