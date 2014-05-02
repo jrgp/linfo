@@ -26,8 +26,9 @@ if (isset($argc) && is_array($argv))
 	define('LINFO_CLI', true);
 
 // Version
+$scm = '$Format:%ci$';
 define('AppName', 'Linfo');
-define('VERSION', 'git');
+define('VERSION', strpos($scm, '$') !== false ? 'git' : $scm);
 
 // Anti hack, as in allow included files to ensure they were included
 define('IN_INFO', true);
