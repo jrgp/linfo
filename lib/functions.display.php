@@ -832,7 +832,7 @@ function showInfoHTML($info, $settings) {
 
 	echo '
 <div id="foot">
-	'.sprintf($lang['footer_app'], '<a href="https://github.com/jrgp/linfo"><em>'.AppName.' ('.VERSION.')</em></a>',  round(microtime(true) - TIME_START,2)).'<br>
+	'.sprintf($lang['footer_app'], '<a href="https://github.com/jrgp/linfo"><em>'.AppName.'</em></a> ('.VERSION.')',  round(microtime(true) - TIME_START,2)).'<br>
 	<em>'.AppName.'</em> &copy; 2010 &ndash; '.(date('Y') > 2011 ? date('Y') : 2011).'
 	Joseph Gillotti '.(date('m/d') == '06/03' ? ' (who turns '.(date('Y') - 1993).' today!)' : '').'&amp; friends. Source code licensed under GPL.
 </div>
