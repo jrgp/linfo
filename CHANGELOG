@@ -78,3 +78,6 @@ v1.11 5/2/2014
  - Better support for OS X Mavericks
  - Virtualization detection for Linux
  - CPU Usage reporting for Linux
+
+v1.?? ?/??/20??
+ - added utorrent web ui parsing extension

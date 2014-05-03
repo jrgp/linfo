@@ -631,13 +631,7 @@ function showInfoHTML($info, $settings) {
 					<td>'.byte_convert($mount['free']).
 					($mount['free_percent'] !== false ? ' <span class="perc">('.$mount['free_percent'].'%)</span>' : '').'</td>
 					<td>
-						<div class="bar_chart">
-							<div class="bar_inner" style="width: '.(int) $mount['used_percent'].'%;">
-								<div class="bar_text">
-									'.($mount['used_percent'] ? $mount['used_percent'].'%' : 'N/A').'
-								</div>
-							</div>
-						</div>
+						'.bar_chart((int) $mount['used_percent'], $mount['used_percent'] ? $mount['used_percent'].'%' : 'N/A').'
 					</td>
 				</tr>';
 			}
@@ -646,7 +640,7 @@ function showInfoHTML($info, $settings) {
 		}
 
 		// Show totals and finish table
-		$total_used_perc = $total_size > 0 && $total_used > 0 ?  round($total_used / $total_size, 2) * 100 : 0;
+		$total_used_perc = $total_size > 0 && $total_used > 0 ? round($total_used / $total_size, 2) * 100 : 0;
 		echo '
 		<tr class="alt">
 			<td colspan="',2 + $addcolumns,'">Totals: </td>
@@ -654,13 +648,7 @@ function showInfoHTML($info, $settings) {
 			<td>'.byte_convert($total_used).'</td>
 			<td>'.byte_convert($total_free).'</td>
 			<td>
-				<div class="bar_chart">
-					<div class="bar_inner" style="width: '.$total_used_perc.'%;">
-						<div class="bar_text">
-							'.$total_used_perc.'%
-						</div>
-					</div>
-				</div>
+				'.bar_chart($total_used_perc, $total_used_perc.'%').'
 			</td>
 		</tr>
 	</table>
@@ -768,7 +756,7 @@ function showInfoHTML($info, $settings) {
 				switch (array_key_exists('extra_type', $ext) && !empty($ext['extra_vals']) ? $ext['extra_type'] : false) {
 					
 					// Table with a key->value table to the right of it
-					// Useful for stats or other stuff pertaining to  
+					// Useful for stats or other stuff pertaining to
 					// the main info to the left
 					case 'k->v':
 						echo '
@@ -832,7 +820,7 @@ function showInfoHTML($info, $settings) {
 
 	echo '
 <div id="foot">
-	'.sprintf($lang['footer_app'], '<a href="https://github.com/jrgp/linfo"><em>'.AppName.'</em></a> ('.VERSION.')',  round(microtime(true) - TIME_START,2)).'<br>
+	'.sprintf($lang['footer_app'], '<a href="https://github.com/jrgp/linfo"><em>'.AppName.'</em></a> ('.VERSION.')', round(microtime(true) - TIME_START,2)).'<br>
 	<em>'.AppName.'</em> &copy; 2010 &ndash; '.(date('Y') > 2011 ? date('Y') : 2011).'
 	Joseph Gillotti '.(date('m/d') == '06/03' ? ' (who turns '.(date('Y') - 1993).' today!)' : '').'&amp; friends. Source code licensed under GPL.
 </div>
@@ -846,6 +834,23 @@ function showInfoHTML($info, $settings) {
 
 }
 
+/**
+ * Create a progress bar looking thingy. Put into a function here
+ * as its being increasingly used elsewhere. TODO refactor linfo and
+ * stop leaving functions in global namespace
+ */
+function bar_chart($percent, $text = false) {
+	$text = $text ?: $percent.'%';
+	return '
+		<div class="bar_chart">
+			<div class="bar_inner" style="width: '.$percent.'%;">
+				<div class="bar_text">
+					'.$text.'
+				</div>
+			</div>
+		</div>
+	';
+}
 
 /**
  * Show it all... in simplexml
