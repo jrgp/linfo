@@ -126,7 +126,6 @@ class ext_libvirt implements LinfoExtension {
 		if (!$this->res)
 			return false;
 
-		// Start showing connections
 		$rows[] = array(
 			'type' => 'header',
 			'columns' =>
