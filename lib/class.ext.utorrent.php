@@ -55,6 +55,7 @@ class ext_utorrent implements LinfoExtension {
 		$LinfoError,
 		$torrents = array(),
 		$connectionSettings = array(),
+		$stats = array('uploaded' => 0, 'downloaded' => 0),
 		$cookiefile = false,
 		$res = false;
 
@@ -188,6 +189,9 @@ class ext_utorrent implements LinfoExtension {
 			}
 			$this->torrents[] = $torrent;
 			$torrent_names[] = $torrent['TORRENT_NAME'];
+
+      $this->stats['downloaded'] += $torrent['TORRENT_DOWNLOADED'];
+      $this->stats['uploaded'] += $torrent['TORRENT_UPLOADED'];
 		}
 
 		// torrent_names them by name ascending
@@ -232,15 +236,16 @@ class ext_utorrent implements LinfoExtension {
 					byte_convert($info['TORRENT_DOWNLOADED']),
 					byte_convert($info['TORRENT_UPLOADED']),
 					$info['TORRENT_RATIO'] > 0 ? round($info['TORRENT_RATIO'] / 1000, 2) : '0.0',
-					byte_convert($info['TORRENT_DOWNSPEED']).' &darr; '.
-					byte_convert($info['TORRENT_UPSPEED']).' &uarr; '
+					byte_convert($info['TORRENT_DOWNSPEED']).'/s &darr; '.
+					byte_convert($info['TORRENT_UPSPEED']).'/s &uarr; '
 				)
 			);
 		}
 
 		// Give it off
 		return array(
-			'root_title' => '&micro;Torrent',
+			'root_title' => '&micro;Torrent <span style="font-size: 80%;">('.byte_convert($this->stats['downloaded']).' &darr; '
+        .byte_convert($this->stats['uploaded']).' &uarr; '.round($this->stats['uploaded'] / $this->stats['downloaded'], 2).' ratio)</span>',
 			'rows' => $rows
 		);
 	}
