@@ -181,6 +181,7 @@ class ext_utorrent implements LinfoExtension {
 		}
 
 		$torrent_names = array();
+		$torrent_states = array();
 
 		foreach ($response['torrents'] as $torrent_src) {
 			$torrent = array();
@@ -189,13 +190,15 @@ class ext_utorrent implements LinfoExtension {
 			}
 			$this->torrents[] = $torrent;
 			$torrent_names[] = $torrent['TORRENT_NAME'];
+			$torrent_states[] = $torrent['TORRENT_STATUS_MESSAGE'];
 
-      $this->stats['downloaded'] += $torrent['TORRENT_DOWNLOADED'];
-      $this->stats['uploaded'] += $torrent['TORRENT_UPLOADED'];
+			$this->stats['downloaded'] += $torrent['TORRENT_DOWNLOADED'];
+			$this->stats['uploaded'] += $torrent['TORRENT_UPLOADED'];
 		}
 
-		// torrent_names them by name ascending
-		array_multisort($torrent_names, SORT_ASC, $this->torrents);
+		// Sort by state and then name ascending (show downloading/etc first)
+		array_multisort($torrent_states, SORT_ASC,
+			$torrent_names, SORT_ASC, $this->torrents);
 
 		$this->res = true;
 		$this->cleanup();
@@ -245,7 +248,7 @@ class ext_utorrent implements LinfoExtension {
 		// Give it off
 		return array(
 			'root_title' => '&micro;Torrent <span style="font-size: 80%;">('.byte_convert($this->stats['downloaded']).' &darr; '
-        .byte_convert($this->stats['uploaded']).' &uarr; '.round($this->stats['uploaded'] / $this->stats['downloaded'], 2).' ratio)</span>',
+				.byte_convert($this->stats['uploaded']).' &uarr; '.round($this->stats['uploaded'] / $this->stats['downloaded'], 2).' ratio)</span>',
 			'rows' => $rows
 		);
 	}
