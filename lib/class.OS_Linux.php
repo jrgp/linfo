@@ -28,7 +28,7 @@ defined('IN_LINFO') or exit;
  * Totally ignores CallExt class, very deliberately
  * Also deliberately ignores trying to find out the distro. 
  */
-class OS_Linux {
+class OS_Linux extends OS_Unix_Common {
 
 	// Keep these tucked away
 	protected
@@ -165,11 +165,9 @@ class OS_Linux {
 			$this->error->add('Linfo Core', 'Error getting /proc/sys/kernel/hostname');
 			return 'Unknown';
 		}
-		else {
 
-			// Didn't fail; return it
-			return $hostname;
-		}
+		// Didn't fail; return it
+		return $this->ensureFQDN($hostname);
 	}
 
 	/**
