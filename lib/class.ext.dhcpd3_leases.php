@@ -69,7 +69,7 @@ class ext_dhcpd3_leases implements LinfoExtension {
 		$this->_hide_mac = array_key_exists('dhcpd3_hide_mac', $settings) ? (bool) $settings['dhcpd3_hide_mac'] : false;
 
 		// Find leases file
-		$this->_leases_file = locate_actual_path(array(
+		$this->_leases_file = LinfoCommon::locateActualPath(array(
 			'/var/lib/dhcp/dhcpd.leases', // modern-er debian
 			'/var/lib/dhcp3/dhcpd.leases',	// debian/ubuntu/others probably
 			'/var/lib/dhcpd/dhcpd.leases',	// Possibly redhatish distros and others
@@ -96,7 +96,7 @@ class ext_dhcpd3_leases implements LinfoExtension {
 		}
 
 		// Get contents
-		$contents = getContents($this->_leases_file, false);
+		$contents = LinfoCommon::getContents($this->_leases_file, false);
 
 		// Couldn't?
 		if ($contents === false) {

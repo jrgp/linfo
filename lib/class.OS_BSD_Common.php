@@ -54,7 +54,7 @@ abstract class OS_BSD_Common {
 	
 	// Save dmesg
 	protected function loadDmesg() {
-		$this->dmesg = getContents('/var/run/dmesg.boot');
+		$this->dmesg = LinfoCommon::getContents('/var/run/dmesg.boot');
 	}
 
 	// Use sysctl to get something, and cache result.

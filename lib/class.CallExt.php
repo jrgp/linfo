@@ -107,7 +107,7 @@ class CallExt {
 				$command = "$path$name $switches";
 
 				// Sudoing?
-				$command = $attempt_sudo ? locate_actual_path(array_append_string($this->searchPaths, 'sudo', '%2s%1s')) . ' ' . $command : $command;
+				$command = $attempt_sudo ? LinfoCommon::locateActualPath(LinfoCommon::arrayAppendString($this->searchPaths, 'sudo', '%2s%1s')) . ' ' . $command : $command;
 
 				// Result of command
 				$result = `$command`;

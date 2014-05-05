@@ -212,9 +212,9 @@ function showInfoHTML($info, $settings) {
 				</tr>
 				<tr>
 					<td>'.$info['RAM']['type'].'</td>
-					<td>'.byte_convert($info['RAM']['free']).'</td>
-					<td>'.byte_convert($info['RAM']['total'] - $info['RAM']['free']).'</td>
-					<td>'.byte_convert($info['RAM']['total']).'</td>
+					<td>'.LinfoCommon::byteConvert($info['RAM']['free']).'</td>
+					<td>'.LinfoCommon::byteConvert($info['RAM']['total'] - $info['RAM']['free']).'</td>
+					<td>'.LinfoCommon::byteConvert($info['RAM']['total']).'</td>
 				</tr>';
 				$have_swap = (isset($info['RAM']['swapFree']) || isset($info['RAM']['swapTotal']));
 				if ($have_swap) {
@@ -223,9 +223,9 @@ function showInfoHTML($info, $settings) {
 					echo'
 					<tr>
 						<td'.($show_detailed_swap ? ' rowspan="2"' : '').'>Swap</td>
-						<td>'.byte_convert(@$info['RAM']['swapFree']).'</td>
-						<td>'.byte_convert(@$info['RAM']['swapTotal'] - $info['RAM']['swapFree']).'</td>
-						<td>'.byte_convert(@$info['RAM']['swapTotal']).'</td>
+						<td>'.LinfoCommon::byteConvert(@$info['RAM']['swapFree']).'</td>
+						<td>'.LinfoCommon::byteConvert(@$info['RAM']['swapTotal'] - $info['RAM']['swapFree']).'</td>
+						<td>'.LinfoCommon::byteConvert(@$info['RAM']['swapTotal']).'</td>
 					</tr>';
 					
 					// As in we have at least one swap device present. Show them.
@@ -251,8 +251,8 @@ function showInfoHTML($info, $settings) {
 										<tr>
 											<td>'.$swap['device'].'</td>
 											<td>'.ucfirst($swap['type']).'</td>
-											<td>'.byte_convert($swap['size']).'</td>
-											<td>'.byte_convert($swap['used']).'</td>
+											<td>'.LinfoCommon::byteConvert($swap['size']).'</td>
+											<td>'.LinfoCommon::byteConvert($swap['used']).'</td>
 										</tr>
 										';
 									echo '
@@ -288,8 +288,8 @@ function showInfoHTML($info, $settings) {
 				<tr>
 					<td>'.$device.'</td>', $show_type ? '
 					<td>'.$stats['type'].'</td>' : '','
-					<td>'.byte_convert($stats['sent']['bytes']).'</td>
-					<td>'.byte_convert($stats['recieved']['bytes']).'</td>
+					<td>'.LinfoCommon::byteConvert($stats['sent']['bytes']).'</td>
+					<td>'.LinfoCommon::byteConvert($stats['recieved']['bytes']).'</td>
 					<td class="net_'.$stats['state'].'">'.ucfirst($stats['state']).'</td>
 				</tr>';
 			else
@@ -388,7 +388,7 @@ function showInfoHTML($info, $settings) {
 						'.(array_key_exists(1, $state_parts) ? '<span class="faded">'.$state_parts[1].'</span>' : '').'</td>
 					<td>'.$state['pid'].'</td>
 					<td>',$state['threads'] ? $state['threads'] : '?','</td>
-					<td>',$state['memory_usage'] ? byte_convert($state['memory_usage']) : '?','</td>
+					<td>',$state['memory_usage'] ? LinfoCommon::byteConvert($state['memory_usage']) : '?','</td>
 				</tr>
 			';
 		}
@@ -468,7 +468,7 @@ function showInfoHTML($info, $settings) {
 					<td>',$drive['name'] ? $drive['name'] : $lang['unknown'],'</td>
 					', $show_stats ? '<td>'.($drive['reads'] !== false ? number_format($drive['reads']) : $lang['unknown']).'</td>
 					<td>'.($drive['writes'] !== false ? number_format($drive['writes']) : $lang['unknown']).'</td>' : '','
-					<td>',$drive['size'] ? byte_convert($drive['size']) : $lang['unknown'],'</td>
+					<td>',$drive['size'] ? LinfoCommon::byteConvert($drive['size']) : $lang['unknown'],'</td>
 				</tr>';
 
 				// If we've got partitions for this drive, show them too
@@ -480,7 +480,7 @@ function showInfoHTML($info, $settings) {
 					// Each
 					foreach ($drive['partitions'] as $partition)
 						echo '
-						&#9492; '. (isset($partition['number']) ? $drive['device'].$partition['number'] : $partition['name']) .' - '.byte_convert($partition['size']).'<br />';
+						&#9492; '. (isset($partition['number']) ? $drive['device'].$partition['number'] : $partition['name']) .' - '.LinfoCommon::byteConvert($partition['size']).'<br />';
 
 					echo '
 					</td>
@@ -625,10 +625,10 @@ function showInfoHTML($info, $settings) {
 				echo'
 					<td>'.$mount['type'].'</td>', $settings['show']['mounts_options'] ? '
 					<td>'.(empty($mount['options']) ? '<em>unknown</em>' : '<ul><li>'.implode('</li><li>', $mount['options']).'</li></ul>').'</td>' : '','
-					<td>'.byte_convert($mount['size']).'</td>
-					<td>'.byte_convert($mount['used']).
+					<td>'.LinfoCommon::byteConvert($mount['size']).'</td>
+					<td>'.LinfoCommon::byteConvert($mount['used']).
 					($mount['used_percent'] !== false ? ' <span class="perc">('.$mount['used_percent'].'%)</span>' : '').'</td>
-					<td>'.byte_convert($mount['free']).
+					<td>'.LinfoCommon::byteConvert($mount['free']).
 					($mount['free_percent'] !== false ? ' <span class="perc">('.$mount['free_percent'].'%)</span>' : '').'</td>
 					<td>
 						'.bar_chart((int) $mount['used_percent'], $mount['used_percent'] ? $mount['used_percent'].'%' : 'N/A').'
@@ -644,9 +644,9 @@ function showInfoHTML($info, $settings) {
 		echo '
 		<tr class="alt">
 			<td colspan="',2 + $addcolumns,'">Totals: </td>
-			<td>'.byte_convert($total_size).'</td>
-			<td>'.byte_convert($total_used).'</td>
-			<td>'.byte_convert($total_free).'</td>
+			<td>'.LinfoCommon::byteConvert($total_size).'</td>
+			<td>'.LinfoCommon::byteConvert($total_used).'</td>
+			<td>'.LinfoCommon::byteConvert($total_free).'</td>
 			<td>
 				'.bar_chart($total_used_perc, $total_used_perc.'%').'
 			</td>
@@ -762,7 +762,7 @@ function showInfoHTML($info, $settings) {
 						echo '
 <div class="col2_side">
 	<div class="col2_side_left">
-	'.create_table($ext).'
+	'.LinfoCommon::createTable($ext).'
 	</div>
 	<div class="col2_side_right">
 		<div class="infoTable">
@@ -786,7 +786,7 @@ function showInfoHTML($info, $settings) {
 
 					// Nothing extra; just the table
 					default:
-						echo create_table($ext);
+						echo LinfoCommon::createTable($ext);
 					break;
 				}
 			}
@@ -1099,7 +1099,7 @@ function bar_chart($percent, $text = false) {
 			foreach ($info['extensions'] as $ext) {
 				$header = false;
 				if (is_array($ext) && count($ext) > 0) {
-					$this_ext = $extensions->addChild(xml_string_sanitize($ext['root_title']));
+					$this_ext = $extensions->addChild(LinfoCommon::xmlStringSanitize($ext['root_title']));
 					foreach ((array) $ext['rows'] as $i => $row) {
 						if ($row['type'] == 'header') {
 							$header = $i;
@@ -1109,7 +1109,7 @@ function bar_chart($percent, $text = false) {
 							if ($header !== false && array_key_exists($header, $ext['rows'])) {
 								foreach ($ext['rows'][$header]['columns'] as $ri => $rc) {
 									$this_row->addChild(
-										xml_string_sanitize($rc),
+										LinfoCommon::xmlStringSanitize($rc),
 										$ext['rows'][$i]['columns'][$ri]
 									);
 								}

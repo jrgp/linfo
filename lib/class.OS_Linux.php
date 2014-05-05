@@ -130,7 +130,7 @@ class OS_Linux {
 		}
 
 		// Get it
-		$contents = getContents($file);
+		$contents = LinfoCommon::getContents($file);
 
 		// Parse it
 		if (preg_match('/^Linux version (\S+).+$/', $contents, $match) != 1) {
@@ -158,7 +158,7 @@ class OS_Linux {
 		$file = '/proc/sys/kernel/hostname';
 		
 		// Get it
-		$hostname = getContents($file, false);
+		$hostname = LinfoCommon::getContents($file, false);
 
 		// Failed?
 		if ($hostname === false) {
@@ -202,14 +202,14 @@ class OS_Linux {
 		$swapVals = array();
 
 		// Get memContents
-		@preg_match_all('/^([^:]+)\:\s+(\d+)\s*(?:k[bB])?\s*/m', getContents($procFileMem), $matches, PREG_SET_ORDER);
+		@preg_match_all('/^([^:]+)\:\s+(\d+)\s*(?:k[bB])?\s*/m', LinfoCommon::getContents($procFileMem), $matches, PREG_SET_ORDER);
 
 		// Deal with it
 		foreach ((array)$matches as $memInfo)
 			$memVals[$memInfo[1]] = $memInfo[2];
 
 		// Get swapContents
-		@preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)/m', getContents($procFileSwap), $matches, PREG_SET_ORDER);
+		@preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)/m', LinfoCommon::getContents($procFileSwap), $matches, PREG_SET_ORDER);
 		foreach ((array)$matches as $swapDevice) {
 			
 			// Append each swap device
@@ -347,7 +347,7 @@ class OS_Linux {
 			$t = new LinfoTimerStart('Uptime');
 
 		// Get contents
-		$contents = getContents('/proc/uptime', false);
+		$contents = LinfoCommon::getContents('/proc/uptime', false);
 
 		// eh?
 		if ($contents === false) {
@@ -359,10 +359,10 @@ class OS_Linux {
 		list($seconds) = explode(' ', $contents, 1);
 
 		// Get it textual, as in days/minutes/hours/etc
-		$uptime = seconds_convert(ceil($seconds));
+		$uptime = LinfoCommon::secondsConvert(ceil($seconds));
 
 		// Now find out when the system was booted
-		$contents = getContents('/proc/stat', false);
+		$contents = LinfoCommon::getContents('/proc/stat', false);
 
 		// Ugh
 		if ($contents === false)
@@ -393,7 +393,7 @@ class OS_Linux {
 
 		// Get partitions
 		$partitions = array();
-		$partitions_contents = getContents('/proc/partitions');
+		$partitions_contents = LinfoCommon::getContents('/proc/partitions');
 		if (@preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, PREG_SET_ORDER) > 0) {
 			// Go through each match
 			foreach ($partitions_match as $partition)
@@ -416,7 +416,7 @@ class OS_Linux {
 			$parts = explode('/', $path);
 
 			// Attempt getting read/write stats
-			if (preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', getContents(dirname(dirname($path)).'/stat'), $statMatches) !== 1) {
+			if (preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', LinfoCommon::getContents(dirname(dirname($path)).'/stat'), $statMatches) !== 1) {
 				// Didn't get it
 				$reads = false;
 				$writes = false;
@@ -427,12 +427,12 @@ class OS_Linux {
 
 			// Append this drive on
 			$drives[] = array(
-				'name' => getContents($path, 'Unknown'),
-				'vendor' => getContents(dirname($path).'/vendor', 'Unknown'),
+				'name' => LinfoCommon::getContents($path, 'Unknown'),
+				'vendor' => LinfoCommon::getContents(dirname($path).'/vendor', 'Unknown'),
 				'device' => '/dev/'.$parts[3],
 				'reads' => $reads,
 				'writes' => $writes,
-				'size' => getContents(dirname(dirname($path)).'/size', 0) * 512,
+				'size' => LinfoCommon::getContents(dirname(dirname($path)).'/size', 0) * 512,
 				'partitions' => array_key_exists($parts[3], $partitions) && is_array($partitions[$parts[3]]) ? $partitions[$parts[3]] : false 
 			);
 		}
@@ -544,8 +544,8 @@ class OS_Linux {
 				// Get info here
 				$section = rtrim($path, 'label');
 				$filename = basename($path);
-				$label = getContents($path);
-				$value = getContents($section.'input');
+				$label = LinfoCommon::getContents($path);
+				$value = LinfoCommon::getContents($section.'input');
 
 				// Determine units and possibly fix values
 				if (strpos($filename, 'fan') !== false)
@@ -579,8 +579,8 @@ class OS_Linux {
 			$dir = dirname($bl);
 			if (!is_file($dir.'/actual_brightness'))
 				continue;
-			$max = get_int_from_file($bl);
-			$cur = get_int_from_file($dir.'/actual_brightness');
+			$max = LinfoCommon::getIntFromFile($bl);
+			$cur = LinfoCommon::getIntFromFile($dir.'/actual_brightness');
 			if ($max < 0 || $cur < 0)
 				continue;
 			$return[] = array(
@@ -609,7 +609,7 @@ class OS_Linux {
 			$t = new LinfoTimerStart('Mounted file systems');
 
 		// File
-		$contents = getContents('/proc/mounts', false);
+		$contents = LinfoCommon::getContents('/proc/mounts', false);
 
 		// Can't?
 		if ($contents == false)
@@ -686,12 +686,12 @@ class OS_Linux {
 			$t = new LinfoTimerStart('Hardware Devices');
 
 		// Location of useful paths
-		$pci_ids = locate_actual_path(array(
+		$pci_ids = LinfoCommon::locateActualPath(array(
 			'/usr/share/misc/pci.ids',	// debian/ubuntu
 			'/usr/share/pci.ids',		// opensuse
 			'/usr/share/hwdata/pci.ids',	// centos. maybe also redhat/fedora
 		));
-		$usb_ids = locate_actual_path(array(
+		$usb_ids = LinfoCommon::locateActualPath(array(
 			'/usr/share/misc/usb.ids',	// debian/ubuntu
 			'/usr/share/usb.ids',		// opensuse
 			'/usr/share/hwdata/usb.ids',	// centos. maybe also redhat/fedora
@@ -726,7 +726,7 @@ class OS_Linux {
 		if (array_key_exists('mdadm', (array)$this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
 
 			// Try getting contents
-			$mdadm_contents = getContents('/proc/mdstat', false);
+			$mdadm_contents = LinfoCommon::getContents('/proc/mdstat', false);
 
 			// No?
 			if ($mdadm_contents === false)
@@ -786,7 +786,7 @@ class OS_Linux {
 					'status' => $array[2],
 					'level' => $array[3],
 					'drives' => $drives,
-					'size' => byte_convert($array[5]*1024),
+					'size' => LinfoCommon::byteConvert($array[5]*1024),
 					'algorithm' => $array[6],
 					'count' => $array[7],
 					'chart' => $array[8]
@@ -818,7 +818,7 @@ class OS_Linux {
 		$file = '/proc/loadavg';
 
 		// Get contents
-		$contents = getContents($file, false);
+		$contents = LinfoCommon::getContents($file, false);
 
 		// ugh
 		if ($contents === false) {
@@ -857,7 +857,7 @@ class OS_Linux {
 		foreach ((array) @glob('/sys/class/net/*', GLOB_NOSORT) as $path) {
 
 			// States
-			$operstate_contents = getContents($path.'/operstate');
+			$operstate_contents = LinfoCommon::getContents($path.'/operstate');
 			switch ($operstate_contents) {
 				case 'down':
 				case 'up':
@@ -871,7 +871,7 @@ class OS_Linux {
 			}
 
 			if ($state = 'unknown' && file_exists($path.'/carrier')) {
-				 $carrier = getContents($path.'/carrier', false);
+				 $carrier = LinfoCommon::getContents($path.'/carrier', false);
 				if (!empty($carrier)) 
 					$state = 'up'; 
 				else
@@ -879,7 +879,7 @@ class OS_Linux {
 			}
 
 			// Type
-			$type_contents = strtoupper(getContents($path.'/device/modalias'));
+			$type_contents = strtoupper(LinfoCommon::getContents($path.'/device/modalias'));
 			list($type) = explode(':', $type_contents, 2);
 			$type = $type != 'USB' && $type != 'PCI' ? 'N/A' : $type;
 
@@ -888,14 +888,14 @@ class OS_Linux {
 
 				// Stats are stored in simple files just containing the number
 				'recieved' => array(
-					'bytes' => get_int_from_file($path.'/statistics/rx_bytes'),
-					'errors' => get_int_from_file($path.'/statistics/rx_errors'),
-					'packets' => get_int_from_file($path.'/statistics/rx_packets')
+					'bytes' => LinfoCommon::getIntFromFile($path.'/statistics/rx_bytes'),
+					'errors' => LinfoCommon::getIntFromFile($path.'/statistics/rx_errors'),
+					'packets' => LinfoCommon::getIntFromFile($path.'/statistics/rx_packets')
 				),
 				'sent' => array(
-					'bytes' => get_int_from_file($path.'/statistics/tx_bytes'),
-					'errors' => get_int_from_file($path.'/statistics/tx_errors'),
-					'packets' => get_int_from_file($path.'/statistics/rx_packets')
+					'bytes' => LinfoCommon::getIntFromFile($path.'/statistics/tx_bytes'),
+					'errors' => LinfoCommon::getIntFromFile($path.'/statistics/tx_errors'),
+					'packets' => LinfoCommon::getIntFromFile($path.'/statistics/rx_packets')
 				),
 
 				// These were determined above
@@ -939,8 +939,8 @@ class OS_Linux {
 				continue;
 
 			// Get these from the simple text files
-			$charge_full = get_int_from_file($b.'/charge_full');
-			$charge_now = get_int_from_file($b.'/charge_now');
+			$charge_full = LinfoCommon::getIntFromFile($b.'/charge_full');
+			$charge_now = LinfoCommon::getIntFromFile($b.'/charge_now');
 
 			// Alleged percentage
 			$percentage = $charge_now != 0 && $charge_full != 0 ? (round($charge_now / $charge_full, 4) * 100) : '?';
@@ -950,8 +950,8 @@ class OS_Linux {
 				'charge_full' => $charge_full,
 				'charge_now' => $charge_now,
 				'percentage' => (is_numeric($percentage) && $percentage > 100 ? 100 : $percentage ).'%',
-				'device' => getContents($b.'/manufacturer') . ' ' . getContents($b.'/model_name', 'Unknown'),
-				'state' => getContents($b.'/status', 'Unknown')
+				'device' => LinfoCommon::getContents($b.'/manufacturer') . ' ' . LinfoCommon::getContents($b.'/model_name', 'Unknown'),
+				'state' => LinfoCommon::getContents($b.'/status', 'Unknown')
 			);
 		}
 
@@ -975,7 +975,7 @@ class OS_Linux {
 		$return = array();
 
 		// In here
-		$contents = getContents('/proc/net/wireless');
+		$contents = LinfoCommon::getContents('/proc/net/wireless');
 
 		// Oi
 		if ($contents == false) {
@@ -1028,7 +1028,7 @@ class OS_Linux {
 		}
 
 		// Get contents and parse
-		$contents = getContents($file);
+		$contents = LinfoCommon::getContents($file);
 
 		// Parse
 		if (preg_match_all('/^\s*(\d+)\s\[[\s\w]+\]:\s(.+)$/m', $contents, $matches, PREG_SET_ORDER) == 0)
@@ -1087,7 +1087,7 @@ class OS_Linux {
 				continue;
 			
 			// Get that file's contents
-			$status_contents = getContents($process);
+			$status_contents = LinfoCommon::getContents($process);
 
 			// Try getting state
 			@preg_match('/^State:\s+(\w)/m', $status_contents, $state_match);
@@ -1162,7 +1162,7 @@ class OS_Linux {
 		if ($do_process_search) {
 			// Precache all process cmdlines
 			for ($i = 0; $i < $num_paths; $i++)
-				$cmdline_cache[$i] = explode("\x00", getContents($potential_paths[$i]));
+				$cmdline_cache[$i] = explode("\x00", LinfoCommon::getContents($potential_paths[$i]));
 			
 			// Go through the list of executables to search for
 			foreach ($this->settings['services']['executables'] as $service => $exec) {
@@ -1193,7 +1193,7 @@ class OS_Linux {
 
 		// PID files
 		foreach ($this->settings['services']['pidFiles'] as $service => $file) {
-			$pid = getContents($file, false);
+			$pid = LinfoCommon::getContents($file, false);
 			if ($pid != false && is_numeric($pid))
 				$pids[$service] = $pid;
 		}
@@ -1201,7 +1201,7 @@ class OS_Linux {
 		// Deal with PIDs
 		foreach ($pids as $service => $pid) {
 			$path = '/proc/'.$pid.'/status';
-			$status_contents = getContents($path, false);
+			$status_contents = LinfoCommon::getContents($path, false);
 			if ($status_contents == false) {
 				$statuses[$service] = array('state' => 'Down', 'threads' => 'N/A', 'pid' => $pid);
 				continue;
@@ -1348,7 +1348,7 @@ class OS_Linux {
 			if (file_exists($distro[0]) && is_readable($distro[0])) {
 
 				// Get it
-				$contents = $distro[1] !== '' ? getContents($distro[0], '') : '';
+				$contents = $distro[1] !== '' ? LinfoCommon::getContents($distro[0], '') : '';
 
 				// Don't use regex, this is enough; say version is the file's contents
 				if ($distro[1] === false) {
@@ -1383,7 +1383,7 @@ class OS_Linux {
 				}
 
 				// Closure 
-				elseif(is_callable($distro[1]) && ($info = $distro[1](getContents($distro[0]))) && is_array($info)) {
+				elseif(is_callable($distro[1]) && ($info = $distro[1](LinfoCommon::getContents($distro[0]))) && is_array($info)) {
 					return array(
 						'name' => $info['distro'],
 						'version' => $info['version']
@@ -1424,7 +1424,7 @@ class OS_Linux {
 		foreach ($procs as $proc) {
 
 			// Does the process match a popular shell, such as bash, csh, etc?
-			if (preg_match('/(?:bash|csh|zsh|ksh)$/', getContents($proc, ''))) {
+			if (preg_match('/(?:bash|csh|zsh|ksh)$/', LinfoCommon::getContents($proc, ''))) {
 
 				// Who owns it, anyway? 
 				$owner = fileowner(dirname($proc));
@@ -1462,20 +1462,20 @@ class OS_Linux {
 
 		// Try getting kernel modules
 		$modules = array();
-		if (preg_match_all('/^(\S+)/m', getContents('/proc/modules', ''), $matches, PREG_SET_ORDER)) {
+		if (preg_match_all('/^(\S+)/m', LinfoCommon::getContents('/proc/modules', ''), $matches, PREG_SET_ORDER)) {
 			foreach ($matches as $match)	
 				$modules[] = $match[1];
 		}
 
 		// VMware modules. Tested on vmware fusion for mac...
-		if (any_in_array(array('vmw_balloon', 'vmwgfx', 'vmw_vmci'), $modules))
+		if (LinfoCommon::anyInArray(array('vmw_balloon', 'vmwgfx', 'vmw_vmci'), $modules))
 			return array('type' => 'guest', 'method' => 'VMWare');
 
 		// Looks like it might be xen...
-		if (any_in_array(array('xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'), $modules) || is_dir('/proc/xen')) {
+		if (LinfoCommon::anyInArray(array('xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'), $modules) || is_dir('/proc/xen')) {
 
 			// Guest or host?
-			if (any_in_array(array('xen-netback', 'xen_blkback'), $modules) || strpos('control_d', getContents('/proc/xen/capabilities', '')) !== false) 
+			if (LinfoCommon::anyInArray(array('xen-netback', 'xen_blkback'), $modules) || strpos('control_d', LinfoCommon::getContents('/proc/xen/capabilities', '')) !== false) 
 				return array('type' => 'host', 'method' => 'Xen');
 			else
 				return array('type' => 'guest', 'method' => 'Xen');
@@ -1494,7 +1494,7 @@ class OS_Linux {
 			return array('type' => 'host', 'method' => 'KVM');
 
 		// Looks like it might be a KVM or QEMU guest! This is a bit lame since Xen can also use virtio but its less likely (?)
-		if (any_in_array(array('virtio', 'virtio_balloon', 'virtio_pci', 'virtio_blk', 'virtio_net'), $modules))
+		if (LinfoCommon::anyInArray(array('virtio', 'virtio_balloon', 'virtio_pci', 'virtio_blk', 'virtio_net'), $modules))
 			return array('type' => 'guest', 'method' => 'Qemu/KVM');
 
 		// idk
@@ -1552,7 +1552,7 @@ class OS_Linux {
 		 }
 
 		 for ($i = 0; $i < $iterations; $i++) {
-			 $contents = getContents('/proc/stat', false);
+			 $contents = LinfoCommon::getContents('/proc/stat', false);
 
 			 // Yay we can't read it so we won't sleep below!
 			 if (!$contents)

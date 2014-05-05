@@ -96,7 +96,7 @@ class ext_transmission implements LinfoExtension {
 		$t = new LinfoTimerStart('Transmission extension');
 
 		// Deal with stats, if possible 
-		if ($this->_folder && ($stats_contents = getContents($this->_folder.'stats.json', false)) && $stats_contents != false) {
+		if ($this->_folder && ($stats_contents = LinfoCommon::getContents($this->_folder.'stats.json', false)) && $stats_contents != false) {
 			$stats_vals = @json_decode($stats_contents, true);
 			if (is_array($stats_vals))
 				$this->_stats = $stats_vals;
@@ -294,20 +294,20 @@ class ext_transmission implements LinfoExtension {
 						</div>
 						',
 						$torrent['state'],
-						$have_bytes !== false ? byte_convert($have_bytes) : $torrent['have'],
-						$uploaded_bytes !== false ? byte_convert($uploaded_bytes) : 'None',
+						$have_bytes !== false ? LinfoCommon::byteConvert($have_bytes) : $torrent['have'],
+						$uploaded_bytes !== false ? LinfoCommon::byteConvert($uploaded_bytes) : 'None',
 						$torrent['eta'],
 						$torrent['ratio'],
-						byte_convert($torrent['up']) . '/s',
-						byte_convert($torrent['down']) . '/s'
+						LinfoCommon::byteConvert($torrent['up']) . '/s',
+						LinfoCommon::byteConvert($torrent['down']) . '/s'
 					)
 				);
 			}
 
 			// Finish the size totals
 			$status_tally['Ratio'] = $status_tally['Downloaded'] > 0 && $status_tally['Uploaded'] > 0 ? round($status_tally['Uploaded'] / $status_tally['Downloaded'], 2) : 'N/A';
-			$status_tally['Downloaded'] = $status_tally['Downloaded'] > 0 ? byte_convert($status_tally['Downloaded']) : 'None';
-			$status_tally['Uploaded'] = $status_tally['Uploaded'] > 0 ? byte_convert($status_tally['Uploaded']) : 'None';
+			$status_tally['Downloaded'] = $status_tally['Downloaded'] > 0 ? LinfoCommon::byteConvert($status_tally['Downloaded']) : 'None';
+			$status_tally['Uploaded'] = $status_tally['Uploaded'] > 0 ? LinfoCommon::byteConvert($status_tally['Uploaded']) : 'None';
 
 			// Create a row for the tally of statuses
 			if (count($status_tally) > 0) {
@@ -339,10 +339,10 @@ class ext_transmission implements LinfoExtension {
 			$extra_vals = array(
 				'title' => 'Transmission Stats',
 				'values' => array(
-					array('Total Downloaded', byte_convert($this->_stats['downloaded-bytes'])),
-					array('Total Uploaded', byte_convert($this->_stats['uploaded-bytes'])),
+					array('Total Downloaded', LinfoCommon::byteConvert($this->_stats['downloaded-bytes'])),
+					array('Total Uploaded', LinfoCommon::byteConvert($this->_stats['uploaded-bytes'])),
 					$this->_stats['uploaded-bytes'] > 0 && $this->_stats['downloaded-bytes'] > 0 ? array('Total Ratio', round($this->_stats['uploaded-bytes'] / $this->_stats['downloaded-bytes'], 3)) : false,
-					array('Duration', seconds_convert($this->_stats['seconds-active']))
+					array('Duration', LinfoCommon::secondsConvert($this->_stats['seconds-active']))
 				)
 			);
 		}

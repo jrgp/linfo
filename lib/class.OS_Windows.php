@@ -250,7 +250,7 @@ class OS_Windows {
 		);
 		$booted_ts = mktime($booted['hour'], $booted['minute'], $booted['second'], $booted['month'], $booted['day'], $booted['year']);
 		
-		return seconds_convert(time() - $booted_ts) . '; booted ' . date($this->settings['dates'], $booted_ts);
+		return LinfoCommon::secondsConvert(time() - $booted_ts) . '; booted ' . date($this->settings['dates'], $booted_ts);
 	}
 	
 	/**

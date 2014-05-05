@@ -96,9 +96,9 @@ class out_ncurses {
 			array(
 				'name' => $lang['memory'],
 				'content' => array(
-					array($lang['size'], byte_convert($info['RAM']['total'])),
-					array($lang['used'], byte_convert($info['RAM']['total'] - $info['RAM']['free'])),
-					array($lang['free'], byte_convert($info['RAM']['free'])),
+					array($lang['size'], LinfoCommon::byteConvert($info['RAM']['total'])),
+					array($lang['used'], LinfoCommon::byteConvert($info['RAM']['total'] - $info['RAM']['free'])),
+					array($lang['free'], LinfoCommon::byteConvert($info['RAM']['free'])),
 				)
 			)
 		);

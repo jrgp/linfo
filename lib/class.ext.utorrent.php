@@ -231,24 +231,24 @@ class ext_utorrent implements LinfoExtension {
 				'columns' => array(
 					$info['TORRENT_NAME'].
 						'<br /><span style="font-size: 80%;">'.$info['TORRENT_HASH'].'</span>',
-					byte_convert($info['TORRENT_SIZE']),
+					LinfoCommon::byteConvert($info['TORRENT_SIZE']),
 					bar_chart($info['TORRENT_PROGRESS'] / 10),
 					$info['TORRENT_STATUS_MESSAGE'],
 					$info['TORRENT_SEEDS_CONNECTED'].'/'.$info['TORRENT_SEEDS_SWARM'],
 					$info['TORRENT_SEEDS_CONNECTED'].'/'.$info['TORRENT_PEERS_SWARM'],
-					byte_convert($info['TORRENT_DOWNLOADED']),
-					byte_convert($info['TORRENT_UPLOADED']),
+					LinfoCommon::byteConvert($info['TORRENT_DOWNLOADED']),
+					LinfoCommon::byteConvert($info['TORRENT_UPLOADED']),
 					$info['TORRENT_RATIO'] > 0 ? round($info['TORRENT_RATIO'] / 1000, 2) : '0.0',
-					byte_convert($info['TORRENT_DOWNSPEED']).'/s &darr; '.
-					byte_convert($info['TORRENT_UPSPEED']).'/s &uarr; '
+					LinfoCommon::byteConvert($info['TORRENT_DOWNSPEED']).'/s &darr; '.
+					LinfoCommon::byteConvert($info['TORRENT_UPSPEED']).'/s &uarr; '
 				)
 			);
 		}
 
 		// Give it off
 		return array(
-			'root_title' => '&micro;Torrent <span style="font-size: 80%;">('.byte_convert($this->stats['downloaded']).' &darr; '
-				.byte_convert($this->stats['uploaded']).' &uarr; '.round($this->stats['uploaded'] / $this->stats['downloaded'], 2).' ratio)</span>',
+			'root_title' => '&micro;Torrent <span style="font-size: 80%;">('.LinfoCommon::byteConvert($this->stats['downloaded']).' &darr; '
+				.LinfoCommon::byteConvert($this->stats['uploaded']).' &uarr; '.round($this->stats['uploaded'] / $this->stats['downloaded'], 2).' ratio)</span>',
 			'rows' => $rows
 		);
 	}
