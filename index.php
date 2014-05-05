@@ -71,8 +71,6 @@ $settings['hide']['filesystems'][] = 'binfmt_misc';
 // Load libs
 require_once LOCAL_PATH . 'lib/functions.init.php';
 require_once LOCAL_PATH . 'lib/functions.display.php';
-require_once LOCAL_PATH . 'lib/class.LinfoTimer.php';
-require_once LOCAL_PATH . 'lib/interface.LinfoExtension.php';
 
 // Default timeformat
 $settings['dates'] = array_key_exists('dates', $settings) ? $settings['dates'] : 'm/d/y h:i A (T)';
