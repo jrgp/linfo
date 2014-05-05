@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * This file is part of Linfo (c) 2014 Joseph Gillotti.
  * 
@@ -28,6 +27,8 @@ defined('IN_LINFO') or exit;
  *
  * Serve as the script's "controller". Leverages other classes. Loads settings,
  * outputs them in formats, runs extensions, etc.
+ *
+ * @throws LinfoFatalException
  */
 class Linfo {
 
@@ -51,8 +52,7 @@ class Linfo {
 
 		// Run through dependencies / sanity checking
 		if (!extension_loaded('pcre') && !function_exists('preg_match') && !function_exists('preg_match_all')) {
-			echo $this->app_name.' needs the `pcre\' extension to be loaded. http://us2.php.net/manual/en/book.pcre.php';
-			exit(1);
+			throw new LinfoFatalException($this->app_name.' needs the `pcre\' extension to be loaded. http://us2.php.net/manual/en/book.pcre.php');
 		}
 
 		// Warnings usually displayed to browser happen if date.timezone isn't set in php 5.3+
@@ -76,11 +76,11 @@ class Linfo {
 
 		// If configuration file does not exist but the sample does, say so
 		if (!is_file(LINFO_LOCAL_PATH . 'config.inc.php') && is_file(LINFO_LOCAL_PATH . 'sample.config.inc.php'))
-			exit('Make changes to sample.config.inc.php then rename as config.inc.php');
+			throw new LinfoFatalException('Make changes to sample.config.inc.php then rename as config.inc.php');
 
 		// If the config file is just gone, also say so
 		elseif(!is_file(LINFO_LOCAL_PATH . 'config.inc.php'))
-			exit('Config file not found.');
+			throw new LinfoFatalException('Config file not found.');
 
 		// It exists; load it
 		$settings = LinfoCommon::getVarFromFile(LINFO_LOCAL_PATH . 'config.inc.php', 'settings');
@@ -128,18 +128,12 @@ class Linfo {
 		$os = $this->getOS();
 
 		if (!$os)
-			exit("Unknown/unsupported operating system\n");
+			throw new LinfoFatalException("Unknown/unsupported operating system\n");
 
-		$class = 'OS_'.$os;
+		$distro_class = 'OS_'.$os;
+		$distro_instance = new $distro_class($this->settings);
 
-		try {
-			$distro_class =	new $class($this->settings);
-		}
-		catch (GetInfoException $e) {
-			exit($e->getMessage());
-		}
-
-		$this->info = $distro_class->getAll();
+		$this->info = $distro_instance->getAll();
 		$this->info['contains'] = array_key_exists('contains', $this->info) ? (array) $this->info['contains'] : array();
 		$this->info['timestamp'] = date('c');
 	}
@@ -217,8 +211,8 @@ class Linfo {
 			break;
 
 			case 'xml':
-				if (!extension_loaded('SimpleXML')) 
-					exit('Cannot generate XML. Install php\'s SimpleXML extension.');
+				if (!extension_loaded('SimpleXML'))
+					throw new LinfoFatalException('Cannot generate XML. Install php\'s SimpleXML extension.');
 				$output->xmlOut();
 			break;
 		}
