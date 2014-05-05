@@ -1,7 +1,7 @@
 <?php
 
 // Don't touch this. It attempts to thwart attempts of reading this file by another php script
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 // If you experience timezone errors, uncomment (remove //) the following line and change the timezone to your liking
 // date_default_timezone_set('America/New_York');
