@@ -19,13 +19,13 @@
 */
 
 
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 /*
  * Extensions must conform to this
  */
 interface LinfoExtension {
-	public function __construct();	// Have them localize useful things
+	public function __construct(Linfo $linfo);	// Have them localize useful things
 	public function work();		// Do the job
 	public function result();	// Return the result
 }

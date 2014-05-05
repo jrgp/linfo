@@ -30,18 +30,18 @@ $settings['utorrent_connection'] = array(
  * 
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with Linfo.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Linfo.	If not, see <http://www.gnu.org/licenses/>.
  * 
 */
 
 /**
  * Keep out hackers...
  */
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 /**
  * Get status on torrents running under uTorrent
@@ -99,8 +99,8 @@ class ext_utorrent implements LinfoExtension {
 		TOKEN_URL = 'http://%s:%s/gui/token.html',
 		LIST_URL = 'http://%s:%s/gui/?token=%s&list=%s';
 
-	public function __construct() {
-		global $settings;
+	public function __construct(Linfo $linfo) {
+		$settings = $linfo->getSettings();
 		$this->LinfoError = LinfoError::Singleton();
 		$this->connectionSettings = $settings['utorrent_connection'];
 	}
@@ -232,7 +232,7 @@ class ext_utorrent implements LinfoExtension {
 					$info['TORRENT_NAME'].
 						'<br /><span style="font-size: 80%;">'.$info['TORRENT_HASH'].'</span>',
 					LinfoCommon::byteConvert($info['TORRENT_SIZE']),
-					bar_chart($info['TORRENT_PROGRESS'] / 10),
+					LinfoOutput::generateBarChart($info['TORRENT_PROGRESS'] / 10),
 					$info['TORRENT_STATUS_MESSAGE'],
 					$info['TORRENT_SEEDS_CONNECTED'].'/'.$info['TORRENT_SEEDS_SWARM'],
 					$info['TORRENT_SEEDS_CONNECTED'].'/'.$info['TORRENT_PEERS_SWARM'],

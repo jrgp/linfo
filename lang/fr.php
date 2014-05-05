@@ -19,7 +19,7 @@
 */
 
 
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 /*
  * Traduction française : Jean-Bernard Yata yata.jb@revolsys.fr

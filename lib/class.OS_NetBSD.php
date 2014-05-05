@@ -19,7 +19,7 @@
 */
 
 
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 /*
  * NetBSD info class. Differs slightly from FreeBSD's

@@ -31,7 +31,7 @@ Installation:
 /**
  * Keep out hackers...
  */
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 /**
  * Get status on dhcp3 leases
@@ -58,9 +58,9 @@ class ext_dhcpd3_leases implements LinfoExtension {
 	 * 
 	 * @access public
 	 */
-	public function __construct() {
+	public function __construct(Linfo $linfo) {
 
-		global $settings;
+    $settings = $linfo->getSettings();
 
 		// Localize error handler
 		$this->_LinfoError = LinfoError::Singleton();

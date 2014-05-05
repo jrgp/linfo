@@ -20,7 +20,7 @@
 /**
  * Keep out hackers...
  */
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 /**
  * Get info on a usual linux system
@@ -853,7 +853,6 @@ class OS_Linux {
 		$return = array();
 
 		// Get values for each device
-		$num_nets = count($nets);
 		foreach ((array) @glob('/sys/class/net/*', GLOB_NOSORT) as $path) {
 
 			// States
@@ -1297,6 +1296,8 @@ class OS_Linux {
 		// - Also permits files that contain only the distro release version and nothing else,
 		// - in which case passing false instead of a regex string snags the contents.
 		// - And even also supports empty files, and just uses said file to identify the distro and ignore version
+    //
+    // TODO: Refactor this function
 
 		// Store the distribution's files we check for, optional regex parsing string, and name of said distro here:
 		$distros = array(
@@ -1367,7 +1368,7 @@ class OS_Linux {
 				}
 
 				// Get the distro out of the regex as well?
-				elseif($distro[2] === false && preg_match($distro[1], $contents, $m)) {
+				elseif($distro[2] === false && @preg_match($distro[1], $contents, $m)) {
 					return array(
 						'name' => $m[1],
 						'version' => $m[2] . (isset($m[3]) ? ' ('.$m[3].')' : '')
@@ -1375,7 +1376,7 @@ class OS_Linux {
 				}
 
 				// Our regex match it?
-				elseif(preg_match($distro[1], $contents, $m)) {
+				elseif(@preg_match($distro[1], $contents, $m)) {
 					return array(
 						'name' => $distro[2],
 						'version' => $m[1] . (isset($m[2]) ? ' ('.$m[2].')' : '')

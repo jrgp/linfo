@@ -34,7 +34,7 @@ Installation:
  * 
 */
 
-defined('IN_INFO') or exit; 
+defined('IN_LINFO') or exit; 
 
 /*
  * Get status on soldat game servers
@@ -48,8 +48,8 @@ class ext_soldat implements LinfoExtension {
 		$_servers;
 
 	// Localize important classes
-	public function __construct() {
-		global $settings;
+	public function __construct(Linfo $linfo) {
+		$settings = $linfo->getSettings();
 		$this->_LinfoError = LinfoError::Singleton();
 		$this->_servers = (array) $settings['soldat_servers'];
 	}
