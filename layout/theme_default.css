@@ -55,6 +55,7 @@ table.mini th {background-color: inherit;}
 .net_unknown {color: purple;}
 #errorList, #timerList {font-size: 75%; margin-top: 15px; margin-bottom: 15px;}
 .bar_chart { position: relative; margin: auto;}
+.smaller_bar_chart {padding-bottom: 2px;}
 .smaller_bar_chart .bar_text { text-align: left !important; }
 .bar_inner {
 	border-radius: 2px;
