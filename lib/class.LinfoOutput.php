@@ -241,16 +241,24 @@ class LinfoOutput {
 	
 	// The CPUs
 	if (!empty($settings['show']['cpu'])) {
-		$cpus = '';
-		foreach ((array) $info['CPU'] as $cpu) 
-			$cpus .=
+		$cpus = [];
+
+		foreach ((array) $info['CPU'] as $cpu) {
+			$cpu_html = 
 				(array_key_exists('Vendor', $cpu) && !empty($cpu['Vendor']) ? $cpu['Vendor'] . ' - ' : '') .
 				$cpu['Model'] .
 				(array_key_exists('MHz', $cpu) ?
 					($cpu['MHz'] < 1000 ? ' ('.$cpu['MHz'].' MHz)' : ' ('.round($cpu['MHz'] / 1000, 3).' GHz)') : '') .
-						(array_key_exists('usage_percentage', $cpu) ? ' ('.$cpu['usage_percentage'].'%)' : '') .
-					'<br />';
-		$core[] = array('CPUs ('.count($info['CPU']).')', $cpus);
+						(array_key_exists('usage_percentage', $cpu) ? ' ('.$cpu['usage_percentage'].'%)' : '');
+
+			if (array_key_exists('usage_percentage', $cpu))
+				$cpu_html = '<div class="smaller_bar_chart">'.self::generateBarChart($cpu['usage_percentage'], $cpu_html).'</div>';
+			else
+				$cpu_html .= '<br>';
+
+			$cpus[] = $cpu_html;
+		}
+		$core[] = array('CPUs ('.count($info['CPU']).')', implode('', $cpus));
 	}
 
 	// CPU Usage?
