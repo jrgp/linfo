@@ -21,6 +21,7 @@
 
 // Anti hack, as in allow included files to ensure they were included
 defined('IN_LINFO') or define('IN_LINFO', true);
+defined('IN_INFO') or define('IN_INFO', true); // support old config files
 
 // Configure absolute path to local directory
 defined('LINFO_LOCAL_PATH') or define('LINFO_LOCAL_PATH', dirname(__FILE__) . '/');
