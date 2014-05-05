@@ -20,7 +20,7 @@
 /**
  * Keep out hackers...
  */
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 /**
  * Started/created at the beginning of a function declaration.

@@ -20,7 +20,7 @@
 /**
  * Keep out hackers...
  */
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 /**
  * Deal with pci.ids and usb.ids workings
@@ -62,7 +62,7 @@ class HW_IDS {
 			'_'.substr(md5(LinfoCommon::getContents('/proc/sys/kernel/hostname')), 0, 10) : '_x';
 
 		// Path to the cache file
-		$this->_cache_file = CACHE_PATH.'/ids_cache'.$sys_id.($this->_use_json ? '.json' : '');
+		$this->_cache_file = LINFO_CACHE_PATH.'/ids_cache'.$sys_id.($this->_use_json ? '.json' : '');
 
 		// Load contents of cache
 		$this->_populate_cache();
@@ -120,7 +120,7 @@ class HW_IDS {
 	 * @access private
 	 */
 	private function _fetchPciIdsLinux() {
-    foreach ((array) @glob('/sys/bus/pci/devices/*', GLOB_NOSORT) as $path) {
+		foreach ((array) @glob('/sys/bus/pci/devices/*', GLOB_NOSORT) as $path) {
 			
 			// See if we can use simple vendor/device files and avoid taking time with regex
 			if (($f_device = LinfoCommon::getContents($path.'/device', '')) && ($f_vend = LinfoCommon::getContents($path.'/vendor', '')) &&
@@ -215,7 +215,7 @@ class HW_IDS {
 	 * @access private
 	 */
 	private function _write_cache() {
-		if (is_writable(CACHE_PATH)) 
+		if (is_writable(LINFO_CACHE_PATH)) 
 			@file_put_contents($this->_cache_file, $this->_use_json ? 
 				json_encode(array(
 					'hw' => array(

@@ -29,7 +29,7 @@ Installation:
  * 
 */
 
-defined('IN_INFO') or exit; 
+defined('IN_LINFO') or exit; 
 
 /*
  * Get info on a samba install by running smbstatus
@@ -44,7 +44,7 @@ class ext_smb implements LinfoExtension {
 		$_date_format = 'm/d/y @ h:i A';
 
 	// Localize important classes
-	public function __construct() {
+	public function __construct(Linfo $linfo) {
 		$this->_LinfoError = LinfoError::Singleton();
 		$this->_CallExt = new CallExt;
 		$this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));

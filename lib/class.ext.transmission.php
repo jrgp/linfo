@@ -44,7 +44,7 @@ Installation:
 /**
  * Keep out hackers...
  */
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 /**
  * Get status on transmission torrents
@@ -70,8 +70,8 @@ class ext_transmission implements LinfoExtension {
 	 * 
 	 * @access public
 	 */
-	public function __construct() {
-		global $settings;
+	public function __construct(Linfo $linfo) {
+		$settings = $linfo->getSettings();
 
 		// Classes we need
 		$this->_CallExt = new CallExt;

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of Linfo (c) 2010 Joseph Gillotti.
+ * This file is part of Linfo (c) 2014 Joseph Gillotti.
  * 
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -10,65 +10,179 @@
  * 
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with Linfo.  If not, see <http://www.gnu.org/licenses/>.
- * 
-*/
+ * along with Linfo.	If not, see <http://www.gnu.org/licenses/>.
+ */
 
 /**
  * Keep out hackers...
  */
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
-/**
- * Show it all... in very minimal HTML
- * @param array $info the system information
- * @param array $settings linfo settings
- */
-function showInfoHTML($info, $settings) {
+class LinfoOutput {
 
-	// Gain access to language array
-	global $lang;
+	protected $linfo;
 
-	// Fun icons
-	$show_icons = array_key_exists('icons', $settings) ? !empty($settings['icons']) : true;
-	$os_icon = defined('IS_WINDOWS') ? 'windows' : strtolower(str_replace(' ', '', current(explode('(', $info['OS']))));
-	$distro_icon = $info['OS'] == 'Linux' && is_array($info['Distro']) && $info['Distro']['name'] ? strtolower(str_replace(' ', '', $info['Distro']['name'])) : false;
+	public function __construct(Linfo $linfo) {
+		$this->linfo = $linfo;
+	}
 
-	// Start compressed output buffering. Try to not do this if we've had errors or otherwise already outputted stuff
-	if ((!function_exists('error_get_last') || !error_get_last()) && (!isset($settings['compress_content']) || $settings['compress_content']))
-		ob_start(function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
+	/**
+	 * Create a progress bar looking thingy. Put into a function here
+	 * as its being increasingly used elsewhere. TODO refactor linfo and
+	 * stop leaving functions in global namespace
+	 */
+	public static function generateBarChart($percent, $text = false) {
+		return '
+			<div class="bar_chart">
+				<div class="bar_inner" style="width: '.$percent.'%;">
+					<div class="bar_text">
+						'.($text ?: $percent.'%').'
+					</div>
+				</div>
+			</div>
+		';
+	}
 
-	// See if we have a specific theme file installed
-	if (isset($settings['theme']) && strpos($settings['theme'], '..') === false && file_exists('layout/theme_'.$settings['theme'].'.css'))
-		$theme_css = 'theme_'.$settings['theme'].'.css';
+	// Create a table out of an array. Mostly used by extensions
+	/*
+		Example array structure:
 
-	// Does default exist?? Don't bitch at me for assigning an array key in an if-then
-	elseif (($settings['theme'] = 'default') && file_exists('layout/theme_'.$settings['theme'].'.css'))
-		$theme_css = 'theme_'.$settings['theme'].'.css';
+		$structure = array(
+			'root_title' => 'Name',
+			'rows' => array(
+				01 = array(
+					'type' => 'header',
+					'columns' => array(
+						'Column 1',
+						'Column 2',
+						// OR array(colspannumber, 'value')
+					)
+				)
+				02 => array(
+					'type' => 'values',
+					'columns' => array(
+						'Value 1',
+						'Value 2',
+						// OR array(colspannumber, 'value')
+					)
+				)
+			)
+		);
+	*/
+	public static function createTable($structure) {
 
-	// if not, do the old way
-	else
-		$theme_css = 'styles.css';
+		// Start it off
+		$html = '
+	<div class="infoTable">
+		<h2>'.$structure['root_title'].'</h2>
+		<table>';
+		
+		// Go throuch each row
+		foreach ($structure['rows'] as $row) {
+
+			// Let stuff be killed
+			$row['columns'] = array_filter($row['columns']);
+
+			// Ignore this if it's empty
+			if (empty($row['columns']))
+				continue;
+
+			// Start the typical tr
+			$html .= '
+			<tr>';
+
+			// Is this row a header? 
+			if ($row['type'] == 'header') {
+				foreach ($row['columns'] as $v)
+					$html .= is_array($v) ? '
+				<th colspan="'.$v[0].'"'.(array_key_exists('2', $v) ? ' style="width: '.$v[2].';"' : '').'>'.$v[1].'</th>' : '
+				<th>'.$v.'</th>';
+			}
+
+			// Or is it a row saying nothing was found?
+			elseif ($row['type'] == 'none') {
+				foreach ($row['columns'] as $v)
+					$html .= is_array($v) ? '
+				<td colspan="'.$v[0].'" class="none">'.$v[1].'</td>' : '
+				<td class="none">'.$v.'</td>';
+
+			}
+
+			// Or is it values?
+			elseif ($row['type'] == 'values') {
+				foreach ($row['columns'] as $v)
+					$html .= is_array($v) ? '
+				<td colspan="'.$v[0].'">'.$v[1].'</td>' : '
+				<td>'.$v.'</td>';
+
+			}
+
+			// End the usual tr
+			$html .= '
+			</tr>';
+		}
+		
+		// Closing tags
+		$html .= '
+		</table>
+	</div>';
+
+		// Give it
+		return $html;
+	}
+
+	public function ncursesOut() {
+		$curses = new LinfoNCurses($this->linfo);
+		$curses->draw();
+	}
+
+	public function htmlOut() {
+		$lang = $this->linfo->getLang();
+		$settings = $this->linfo->getSettings();
+		$info = $this->linfo->getInfo();
+		$appName = $this->linfo->getAppName();
+		$version = $this->linfo->getVersion();
+
+		// Fun icons
+		$show_icons = array_key_exists('icons', $settings) ? !empty($settings['icons']) : true;
+		$os_icon = defined('IS_WINDOWS') ? 'windows' : strtolower(str_replace(' ', '', current(explode('(', $info['OS']))));
+		$distro_icon = $info['OS'] == 'Linux' && is_array($info['Distro']) && $info['Distro']['name'] ? strtolower(str_replace(' ', '', $info['Distro']['name'])) : false;
+
+		// Start compressed output buffering. Try to not do this if we've had errors or otherwise already outputted stuff
+		if ((!function_exists('error_get_last') || !error_get_last()) && (!isset($settings['compress_content']) || $settings['compress_content']))
+			ob_start(function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
+
+		// See if we have a specific theme file installed
+		if (isset($settings['theme']) && strpos($settings['theme'], '..') === false && file_exists('layout/theme_'.$settings['theme'].'.css'))
+			$theme_css = 'theme_'.$settings['theme'].'.css';
+
+		// Does default exist?? Don't bitch at me for assigning an array key in an if-then
+		elseif (($settings['theme'] = 'default') && file_exists('layout/theme_'.$settings['theme'].'.css'))
+			$theme_css = 'theme_'.$settings['theme'].'.css';
+
+		// if not, do the old way
+		else
+			$theme_css = 'styles.css';
 
 	// Proceed to letting it all out
 	echo '<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>'.AppName.' - '.$info['HostName'].'</title>
-	<link href="'.WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon">
-	<link href="'.WEB_PATH.'layout/'.$theme_css.'" rel="stylesheet">'.( $show_icons ? '
-	<link href="'.WEB_PATH.'layout/icons.css" rel="stylesheet">' : ''
+	<title>'.$appName.' - '.$info['HostName'].'</title>
+	<link href="'.LINFO_WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon">
+	<link href="'.LINFO_WEB_PATH.'layout/'.$theme_css.'" rel="stylesheet">'.( $show_icons ? '
+	<link href="'.LINFO_WEB_PATH.'layout/icons.css" rel="stylesheet">' : ''
 	).'
-	<script src="'.WEB_PATH.'layout/scripts.min.js"></script>
-	<meta name="generator" content="'.AppName.' ('.VERSION.')">
+	<script src="'.LINFO_WEB_PATH.'layout/scripts.min.js"></script>
+	<meta name="generator" content="'.$appName.' ('.$version.')">
 	<meta name="author" content="Joseph Gillotti &amp; friends">
 	<!--[if lt IE 8]>
-	<link href="'.WEB_PATH.'layout/old_ie.css" type="text/css" rel="stylesheet">
+	<link href="'.LINFO_WEB_PATH.'layout/old_ie.css" type="text/css" rel="stylesheet">
 	<![endif]-->
 </head>
 <body id="info">
@@ -87,11 +201,11 @@ function showInfoHTML($info, $settings) {
 
 	// OS? (with icon, if we have it)
 	if (!empty($settings['show']['os']))
-		$core[] = array($lang['os'], ($show_icons && (file_exists(LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.png')) ? '<span class="icon icon_os_'.$os_icon.'"></span>' : '') . $info['OS']);
+		$core[] = array($lang['os'], ($show_icons && (file_exists(LINFO_LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.gif') || file_exists(LINFO_LOCAL_PATH . 'layout/icons/os_'.$os_icon.'.png')) ? '<span class="icon icon_os_'.$os_icon.'"></span>' : '') . $info['OS']);
 	
 	// Distribution? (with icon, if we have it)
 	if (!empty($settings['show']['distro']) && array_key_exists('Distro', $info) && is_array($info['Distro']))
-		$core[] = array($lang['distro'], ($show_icons && $distro_icon && (file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.gif') || file_exists(LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.png')) ? '<span class="icon icon_distro_'.$distro_icon.'"></span>' : '') . $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
+		$core[] = array($lang['distro'], ($show_icons && $distro_icon && (file_exists(LINFO_LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.gif') || file_exists(LINFO_LOCAL_PATH . 'layout/icons/distro_'.$distro_icon.'.png')) ? '<span class="icon icon_distro_'.$distro_icon.'"></span>' : '') . $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
 
 	// Virtualization
 	if (!empty($settings['show']['virtualization']) && isset($info['virtualization']) && !empty($info['virtualization'])) {
@@ -349,7 +463,6 @@ function showInfoHTML($info, $settings) {
 						<td>'.$bat['device'].'</td>
 						<td>'.$bat['state'].'</td>
 						<td>
-						
 							<div class="bar_chart">
 								<div class="bar_inner" style="width: '.(int) $bat['percentage'].'%;">
 									<div class="bar_text">
@@ -631,7 +744,7 @@ function showInfoHTML($info, $settings) {
 					<td>'.LinfoCommon::byteConvert($mount['free']).
 					($mount['free_percent'] !== false ? ' <span class="perc">('.$mount['free_percent'].'%)</span>' : '').'</td>
 					<td>
-						'.bar_chart((int) $mount['used_percent'], $mount['used_percent'] ? $mount['used_percent'].'%' : 'N/A').'
+						'.self::generateBarChart((int) $mount['used_percent'], $mount['used_percent'] ? $mount['used_percent'].'%' : 'N/A').'
 					</td>
 				</tr>';
 			}
@@ -648,7 +761,7 @@ function showInfoHTML($info, $settings) {
 			<td>'.LinfoCommon::byteConvert($total_used).'</td>
 			<td>'.LinfoCommon::byteConvert($total_free).'</td>
 			<td>
-				'.bar_chart($total_used_perc, $total_used_perc.'%').'
+				'.self::generateBarChart($total_used_perc, $total_used_perc.'%').'
 			</td>
 		</tr>
 	</table>
@@ -762,7 +875,7 @@ function showInfoHTML($info, $settings) {
 						echo '
 <div class="col2_side">
 	<div class="col2_side_left">
-	'.LinfoCommon::createTable($ext).'
+	'.self::createTable($ext).'
 	</div>
 	<div class="col2_side_right">
 		<div class="infoTable">
@@ -786,7 +899,7 @@ function showInfoHTML($info, $settings) {
 
 					// Nothing extra; just the table
 					default:
-						echo LinfoCommon::createTable($ext);
+						echo self::createTable($ext);
 					break;
 				}
 			}
@@ -820,8 +933,8 @@ function showInfoHTML($info, $settings) {
 
 	echo '
 <div id="foot">
-	'.sprintf($lang['footer_app'], '<a href="https://github.com/jrgp/linfo"><em>'.AppName.'</em></a> ('.VERSION.')', round(microtime(true) - TIME_START,2)).'<br>
-	<em>'.AppName.'</em> &copy; 2010 &ndash; '.(date('Y') > 2011 ? date('Y') : 2011).'
+	'.sprintf($lang['footer_app'], '<a href="https://github.com/jrgp/linfo"><em>'.$appName.'</em></a> ('.$version.')', round(microtime(true) - $this->linfo->getTimeStart(), 2)).'<br>
+	<em>'.$appName.'</em> &copy; 2010 &ndash; '.(date('Y') > 2011 ? date('Y') : 2011).'
 	Joseph Gillotti '.(date('m/d') == '06/03' ? ' (who turns '.(date('Y') - 1993).' today!)' : '').'&amp; friends. Source code licensed under GPL.
 </div>
 <div id="foot_time">
@@ -832,341 +945,318 @@ function showInfoHTML($info, $settings) {
 </body>
 </html>';
 
-}
 
-/**
- * Create a progress bar looking thingy. Put into a function here
- * as its being increasingly used elsewhere. TODO refactor linfo and
- * stop leaving functions in global namespace
- */
-function bar_chart($percent, $text = false) {
-	$text = $text ?: $percent.'%';
-	return '
-		<div class="bar_chart">
-			<div class="bar_inner" style="width: '.$percent.'%;">
-				<div class="bar_text">
-					'.$text.'
-				</div>
-			</div>
-		</div>
-	';
-}
+	}
 
-/**
- * Show it all... in simplexml
- * @param array $info the system information
- * @param array $settings linfo settings
- */
- function showInfoSimpleXML($info, $settings) {
- 	global $lang;
+	public function xmlOut() {
+		$lang = $this->linfo->getLang();
+		$settings = $this->linfo->getSettings();
+		$info = $this->linfo->getInfo();
 
- 	try {
-		// Start it up
-		$xml = new SimpleXMLElement('<?xml version="1.0"?><linfo></linfo>');
+		try {
+			// Start it up
+			$xml = new SimpleXMLElement('<?xml version="1.0"?><linfo></linfo>');
 
-		// Deal with core stuff
-		$core_elem = $xml->addChild('core');
-		$core = array();
-		if (!empty($settings['show']['os']))
-			$core[] = array('os', $info['OS']);
-		if (!empty($settings['show']['distro']) && is_array($info['Distro']))
-			$core[] = array($lang['distro'],  $info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
-		if (!empty($settings['show']['kernel']))
-			$core[] = array('kernel', $info['Kernel']);
-		$core[] = array('accessed_ip', (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
-		if (!empty($settings['show']['uptime']))
-			$core[] = array('uptime', $info['UpTime']);
-		if (!empty($settings['show']['hostname']))
-			$core[] = array('hostname', $info['HostName']);
-		if (!empty($settings['show']['cpu'])) {
-			$cpus = '';
-			foreach ((array) $info['CPU'] as $cpu) 
-				$cpus .=
-					(array_key_exists('Vendor', $cpu) && empty($cpu['Vendor']) ? $cpu['Vendor'] . ' - ' : '') .
-					$cpu['Model'] .
-					(array_key_exists('MHz', $cpu) ?
-						($cpu['MHz'] < 1000 ? ' ('.$cpu['MHz'].' MHz)' : ' ('.round($cpu['MHz'] / 1000, 3).' GHz)') : '') .
-						'<br />';
-			$core[] = array('CPU', $cpus);
-		}
-		if (!empty($settings['show']['model']) && array_key_exists('Model', $info) && !empty($info['Model']))
-			$core[] = array($lang['model'], $info['Model']);
-		if (!empty($settings['show']['load']))
-			$core[] = array('load', implode(' ', (array) $info['Load']));
-		if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
-			$proc_stats = array();
-			if (array_key_exists('totals', $info['processStats']) && is_array($info['processStats']['totals']))
-				foreach ($info['processStats']['totals'] as $k => $v) 
-					$proc_stats[] = $k . ': ' . number_format($v);
-			$proc_stats[] = 'total: ' . number_format($info['processStats']['proc_total']);
-			$core[] = array('processes', implode('; ', $proc_stats));
-			if ($info['processStats']['threads'] !== false)
-				$core[] = array('threads', number_format($info['processStats']['threads']));
-		}
-		for ($i = 0, $core_num = count($core); $i < $core_num; $i++) 
-			$core_elem->addChild($core[$i][0], $core[$i][1]);
-
-		// RAM
-		if (!empty($settings['show']['ram'])) {
-			$mem = $xml->addChild('memory');
-			$core_mem = $mem->addChild($info['RAM']['type']);
-			$core_mem->addChild('free', $info['RAM']['free']);
-			$core_mem->addChild('total', $info['RAM']['total']);
-			$core_mem->addChild('used', $info['RAM']['total'] - $info['RAM']['free']);
-			if (isset($info['RAM']['swapFree']) || isset($info['RAM']['swapTotal'])){
-				$swap = $mem->addChild('swap');
-				$swap_core = $swap->addChild('core');
-				$swap_core->addChild('free', $info['RAM']['swapFree']);
-				$swap_core->addChild('total', $info['RAM']['swapTotal']);
-				$swap_core->addChild('used', $info['RAM']['swapTotal'] - $info['RAM']['swapFree']);
-				if (is_array($info['RAM']['swapInfo']) && count($info['RAM']['swapInfo']) > 0) {
-					$swap_devices = $swap->addChild('devices');
-					foreach($info['RAM']['swapInfo'] as $swap_dev) {
-						$swap_dev_elem = $swap_devices->addChild('device');
-						$swap_dev_elem->addAttribute('device', $swap_dev['device']);
-						$swap_dev_elem->addAttribute('type', $swap_dev['type']);
-						$swap_dev_elem->addAttribute('size', $swap_dev['size']);
-						$swap_dev_elem->addAttribute('used', $swap_dev['used']);
-					}
-				}
+			// Deal with core stuff
+			$core_elem = $xml->addChild('core');
+			$core = array();
+			if (!empty($settings['show']['os']))
+				$core[] = array('os', $info['OS']);
+			if (!empty($settings['show']['distro']) && is_array($info['Distro']))
+				$core[] = array($lang['distro'],	$info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
+			if (!empty($settings['show']['kernel']))
+				$core[] = array('kernel', $info['Kernel']);
+			$core[] = array('accessed_ip', (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
+			if (!empty($settings['show']['uptime']))
+				$core[] = array('uptime', $info['UpTime']);
+			if (!empty($settings['show']['hostname']))
+				$core[] = array('hostname', $info['HostName']);
+			if (!empty($settings['show']['cpu'])) {
+				$cpus = '';
+				foreach ((array) $info['CPU'] as $cpu) 
+					$cpus .=
+						(array_key_exists('Vendor', $cpu) && empty($cpu['Vendor']) ? $cpu['Vendor'] . ' - ' : '') .
+						$cpu['Model'] .
+						(array_key_exists('MHz', $cpu) ?
+							($cpu['MHz'] < 1000 ? ' ('.$cpu['MHz'].' MHz)' : ' ('.round($cpu['MHz'] / 1000, 3).' GHz)') : '') .
+							'<br />';
+				$core[] = array('CPU', $cpus);
 			}
-		}
-	
-		// NET
-		if (!empty($settings['show']['network'])) {
-			$net = $xml->addChild('net');
-			foreach ($info['Network Devices'] as $device => $stats) {
-				$nic = $net->addChild('interface');
-				$nic->addAttribute('device', $device);
-				$nic->addAttribute('type', $stats['type']);
-				$nic->addAttribute('sent', $stats['sent']['bytes']);
-				$nic->addAttribute('recieved', $stats['recieved']['bytes']);
+			if (!empty($settings['show']['model']) && array_key_exists('Model', $info) && !empty($info['Model']))
+				$core[] = array($lang['model'], $info['Model']);
+			if (!empty($settings['show']['load']))
+				$core[] = array('load', implode(' ', (array) $info['Load']));
+			if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
+				$proc_stats = array();
+				if (array_key_exists('totals', $info['processStats']) && is_array($info['processStats']['totals']))
+					foreach ($info['processStats']['totals'] as $k => $v) 
+						$proc_stats[] = $k . ': ' . number_format($v);
+				$proc_stats[] = 'total: ' . number_format($info['processStats']['proc_total']);
+				$core[] = array('processes', implode('; ', $proc_stats));
+				if ($info['processStats']['threads'] !== false)
+					$core[] = array('threads', number_format($info['processStats']['threads']));
 			}
-		}
+			for ($i = 0, $core_num = count($core); $i < $core_num; $i++) 
+				$core_elem->addChild($core[$i][0], $core[$i][1]);
 
-		// TEMPS
-		if (!empty($settings['show']['temps']) && count($info['Temps']) > 0) {
-			$temps = $xml->addChild('temps');
-			foreach ($info['Temps'] as $stat) {
-				$temp = $temps->addChild('temp');
-				$temp->addAttribute('path', $stat['path']);
-				$temp->addAttribute('name', $stat['name']);
-				$temp->addAttribute('temp', $stat['temp'].' '.$stat['unit']);
-			}
-		}
-
-		// Batteries
-		if (!empty($settings['show']['battery']) && count($info['Battery']) > 0) {
-			$bats = $xml->addChild('batteries');
-			foreach ($info['Battery'] as $bat)  {
-				$bat = $bats->addChild('battery');
-				$bat->addAttribute('device', $bat['device']);
-				$bat->addAttribute('state', $bat['state']);
-				$bat->addAttribute('percentage', $bat['percentage']);
-			}
-		}
-
-		// SERVICES
-		if (!empty($settings['show']['services']) && count($info['services']) > 0) {
-			$services = $xml->addChild('services');
-			foreach ($info['services'] as $service => $state) {
-				$state_parts = explode(' ', $state['state'], 2);
-				$service_elem = $services->addChild('service');
-				$service_elem->addAttribute('name', $service);
-				$service_elem->addAttribute('state', $state_parts[0] . (array_key_exists(1, $state_parts) ? ' '.$state_parts[1] : ''));
-				$service_elem->addAttribute('pid', $state['pid']);
-				$service_elem->addAttribute('threads', $state['threads'] ? $state['threads'] : '?');
-				$service_elem->addAttribute('mem_usage', $state['memory_usage'] ? $state['memory_usage'] : '?');
-			}
-		}
-
-		// DEVICES
-		if (!empty($settings['show']['devices'])) {
-			$show_vendor = array_key_exists('hw_vendor', $info['contains']) ? ($info['contains']['hw_vendor'] === false ? false : true) : true;
-			$devices = $xml->addChild('devices');
-			for ($i = 0, $num_devs = count($info['Devices']); $i < $num_devs; $i++) {
-				$device = $devices->addChild('device');
-				$device->addAttribute('type', $info['Devices'][$i]['type']);
-				if ($show_vendor)
-					$device->addAttribute('vendor', $info['Devices'][$i]['vendor']);
-				$device->addAttribute('name', $info['Devices'][$i]['device']);
-			}
-		}
-
-		// DRIVES
-		if (!empty($settings['show']['hd'])) {
-			$show_stats = array_key_exists('drives_rw_stats', $info['contains']) ? ($info['contains']['drives_rw_stats'] === false ? false : true) : true;
-			$drives = $xml->addChild('drives');
-			foreach($info['HD'] as $drive) {
-				$drive_elem = $drives->addChild('drive');
-				$drive_elem->addAttribute('device', $drive['device']);
-				$drive_elem->addAttribute('vendor', $drive['vendor'] ? $drive['vendor'] : $lang['unknown']);
-				$drive_elem->addAttribute('name', $drive['name']);
-				if ($show_stats) {
-					$drive_elem->addAttribute('reads', $drive['reads'] ? $drive['reads'] : 'unknown');
-					$drive_elem->addAttribute('writes', $drive['writes'] ? $drive['writes'] : 'unknown');
-				}
-				$drive_elem->addAttribute('size', $drive['size'] ? $drive['size'] : 'unknown');
-				if (is_array($drive['partitions']) && count($drive['partitions']) > 0) {
-					$partitions = $drive_elem->addChild('partitions');
-					foreach ($drive['partitions'] as $partition) {
-						$partition_elem = $partitions->addChild('partition');
-						$partition_elem->addAttribute('name', isset($partition['number']) ? $drive['device'].$partition['number'] : $partition['name']);
-						$partition_elem->addAttribute('size', $partition['size']);
-					}
-				}
-			}
-
-		}
-
-		// Sound cards? lol
-		if (!empty($settings['show']['sound']) && count($info['SoundCards']) > 0) {
-			$cards = $xml->addChild('soundcards');
-			foreach ($info['SoundCards'] as $card) {
-				$card_elem = $cards->addChild('card');
-				$card_elem->addAttribute('number', $card['number']);
-				$card_elem->addAttribute('vendor', empty($card['vendor']) ? 'unknown' : $card['vendor']);
-				$card_elem->addAttribute('card', $card['card']);
-			}
-		}
-
-		// File system mounts
-		if (!empty($settings['show']['mounts'])) {
-			$has_devices = false;
-			$has_labels = false;
-			$has_types = false;
-			foreach($info['Mounts'] as $mount) {
-				if (!empty($mount['device'])) {
-					$has_devices = true;
-				}
-				if (!empty($mount['label'])) {
-					$has_labels = true;
-				}
-				if (!empty($mount['devtype'])) {
-					$has_types = true;
-				}
-			}
-			$mounts = $xml->addChild('mounts');
-			foreach ($info['Mounts'] as $mount) {
-				$mount_elem = $mounts->addChild('mount');
-				if (preg_match('/^.+:$/', $mount['device']) == 1)
-					$mount['device'] .= DIRECTORY_SEPARATOR;
-				if ($has_types) 
-					$mount_elem->addAttribute('type', $mount['devtype']);
-				if ($has_devices) 
-					$mount_elem->addAttribute('device', $mount['device']);
-				$mount_elem->addAttribute('mountpoint', $mount['mount']);
-				if ($has_labels) 
-					$mount_elem->addAttribute('label', $mount['label']);
-				$mount_elem->addAttribute('fstype', $mount['type']);
-				if ($settings['show']['mounts_options'] && !empty($mount['options'])) {
-					$options_elem = $mount_elem->addChild('mount_options');
-					foreach ($mount['options'] as $option)
-						$options_elem->addChild($option);
-				}
-				$mount_elem->addAttribute('size', $mount['size']);
-				$mount_elem->addAttribute('used', $mount['used']);
-				$mount_elem->addAttribute('free', $mount['free']);
-			}
-		}
-
-		// RAID arrays
-		if (!empty($settings['show']['raid']) && count($info['Raid']) > 0) {
-			$raid_elem = $xml->addChild('raid');
-			foreach ($info['Raid'] as $raid) {
-				$array = $raid_elem->addChild('array');
-				$active = explode('/', $raid['count']);
-				$array->addAttribute('device', $raid['device']);
-				$array->addAttribute('level', $raid['level']);
-				$array->addAttribute('status', $raid['status']);
-				$array->addAttribute('size', $raid['size']);
-				$array->addAttribute('active', $active[1].'/'.$active[0]);
-				$drives = $array->addChild('drives');
-				foreach ($raid['drives'] as $drive) {
-					$drive_elem = $drives->addChild('drive');
-					$drive_elem->addAttribute('drive', $drive['drive']);
-					$drive_elem->addAttribute('state', $drive['state']);
-				}
-			}
-		}
-		
-		// Timestamp
-		$xml->addChild('timestamp', $info['timestamp']);
-
-		// Extensions
-		if (count($info['extensions']) > 0) {
-			$extensions = $xml->addChild('extensions');
-			foreach ($info['extensions'] as $ext) {
-				$header = false;
-				if (is_array($ext) && count($ext) > 0) {
-					$this_ext = $extensions->addChild(LinfoCommon::xmlStringSanitize($ext['root_title']));
-					foreach ((array) $ext['rows'] as $i => $row) {
-						if ($row['type'] == 'header') {
-							$header = $i;
+			// RAM
+			if (!empty($settings['show']['ram'])) {
+				$mem = $xml->addChild('memory');
+				$core_mem = $mem->addChild($info['RAM']['type']);
+				$core_mem->addChild('free', $info['RAM']['free']);
+				$core_mem->addChild('total', $info['RAM']['total']);
+				$core_mem->addChild('used', $info['RAM']['total'] - $info['RAM']['free']);
+				if (isset($info['RAM']['swapFree']) || isset($info['RAM']['swapTotal'])){
+					$swap = $mem->addChild('swap');
+					$swap_core = $swap->addChild('core');
+					$swap_core->addChild('free', $info['RAM']['swapFree']);
+					$swap_core->addChild('total', $info['RAM']['swapTotal']);
+					$swap_core->addChild('used', $info['RAM']['swapTotal'] - $info['RAM']['swapFree']);
+					if (is_array($info['RAM']['swapInfo']) && count($info['RAM']['swapInfo']) > 0) {
+						$swap_devices = $swap->addChild('devices');
+						foreach($info['RAM']['swapInfo'] as $swap_dev) {
+							$swap_dev_elem = $swap_devices->addChild('device');
+							$swap_dev_elem->addAttribute('device', $swap_dev['device']);
+							$swap_dev_elem->addAttribute('type', $swap_dev['type']);
+							$swap_dev_elem->addAttribute('size', $swap_dev['size']);
+							$swap_dev_elem->addAttribute('used', $swap_dev['used']);
 						}
-						elseif ($row['type'] == 'values') {
-							$this_row = $this_ext->addChild('row');
-							if ($header !== false && array_key_exists($header, $ext['rows'])) {
-								foreach ($ext['rows'][$header]['columns'] as $ri => $rc) {
-									$this_row->addChild(
-										LinfoCommon::xmlStringSanitize($rc),
-										$ext['rows'][$i]['columns'][$ri]
-									);
+					}
+				}
+			}
+		
+			// NET
+			if (!empty($settings['show']['network'])) {
+				$net = $xml->addChild('net');
+				foreach ($info['Network Devices'] as $device => $stats) {
+					$nic = $net->addChild('interface');
+					$nic->addAttribute('device', $device);
+					$nic->addAttribute('type', $stats['type']);
+					$nic->addAttribute('sent', $stats['sent']['bytes']);
+					$nic->addAttribute('recieved', $stats['recieved']['bytes']);
+				}
+			}
+
+			// TEMPS
+			if (!empty($settings['show']['temps']) && count($info['Temps']) > 0) {
+				$temps = $xml->addChild('temps');
+				foreach ($info['Temps'] as $stat) {
+					$temp = $temps->addChild('temp');
+					$temp->addAttribute('path', $stat['path']);
+					$temp->addAttribute('name', $stat['name']);
+					$temp->addAttribute('temp', $stat['temp'].' '.$stat['unit']);
+				}
+			}
+
+			// Batteries
+			if (!empty($settings['show']['battery']) && count($info['Battery']) > 0) {
+				$bats = $xml->addChild('batteries');
+				foreach ($info['Battery'] as $bat)	{
+					$bat = $bats->addChild('battery');
+					$bat->addAttribute('device', $bat['device']);
+					$bat->addAttribute('state', $bat['state']);
+					$bat->addAttribute('percentage', $bat['percentage']);
+				}
+			}
+
+			// SERVICES
+			if (!empty($settings['show']['services']) && count($info['services']) > 0) {
+				$services = $xml->addChild('services');
+				foreach ($info['services'] as $service => $state) {
+					$state_parts = explode(' ', $state['state'], 2);
+					$service_elem = $services->addChild('service');
+					$service_elem->addAttribute('name', $service);
+					$service_elem->addAttribute('state', $state_parts[0] . (array_key_exists(1, $state_parts) ? ' '.$state_parts[1] : ''));
+					$service_elem->addAttribute('pid', $state['pid']);
+					$service_elem->addAttribute('threads', $state['threads'] ? $state['threads'] : '?');
+					$service_elem->addAttribute('mem_usage', $state['memory_usage'] ? $state['memory_usage'] : '?');
+				}
+			}
+
+			// DEVICES
+			if (!empty($settings['show']['devices'])) {
+				$show_vendor = array_key_exists('hw_vendor', $info['contains']) ? ($info['contains']['hw_vendor'] === false ? false : true) : true;
+				$devices = $xml->addChild('devices');
+				for ($i = 0, $num_devs = count($info['Devices']); $i < $num_devs; $i++) {
+					$device = $devices->addChild('device');
+					$device->addAttribute('type', $info['Devices'][$i]['type']);
+					if ($show_vendor)
+						$device->addAttribute('vendor', $info['Devices'][$i]['vendor']);
+					$device->addAttribute('name', $info['Devices'][$i]['device']);
+				}
+			}
+
+			// DRIVES
+			if (!empty($settings['show']['hd'])) {
+				$show_stats = array_key_exists('drives_rw_stats', $info['contains']) ? ($info['contains']['drives_rw_stats'] === false ? false : true) : true;
+				$drives = $xml->addChild('drives');
+				foreach($info['HD'] as $drive) {
+					$drive_elem = $drives->addChild('drive');
+					$drive_elem->addAttribute('device', $drive['device']);
+					$drive_elem->addAttribute('vendor', $drive['vendor'] ? $drive['vendor'] : $lang['unknown']);
+					$drive_elem->addAttribute('name', $drive['name']);
+					if ($show_stats) {
+						$drive_elem->addAttribute('reads', $drive['reads'] ? $drive['reads'] : 'unknown');
+						$drive_elem->addAttribute('writes', $drive['writes'] ? $drive['writes'] : 'unknown');
+					}
+					$drive_elem->addAttribute('size', $drive['size'] ? $drive['size'] : 'unknown');
+					if (is_array($drive['partitions']) && count($drive['partitions']) > 0) {
+						$partitions = $drive_elem->addChild('partitions');
+						foreach ($drive['partitions'] as $partition) {
+							$partition_elem = $partitions->addChild('partition');
+							$partition_elem->addAttribute('name', isset($partition['number']) ? $drive['device'].$partition['number'] : $partition['name']);
+							$partition_elem->addAttribute('size', $partition['size']);
+						}
+					}
+				}
+
+			}
+
+			// Sound cards? lol
+			if (!empty($settings['show']['sound']) && count($info['SoundCards']) > 0) {
+				$cards = $xml->addChild('soundcards');
+				foreach ($info['SoundCards'] as $card) {
+					$card_elem = $cards->addChild('card');
+					$card_elem->addAttribute('number', $card['number']);
+					$card_elem->addAttribute('vendor', empty($card['vendor']) ? 'unknown' : $card['vendor']);
+					$card_elem->addAttribute('card', $card['card']);
+				}
+			}
+
+			// File system mounts
+			if (!empty($settings['show']['mounts'])) {
+				$has_devices = false;
+				$has_labels = false;
+				$has_types = false;
+				foreach($info['Mounts'] as $mount) {
+					if (!empty($mount['device'])) {
+						$has_devices = true;
+					}
+					if (!empty($mount['label'])) {
+						$has_labels = true;
+					}
+					if (!empty($mount['devtype'])) {
+						$has_types = true;
+					}
+				}
+				$mounts = $xml->addChild('mounts');
+				foreach ($info['Mounts'] as $mount) {
+					$mount_elem = $mounts->addChild('mount');
+					if (preg_match('/^.+:$/', $mount['device']) == 1)
+						$mount['device'] .= DIRECTORY_SEPARATOR;
+					if ($has_types) 
+						$mount_elem->addAttribute('type', $mount['devtype']);
+					if ($has_devices) 
+						$mount_elem->addAttribute('device', $mount['device']);
+					$mount_elem->addAttribute('mountpoint', $mount['mount']);
+					if ($has_labels) 
+						$mount_elem->addAttribute('label', $mount['label']);
+					$mount_elem->addAttribute('fstype', $mount['type']);
+					if ($settings['show']['mounts_options'] && !empty($mount['options'])) {
+						$options_elem = $mount_elem->addChild('mount_options');
+						foreach ($mount['options'] as $option)
+							$options_elem->addChild($option);
+					}
+					$mount_elem->addAttribute('size', $mount['size']);
+					$mount_elem->addAttribute('used', $mount['used']);
+					$mount_elem->addAttribute('free', $mount['free']);
+				}
+			}
+
+			// RAID arrays
+			if (!empty($settings['show']['raid']) && count($info['Raid']) > 0) {
+				$raid_elem = $xml->addChild('raid');
+				foreach ($info['Raid'] as $raid) {
+					$array = $raid_elem->addChild('array');
+					$active = explode('/', $raid['count']);
+					$array->addAttribute('device', $raid['device']);
+					$array->addAttribute('level', $raid['level']);
+					$array->addAttribute('status', $raid['status']);
+					$array->addAttribute('size', $raid['size']);
+					$array->addAttribute('active', $active[1].'/'.$active[0]);
+					$drives = $array->addChild('drives');
+					foreach ($raid['drives'] as $drive) {
+						$drive_elem = $drives->addChild('drive');
+						$drive_elem->addAttribute('drive', $drive['drive']);
+						$drive_elem->addAttribute('state', $drive['state']);
+					}
+				}
+			}
+			
+			// Timestamp
+			$xml->addChild('timestamp', $info['timestamp']);
+
+			// Extensions
+			if (count($info['extensions']) > 0) {
+				$extensions = $xml->addChild('extensions');
+				foreach ($info['extensions'] as $ext) {
+					$header = false;
+					if (is_array($ext) && count($ext) > 0) {
+						$this_ext = $extensions->addChild(LinfoCommon::xmlStringSanitize($ext['root_title']));
+						foreach ((array) $ext['rows'] as $i => $row) {
+							if ($row['type'] == 'header') {
+								$header = $i;
+							}
+							elseif ($row['type'] == 'values') {
+								$this_row = $this_ext->addChild('row');
+								if ($header !== false && array_key_exists($header, $ext['rows'])) {
+									foreach ($ext['rows'][$header]['columns'] as $ri => $rc) {
+										$this_row->addChild(
+											LinfoCommon::xmlStringSanitize($rc),
+											$ext['rows'][$i]['columns'][$ri]
+										);
+									}
 								}
 							}
 						}
 					}
 				}
 			}
+			
+			// Out it
+			header('Content-type: text/xml');
+			echo $xml->asXML();
+
+			// Comment which has stats and generator
+			echo '<!-- Generated in '.round(microtime(true) - $this->linfo->getTimeStart(), 2).' seconds by '.$this->linfo->getAppName().' ('.$this->linfo->getVersion().')-->';
+		}
+		catch (Exception $e) {
+			exit('Creation of XML error: '.$e->getMessage());
+		}
+	}
+
+	public function serializedOut() {
+		echo serialize($this->linfo->getInfo());
+	}
+
+	/**
+	 * Show it all... in JSON
+	 * @param array $info the system information
+	 * @param array $settings linfo settings
+	 */
+	public function jsonOut() {
+
+		$settings = $this->linfo->getSettings();
+
+		header('Content-Type: application/json');
+
+		// Make sure we have JSON
+		if (!function_exists('json_encode')) {
+			exit('{error:\'JSON extension not loaded\'}');
+			return;
 		}
 		
-		// Out it
-		header('Content-type: text/xml');
-		echo $xml->asXML();
+		// Output buffering, along with compression (if supported)
+		if (!isset($settings['compress_content']) || $settings['compress_content']) 
+			ob_start(function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
 
-		// Comment which has stats and generator
-		echo '<!-- Generated in '.round(microtime(true) - TIME_START,2).' seconds by '.AppName.' ('.VERSION.')-->';
+		// Give it. Support JSON-P like functionality if the ?callback param looks like a valid javascript
+		// function name, including object traversal.
+		echo array_key_exists('callback', $_GET) && preg_match('/^[a-z0-9\_\.]+$/i', $_GET['callback']) ?
+			$_GET['callback'].'('.json_encode($this->linfo->getInfo()).')' : json_encode($this->linfo->getInfo());
+
+		// Send it all out
+		if (!isset($settings['compress_content']) || $settings['compress_content']) 
+			ob_end_flush();
 	}
-	catch (Exception $e) {
-		exit('Creation of XML error: '.$e->getMessage());
-	}
- }
-
-/**
- * Show it all... in XMLWriter
- * @param array $info the system information
- * @param array $settings linfo settings
- */
- function showInfoXMLWriter($info, $settings) {
- 	exit ('So far only php\'s simple xml library is supported for XML output. Sorry!');
- }
-
-/**
- * Show it all... in JSON
- * @param array $info the system information
- * @param array $settings linfo settings
- */
- function showInfoJSON($info, $settings) {
-
- 	// Make sure we have JSON
- 	if (!function_exists('json_encode'))  {
-		exit('{error:\'JSON extension not loaded\'}');
-		return;
-	}
-	
-	header('Content-Type: application/json');
-
-	// Output buffering, along with compression (if supported)
-	if (!isset($settings['compress_content']) || $settings['compress_content']) 
-		ob_start(function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
-	
-
-	// Give it. Support JSON-P like functionality if the ?callback param looks like a valid javascript
-	// function name, including object traversal.
-	echo array_key_exists('callback', $_GET) && preg_match('/^[a-z0-9\_\.]+$/i', $_GET['callback']) ?
-		$_GET['callback'].'('.json_encode($info).')' : json_encode($info);
-
-	// Send it all out
-	if (!isset($settings['compress_content']) || $settings['compress_content']) 
-		ob_end_flush();
- }
+}

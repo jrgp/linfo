@@ -36,7 +36,7 @@ $settings['libvirt_connection'] = array(
 /**
  * Keep out hackers...
  */
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 /**
  * Get status on libvirt VMs
@@ -53,9 +53,9 @@ class ext_libvirt implements LinfoExtension {
 		$connectionSettings = array(),
 		$res = false;
 
-	public function __construct() {
+	public function __construct(Linfo $linfo) {
 
-		global $settings;
+		$settings = $linfo->getSettings();
 
 		$this->LinfoError = LinfoError::Singleton();
 

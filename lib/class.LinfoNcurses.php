@@ -20,15 +20,17 @@
 /**
  * Keep out hackers...
  */
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 /**
  * Output in ncurses format for client side CLI functionality
  * @author Joseph Gillotti
  */
-class out_ncurses {
+class LinfoNcurses {
 
 	private 
+
+    $linfo,
 
 		// Store our windows here
 		$_windows = array(),
@@ -37,7 +39,9 @@ class out_ncurses {
 		// ncurses loaded?
 		$loaded = true;
 
-	public function __construct() {
+	public function __construct(Linfo $linfo) {
+
+    $this->linfo = $linfo;
 
 		// We obviously need this
 		if (!extension_loaded('ncurses')) {
@@ -59,10 +63,11 @@ class out_ncurses {
 			ncurses_end();	
 	}
 
-	public function work($info, $settings, $getter) {
+	public function draw() {
 		
 		// Gain access to translations
-		global $lang;
+    $lang = $this->linfo->getLang();
+    $info = $this->linfo->getInfo();
 
 		// Say we're called more than once. Kill previous remnants
 		if (count($this->_windows) > 0)
@@ -125,7 +130,7 @@ class out_ncurses {
 			ncurses_napms(1000);
 
 			// Call ourselves
-			$this->work($getter->getAll(), $settings, $getter);
+			$this->work();
 		}
 	}
 

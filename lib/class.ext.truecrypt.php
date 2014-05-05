@@ -28,7 +28,7 @@ Installation:
  * 
 */
 
-defined('IN_INFO') or exit; 
+defined('IN_LINFO') or exit; 
 
 /*
  * Get status on truecrypt volumes. very experimental
@@ -42,7 +42,7 @@ class ext_truecrypt implements LinfoExtension {
 		$_res;
 
 	// Localize important classes
-	public function __construct() {
+	public function __construct(Linfo $linfo) {
 		$this->_LinfoError = LinfoError::Singleton();
 		$this->_CallExt = new CallExt;
 		$this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));

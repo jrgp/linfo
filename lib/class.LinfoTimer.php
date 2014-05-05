@@ -20,7 +20,7 @@
 /**
  * Keep out hackers...
  */
-defined('IN_INFO') or exit;
+defined('IN_LINFO') or exit;
 
 /**
  * Used to time how long it takes to fetch each bit of information. 

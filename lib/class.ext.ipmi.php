@@ -33,7 +33,7 @@ Installation:
  * 
 */
 
-defined('IN_INFO') or exit; 
+defined('IN_LINFO') or exit; 
 
 /**
  * IPMI extension for temps/voltages
@@ -50,10 +50,12 @@ class ext_ipmi implements LinfoExtension {
 	// Store these tucked away here
 	private
 		$_CallExt,
-		$_LinfoError;
+		$_LinfoError,
+    $linfo;
 
 	// Start us off
-	public function __construct() {
+	public function __construct(Linfo $linfo) {
+    $this->linfo = $linfo;
 		$this->_LinfoError = LinfoError::Singleton();
 		$this->_CallExt = new CallExt;
 		$this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
@@ -62,7 +64,7 @@ class ext_ipmi implements LinfoExtension {
 	// Work it, baby
 	public function work() {
 		
-		global $info;
+    $info = &$this->linfo->getInfo();
 
 		// Make sure this is an array
 		$info['Temps'] = (array) $info['Temps'];
