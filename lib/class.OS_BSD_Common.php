@@ -26,7 +26,7 @@ defined('IN_LINFO') or exit;
  * The BSD os's are largely similar and thus draw from this class.
 */
 
-abstract class OS_BSD_Common {
+abstract class OS_BSD_Common extends OS_Unix_Common {
 	
 	// Store these
 	protected
