@@ -76,7 +76,7 @@ function linfoAutoloader($class) {
 
 // Opt for spl_autoload_register if we have it. Ancient installations
 // might not
-if (!function_exists('spl_autoload_register')) {
+if (function_exists('spl_autoload_register')) {
 	spl_autoload_register('linfoAutoloader');
 }
 else {
