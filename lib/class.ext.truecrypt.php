@@ -146,7 +146,7 @@ class ext_truecrypt implements LinfoExtension {
 		$this->_call();
 	}
 
-	// Get result. Essentially take results and make it usable by the create_table function
+	// Get result. Essentially take results and make it usable by the LinfoCommon::createTable function
 	public function result() {
 
 		// Don't bother if it didn't go well

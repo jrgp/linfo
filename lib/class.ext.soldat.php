@@ -58,7 +58,7 @@ class ext_soldat implements LinfoExtension {
 	private function _call() {
 		$this->_res = array();
 		foreach ($this->_servers as $name => $path) {
-			$lines = getLines($path);
+			$lines = LinfoCommon::getLines($path);
 			if (count($lines) == 0)
 				continue;
 			$info = self::readgamestat($lines);
@@ -71,7 +71,7 @@ class ext_soldat implements LinfoExtension {
 		$this->_call();
 	}
 
-	// Get result. Essentially take results and make it usable by the create_table function
+	// Get result. Essentially take results and make it usable by the LinfoCommon::createTable function
 	public function result() {
 
 		// Don't bother if it didn't go well

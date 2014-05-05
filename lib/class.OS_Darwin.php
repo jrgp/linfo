@@ -305,7 +305,7 @@ class OS_Darwin extends OS_BSD_Common{
 			return '';
 
 		// Get it textual, as in days/minutes/hours/etc
-		return seconds_convert(time() - $m[1]) . '; booted ' . date($this->settings['dates'], $m[1]);
+		return LinfoCommon::secondsConvert(time() - $m[1]) . '; booted ' . date($this->settings['dates'], $m[1]);
 	}
 	
 	// Get system load

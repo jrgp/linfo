@@ -123,7 +123,7 @@ class GetHddTemp {
 			return array();
 		}
 		$devices = array();
-		foreach (getLines($file) as $line) {
+		foreach (LinfoCommon::getLines($file) as $line) {
 			if (preg_match('/\w+\s*\d+ \d{2}:\d{2}:\d{2} \w+ hddtemp\[\d+\]: (.+): (.+): (\d+) ([CF])/i', trim($line), $match) == 1) {
 				// Replace current record of dev with updated temp
 				$devices[$match[1]] = array($match[2], $match[3], $match[4]);

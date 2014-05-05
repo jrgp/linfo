@@ -70,7 +70,6 @@ $settings['hide']['filesystems'][] = 'binfmt_misc';
 
 // Load libs
 require_once LOCAL_PATH . 'lib/functions.init.php';
-require_once LOCAL_PATH . 'lib/functions.misc.php';
 require_once LOCAL_PATH . 'lib/functions.display.php';
 require_once LOCAL_PATH . 'lib/class.LinfoTimer.php';
 require_once LOCAL_PATH . 'lib/interface.LinfoExtension.php';

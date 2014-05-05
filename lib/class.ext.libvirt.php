@@ -144,7 +144,7 @@ class ext_libvirt implements LinfoExtension {
 			$disks = array();
 
 			foreach ($info['storage'] as $disk) {
-				$disks[] = $disk['device'].': '.$disk['file'].' ('.byte_convert($disk['capacity'], 2).')';
+				$disks[] = $disk['device'].': '.$disk['file'].' ('.LinfoCommon::byteConvert($disk['capacity'], 2).')';
 			}
 
 			$rows[] = array(
@@ -152,7 +152,7 @@ class ext_libvirt implements LinfoExtension {
 				'columns' => array(
 					$name, 
 					$info['state'] == 1 ? '<span style="color: green;">On</span>' : '<span style="color: maroon;">Off</span>',
-					byte_convert($info['memory']*1024, 2),
+					LinfoCommon::byteConvert($info['memory']*1024, 2),
 					$info['nrVirtCpu'],
 					$info['cpuUsed'] ? $info['cpuUsed'] : 'N/A',
 					$disks ? implode('<br />', $disks) : 'None'

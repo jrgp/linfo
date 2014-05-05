@@ -106,7 +106,7 @@ class ext_cups implements LinfoExtension {
 					'owner' => $queue_match[2],
 					'job' => $queue_match[3],
 					'files' => $queue_match[4],
-					'size' => byte_convert($queue_match[5])
+					'size' => LinfoCommon::byteConvert($queue_match[5])
 				);
 			}
 		}
@@ -126,7 +126,7 @@ class ext_cups implements LinfoExtension {
 		$this->_call();
 	}
 
-	// Get result. Essentially take results and make it usable by the create_table function
+	// Get result. Essentially take results and make it usable by the LinfoCommon::createTable function
 	public function result() {
 
 		// Don't bother if it didn't go well

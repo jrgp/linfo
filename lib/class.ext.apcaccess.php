@@ -105,7 +105,7 @@ class ext_apcaccess implements LinfoExtension {
 		
 		// Get time remaning
 		if (preg_match('/^TIMELEFT\s+:\s+([\d\.]+)/m', $result, $m))
-			$this->_res['time_left'] = seconds_convert($m[1] * 60);
+			$this->_res['time_left'] = LinfoCommon::secondsConvert($m[1] * 60);
 		
 		// Get status
 		if (preg_match('/^STATUS\s+:\s+([A-Z]+)/m', $result, $m))
@@ -142,7 +142,7 @@ class ext_apcaccess implements LinfoExtension {
 		$this->_call();
 	}
 
-	// Get result. Essentially take results and make it usable by the create_table function
+	// Get result. Essentially take results and make it usable by the LinfoCommon::createTable function
 	public function result() {
 
 		// Don't bother if it didn't go well
