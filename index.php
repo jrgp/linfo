@@ -22,10 +22,19 @@
 require_once __DIR__.'/init.php';
 
 // Begin
-$linfo = new Linfo;
-$linfo->output();
+try {
+	$linfo = new Linfo;
+	$linfo->output();
+}
+
+// No more inline exit's in any of Linfo's core code!
+catch (LinfoFatalException $e) {
+	echo $e->getMessage()."\n";
+	exit(1);
+}
 
 // Developers:
 // if you include init.php as above and instantiate a $linfo
 // object, you can get an associative array of all of the 
 // system info with $linfo->getInfo();
+// Just catch the LinfoFatalException for fatal errors

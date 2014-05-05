@@ -54,7 +54,7 @@ class OS_Windows {
 		$this->wmi = new COM('winmgmts:{impersonationLevel=impersonate}//./root/cimv2');
 		
 		if (!is_object($this->wmi)) {
-			throw new GetInfoException('This needs access to WMI. Please enable DCOM in php.ini and allow the current user to access the WMI DCOM object.');
+			throw new LinfoFatalException('This needs access to WMI. Please enable DCOM in php.ini and allow the current user to access the WMI DCOM object.');
 		}
 	}
 

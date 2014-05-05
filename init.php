@@ -23,6 +23,10 @@
 defined('IN_LINFO') or define('IN_LINFO', true);
 defined('IN_INFO') or define('IN_INFO', true); // support old config files
 
+// Are we running from the CLI?
+if (isset($argc) && is_array($argv))
+	defined('LINFO_CLI') or define('LINFO_CLI', true);
+
 // Configure absolute path to local directory
 defined('LINFO_LOCAL_PATH') or define('LINFO_LOCAL_PATH', dirname(__FILE__) . '/');
 
@@ -30,15 +34,6 @@ defined('LINFO_CACHE_PATH') or define('LINFO_CACHE_PATH', dirname(__FILE__) . '/
 
 // Configure absolute path to web directory
 defined('LINFO_WEB_PATH') or define('LINFO_WEB_PATH', !defined('LINFO_CLI') ? substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '/')+1) : './');
-
-// Are we running from the CLI?
-if (isset($argc) && is_array($argv))
-	defined('LINFO_CLI') or define('LINFO_CLI', true);
-
-/**
- * Exception for info classes
- */
-class GetInfoException extends Exception{}
 
 /**
  * Set up class and interface auto loading
@@ -50,10 +45,9 @@ function linfoAutoloader($class) {
 
 	if (is_file($class_file)) {
 		require_once $class_file;
-		if (!class_exists($class))
-			exit('Class '.$class.' not found in '.$file);
-		else
+		if (class_exists($class))
 			return;
+		exit('Class '.$class.' not found in '.$class_file."\n");
 	}
 
 	// But maybe it's really an interface?
@@ -61,17 +55,15 @@ function linfoAutoloader($class) {
 
 	if (is_file($interface_file)) {
 		require_once $interface_file;
-		if (!interface_exists($class))
-			exit('Interface '.$interface.' not found in '.$file);
-		else
+		if (interface_exists($class))
 			return;
+		exit('Interface '.$interface.' not found in '.$interface_file."\n");
 	}
 
-	if ($class == 'COM') {
+	if ($class == 'COM')
 		exit('To run Linfo on Windows you need to enable PHP\'s COM extension');
-	}
 
-	exit('Could not find class or interface '.$class);
+	exit('Could not find class or interface '.$class."\n");
 }
 
 // Opt for spl_autoload_register if we have it. Ancient installations

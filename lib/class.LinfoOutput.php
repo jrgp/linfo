@@ -136,7 +136,7 @@ class LinfoOutput {
 	}
 
 	public function ncursesOut() {
-		$curses = new LinfoNCurses($this->linfo);
+		$curses = new LinfoNcurses($this->linfo);
 		$curses->draw();
 	}
 

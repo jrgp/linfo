@@ -23,7 +23,7 @@ class OS_CYGWIN {
 
 		// Make sure we have what we need
 		if (!is_dir('/proc'))
-			throw new GetInfoException('This needs access to /proc to work.');
+			throw new LinfoFatalException('This needs access to /proc to work.');
 	}
 
 	/**

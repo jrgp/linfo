@@ -66,8 +66,6 @@ class OS_FreeBSD extends OS_BSD_Common{
 		// Save version
 		if (preg_match('/^([\d\.]+)/', php_uname('r'), $vm) != 0)
 			$this->version = (float) $vm[1];
-		
-	//	var_dump($this->version); exit;
 	}
 	
 	// This function will likely be shared among all the info classes
