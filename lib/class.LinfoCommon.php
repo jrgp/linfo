@@ -17,6 +17,11 @@
  * along with Linfo.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * Keep out hackers...
+ */
+defined('IN_INFO') or exit;
+
 class LinfoCommon {
 
   // Certain files, specifcally the pci/usb ids files, vary in location from

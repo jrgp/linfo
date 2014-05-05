@@ -23,27 +23,35 @@
 defined('IN_INFO') or exit;
 
 /**
- * Set up class auto loading
+ * Set up class and interface auto loading
  * @param string $class the name of the class being searched fro
  */
 function __autoload($class) {
 	
-	// Path to where it should be
-	$file = LOCAL_PATH . 'lib/class.'.$class.'.php';
+	$class_file = LOCAL_PATH . 'lib/class.'.$class.'.php';
+	$interface_file = LOCAL_PATH . 'lib/interface.'.$class.'.php';
 
-	// Load it if it does
-	if (is_file($file)) 
-		require_once $file;
-	else
-		exit('File for '.$file.' not found');
-	
-	// Make sure we have it
-	if (!class_exists($class)) {
-		if ($class == 'COM')
-			exit('You need to enable PHP\'s COM extension');
-		else
-			exit('Class '.$class.' not found in '.$file);
-	}
+  if (is_file($class_file)) {
+    require_once $class_file;
+    if (!class_exists($class))
+      exit('Class '.$class.' not found in '.$file);
+    else
+      return;
+  }
+
+  if (is_file($interface_file)) {
+    require_once $interface_file;
+    if (!interface_exists($class))
+      exit('Interface '.$interface.' not found in '.$file);
+    else
+      return;
+  }
+
+  if ($class == 'COM') {
+    exit('To run Linfo on Windows you need to enable the COM extension');
+  }
+
+  exit('Could not find class or interface '.$class);
 }
 
 
