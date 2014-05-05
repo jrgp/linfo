@@ -57,7 +57,7 @@ class ext_libvirt implements LinfoExtension {
 
 		global $settings;
 
-		$this->LinfoError = LinfoError::Fledging();
+		$this->LinfoError = LinfoError::Singleton();
 
 		$this->connectionSettings = $settings['libvirt_connection'];
 	}

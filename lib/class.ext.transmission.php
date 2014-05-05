@@ -76,7 +76,7 @@ class ext_transmission implements LinfoExtension {
 		// Classes we need
 		$this->_CallExt = new CallExt;
 		$this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin'));
-		$this->_LinfoError = LinfoError::Fledging();
+		$this->_LinfoError = LinfoError::Singleton();
 
 		// Transmission specific settings
 		$this->_auth = array_key_exists('transmission_auth', $settings) ? (array) $settings['transmission_auth'] : array();

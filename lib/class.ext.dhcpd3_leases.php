@@ -63,7 +63,7 @@ class ext_dhcpd3_leases implements LinfoExtension {
 		global $settings;
 
 		// Localize error handler
-		$this->_LinfoError = LinfoError::Fledging();
+		$this->_LinfoError = LinfoError::Singleton();
 
 		// Should we hide mac addresses, to prevent stuff like mac address spoofing?
 		$this->_hide_mac = array_key_exists('dhcpd3_hide_mac', $settings) ? (bool) $settings['dhcpd3_hide_mac'] : false;

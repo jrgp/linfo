@@ -43,7 +43,7 @@ class ext_truecrypt implements LinfoExtension {
 
 	// Localize important classes
 	public function __construct() {
-		$this->_LinfoError = LinfoError::Fledging();
+		$this->_LinfoError = LinfoError::Singleton();
 		$this->_CallExt = new CallExt;
 		$this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
 	}

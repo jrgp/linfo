@@ -43,7 +43,7 @@ abstract class OS_BSD_Common {
 		$this->settings = $settings;
 		
 		// Localize error handler
-		$this->error = LinfoError::Fledging();
+		$this->error = LinfoError::Singleton();
 		
 		// Exec running
 		$this->exec = new CallExt;

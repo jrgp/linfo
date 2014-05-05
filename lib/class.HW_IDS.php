@@ -70,7 +70,7 @@ class HW_IDS {
 		// Might need these
 		$this->exec = new CallExt;
 		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
-		$this->error = LinfoError::Fledging();
+		$this->error = LinfoError::Singleton();
 	}
 
 	/**

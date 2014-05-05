@@ -37,13 +37,13 @@ class LinfoTimer {
 	protected static $_fledging;
 
 	/**
-	 * Fledging. Get singleton instance
+	 * Singleton. Get singleton instance
 	 * 
 	 * @param array $settings linfo settings
 	 * @access public
 	 * @return object LinfoError instance
 	 */
-	public static function Fledging($settings = null) {
+	public static function Singleton($settings = null) {
 		$c = __CLASS__;
 		if (!isset(self::$_fledging))
 			self::$_fledging = new $c($settings);

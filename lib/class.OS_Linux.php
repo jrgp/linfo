@@ -50,7 +50,7 @@ class OS_Linux {
 		$this->settings = $settings;
 
 		// Localize error handler
-		$this->error = LinfoError::Fledging();
+		$this->error = LinfoError::Singleton();
 
 		// Make sure we have what we need
 		if (!is_dir('/sys') || !is_dir('/proc'))

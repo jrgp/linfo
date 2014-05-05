@@ -101,7 +101,7 @@ class ext_utorrent implements LinfoExtension {
 
 	public function __construct() {
 		global $settings;
-		$this->LinfoError = LinfoError::Fledging();
+		$this->LinfoError = LinfoError::Singleton();
 		$this->connectionSettings = $settings['utorrent_connection'];
 	}
 

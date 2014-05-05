@@ -48,7 +48,7 @@ class OS_Windows {
 		$this->settings = $settings;
 
 		// Localize error handler
-		$this->error = LinfoError::Fledging();
+		$this->error = LinfoError::Singleton();
 		
 		// Get WMI instance
 		$this->wmi = new COM('winmgmts:{impersonationLevel=impersonate}//./root/cimv2');

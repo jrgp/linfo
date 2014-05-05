@@ -722,7 +722,7 @@ function showInfoHTML($info, $settings) {
 	}
 
 	// Feel like showing errors? Are there any even?
-	if (!empty($settings['show_errors']) && LinfoError::Fledging()->num() > 0) {
+	if (!empty($settings['show_errors']) && LinfoError::Singleton()->num() > 0) {
 		echo '
 	<div id="errorList" class="infoTable">
 		<h2>'.$lang['error_head'].'</h2>
@@ -732,7 +732,7 @@ function showInfoHTML($info, $settings) {
 				<th>'.$lang['message'].'</th>
 			</tr>';
 
-			foreach (LinfoError::Fledging()->show() as $error) {
+			foreach (LinfoError::Singleton()->show() as $error) {
 				echo '
 				<tr>
 					<td>'.$error[0].'</td>
@@ -803,7 +803,7 @@ function showInfoHTML($info, $settings) {
 				<th>'.$lang['time_taken'].'</th>
 			</tr>';
 
-			foreach (LinfoTimer::Fledging()->getResults() as $result) {
+			foreach (LinfoTimer::Singleton()->getResults() as $result) {
 				echo '
 				<tr>
 					<td>'.$result[0].'</td>
