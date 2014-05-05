@@ -51,7 +51,7 @@ class LinfoTimerStart {
 	 * classes dies, thus calling the following destructor
 	 */
 	public function __destruct() {
-		LinfoTimer::Fledging()->save($this->_id, microtime(true) - $this->_start);
+		LinfoTimer::Singleton()->save($this->_id, microtime(true) - $this->_start);
 	}
 }
 

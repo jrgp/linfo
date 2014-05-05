@@ -50,7 +50,7 @@ class ext_soldat implements LinfoExtension {
 	// Localize important classes
 	public function __construct() {
 		global $settings;
-		$this->_LinfoError = LinfoError::Fledging();
+		$this->_LinfoError = LinfoError::Singleton();
 		$this->_servers = (array) $settings['soldat_servers'];
 	}
 

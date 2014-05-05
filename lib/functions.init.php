@@ -140,7 +140,7 @@ function runExtensions(&$info, $settings) {
 
 		// Anti hack
 		if (!preg_match('/^[a-z0-9-_]+$/i', $ext)) {
-			LinfoError::Fledging()->add('Extension Loader', 'Not going to load "'.$ext.'" extension as only characters allowed in name are letters/numbers/-_');
+			LinfoError::Singleton()->add('Extension Loader', 'Not going to load "'.$ext.'" extension as only characters allowed in name are letters/numbers/-_');
 			continue;
 		}
 
@@ -150,7 +150,7 @@ function runExtensions(&$info, $settings) {
 		else {
 			
 			// Issue an error and skip this thing otheriwse
-			LinfoError::Fledging()->add('Extension Loader', 'Cannot find file for "'.$ext.'" extension.');
+			LinfoError::Singleton()->add('Extension Loader', 'Cannot find file for "'.$ext.'" extension.');
 			continue;
 		}
 
@@ -159,14 +159,14 @@ function runExtensions(&$info, $settings) {
 
 		// Make sure it exists
 		if (!class_exists($class)) {
-			LinfoError::Fledging()->add('Extension Loader', 'Cannot find class for "'.$ext.'" extension.');
+			LinfoError::Singleton()->add('Extension Loader', 'Cannot find class for "'.$ext.'" extension.');
 			continue;
 		}
 
 		// Handle version checking
 		$min_version = defined($class.'::LINFO_MIN_VERSION') ? constant($class.'::LINFO_MIN_VERSION') : false; 
 		if ($min_version !== false && strtolower(VERSION) != 'git' && !version_compare(VERSION, $min_version, '>=')) {
-			LinfoError::Fledging()->add('Extension Loader', '"'.$ext.'" extension requires at least Linfo v'.$min_version);
+			LinfoError::Singleton()->add('Extension Loader', '"'.$ext.'" extension requires at least Linfo v'.$min_version);
 			continue;
 		}
 

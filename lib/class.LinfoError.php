@@ -37,13 +37,13 @@ class LinfoError {
 	protected static $_fledging;
 
 	/**
-	 * Fledging. Get singleton instance
+	 * Singleton. Get singleton instance
 	 * 
 	 * @param array $settings linfo settings
 	 * @access public
 	 * @return object LinfoError instance
 	 */
-	static public function Fledging($settings = null) {
+	static public function Singleton($settings = null) {
 		$c = __CLASS__;
 		if (!isset(self::$_fledging))
 			self::$_fledging = new $c($settings);

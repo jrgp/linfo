@@ -19,7 +19,7 @@ class OS_CYGWIN {
 		$this->settings = $settings;
 
 		// Localize error handler
-		$this->error = LinfoError::Fledging();
+		$this->error = LinfoError::Singleton();
 
 		// Make sure we have what we need
 		if (!is_dir('/proc'))
