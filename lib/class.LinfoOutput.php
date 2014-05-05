@@ -241,7 +241,7 @@ class LinfoOutput {
 	
 	// The CPUs
 	if (!empty($settings['show']['cpu'])) {
-		$cpus = [];
+		$cpus = array();
 
 		foreach ((array) $info['CPU'] as $cpu) {
 			$cpu_html = 
