@@ -9,7 +9,7 @@
       "name": "Joe Gillotti",
       "email": "joe@joegillotti.com",
       "homepage": "http://joegillotti.com",
-      "role": "Developer"
+      "role": "Author"
     }
   ],
     "require": {
@@ -17,7 +17,7 @@
       "ext-pcre": "*"
     },
     "suggest": {
-      "ext-com": "*"
+      "ext-com": "On Windows"
     }
 }
 
