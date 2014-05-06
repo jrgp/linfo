@@ -15,7 +15,9 @@
     "require": {
       "php": ">=5.1.0",
       "ext-pcre": "*",
-      "ext-com_dotnet": "Needed on Windows"
+    },
+    "suggest": {
+      "ext-com": "*"
     }
 }
 
