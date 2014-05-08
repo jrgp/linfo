@@ -1,0 +1,23 @@
+{
+  "name": "linfo/linfo",
+    "description": "App and library for easily parsing and displaying system information of the host, like network/torrents/cpu/memory/usb/pci/sound cards/filesystems/raid array/ipmi/etc.",
+    "keywords": ["health","system","linux","specs","cpu"],
+    "homepage": "http://github.com/jrgp/linfo",
+    "license": "GPL",
+    "authors": [
+    {
+      "name": "Joe Gillotti",
+      "email": "joe@joegillotti.com",
+      "homepage": "http://joegillotti.com",
+      "role": "Author"
+    }
+  ],
+    "require": {
+      "php": ">=5.1.0",
+      "ext-pcre": "*"
+    },
+    "suggest": {
+      "ext-com": "On Windows"
+    }
+}
+

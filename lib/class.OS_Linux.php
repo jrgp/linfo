@@ -54,7 +54,7 @@ class OS_Linux extends OS_Unix_Common {
 
 		// Make sure we have what we need
 		if (!is_dir('/sys') || !is_dir('/proc'))
-			throw new GetInfoException('This needs access to /proc and /sys to work.');
+			throw new LinfoFatalException('This needs access to /proc and /sys to work.');
 	}
 
 	/**
