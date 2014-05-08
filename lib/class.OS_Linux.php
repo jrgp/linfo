@@ -853,6 +853,8 @@ class OS_Linux extends OS_Unix_Common {
 		// Get values for each device
 		foreach ((array) @glob('/sys/class/net/*', GLOB_NOSORT) as $path) {
 
+			$nic = basename($path);
+
 			// States
 			$operstate_contents = LinfoCommon::getContents($path.'/operstate');
 			switch ($operstate_contents) {
@@ -875,13 +877,33 @@ class OS_Linux extends OS_Unix_Common {
 					$state = 'down'; 
 			}
 
-			// Type
-			$type_contents = strtoupper(LinfoCommon::getContents($path.'/device/modalias'));
-			list($type) = explode(':', $type_contents, 2);
-			$type = $type != 'USB' && $type != 'PCI' ? 'N/A' : $type;
+			// Try the weird ways of getting type (https://stackoverflow.com/a/16060638)
+			$type = false;
+			$typeCode = LinfoCommon::getIntFromFile($path.'/type');
+
+			if ($typeCode == 772)
+				$type = 'Loopback';
+			elseif ($typeCode == 65534)
+				$type = 'Tunnel';
+			elseif ($typeCode == 776)
+				$type = 'IPv6 in IPv4';
+
+			if (!$type) {
+				$type_contents = strtoupper(LinfoCommon::getContents($path.'/device/modalias'));
+				list($type_match) = explode(':', $type_contents, 2);
+
+				if (in_array($type_match, array('PCI', 'USB')))
+					$type = 'Ethernet ('.$type_match.')';
+				elseif (is_dir($path.'/bridge'))
+					$type = 'Bridge';
+				elseif (is_dir($path.'/bonding'))
+					$type = 'Bond';
+
+				// TODO find some way of finding out what provides the virt-specific kvm/xen vif/vnet devices
+			}
 
 			// Save and get info for each
-			$return[basename($path)] = array(
+			$return[$nic] = array(
 
 				// Stats are stored in simple files just containing the number
 				'recieved' => array(
@@ -897,7 +919,7 @@ class OS_Linux extends OS_Unix_Common {
 
 				// These were determined above
 				'state' => $state,
-				'type' => $type
+				'type' => $type ?: 'N/A'
 			);
 		}
 
