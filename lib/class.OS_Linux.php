@@ -894,12 +894,14 @@ class OS_Linux extends OS_Unix_Common {
 
 				if (in_array($type_match, array('PCI', 'USB')))
 					$type = 'Ethernet ('.$type_match.')';
+				elseif ($type_contents == 'XEN:VIF')
+					$type = 'Xen (VIF)';
 				elseif (is_dir($path.'/bridge'))
 					$type = 'Bridge';
 				elseif (is_dir($path.'/bonding'))
 					$type = 'Bond';
 
-				// TODO find some way of finding out what provides the virt-specific kvm/xen vif/vnet devices
+				// TODO find some way of finding out what provides the virt-specific kvm vnet devices
 			}
 
 			// Save and get info for each
