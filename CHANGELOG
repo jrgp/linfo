@@ -87,3 +87,4 @@ v?.?? ?/??/20??
    if version reported by sysctl isn't fully qualified
  - all inline exit's converted to exceptions so this can be used as a library
    without fear of killing whichever app uses it
+ - More detailed network detection type on Linux
