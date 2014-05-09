@@ -88,4 +88,14 @@ class LinfoError {
 	public function num() {
 		return count($this->_errors);
 	}
+
+	/**
+	 * Wipe out singleton instance. Used mainly for unit tests
+	 *
+	 * @static
+	 * @return void
+	 */
+	public static function clear() {
+		self::$_fledging = null;
+	}
 }
