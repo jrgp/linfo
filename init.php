@@ -59,11 +59,6 @@ function linfoAutoloader($class) {
 			return;
 		exit('Interface '.$interface.' not found in '.$interface_file."\n");
 	}
-
-	if ($class == 'COM')
-		exit('To run Linfo on Windows you need to enable PHP\'s COM extension');
-
-	exit('Could not find class or interface '.$class."\n");
 }
 
 // Opt for spl_autoload_register if we have it. Ancient installations

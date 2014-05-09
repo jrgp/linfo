@@ -82,6 +82,7 @@ v1.11 5/2/2014
 v?.?? ?/??/20??
  - Major refactor: no global vars; easier to use
    simply as a library by third party apps
+ - Added unit tests via PHPUnit
  - added utorrent web ui parsing extension
  - proper fqdn resolution on linux using /etc/hosts
    if version reported by sysctl isn't fully qualified

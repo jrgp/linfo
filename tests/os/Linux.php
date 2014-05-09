@@ -29,35 +29,37 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
    * @test
    */
   public static function getKernel() {
-    self::assertTrue(is_string(self::$parser->getKernel()));
+    self::assertInternalType('string', self::$parser->getKernel());
   }
 
   /**
    * @test
    */
   public static function getHostname() {
-    self::assertTrue(is_string(self::$parser->getHostname()));
+    self::assertInternalType('string', self::$parser->getHostname());
   }
 
   /**
    * @test
    */
   public static function getCPUArchitecture() {
-    self::assertTrue(is_string(self::$parser->getCPUArchitecture()));
+    self::assertInternalType('string', self::$parser->getCPUArchitecture());
   }
 
   /**
    * @test
    */
   public static function getTemps() {
-    self::assertTrue(is_array(self::$parser->getTemps()));
+    // TODO: flesh this out
+    self::assertInternalType('array', self::$parser->getTemps());
   }
 
   /**
    * @test
    */
   public static function getRAID() {
-    self::assertTrue(is_array(self::$parser->getRAID()));
+    // TODO: flesh this out
+    self::assertInternalType('array', self::$parser->getRAID());
   }
 
   /**
@@ -65,7 +67,7 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
    */
   public static function getDistro() {
     $distro = self::$parser->getDistro();
-    self::assertTrue(is_array($distro));
+    self::assertInternalType('array', $distro);
     foreach (array('name', 'version') as $key)
       self::assertArrayHasKey($key, $distro);
   }
@@ -74,29 +76,43 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
    * @test
    */
   public static function getNumLoggedIn() {
-    self::assertTrue(is_int(self::$parser->getNumLoggedIn()));
+    self::assertInternalType('int', self::$parser->getNumLoggedIn());
   }
 
   /**
    * @test
    */
   public static function getCPUUsage() {
-    self::assertTrue(is_float(self::$parser->getCPUUsage()));
+    self::assertInternalType('float', self::$parser->getCPUUsage());
   }
 
   /**
    * @test
    */
   public static function getSoundCards() {
-    self::assertTrue(is_array(self::$parser->getSoundCards()));
+    $cards = self::$parser->getSoundCards();
+    self::assertInternalType('array', $cards);
+    foreach ($cards as $card) {
+      self::assertArrayHasKey('card', $card);
+      self::assertArrayHasKey('number', $card);
+    }
   }
 
   /**
    * @test
    */
   public static function getMounts() {
-    // TODO make sure each mount given has proper fields
-    self::assertTrue(is_array(self::$parser->getMounts()));
+    $mounts = self::$parser->getMounts();
+    self::assertInternalType('array', $mounts);
+    foreach ($mounts as $mount) {
+      foreach (array('device', 'mount', 'type', 'size', 'used', 'free', 'free_percent', 'used_percent', 'options') as $key) {
+        self::assertArrayHasKey($key, $mount);
+      }
+      self::assertInternalType('string', $mount['device']);
+      self::assertInternalType('string', $mount['mount']);
+      self::assertInternalType('string', $mount['type']);
+      self::assertInternalType('array', $mount['options']);
+    }
   }
 
   /**
@@ -104,15 +120,15 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
    */
   public static function getNet() {
     $nics = self::$parser->getNet();
-    self::assertTrue(is_array($nics));
+    self::assertInternalType('array', $nics);
     foreach ($nics as $nic) {
       foreach (array('sent', 'recieved', 'state', 'type') as $key) {
         self::assertArrayHasKey($key, $nic);
       }
-      self::assertTrue(is_string($nic['state']));
-      self::assertTrue(is_string($nic['type']));
-      self::assertTrue(is_array($nic['sent']));
-      self::assertTrue(is_array($nic['recieved']));
+      self::assertInternalType('string', $nic['state']);
+      self::assertInternalType('string', $nic['type']);
+      self::assertInternalType('array', $nic['sent']);
+      self::assertInternalType('array', $nic['recieved']);
       foreach (array('bytes', 'errors', 'packets') as $key) {
         self::assertArrayHasKey($key, $nic['sent']);
         self::assertArrayHasKey($key, $nic['recieved']);
@@ -126,7 +142,8 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
    * @test
    */
   public static function getCPU() {
-    self::assertTrue(is_array(self::$parser->getCPU()));
+    // TODO: flesh this out
+    self::assertInternalType('array', self::$parser->getCPU());
   }
 
   /**
@@ -134,7 +151,7 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
    */
   public static function getHD() {
     $drives = self::$parser->getHD();
-    self::assertTrue(is_array($drives));
+    self::assertInternalType('array', $drives);
     foreach ($drives as $drive) {
       foreach (array('name', 'vendor', 'device', 'reads', 'writes', 'size', 'partitions') as $key) {
         self::assertArrayHasKey($key, $drive);
@@ -143,11 +160,11 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
         foreach ($drive['partitions'] as $partition) {
           self::assertArrayHasKey('size', $partition);
           self::assertArrayHasKey('number', $partition);
-          self::assertTrue(is_int($partition['size']));
+          self::assertInternalType('int', $partition['size']);
           self::assertTrue(is_numeric($partition['number']));
         }
       }
-      self::assertTrue(is_int($drive['size']));
+      self::assertInternalType('int', $drive['size']);
     }
   }
 
@@ -155,7 +172,7 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
    * @test
    */
   public static function getUpTime() {
-    self::assertTrue(is_string(self::$parser->getUpTime()));
+    self::assertInternalType('string', self::$parser->getUpTime());
   }
 
   /**
@@ -163,7 +180,7 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
    */
   public static function getLoad() {
     $load = self::$parser->getLoad();
-    self::assertTrue(is_array($load));
+    self::assertInternalType('array', $load);
     foreach (array('now', '5min', '15min') as $key)
       self::assertArrayHasKey($key, $load);
   }
@@ -173,15 +190,15 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
    */
   public static function getProcessStats() {
     $stats = self::$parser->getProcessStats();
-    self::assertTrue(is_array($stats));
+    self::assertInternalType('array', $stats);
     foreach (array('totals', 'proc_total', 'threads') as $key) {
       self::assertArrayHasKey($key, $stats);
     }
-    self::assertTrue(is_int($stats['proc_total']));
-    self::assertTrue(is_int($stats['threads']));
+    self::assertInternalType('int', $stats['proc_total']);
+    self::assertInternalType('int', $stats['threads']);
     foreach (array('running', 'zombie', 'stopped', 'sleeping') as $key) {
       self::assertArrayHasKey($key, $stats['totals']);
-      self::assertTrue(is_int($stats['totals'][$key]));
+      self::assertInternalType('int', $stats['totals'][$key]);
     }
   }
 
@@ -190,7 +207,7 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
    */
   public static function getRam() {
     $stats = self::$parser->getRam();
-    self::assertTrue(is_array($stats));
+    self::assertInternalType('array', $stats);
     foreach (array('total', 'type', 'free', 'swapTotal', 'swapFree', 'swapInfo') as $key)
       self::assertArrayHasKey($key, $stats);
   }

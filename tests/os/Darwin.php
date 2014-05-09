@@ -20,8 +20,7 @@ class OS_DarwinTest extends PHPUnit_Framework_TestCase {
    * @test
    */
   public static function getOS() {
-    list($os) = explode(' ',self::$parser->getOS());
-    self::assertEquals('Darwin', $os);
+    self::assertStringStartsWith('Darwin', self::$parser->getOS());
   }
 
   /**
