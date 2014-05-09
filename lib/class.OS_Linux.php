@@ -92,7 +92,7 @@ class OS_Linux extends OS_Unix_Common {
 			'services' => empty($this->settings['show']['process_stats']) ? array() : $this->getServices(),
 			'numLoggedIn' => empty($this->settings['show']['numLoggedIn']) ? array() : $this->getNumLoggedIn(),
 			'virtualization' => empty($this->settings['show']['virtualization']) ? array() : $this->getVirtualization(),
-			'cpuUsage' => empty($this->settings['cpu_usage']) || $this->cpu_percent['overall'] === false ? false : $this->cpu_percent['overall']
+			'cpuUsage' => empty($this->settings['cpu_usage'])  ? false : $this->getCPUUsage()
 		);
 	}
 
@@ -1522,6 +1522,15 @@ class OS_Linux extends OS_Unix_Common {
 
 		// idk
 		return false;
+	 }
+
+	/**
+	 * Get overall CPU usage. Depends on determineCPUPercentage() being called prior
+	 *
+	 * @access private
+	 */
+	 private function getCPUUsage() {
+		 return $this->cpu_percent['overall'] === false ? false : $this->cpu_percent['overall'];
 	 }
 
 	/**

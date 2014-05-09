@@ -25,7 +25,7 @@ defined('IN_LINFO') or exit;
 /*
  * The Unix os's are largely similar and thus draw from this class.
 */
-abstract class OS_Unix_Common {
+abstract class OS_Unix_Common extends OS {
 
 	public function ensureFQDN($hostname) {
 

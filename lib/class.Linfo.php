@@ -36,6 +36,7 @@ class Linfo {
 		$settings = array(),
 		$lang = array(),
 		$info = array(),
+		$parser = null,
 
 		$app_name = 'Linfo',
 		$version = '',
@@ -51,9 +52,8 @@ class Linfo {
 		$this->version = strpos($scm, '$') !== false ? 'git' : $scm;
 
 		// Run through dependencies / sanity checking
-		if (!extension_loaded('pcre') && !function_exists('preg_match') && !function_exists('preg_match_all')) {
+		if (!extension_loaded('pcre') && !function_exists('preg_match') && !function_exists('preg_match_all'))
 			throw new LinfoFatalException($this->app_name.' needs the `pcre\' extension to be loaded. http://us2.php.net/manual/en/book.pcre.php');
-		}
 
 		// Warnings usually displayed to browser happen if date.timezone isn't set in php 5.3+
 		if (!ini_get('date.timezone')) 
@@ -67,12 +67,35 @@ class Linfo {
 		foreach (array('LinfoCommon', 'CallExt') as $class)
 			$class::config($this);
 
-		// Gather data
-		$this->parseSystem();
+		// Determine OS
+		$os = $this->getOS();
+
+		if (!$os)
+			throw new LinfoFatalException('Unknown/unsupported operating system');
+
+		$distro_class = 'OS_'.$os;
+		$this->parser = new $distro_class($this->settings);
+	}
+
+	public function scan() {
+		// Run OS prober
+		$this->info = $this->parser->getAll();
+		$this->info['contains'] = array_key_exists('contains', $this->info) ? (array) $this->info['contains'] : array();
+		$this->info['timestamp'] = date('c');
+
+		// Run extra extensions
 		$this->runExtensions();
 	}
 
 	protected function loadSettings() {
+
+		// Running unit tests?
+		if (defined('LINFO_TESTING')) {
+			$this->settings = LinfoCommon::getVarFromFile(LINFO_TESTDIR . '/test_settings.php', 'settings');
+			if (!is_array($this->settings))
+				throw new LinfoFatalException('Failed getting test-specific settings');
+			return;
+		}
 
 		// If configuration file does not exist but the sample does, say so
 		if (!is_file(LINFO_LOCAL_PATH . 'config.inc.php') && is_file(LINFO_LOCAL_PATH . 'sample.config.inc.php'))
@@ -113,6 +136,14 @@ class Linfo {
 
 	protected function loadLanguage() {
 
+		// Running unit tests?
+		if (defined('LINFO_TESTING')) {
+			$this->lang = LinfoCommon::getVarFromFile(LINFO_TESTDIR . '/test_lang.php', 'lang');
+			if (!is_array($this->lang))
+				throw new LinfoFatalException('Failed getting test-specific language');
+			return;
+		}
+
 		// Load translation, defaulting to english of keys are missing (assuming
 		// we're not using english anyway and the english translation indeed exists)
 		if (is_file(LINFO_LOCAL_PATH . 'lang/en.php') && $this->settings['language'] != 'en') 
@@ -122,20 +153,6 @@ class Linfo {
 		// Otherwise snag desired translation, be it english or a non-english without english to fall back on
 		else
 			$this->lang = LinfoCommon::getVarFromFile(LINFO_LOCAL_PATH . 'lang/'.$this->settings['language'].'.php', 'lang');
-	}
-
-	protected function parseSystem() {
-		$os = $this->getOS();
-
-		if (!$os)
-			throw new LinfoFatalException("Unknown/unsupported operating system\n");
-
-		$distro_class = 'OS_'.$os;
-		$distro_instance = new $distro_class($this->settings);
-
-		$this->info = $distro_instance->getAll();
-		$this->info['contains'] = array_key_exists('contains', $this->info) ? (array) $this->info['contains'] : array();
-		$this->info['timestamp'] = date('c');
 	}
 
 	protected function getOS() {
@@ -300,6 +317,10 @@ class Linfo {
 
 	public function getTimeStart() {
 		return $this->time_start;
+	}
+
+	public function getParser() {
+		return $this->parser;
 	}
 }
 

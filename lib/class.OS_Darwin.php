@@ -120,7 +120,7 @@ class OS_Darwin extends OS_BSD_Common{
 		return preg_match('/^\s*Computer Name:\s+(.+)\s*$/m', $this->systemProfiler, $m) ? $m[1] : php_uname('n');
 	}
 
-	private function getCPUArchitecture() {
+	public function getCPUArchitecture() {
 		return php_uname('m');
 	}
 
@@ -177,7 +177,7 @@ class OS_Darwin extends OS_BSD_Common{
 	}
 
 	// Get network interfaces
-	private function getNet() {
+	public function getNet() {
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Network Devices');
@@ -294,7 +294,7 @@ class OS_Darwin extends OS_BSD_Common{
 	}
 
 	// Get uptime 
-	private function getUpTime() {
+	public function getUpTime() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -309,7 +309,7 @@ class OS_Darwin extends OS_BSD_Common{
 	}
 	
 	// Get system load
-	private function getLoad() {
+	public function getLoad() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -329,7 +329,7 @@ class OS_Darwin extends OS_BSD_Common{
 	}
 	
 	// Get stats on processes
-	private function getProcessStats() {
+	public function getProcessStats() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -421,7 +421,7 @@ class OS_Darwin extends OS_BSD_Common{
 	}
 	
 	// Get ram usage
-	private function getRam(){
+	public function getRam() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -451,7 +451,7 @@ class OS_Darwin extends OS_BSD_Common{
 	}
 
 	// Model of mac
-	private function getModel() {
+	public function getModel() {
 		if (preg_match('/^\s+Model Name:\s+(.+)/m', $this->systemProfiler, $m))
 			return $m[1];
 
@@ -462,7 +462,7 @@ class OS_Darwin extends OS_BSD_Common{
 	}
 	
 	// Battery
-	private function getBattery() {
+	public function getBattery() {
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Battery');
@@ -517,7 +517,7 @@ class OS_Darwin extends OS_BSD_Common{
 	}
 
 	// drives
-	private function getHD() {
+	public function getHD() {
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Drives');

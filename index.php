@@ -23,7 +23,14 @@ require_once __DIR__.'/init.php';
 
 // Begin
 try {
+
+  // Load settings and language
 	$linfo = new Linfo;
+
+  // Run through /proc or wherever and build our list of settings
+	$linfo->scan();
+
+  // Give it off in html/json/whatever
 	$linfo->output();
 }
 
@@ -36,5 +43,5 @@ catch (LinfoFatalException $e) {
 // Developers:
 // if you include init.php as above and instantiate a $linfo
 // object, you can get an associative array of all of the 
-// system info with $linfo->getInfo();
+// system info with $linfo->getInfo() after running $linfo->scan();
 // Just catch the LinfoFatalException for fatal errors
