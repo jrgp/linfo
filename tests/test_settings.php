@@ -41,3 +41,15 @@ $settings['show']['services'] = false;
 
 $settings['hide']['storage_devices'] = array();
 $settings['hide']['filesystems'] = array();
+
+$settings['hide']['mountpoints_regex'] = array();
+$settings['hide']['fs_mount_options'] = array();
+
+$settings['hide']['sg'] = true;
+
+$settings['temps']['hwmon'] = false;
+$settings['temps']['hddtemp'] = false;
+$settings['temps']['mbmon'] = false;
+$settings['temps']['sensord'] = false;
+
+$settings['raid'] = array();

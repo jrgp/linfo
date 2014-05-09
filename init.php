@@ -24,7 +24,7 @@ defined('IN_LINFO') or define('IN_LINFO', true);
 defined('IN_INFO') or define('IN_INFO', true); // support old config files
 
 // Are we running from the CLI?
-if (isset($argc) && is_array($argv))
+if ((isset($argc) && is_array($argv)) || defined('LINFO_TESTING'))
 	defined('LINFO_CLI') or define('LINFO_CLI', true);
 
 // Configure absolute path to local directory

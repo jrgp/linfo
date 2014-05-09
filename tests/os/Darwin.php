@@ -7,18 +7,13 @@ class OS_DarwinTest extends PHPUnit_Framework_TestCase {
   public static function setUpBeforeClass() {
     $linfo = new Linfo;
     self::$parser = $linfo->getParser();
+
+    self::assertInstanceOf('OS_Darwin', self::$parser);
   }
 
   public static function tearDownAfterClass() {
     self::$parser = null;
     LinfoCommon::unconfig();
-  }
-
-  /**
-   * @test
-   */
-  public static function verifyOS() {
-    self::assertInstanceOf('OS_Darwin', self::$parser);
   }
 
   /**
