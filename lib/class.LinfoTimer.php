@@ -79,5 +79,15 @@ class LinfoTimer {
 	public function getResults() {
 		return $this->_results;
 	}
+
+	/**
+	 * Wipe out singleton instance. Used mainly for unit tests
+	 *
+	 * @static
+	 * @return void
+	 */
+	public static function clear() {
+		self::$_fledging = null;
+	}
 }
 
