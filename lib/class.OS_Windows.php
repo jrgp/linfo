@@ -27,7 +27,7 @@ defined('IN_LINFO') or exit;
  * Get info on Windows systems
  * Written and maintained by Oliver Kuckertz (mologie).
  */
-class OS_Windows {
+class OS_Windows extends OS {
 
 	// Keep these tucked away
 	protected

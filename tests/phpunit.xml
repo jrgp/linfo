@@ -1,8 +1,20 @@
 <phpunit
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
-         backupGlobals="true"
-         backupStaticAttributes="false"
-         bootstrap="../init.php"
-        colors="true"></phpunit>
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
+  backupGlobals="false"
+  backupStaticAttributes="false"
+  bootstrap="bootstrap.php"
+  colors="true">
+
+  <testsuites>
+
+    <!-- Run everything except OS dependent tests -->
+    <testsuite name="Linfo">
+    <directory suffix=".php">linfo/</directory>
+    <exclude suffix=".php">os/</exclude>
+    </testsuite>
+
+  </testsuites>
+
+</phpunit>
 

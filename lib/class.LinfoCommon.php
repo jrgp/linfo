@@ -33,6 +33,11 @@ class LinfoCommon {
 		self::$lang = $linfo->getLang();
 	}
 
+	public static function unconfig() {
+		self::$settings = array();
+		self::$lang = array();
+	}
+
 	// Certain files, specifcally the pci/usb ids files, vary in location from
 	// linux distro to linux distro. This function, when passed an array of
 	// possible file location, picks the first it finds and returns it. When
@@ -145,7 +150,7 @@ class LinfoCommon {
 		if (!is_file($file))
 			return false;
 
-		require_once $file;
+		require $file;
 
 		// Double dollar sign means treat variable contents 
 		// as the name of a variable. 
