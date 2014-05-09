@@ -1161,9 +1161,7 @@ class LinfoOutput {
 						$mount_elem->addAttribute('label', $mount['label']);
 					$mount_elem->addAttribute('fstype', $mount['type']);
 					if ($settings['show']['mounts_options'] && !empty($mount['options'])) {
-						$options_elem = $mount_elem->addChild('mount_options');
-						foreach ($mount['options'] as $option)
-							$options_elem->addChild($option);
+						$mount_elem->addAttribute('options', implode(',', $mount['options']));
 					}
 					$mount_elem->addAttribute('size', $mount['size']);
 					$mount_elem->addAttribute('used', $mount['used']);

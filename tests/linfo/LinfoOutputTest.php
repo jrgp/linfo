@@ -39,10 +39,6 @@ class LinfoOutTest extends PHPUnit_Framework_TestCase {
     self::$output->xmlOut();
     $xml = ob_get_clean();
 
-    $p = xml_parser_create();
-    $retcode = xml_parse_into_struct($p, $xml, $vals, $index);
-    xml_parser_free($p);
-
-    self::assertTrue($retcode === 1, 'Failed parsing generated XML');
+    self::assertTrue(simplexml_load_string($xml) !== false, 'Failed parsing generated XML');
   }
 }
