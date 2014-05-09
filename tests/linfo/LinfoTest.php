@@ -17,28 +17,28 @@ class LinfoTest extends PHPUnit_Framework_TestCase {
    * @test
    */
   public static function getLang() {
-    self::assertTrue(is_array(self::$linfo->getLang()));
+    self::assertInternalType('array', self::$linfo->getLang());
   }
 
   /**
    * @test
    */
   public static function getSettings() {
-    self::assertTrue(is_array(self::$linfo->getSettings()));
+    self::assertInternalType('array', self::$linfo->getSettings());
   }
 
   /**
    * @test
    */
   public static function getAppName() {
-    self::assertTrue(is_string(self::$linfo->getAppName()));
+    self::assertInternalType('string', self::$linfo->getAppName());
   }
 
   /**
    * @test
    */
   public static function getVersion() {
-    self::assertTrue(is_string(self::$linfo->getVersion()));
+    self::assertInternalType('string', self::$linfo->getVersion());
   }
 
   /**
