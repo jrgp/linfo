@@ -17,7 +17,7 @@ $settings['show']['load'] = true;
 $settings['show']['ram'] = true;
 $settings['show']['hd'] = true;
 $settings['show']['mounts'] = true;
-$settings['show']['mounts_options'] = false; 
+$settings['show']['mounts_options'] = true;
 $settings['show']['network'] = true;
 $settings['show']['uptime'] = true;
 $settings['show']['cpu'] = true;
@@ -29,15 +29,15 @@ $settings['show']['model'] = true;
 $settings['show']['numLoggedIn'] = true; 
 $settings['show']['virtualization'] = true;
 
-$settings['cpu_usage'] = false; 
+$settings['cpu_usage'] = true;
 
 $settings['show']['duplicate_mounts'] = true;
 
-$settings['show']['temps'] = false;
-$settings['show']['raid'] = false; 
+$settings['show']['temps'] = true;
+$settings['show']['raid'] = true;
 
-$settings['show']['battery'] = false;
-$settings['show']['sound'] = false;
+$settings['show']['battery'] = true;
+$settings['show']['sound'] = true;
 $settings['show']['wifi'] = false; 
 
 $settings['show']['services'] = false;
@@ -50,9 +50,13 @@ $settings['hide']['fs_mount_options'] = array();
 
 $settings['hide']['sg'] = true;
 
-$settings['temps']['hwmon'] = false;
-$settings['temps']['hddtemp'] = false;
-$settings['temps']['mbmon'] = false;
-$settings['temps']['sensord'] = false;
+$settings['temps']['hwmon'] = true;
+$settings['temps']['hddtemp'] = true;
+$settings['temps']['mbmon'] = true;
+$settings['temps']['sensord'] = true;
 
 $settings['raid'] = array();
+
+
+$settings['additional_paths'] = array();
+$settings['services'] = array();

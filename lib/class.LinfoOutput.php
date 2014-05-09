@@ -970,7 +970,7 @@ class LinfoOutput {
 			$core = array();
 			if (!empty($settings['show']['os']))
 				$core[] = array('os', $info['OS']);
-			if (!empty($settings['show']['distro']) && is_array($info['Distro']))
+			if (!empty($settings['show']['distro']) && isset($info['Distro']) && is_array($info['Distro']))
 				$core[] = array($lang['distro'],	$info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
 			if (!empty($settings['show']['kernel']))
 				$core[] = array('kernel', $info['Kernel']);
@@ -1046,7 +1046,7 @@ class LinfoOutput {
 			}
 
 			// TEMPS
-			if (!empty($settings['show']['temps']) && count($info['Temps']) > 0) {
+			if (!empty($settings['show']['temps']) && isset($info['Temps']) && count($info['Temps']) > 0) {
 				$temps = $xml->addChild('temps');
 				foreach ($info['Temps'] as $stat) {
 					$temp = $temps->addChild('temp');
@@ -1057,7 +1057,7 @@ class LinfoOutput {
 			}
 
 			// Batteries
-			if (!empty($settings['show']['battery']) && count($info['Battery']) > 0) {
+			if (!empty($settings['show']['battery']) && isset($info['Battery']) && count($info['Battery']) > 0) {
 				$bats = $xml->addChild('batteries');
 				foreach ($info['Battery'] as $bat)	{
 					$bat = $bats->addChild('battery');
@@ -1068,7 +1068,7 @@ class LinfoOutput {
 			}
 
 			// SERVICES
-			if (!empty($settings['show']['services']) && count($info['services']) > 0) {
+			if (!empty($settings['show']['services']) && isset($info['services']) && count($info['services']) > 0) {
 				$services = $xml->addChild('services');
 				foreach ($info['services'] as $service => $state) {
 					$state_parts = explode(' ', $state['state'], 2);
@@ -1082,7 +1082,7 @@ class LinfoOutput {
 			}
 
 			// DEVICES
-			if (!empty($settings['show']['devices'])) {
+			if (!empty($settings['show']['devices']) && isset($info['Devices'])) {
 				$show_vendor = array_key_exists('hw_vendor', $info['contains']) ? ($info['contains']['hw_vendor'] === false ? false : true) : true;
 				$devices = $xml->addChild('devices');
 				for ($i = 0, $num_devs = count($info['Devices']); $i < $num_devs; $i++) {
@@ -1121,7 +1121,7 @@ class LinfoOutput {
 			}
 
 			// Sound cards? lol
-			if (!empty($settings['show']['sound']) && count($info['SoundCards']) > 0) {
+			if (!empty($settings['show']['sound']) && isset($info['SoundCards']) && count($info['SoundCards']) > 0) {
 				$cards = $xml->addChild('soundcards');
 				foreach ($info['SoundCards'] as $card) {
 					$card_elem = $cards->addChild('card');
@@ -1172,7 +1172,7 @@ class LinfoOutput {
 			}
 
 			// RAID arrays
-			if (!empty($settings['show']['raid']) && count($info['Raid']) > 0) {
+			if (!empty($settings['show']['raid']) && isset($info['Raid']) && count($info['Raid']) > 0) {
 				$raid_elem = $xml->addChild('raid');
 				foreach ($info['Raid'] as $raid) {
 					$array = $raid_elem->addChild('array');
