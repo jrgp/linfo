@@ -102,7 +102,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return string Linux
 	 */
-	private function getOS() {
+	public function getOS() {
 		
 		// Linux, obviously
 		return 'Linux';
@@ -114,7 +114,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return string kernel version
 	 */
-	private function getKernel() {
+	public function getKernel() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -148,7 +148,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return string the host name
 	 */
-	private function getHostName() {
+	public function getHostName() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -176,7 +176,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array the memory information
 	 */
-	private function getRam(){
+	public function getRam(){
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -238,7 +238,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array of cpu info
 	 */
-	private function getCPU() {
+	public function getCPU() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -338,7 +338,7 @@ class OS_Linux extends OS_Unix_Common {
 	}
 
 	// Famously interesting uptime
-	private function getUpTime () {
+	public function getUpTime () {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -383,7 +383,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array the hard drive info
 	 */
-	private function getHD() {
+	public function getHD() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -445,7 +445,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array the temps
 	 */
-	private function getTemps() {
+	public function getTemps() {
 	
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -600,7 +600,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array the mounted the file systems
 	 */
-	private function getMounts() {
+	public function getMounts() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -677,7 +677,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array of devices
 	 */
-	private function getDevs() {
+	public function getDevs() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -711,7 +711,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array of raid arrays
 	 */
-	private function getRAID() {
+	public function getRAID() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -806,7 +806,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array of current system load values
 	 */
-	private function getLoad() {
+	public function getLoad() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -841,7 +841,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array of network devices
 	 */
-	private function getNet() {
+	public function getNet() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -935,7 +935,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array of battery status
 	 */
-	private function getBattery() {
+	public function getBattery() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -986,7 +986,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array of wifi devices
 	 */
-	private function getWifi() {
+	public function getWifi() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -1034,7 +1034,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array of soundcards
 	 */
-	private function getSoundCards() {
+	public function getSoundCards() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -1075,7 +1075,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array of process stats
 	 */
-	private function getProcessStats() {
+	public function getProcessStats() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -1152,7 +1152,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array the services
 	 */
-	private function getServices() {
+	public function getServices() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -1305,7 +1305,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array the distro,version or false
 	 */
-	private function getDistro() {
+	public function getDistro() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -1425,7 +1425,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return string the arch and bits
 	 */
-	private function getCPUArchitecture() {
+	public function getCPUArchitecture() {
 		return php_uname('m');
 	}
 
@@ -1435,7 +1435,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return number of logged in users with shells
 	 */
-	 private function getNumLoggedIn() {
+	 public function getNumLoggedIn() {
 
 		// Snag command line of every process in system
 		$procs = glob('/proc/*/cmdline', GLOB_NOSORT);
@@ -1473,7 +1473,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @return array('type' => 'guest', 'method' => kvm or vmware or xen or openvz) or array('type' => 'host', 'methods' = ['intel', 'amd'])
 	 */
-	 private function getVirtualization() {
+	 public function getVirtualization() {
 
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -1529,7 +1529,7 @@ class OS_Linux extends OS_Unix_Common {
 	 *
 	 * @access private
 	 */
-	 private function getCPUUsage() {
+	 public function getCPUUsage() {
 		 return $this->cpu_percent['overall'] === false ? false : $this->cpu_percent['overall'];
 	 }
 
@@ -1540,7 +1540,7 @@ class OS_Linux extends OS_Unix_Common {
 	 * @access private
 	 * @void
 	 */
-	 private function determineCPUPercentage() {
+	 public function determineCPUPercentage() {
 		 // Time?
 		 if (!empty($this->settings['timer']))
 			 $t = new LinfoTimerStart('Determining CPU usage');
