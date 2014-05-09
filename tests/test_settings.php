@@ -2,6 +2,9 @@
 
 // test for as much functionality as possible
 
+// json test will break if this is enabled
+$settings['compress_content'] = false;
+
 $settings['byte_notation'] = 1024; 
 $settings['dates'] = 'm/d/y h:i A (T)'; 
 $settings['language'] = 'en'; 

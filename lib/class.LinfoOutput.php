@@ -1222,14 +1222,15 @@ class LinfoOutput {
 			}
 			
 			// Out it
-			header('Content-type: text/xml');
+			if (!headers_sent())
+				header('Content-type: text/xml');
 			echo $xml->asXML();
 
 			// Comment which has stats and generator
 			echo '<!-- Generated in '.round(microtime(true) - $this->linfo->getTimeStart(), 2).' seconds by '.$this->linfo->getAppName().' ('.$this->linfo->getVersion().')-->';
 		}
 		catch (Exception $e) {
-			exit('Creation of XML error: '.$e->getMessage());
+			throw new LinfoFatalException('Creation of XML error: '.$e->getMessage());
 		}
 	}
 
@@ -1246,11 +1247,12 @@ class LinfoOutput {
 
 		$settings = $this->linfo->getSettings();
 
-		header('Content-Type: application/json');
+		if (!headers_sent())
+			header('Content-Type: application/json');
 
 		// Make sure we have JSON
 		if (!function_exists('json_encode')) {
-			exit('{error:\'JSON extension not loaded\'}');
+			throw new LinfoFatalException('{error:\'JSON extension not loaded\'}');
 			return;
 		}
 		
