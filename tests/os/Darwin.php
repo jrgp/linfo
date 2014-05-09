@@ -27,72 +27,123 @@ class OS_DarwinTest extends PHPUnit_Framework_TestCase {
    * @test
    */
   public static function getKernel() {
-    self::assertTrue(is_string(self::$parser->getKernel()));
+    self::assertInternalType('string', self::$parser->getKernel());
   }
 
   /**
    * @test
    */
   public static function getModel() {
-    self::assertTrue(is_string(self::$parser->getModel()));
+    self::assertInternalType('string', self::$parser->getModel());
   }
 
   /**
    * @test
    */
   public static function getHostname() {
-    self::assertTrue(is_string(self::$parser->getHostname()));
+    self::assertInternalType('string', self::$parser->getHostname());
   }
 
   /**
    * @test
    */
   public static function getCPUArchitecture() {
-    self::assertTrue(is_string(self::$parser->getCPUArchitecture()));
+    self::assertInternalType('string', self::$parser->getCPUArchitecture());
   }
 
   /**
    * @test
    */
   public static function getMounts() {
-    // TODO make sure each mount given has proper fields
-    self::assertTrue(is_array(self::$parser->getMounts()));
+    $mounts = self::$parser->getMounts();
+    self::assertInternalType('array', $mounts);
+    foreach ($mounts as $mount) {
+      foreach (array('device', 'mount', 'type', 'size', 'used', 'free', 'free_percent', 'used_percent') as $key) {
+        self::assertArrayHasKey($key, $mount);
+      }
+      self::assertInternalType('string', $mount['device']);
+      self::assertInternalType('string', $mount['mount']);
+      self::assertInternalType('string', $mount['type']);
+    }
   }
 
   /**
    * @test
    */
   public static function getNet() {
-    // TODO make sure each nic given has proper fields
-    self::assertTrue(is_array(self::$parser->getNet()));
+    $nics = self::$parser->getNet();
+    self::assertInternalType('array', $nics);
+    foreach ($nics as $nic) {
+      foreach (array('sent', 'recieved', 'state', 'type') as $key) {
+        self::assertArrayHasKey($key, $nic);
+      }
+      self::assertInternalType('string', $nic['state']);
+      self::assertInternalType('string', $nic['type']);
+      self::assertInternalType('array', $nic['sent']);
+      self::assertInternalType('array', $nic['recieved']);
+      foreach (array('bytes', 'errors', 'packets') as $key) {
+        self::assertArrayHasKey($key, $nic['sent']);
+        self::assertArrayHasKey($key, $nic['recieved']);
+        self::assertTrue(is_numeric($nic['sent'][$key]));
+        self::assertTrue(is_numeric($nic['recieved'][$key]));
+      }
+    }
   }
 
   /**
    * @test
    */
   public static function getCPU() {
-    self::assertTrue(is_array(self::$parser->getCPU()));
+    $cpus = self::$parser->getCPU();
+    self::assertInternalType('array', $cpus);
+    foreach ($cpus as $cpu) {
+      self::assertArrayHasKey('Model', $cpu);
+      self::assertArrayHasKey('MHz', $cpu);
+      self::assertArrayHasKey('Vendor', $cpu);
+      self::assertInternalType('string', $cpu['Model']);
+      self::assertInternalType('int', $cpu['MHz']);
+      self::assertInternalType('string', $cpu['Vendor']);
+    }
   }
 
   /**
    * @test
    */
   public static function getBattery() {
-    self::assertTrue(is_array(self::$parser->getBattery()));
+    $batteries = self::$parser->getBattery();
+    self::assertInternalType('array', $batteries);
+    foreach ($batteries as $bat) {
+      foreach (array('charge_full', 'charge_now', 'percentage', 'state') as $key) {
+        self::assertArrayHasKey($key, $bat);
+      }
+    }
   }
 
   /**
    * @test
    */
   public static function getHD() {
-    self::assertTrue(is_array(self::$parser->getHD()));
+    $drives = self::$parser->getHD();
+    self::assertInternalType('array', $drives);
+    foreach ($drives as $drive) {
+      foreach (array('name', 'vendor', 'device', 'reads', 'writes', 'size', 'partitions') as $key) {
+        self::assertArrayHasKey($key, $drive);
+      }
+      if (is_array($drive['partitions'])) {
+        foreach ($drive['partitions'] as $partition) {
+          self::assertArrayHasKey('size', $partition);
+          self::assertTrue(is_numeric($partition['size']));
+        }
+      }
+      self::assertTrue(is_numeric($drive['size']));
+    }
   }
 
   /**
    * @test
    */
   public static function getUpTime() {
-    self::assertTrue(is_string(self::$parser->getUpTime()));
+    self::assertInternalType('string', self::$parser->getUpTime());
   }
 
   /**
@@ -100,7 +151,7 @@ class OS_DarwinTest extends PHPUnit_Framework_TestCase {
    */
   public static function getLoad() {
     $load = self::$parser->getLoad();
-    self::assertTrue(is_array($load));
+    self::assertInternalType('array', $load);
     foreach (array('now', '5min', '15min') as $key)
       self::assertArrayHasKey($key, $load);
   }
@@ -110,9 +161,14 @@ class OS_DarwinTest extends PHPUnit_Framework_TestCase {
    */
   public static function getProcessStats() {
     $stats = self::$parser->getProcessStats();
-    self::assertTrue(is_array($stats));
+    self::assertInternalType('array', $stats);
     foreach (array('totals', 'proc_total') as $key)
       self::assertArrayHasKey($key, $stats);
+    self::assertInternalType('int', $stats['proc_total']);
+    foreach (array('running', 'zombie', 'stopped', 'sleeping', 'idle') as $key) {
+      self::assertArrayHasKey($key, $stats['totals']);
+      self::assertInternalType('int', $stats['totals'][$key]);
+    }
   }
 
   /**
@@ -120,7 +176,7 @@ class OS_DarwinTest extends PHPUnit_Framework_TestCase {
    */
   public static function getRam() {
     $stats = self::$parser->getRam();
-    self::assertTrue(is_array($stats));
+    self::assertInternalType('array', $stats);
     foreach (array('total', 'type', 'free', 'swapTotal', 'swapFree', 'swapInfo') as $key)
       self::assertArrayHasKey($key, $stats);
   }
