@@ -139,4 +139,31 @@ class OS_FreeBSDTest extends PHPUnit_Framework_TestCase {
       self::assertInternalType('array', $mount['options']);
     }
   }
+
+  /**
+   * @test
+   */
+  public static function getDevs() {
+    $devs = self::$parser->getDevs();
+    self::assertInternalType('array', $devs);
+    foreach ($devs as $dev) {
+      foreach (array('vendor', 'device', 'type') as $key) {
+        self::assertArrayHasKey($key, $dev);
+        self::assertInternalType('string', $dev[$key]);
+      }
+    }
+  }
+
+  /**
+   * @test
+   */
+  public static function getHD() {
+    $drives = self::$parser->getHD();
+    self::assertInternalType('array', $drives);
+    foreach ($drives as $drive) {
+      foreach (array('name', 'vendor', 'device') as $key) {
+        self::assertArrayHasKey($key, $drive);
+      }
+    }
+  }
 }
