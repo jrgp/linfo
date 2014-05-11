@@ -1319,99 +1319,113 @@ class OS_Linux extends OS_Unix_Common {
 		// - in which case passing false instead of a regex string snags the contents.
 		// - And even also supports empty files, and just uses said file to identify the distro and ignore version
     //
-    // TODO: Refactor this function
 
-		// Store the distribution's files we check for, optional regex parsing string, and name of said distro here:
-		$distros = array(
-			
-			// This snags ubuntu and other distros which use the lsb method of identifying themselves
-			array('/etc/lsb-release','/^DISTRIB_ID=([^$]+)$\n^DISTRIB_RELEASE=([^$]+)$\n^DISTRIB_CODENAME=([^$]+)$\n/m', false),
-
-			// These working snag versions
-			array('/etc/redhat-release', '/^CentOS release ([\d\.]+) \(([^)]+)\)$/', 'CentOS'),
-			array('/etc/redhat-release', '/^Red Hat.+release (\S+) \(([^)]+)\)$/', 'RedHat'),
-			array('/etc/fedora-release', '/^Fedora(?: Core)? release (\d+) \(([^)]+)\)$/', 'Fedora'),
-			array('/etc/gentoo-release', '/([\d\.]+)$/', 'Gentoo'),
-			array('/etc/SuSE-release', '/^VERSION = ([\d\.]+)$/m', 'openSUSE'),
-			array('/etc/slackware-version', '/([\d\.]+)$/', 'Slackware'),
-
-			// These don't because they're empty 
-			array('/etc/arch-release', '', 'Arch'),
-
-			// I'm unaware of the structure of these files, so versions are not picked up
-			array('/etc/mklinux-release', '', 'MkLinux'),
-			array('/etc/tinysofa-release ', '', 'TinySofa'),
-			array('/etc/turbolinux-release ', '', 'TurboLinux'),
-			array('/etc/yellowdog-release ', '', 'YellowDog'),
-			array('/etc/annvix-release ', '', 'Annvix'),
-			array('/etc/arklinux-release ', '', 'Arklinux'),
-			array('/etc/aurox-release ', '', 'AuroxLinux'),
-			array('/etc/blackcat-release ', '', 'BlackCat'),
-			array('/etc/cobalt-release ', '', 'Cobalt'),
-			array('/etc/immunix-release ', '', 'Immunix'),
-			array('/etc/lfs-release ', '', 'Linux-From-Scratch'),
-			array('/etc/linuxppc-release ', '', 'Linux-PPC'),
-			array('/etc/mklinux-release ', '', 'MkLinux'),
-			array('/etc/nld-release ', '', 'NovellLinuxDesktop'),
-
-			// I know this is gross; I'd use a closure but that kills php <5.4
-			array('/etc/os-release', create_function('$ini', '
-				$info = @parse_ini_string($ini); return $info && isset($info["ID"]) && isset($info["VERSION"]) ?
-					array("distro" => ucfirst($info["ID"]), "version" => $info["VERSION"]) : false;'), false),
-
-			// Leave this since debian derivitives might have it in addition to their own file
-			// If it's last it ensures nothing else has it and thus it should be normal debian
-			array('/etc/debian_version', false, 'Debian'),
+		$contents_distros = array(
+			array(
+				'file' => '/etc/lsb-release',
+				'closure' => create_function('$ini', '
+					return ($info = @parse_ini_string($ini)) &&
+						isset($info["DISTRIB_ID"]) &&
+						isset($info["DISTRIB_RELEASE"]) &&
+						isset($info["DISTRIB_CODENAME"]) ? array(
+							"distro" => $info["DISTRIB_ID"],
+							"version" => $info["DISTRIB_RELEASE"],
+							"codename" => $info["DISTRIB_CODENAME"],
+						) : false;')
+			),
+			array(
+				'file' => '/etc/os-release',
+				'closure' => create_function('$ini', '
+					return ($info = @parse_ini_string($ini)) &&
+						isset($info["ID"]) &&
+						isset($info["VERSION"]) ? array(
+							"distro" => $info["ID"],
+							"version" => $info["VERSION"]
+						) : false;')
+			),
+			array(
+				'file' => '/etc/redhat-release',
+				'regex' => '/^CentOS release (?P<version>[\d\.]+) \((?P<codename>[^)]+)\)$/',
+				'distro' => 'CentOS'
+			),
+			array(
+				'file' => '/etc/redhat-release',
+				'regex' => '/^Red Hat.+release (?P<version>\S+) \((?P<codename>[^)]+)\)$/',
+				'distro' => 'RedHat'
+			),
+			array(
+				'file' => '/etc/fedora-release',
+				'regex' => '/^Fedora(?: Core)? release (?P<version>\d+) \((?P<codename>[^)]+)\)$/',
+				'distro' => 'Fedora'
+			),
+			array(
+				'file' => '/etc/gentoo-release',
+				'regex' => '/(?P<version>[\d\.]+)$/',
+				'distro' => 'Gentoo'
+			),
+			array(
+				'file' => '/etc/SuSE-release',
+				'regex' => '/^VERSION = (?P<version>[\d\.]+)$/m',
+				'distro' => 'openSUSE'
+			),
+			array(
+				'file' => '/etc/slackware-version',
+				'regex' => '/(?P<version>[\d\.]+)$/',
+				'distro' => 'Slackware'
+			),
+			array(
+				'file' => '/etc/debian_version',
+				'distro' => 'Debian'
+			)
 		);
 
-		// Hunt
-		foreach ($distros as $distro) {
+		foreach ($contents_distros as $distro) {
+			if (!is_file($distro['file']) || !($contents = LinfoCommon::getContents($distro['file'], false)))
+				continue;
+			if (isset($distro['closure']) && ($info = $distro['closure']($contents))) {
+				return array(
+					'name' => ucfirst($info['distro']),
+					'version' => $info['version'].(isset($info['codename']) ? ' ('.ucfirst($info['codename']).')' : '')
+				);
+			}
+			elseif (isset($distro['regex']) && preg_match($distro['regex'], $contents, $info)) {
+				return array(
+					'name' => $distro['distro'],
+					'version' => $info['version'].(isset($info['codename']) ? ' ('.ucfirst($info['codename']).')' : '')
+				);
+			}
+			elseif (isset($distro['name'])) {
+				return array(
+					'name' => $distro['name'],
+					'version' => $contents
+				);
+			}
+		}
 
-			// File we're checking for exists and is readable
-			if (file_exists($distro[0]) && is_readable($distro[0])) {
+		$existence_distros = array(
+			'/etc/arch-release' => 'Arch',
+			'/etc/mklinux-release' => 'MkLinux',
+			'/etc/tinysofa-release ' => 'TinySofa',
+			'/etc/turbolinux-release ' => 'TurboLinux',
+			'/etc/yellowdog-release ' => 'YellowDog',
+			'/etc/annvix-release ' => 'Annvix',
+			'/etc/arklinux-release ' => 'Arklinux',
+			'/etc/aurox-release ' => 'AuroxLinux',
+			'/etc/blackcat-release ' => 'BlackCat',
+			'/etc/cobalt-release ' => 'Cobalt',
+			'/etc/immunix-release ' => 'Immunix',
+			'/etc/lfs-release ' => 'Linux-From-Scratch',
+			'/etc/linuxppc-release ' => 'Linux-PPC',
+			'/etc/mklinux-release ' => 'MkLinux',
+			'/etc/nld-release ' => 'NovellLinuxDesktop',
+		);
 
-				// Get it
-				$contents = $distro[1] !== '' ? LinfoCommon::getContents($distro[0], '') : '';
-
-				// Don't use regex, this is enough; say version is the file's contents
-				if ($distro[1] === false) {
-					return array(
-						'name' => $distro[2],
-						'version' => $contents == '' ? false : $contents
-					);
-				}
-				
-				// No idea what the version is. Don't use the file's contents for anything
-				elseif($distro[1] === '') {
-					return array(
-						'name' => $distro[2],
-						'version' => false
-					);
-				}
-
-				// Get the distro out of the regex as well?
-				elseif($distro[2] === false && @preg_match($distro[1], $contents, $m)) {
-					return array(
-						'name' => $m[1],
-						'version' => $m[2] . (isset($m[3]) ? ' ('.$m[3].')' : '')
-					);
-				}
-
-				// Our regex match it?
-				elseif(@preg_match($distro[1], $contents, $m)) {
-					return array(
-						'name' => $distro[2],
-						'version' => $m[1] . (isset($m[2]) ? ' ('.$m[2].')' : '')
-					);
-				}
-
-				// Closure 
-				elseif(is_callable($distro[1]) && ($info = $distro[1](LinfoCommon::getContents($distro[0]))) && is_array($info)) {
-					return array(
-						'name' => $info['distro'],
-						'version' => $info['version']
-					);
-				}
+		foreach ($existence_distros as $file => $distro) {
+			if (is_file($file)) {
+				return array(
+					'name' => $distro,
+					'version' => false
+				);
 			}
 		}
 
