@@ -50,10 +50,6 @@ defined('IN_LINFO') or exit;
  * Get status on transmission torrents
  */
 class ext_transmission implements LinfoExtension {
-
-	// Minimum version of Linfo required
-	const
-		LINFO_MIN_VERSION = '1.6';
 	
 	// Store these tucked away here
 	private
