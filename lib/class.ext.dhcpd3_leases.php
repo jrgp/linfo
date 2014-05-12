@@ -37,10 +37,6 @@ defined('IN_LINFO') or exit;
  * Get status on dhcp3 leases
  */
 class ext_dhcpd3_leases implements LinfoExtension {
-
-	// Minimum version of Linfo required
-	const
-		LINFO_MIN_VERSION = '1.5';
 	
 	// How dates should look
 	const

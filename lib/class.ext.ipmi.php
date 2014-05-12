@@ -43,7 +43,6 @@ class ext_ipmi implements LinfoExtension {
 	
 	// Minimum version of Linfo required
 	const
-		LINFO_MIN_VERSION = '1.8',
 		LINFO_INTEGRATE	= true,
 		EXTENSION_NAME = 'ipmi';
 	

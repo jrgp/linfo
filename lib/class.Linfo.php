@@ -273,13 +273,6 @@ class Linfo {
 				continue;
 			}
 
-			// Handle version checking
-			$min_version = defined($class.'::LINFO_MIN_VERSION') ? constant($class.'::LINFO_MIN_VERSION') : false; 
-			if ($min_version !== false && strtolower($this->version) != 'git' && !version_compare($this->version, $min_version, '>=')) {
-				LinfoError::Singleton()->add('Extension Loader', '"'.$ext.'" extension requires at least Linfo v'.$min_version);
-				continue;
-			}
-
 			// Load it
 			$ext_class = new $class($this);
 

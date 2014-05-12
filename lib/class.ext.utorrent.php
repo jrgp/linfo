@@ -47,9 +47,6 @@ defined('IN_LINFO') or exit;
  * Get status on torrents running under uTorrent
  */
 class ext_utorrent implements LinfoExtension {
-
-	const
-		LINFO_MIN_VERSION = '1.5';
 	
 	private
 		$LinfoError,

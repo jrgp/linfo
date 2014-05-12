@@ -42,9 +42,6 @@ defined('IN_LINFO') or exit;
  * Get status on libvirt VMs
  */
 class ext_libvirt implements LinfoExtension {
-
-	const
-		LINFO_MIN_VERSION = '1.5';
 	
 	private
 		$LinfoError,
