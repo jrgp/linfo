@@ -1524,6 +1524,10 @@ class OS_Linux extends OS_Unix_Common {
 				return array('type' => 'guest', 'method' => 'Xen');
 		}
 
+		// vmware Host! tested on rhel6 running vmware..workstation?
+		if (LinfoCommon::anyInArray(array('vmnet', 'vmci', 'vmmon'), $modules))
+			return array('type' => 'host', 'method' => 'VMWare');
+
 		// VirtualBox Host! Tested on lucid running vbox..
 		if (in_array('vboxdrv', $modules))
 			return array('type' => 'host', 'method' => 'VirtualBox');
