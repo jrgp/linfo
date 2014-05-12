@@ -1493,8 +1493,12 @@ class OS_Linux extends OS_Unix_Common {
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Determining virtualization type');
 
-	 	// Some easy ones first...
-		if (is_file('/proc/vz/veinfo'))
+		// OpenVZ host?
+		if (is_file('/proc/vz/version'))
+			return array('type' => 'host', 'method' => 'OpenVZ');
+
+		// OpenVZ guest?
+		elseif (is_file('/proc/vz/veinfo'))
 			return array('type' => 'guest', 'method' => 'OpenVZ');
 
 		// Try getting kernel modules
