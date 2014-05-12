@@ -894,6 +894,8 @@ class OS_Linux extends OS_Unix_Common {
 
 				if (in_array($type_match, array('PCI', 'USB')))
 					$type = 'Ethernet ('.$type_match.')';
+				elseif ($type_match == 'VIRTIO')
+					$type = 'VirtIO';
 				elseif ($type_contents == 'XEN:VIF')
 					$type = 'Xen (VIF)';
 				elseif (is_dir($path.'/bridge'))
