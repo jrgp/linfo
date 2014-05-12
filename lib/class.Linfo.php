@@ -202,12 +202,9 @@ class Linfo {
 	 */
 	public function output() {
 
-		// A global, yuck!
-		global $argv;
-
 		$output = new LinfoOutput($this);
 
-		if (defined('LINFO_CLI') && extension_loaded('ncurses') && !in_array('--nocurses', $argv)) {
+		if (defined('LINFO_CLI') && extension_loaded('ncurses') && isset($_SERVER['argv']) && !in_array('--nocurses', $_SERVER['argv'])) {
 			$output->ncursesOut();
 			return;
 		}
