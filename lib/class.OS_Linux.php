@@ -455,7 +455,7 @@ class OS_Linux extends OS_Unix_Common {
 		$return = array();
 
 		// hddtemp?
-		if (array_key_exists('hddtemp', (array)$this->settings['temps']) && !empty($this->settings['temps']['hddtemp'])) {
+		if (array_key_exists('hddtemp', (array)$this->settings['temps']) && !empty($this->settings['temps']['hddtemp']) && isset($this->settings['hddtemp'])) {
 			try {
 				// Initiate class
 				$hddtemp = new GetHddTemp($this->settings);
@@ -487,7 +487,7 @@ class OS_Linux extends OS_Unix_Common {
 		}
 
 		// mbmon?
-		if (array_key_exists('mbmon', (array)$this->settings['temps']) && !empty($this->settings['temps']['mbmon'])) {
+		if (array_key_exists('mbmon', (array)$this->settings['temps']) && !empty($this->settings['temps']['mbmon']) && isset($this->settings['mbmon'])) {
 			try {
 				// Initiate class
 				$mbmon = new GetMbMon;
