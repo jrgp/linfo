@@ -29,8 +29,7 @@ defined('IN_LINFO') or exit;
 class LinfoNcurses {
 
 	private 
-
-    $linfo,
+		$linfo,
 
 		// Store our windows here
 		$_windows = array(),
@@ -41,7 +40,7 @@ class LinfoNcurses {
 
 	public function __construct(Linfo $linfo) {
 
-    $this->linfo = $linfo;
+		$this->linfo = $linfo;
 
 		// We obviously need this
 		if (!extension_loaded('ncurses')) {
@@ -65,8 +64,11 @@ class LinfoNcurses {
 	public function draw() {
 		
 		// Gain access to translations
-    $lang = $this->linfo->getLang();
-    $info = $this->linfo->getInfo();
+		$lang = $this->linfo->getLang();
+
+		// And info
+		$this->linfo->scan();
+		$info = $this->linfo->getInfo();
 
 		// Say we're called more than once. Kill previous remnants
 		if (count($this->_windows) > 0)
@@ -160,7 +162,7 @@ class LinfoNcurses {
 		$height = 3 + count($lines);
 
 		// Create window
-		$win =  ncurses_newwin($height, $width, $x, $y);
+		$win = ncurses_newwin($height, $width, $x, $y);
 
 		// This character will be the side borders
 		$side = ord('|');
