@@ -254,16 +254,6 @@ class Linfo {
 				continue;
 			}
 
-			// Does the file exist? load it then
-			if (file_exists(LINFO_LOCAL_PATH . 'lib/class.ext.'.$ext.'.php'))
-				require_once LINFO_LOCAL_PATH . 'lib/class.ext.'.$ext.'.php';
-			else {
-				
-				// Issue an error and skip this thing otheriwse
-				LinfoError::Singleton()->add('Extension Loader', 'Cannot find file for "'.$ext.'" extension.');
-				continue;
-			}
-
 			// Name of its class
 			$class = 'ext_'.$ext;
 
