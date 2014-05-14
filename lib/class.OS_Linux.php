@@ -1510,9 +1510,13 @@ class OS_Linux extends OS_Unix_Common {
 				$modules[] = $match[1];
 		}
 
-		// VMware modules. Tested on vmware fusion for mac...
+		// VMware guest. Tested on debian under vmware fusion for mac...
 		if (LinfoCommon::anyInArray(array('vmw_balloon', 'vmwgfx', 'vmw_vmci'), $modules))
 			return array('type' => 'guest', 'method' => 'VMWare');
+
+		// VMware Host! tested on rhel6 running vmware..workstation?
+		if (LinfoCommon::anyInArray(array('vmnet', 'vmci', 'vmmon'), $modules))
+			return array('type' => 'host', 'method' => 'VMWare');
 
 		// Looks like it might be xen...
 		if (LinfoCommon::anyInArray(array('xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'), $modules) || is_dir('/proc/xen')) {
@@ -1523,10 +1527,6 @@ class OS_Linux extends OS_Unix_Common {
 			else
 				return array('type' => 'guest', 'method' => 'Xen');
 		}
-
-		// vmware Host! tested on rhel6 running vmware..workstation?
-		if (LinfoCommon::anyInArray(array('vmnet', 'vmci', 'vmmon'), $modules))
-			return array('type' => 'host', 'method' => 'VMWare');
 
 		// VirtualBox Host! Tested on lucid running vbox..
 		if (in_array('vboxdrv', $modules))
