@@ -63,7 +63,10 @@ class OS_SunOS extends OS {
 			'unix:0:system_pages:pagesfree',
 
 			// Info on all CPUs
-			'cpu_info:0:'
+			'cpu_info:0:',
+
+			// Network interface stats
+			'link:0:'
 		));
 	}
 	
@@ -72,20 +75,20 @@ class OS_SunOS extends OS {
 
 		// Return everything, whilst obeying display permissions
 		return array(
-			'OS' => empty($this->settings['show']) ? '' : $this->getOS(), 			# done
-			'Kernel' => empty($this->settings['show']) ? '' : $this->getKernel(), 		# done
-			'HostName' => empty($this->settings['show']) ? '' : $this->getHostName(), 	# done
-			'Mounts' => empty($this->settings['show']) ? array() : $this->getMounts(), 	# done
-			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # done
-			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(), 		# done
-			'Load' => empty($this->settings['show']) ? array() : $this->getLoad(), 		# done
-			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(), 		# done
-			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# done
+			'OS' => empty($this->settings['show']) ? '' : $this->getOS(),
+			'Kernel' => empty($this->settings['show']) ? '' : $this->getKernel(),
+			'HostName' => empty($this->settings['show']) ? '' : $this->getHostName(),
+			'Mounts' => empty($this->settings['show']) ? array() : $this->getMounts(),
+			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(),
+			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(),
+			'Load' => empty($this->settings['show']) ? array() : $this->getLoad(),
+			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(),
+			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(),
 			'CPUArchitecture' => empty($this->settings['show']['cpu']) ? array() : $this->getCPUArchitecture(),
+			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),
 			/*
 			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# todo
 			'HD' => empty($this->settings['show']) ? '' : $this->getHD(), 			# todo
-			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),# todo 
 			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# todo 
 			'Battery' => empty($this->settings['show']) ? array(): $this->getBattery(),		# todo
 			'Temps' => empty($this->settings['show']) ? array(): $this->getTemps(), 	# TODO
@@ -114,29 +117,31 @@ class OS_SunOS extends OS {
 
 		try {
 			$command = $this->exec->exec('kstat', ' -p '.implode(' ', array_map('escapeshellarg', $keys)));
-
 			$lines = explode("\n", $command);
-
-			// Not very efficient as it loops over each line for every key that exists, but it is
-			// very effective and thorough
-			foreach ($keys as $key) {
-				foreach ($lines as $line) {
-					$line = trim($line);
-
-					if (strpos($line, $key) !== 0)
-						continue;
-
-					$value = ltrim(substr($line, strlen($key)));
-					if (isset($results[$key]))
-						$results[$key] .= "\n".$value;
-					else
-						$results[$key] = $value;
-				}
-			}
 		}
 
 		catch(CallExtException $e) {
 			LinfoError::Singleton()->add('Solaris Core', 'Failed running kstat.');
+		}
+
+		if (!is_array($lines))
+			return;
+
+		// Not very efficient as it loops over each line for every key that exists, but it is
+		// very effective and thorough
+		foreach ($keys as $key) {
+			foreach ($lines as $line) {
+				$line = trim($line);
+
+				if (strpos($line, $key) !== 0)
+					continue;
+
+				$value = ltrim(substr($line, strlen($key)));
+				if (isset($results[$key]))
+					$results[$key] .= "\n".$value;
+				else
+					$results[$key] = $value;
+			}
 		}
 
 		$this->kstat = array_merge($results, $this->kstat);
@@ -351,5 +356,83 @@ class OS_SunOS extends OS {
 		}
 
 		return $cpus;
+	}
+
+	public function getNet() {
+		$nets = array();
+
+		// ifconfig for nics/statuses
+		try {
+			$ifconfig = $this->exec->exec('ifconfig', '-a');
+		}
+		catch(CallExtException $e) {
+			LinfoError::Singleton()->add('Solaris Core', 'Failed running ifconfig -a.');
+			return array();
+		}
+
+		foreach (explode("\n", $ifconfig) as $line) {
+			if (!preg_match('/^([^:]+):[^<]+<([^>]+)>/', trim($line), $m))
+				continue;
+
+			$nic = $m[1];
+			$flags = explode(',', strtolower($m[2]));
+
+			if (isset($nets[$nic]))
+				continue;
+
+			$type = null;
+
+			if (in_array('loopback', $flags))
+				$type = 'Loopback';
+
+			$nets[$nic] = array(
+
+				// To be filled in later
+				'recieved' => array(
+					'bytes' => 0,
+					'packets' => 0,
+					'errors' => null,
+				),
+				'sent' => array(
+					'bytes' => 0,
+					'bytes' => 0,
+					'errors' => null,
+				),
+
+				// Should find a better way of getting these
+				'state' => in_array('up', $flags) ? 'up' : 'Unknown',
+				'type' => $type
+			);
+		}
+
+		// kstat for more stats
+		foreach (explode("\n", $this->kstat['link:0:']) as $line) {
+			if (!preg_match('/^([^:]+):(\S+)\s+(\S+)/', trim($line), $m))
+				continue;
+
+			list (, $nic, $key, $value) = $m;
+
+			if (!isset($nets[$nic]))
+				continue;
+
+			$cur_nic = &$nets[$nic];
+
+			switch ($key) {
+				case 'ibytes64':
+					$cur_nic['recieved']['bytes'] = $value;
+				break;
+				case 'obytes64':
+					$cur_nic['sent']['bytes'] = $value;
+				break;
+				case 'rbytes64':
+					$cur_nic['recieved']['bytes'] = $value;
+				break;
+				case 'obytes64':
+					$cur_nic['sent']['bytes'] = $value;
+				break;
+			}
+		}
+
+		return $nets;
 	}
 }
