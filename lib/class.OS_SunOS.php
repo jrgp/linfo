@@ -389,13 +389,13 @@ class OS_SunOS extends OS {
 
 				// To be filled in later
 				'recieved' => array(
-					'bytes' => 0,
-					'packets' => 0,
+					'bytes' => null,
+					'packets' => null,
 					'errors' => null,
 				),
 				'sent' => array(
-					'bytes' => 0,
-					'bytes' => 0,
+					'bytes' => null,
+					'bytes' => null,
 					'errors' => null,
 				),
 
@@ -418,11 +418,11 @@ class OS_SunOS extends OS {
 			$cur_nic = &$nets[$nic];
 
 			switch ($key) {
-				case 'ibytes64':
-					$cur_nic['recieved']['bytes'] = $value;
+				case 'ipackets64':
+					$cur_nic['recieved']['packets'] = $value;
 				break;
-				case 'obytes64':
-					$cur_nic['sent']['bytes'] = $value;
+				case 'opackets64':
+					$cur_nic['sent']['packets'] = $value;
 				break;
 				case 'rbytes64':
 					$cur_nic['recieved']['bytes'] = $value;
@@ -431,6 +431,28 @@ class OS_SunOS extends OS {
 					$cur_nic['sent']['bytes'] = $value;
 				break;
 			}
+		}
+
+		// dladm for more stats...
+		try {
+			$dladm = $this->exec->exec('dladm', 'show-link');
+			foreach (explode("\n", $dladm) as $line) {
+				if (!preg_match('/^(\S+)\s+(\S+)\s+\d+\s+(\S+)/', $line, $m))
+					continue;
+
+				if (!isset($nets[$m[1]]))
+					continue;
+
+				if (!$nets[$m[1]]['type'] && $m[2] == 'phys')
+				 $nets[$m[1]]['type'] = 'Physical';
+
+				if (!$nets[$m[1]]['state'] || $nets[$m[1]]['state'] == 'unknown')
+					$nets[$m[1]]['state'] = $m[3];
+			}
+		}
+		catch(CallExtException $e) {
+			LinfoError::Singleton()->add('Solaris Core', 'Failed running dladm show-link.');
+			return array();
 		}
 
 		return $nets;
