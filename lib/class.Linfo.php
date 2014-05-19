@@ -176,10 +176,6 @@ class Linfo {
 				define('IS_WINDOWS', true);
 				return 'Windows';
 			break;
-			case 'CYGWIN':
-				define('IS_CYGWIN', true);
-				return 'CYGWIN';
-			break;
 		}
 
 		// So anything else isn't

@@ -89,3 +89,4 @@ v?.?? ?/??/20??
  - all inline exit's converted to exceptions so this can be used as a library
    without fear of killing whichever app uses it
  - More detailed network detection type on Linux
+ - CYGWIN support removed as it was pointless
