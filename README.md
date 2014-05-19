@@ -5,6 +5,7 @@
  - Additional author(s): See AUTHORS
  - Github URL: https://github.com/jrgp/linfo
  - Sourceforge Project: https://sourceforge.net/projects/linfo
+ - Ohloh SCM stats: https://www.ohloh.net/p/linfo
 
 ### Currently runs on:
  - Linux
@@ -12,10 +13,9 @@
  - NetBSD
  - OpenBSD
  - DragonflyBSD
- - Darwin/Mac OSX (alpha)
+ - Darwin/Mac OSX
  - SunOS/Solaris(alpha)
  - Minix (alpha/pointless)
- - CYGWIN (useless proof of concept)
  - Windows
 
 ### Stuff it reports (all 100% optional; see config file):

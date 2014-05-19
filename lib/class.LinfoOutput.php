@@ -1034,7 +1034,7 @@ class LinfoOutput {
 			}
 		
 			// NET
-			if (!empty($settings['show']['network'])) {
+			if (!empty($settings['show']['network']) && isset($info['Network Devices']) && is_aray($info['Network Devices'])) {
 				$net = $xml->addChild('net');
 				foreach ($info['Network Devices'] as $device => $stats) {
 					$nic = $net->addChild('interface');
@@ -1095,7 +1095,7 @@ class LinfoOutput {
 			}
 
 			// DRIVES
-			if (!empty($settings['show']['hd'])) {
+			if (!empty($settings['show']['hd']) && isset($info['HD']) && is_array($info['HD'])) {
 				$show_stats = array_key_exists('drives_rw_stats', $info['contains']) ? ($info['contains']['drives_rw_stats'] === false ? false : true) : true;
 				$drives = $xml->addChild('drives');
 				foreach($info['HD'] as $drive) {
