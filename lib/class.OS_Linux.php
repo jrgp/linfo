@@ -57,43 +57,9 @@ class OS_Linux extends OS_Unix_Common {
 			throw new LinfoFatalException('This needs access to /proc and /sys to work.');
 	}
 
-	/**
-	 * getAll 
-	 * 
-	 * @access public
-	 * @return array the info
-	 */
-	public function getAll() {
-
+	public function init() {
 		if (isset($this->settings['cpu_usage']) && !empty($this->settings['cpu_usage']))
 			$this->determineCPUPercentage();
-
-		// Return everything, whilst obeying display permissions
-		return array(
-			'OS' => empty($this->settings['show']['os']) ? '' : $this->getOS(),
-			'Kernel' => empty($this->settings['show']['kernel']) ? '' : $this->getKernel(),
-			'Distro' => empty($this->settings['show']['distro']) ? '' : $this->getDistro(),
-			'RAM' => empty($this->settings['show']['ram']) ? array() : $this->getRam(),
-			'HD' => empty($this->settings['show']['hd']) ? '' : $this->getHD(),
-			'Mounts' => empty($this->settings['show']['mounts']) ? array() : $this->getMounts(),
-			'Load' => empty($this->settings['show']['load']) ? array() : $this->getLoad(),
-			'HostName' => empty($this->settings['show']['hostname']) ? '' : $this->getHostName(),
-			'UpTime' => empty($this->settings['show']['uptime']) ? '' : $this->getUpTime(),
-			'CPU' => empty($this->settings['show']['cpu']) ? array() : $this->getCPU(),
-			'CPUArchitecture' => empty($this->settings['show']['cpu']) ? array() : $this->getCPUArchitecture(),
-			'Network Devices' => empty($this->settings['show']['network']) ? array() : $this->getNet(),
-			'Devices' => empty($this->settings['show']['devices']) ? array() : $this->getDevs(),
-			'Temps' => empty($this->settings['show']['temps']) ? array(): $this->getTemps(),
-			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(),
-			'Raid' => empty($this->settings['show']['raid']) ? array(): $this->getRAID(),
-			'Wifi' => empty($this->settings['show']['wifi']) ? array(): $this->getWifi(),
-			'SoundCards' => empty($this->settings['show']['sound']) ? array(): $this->getSoundCards(),
-			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(),
-			'services' => empty($this->settings['show']['process_stats']) ? array() : $this->getServices(),
-			'numLoggedIn' => empty($this->settings['show']['numLoggedIn']) ? array() : $this->getNumLoggedIn(),
-			'virtualization' => empty($this->settings['show']['virtualization']) ? array() : $this->getVirtualization(),
-			'cpuUsage' => empty($this->settings['cpu_usage'])  ? false : $this->getCPUUsage()
-		);
 	}
 
 	/**
@@ -550,7 +516,7 @@ class OS_Linux extends OS_Unix_Common {
 					$unit = 'RPM';
 				elseif (strpos($filename, 'temp') !== false) {
 					$unit = 'C'; // Always seems to be in celsius
-					$value = strlen($value) == 5 ? substr($value, 0, 2) : $value;  // Pointless extra 0's
+					$value = strlen($value) == 5 ? substr($value, 0, 2) : $value; // Pointless extra 0's
 				}
 				elseif (preg_match('/^in\d_label$/', $filename)) {
 					$unit = 'v'; 
@@ -1320,7 +1286,6 @@ class OS_Linux extends OS_Unix_Common {
 		// - Also permits files that contain only the distro release version and nothing else,
 		// - in which case passing false instead of a regex string snags the contents.
 		// - And even also supports empty files, and just uses said file to identify the distro and ignore version
-    //
 
 		$contents_distros = array(
 			array(
