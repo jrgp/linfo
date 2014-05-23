@@ -1034,7 +1034,7 @@ class LinfoOutput {
 			}
 		
 			// NET
-			if (!empty($settings['show']['network']) && isset($info['Network Devices']) && is_aray($info['Network Devices'])) {
+			if (!empty($settings['show']['network']) && isset($info['Network Devices']) && is_array($info['Network Devices'])) {
 				$net = $xml->addChild('net');
 				foreach ($info['Network Devices'] as $device => $stats) {
 					$nic = $net->addChild('interface');
