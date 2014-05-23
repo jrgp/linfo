@@ -49,33 +49,13 @@ class OS_DragonFly extends OS_BSD_Common{
 			'hw.clockrate'
 		), false);
 	}
-	
-	// This function will likely be shared among all the info classes
-	public function getAll() {
 
-		// Return everything, whilst obeying display permissions
+	// What we should leave out
+	public function getContains() {
 		return array(
-			'OS' => empty($this->settings['show']['os']) ? '' : $this->getOS(), 			
-			'Kernel' => empty($this->settings['show']['kernel']) ? '' : $this->getKernel(), 		
-			'HostName' => empty($this->settings['show']['hostname']) ? '' : $this->getHostName(), 	
-			'Mounts' => empty($this->settings['show']['mounts']) ? array() : $this->getMounts(), 	
-			'RAM' => empty($this->settings['show']['ram']) ? array() : $this->getRam(), 		
-			'Load' => empty($this->settings['show']['load']) ? array() : $this->getLoad(), 		
-			'Devices' => empty($this->settings['show']['devices']) ? array() : $this->getDevs(), 	
-			'HD' => empty($this->settings['show']['hd']) ? '' : $this->getHD(), 			
-			'UpTime' => empty($this->settings['show']['uptime']) ? '' : $this->getUpTime(), 		
-			'Network Devices' => empty($this->settings['show']['network']) ? array() : $this->getNet(), 
-			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), 
-			'CPUArchitecture' => empty($this->settings['show']['cpu']) ? array() : $this->getCPUArchitecture(), 
-			'CPU' => empty($this->settings['show']['cpu']) ? array() : $this->getCPU(), 		
-			'Temps' => empty($this->settings['show']['temps']) ? array(): $this->getTemps(), 	
-
-			// Columns we should leave out. (because finding them out is either impossible or requires root access)
-			'contains' => array (
 				'drives_rw_stats' => false,
 				'nic_type' => false
-			)
-		);
+			);
 	}
 
 	// Return OS type

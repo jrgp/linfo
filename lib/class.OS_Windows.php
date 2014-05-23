@@ -59,39 +59,14 @@ class OS_Windows extends OS {
 	}
 
 	/**
-	 * getAll 
-	 * 
+	 * Return a list of things to hide from view..
+	 *
 	 * @access public
-	 * @return array the info
+	 * @return array
 	 */
-	public function getAll() {
-	
-		// Return everything, whilst obeying display permissions
+	public function getContains() {
 		return array(
-			'OS' => empty($this->settings['show']['os']) ? '' : $this->getOS(),
-			'Kernel' => empty($this->settings['show']['kernel']) ? '' : $this->getKernel(),
-			'Distro' => empty($this->settings['show']['distro']) ? '' : $this->getDistro(),
-			'RAM' => empty($this->settings['show']['ram']) ? array() : $this->getRam(),
-			'HD' => empty($this->settings['show']['hd']) ? '' : $this->getHD(),
-			'Mounts' => empty($this->settings['show']['mounts']) ? array() : $this->getMounts(),
-			'Load' => empty($this->settings['show']['load']) ? array() : $this->getLoad(),
-			'HostName' => empty($this->settings['show']['hostname']) ? '' : $this->getHostName(),
-			'UpTime' => empty($this->settings['show']['uptime']) ? '' : $this->getUpTime(),
-			'CPU' => empty($this->settings['show']['cpu']) ? array() : $this->getCPU(),
-			'CPUArchitecture' => empty($this->settings['show']['cpu']) ? array() : $this->getCPUArchitecture(),
-			'Network Devices' => empty($this->settings['show']['network']) ? array() : $this->getNet(),
-			'Devices' => empty($this->settings['show']['devices']) ? array() : $this->getDevs(),
-			'Temps' => empty($this->settings['show']['temps']) ? array(): $this->getTemps(),
-			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(),
-			'Raid' => empty($this->settings['show']['raid']) ? array(): $this->getRAID(),
-			'Wifi' => empty($this->settings['show']['wifi']) ? array(): $this->getWifi(),
-			'SoundCards' => empty($this->settings['show']['sound']) ? array(): $this->getSoundCards(),
-			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(),
-			'services' => empty($this->settings['show']['process_stats']) ? array() : $this->getServices(),
-
-			'contains' => array(
-				'drives_rw_stats' => false
-			)
+			'drives_rw_stats' => false
 		);
 	}
 	

@@ -62,32 +62,14 @@ class OS_OpenBSD extends OS_BSD_Common {
 			'vm.loadavg'
 		), false);
 	}
-	
-	// Return it all
-	public function getAll() {
 
-		// Return everything, whilst obeying display permissions
+	// What we should leave out
+	public function getContains() {
 		return array(
-			'OS' => empty($this->settings['show']) ? '' : $this->getOS(), 			# done
-			'Kernel' => empty($this->settings['show']) ? '' : $this->getKernel(), 		# done
-			'HostName' => empty($this->settings['show']) ? '' : $this->getHostName(), 	# done
-			'Mounts' => empty($this->settings['show']) ? array() : $this->getMounts(), 	# done
-			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(), 		# done
-			'Load' => empty($this->settings['show']) ? array() : $this->getLoad(), 		# done
-			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# done
-			'HD' => empty($this->settings['show']) ? '' : $this->getHD(), 			# done
-			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(), 		# done
-			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),# done
-			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# done
-			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # lacks thread stats
-
-			// Columns we should leave out. (because finding them out is either impossible or requires root access)
-			'contains' => array(
 				'drives_rw_stats' => false,
 				'hw_vendor' => false,
 				'drives_vendor' => false
-			)
-		);
+			);
 	}
 
 	// OS

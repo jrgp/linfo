@@ -90,3 +90,7 @@ v?.?? ?/??/20??
    without fear of killing whichever app uses it
  - More detailed network detection type on Linux
  - CYGWIN support removed as it was pointless
+ - Removed getAll() function from all info classes in favor of a unified 
+   behavior in the Linfo->scan() method
+ - Tweaks to common functions
+ - Biting composer koolaid

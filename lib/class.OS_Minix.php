@@ -52,23 +52,6 @@ class OS_Minix {
 		$this->exec->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/bin'));
 	}
 
-	// Get the information
-	function getAll() {
-		
-		// Return everything, whilst obeying display permissions
-		return array(
-			'OS' => empty($this->settings['show']['os']) ? '' : $this->getOS(),				# done
-			'Kernel' => empty($this->settings['show']['kernel']) ? '' : $this->getKernel(),			# done
-			'HostName' => empty($this->settings['show']['hostname']) ? '' : $this->getHostName(),		# done
-			'Mounts' => empty($this->settings['show']['mounts']) ? array() : $this->getMounts(),		# lacking info
-			'Network Devices' => empty($this->settings['show']['network']) ? array() : $this->getNet(),	# lacking info
-			'CPU' => array(),
-			'Load' => array(),
-
-			// More to follow in further commits
-		);
-	}
-
 	// Operating system
 	private function getOS() {
 		return 'Minix';

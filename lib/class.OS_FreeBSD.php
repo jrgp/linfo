@@ -67,33 +67,16 @@ class OS_FreeBSD extends OS_BSD_Common{
 		if (preg_match('/^([\d\.]+)/', php_uname('r'), $vm) != 0)
 			$this->version = (float) $vm[1];
 	}
-	
-	// This function will likely be shared among all the info classes
-	public function getAll() {
 
-		// Return everything, whilst obeying display permissions
+	/**
+	 * Return a list of things to hide from view..
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function getContains() {
 		return array(
-			'OS' => empty($this->settings['show']['os']) ? '' : $this->getOS(), 			# done
-			'Kernel' => empty($this->settings['show']['kernel']) ? '' : $this->getKernel(), 		# done
-			'HostName' => empty($this->settings['show']['hostname']) ? '' : $this->getHostName(), 	# done
-			'Mounts' => empty($this->settings['show']['mounts']) ? array() : $this->getMounts(), 	# done
-			'RAM' => empty($this->settings['show']['ram']) ? array() : $this->getRam(), 		# done
-			'Load' => empty($this->settings['show']['load']) ? array() : $this->getLoad(), 		# done
-			'Devices' => empty($this->settings['show']['devices']) ? array() : $this->getDevs(), 	# done
-			'HD' => empty($this->settings['show']['hd']) ? '' : $this->getHD(), 			# done
-			'UpTime' => empty($this->settings['show']['uptime']) ? '' : $this->getUpTime(), 		# done
-			'Network Devices' => empty($this->settings['show']['network']) ? array() : $this->getNet(),# done 
-			'Raid' => empty($this->settings['show']['raid']) ? '' : $this->getRAID(),	 	# done (gmirror only)
-			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # lacks thread stats
-			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(),  	# works
-			'CPUArchitecture' => empty($this->settings['show']['cpu']) ? array() : $this->getCPUArchitecture(), # done
-			'CPU' => empty($this->settings['show']['cpu']) ? array() : $this->getCPU(), 		# works
-			'Temps' => empty($this->settings['show']['temps']) ? array(): $this->getTemps(), 	# TODO,
-
-			// Columns we should leave out. (because finding them out is either impossible or requires root access)
-			'contains' => array(
-				'drives_rw_stats' => false
-			)
+			'drives_rw_stats' => false
 		);
 	}
 
