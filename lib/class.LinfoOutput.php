@@ -296,7 +296,7 @@ class LinfoOutput {
 	}
 	
 	// Users with active shells
-	if (!empty($settings['show']['numLoggedIn']) && array_key_exists('numLoggedIn', $info))
+	if (!empty($settings['show']['numLoggedIn']) && array_key_exists('numLoggedIn', $info) && $info['numLoggedIn'])
 		$core[] = array($lang['numLoggedIn'], $info['numLoggedIn']);
 
 	// Show
