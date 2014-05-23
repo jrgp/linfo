@@ -235,7 +235,7 @@ class ext_utorrent implements LinfoExtension {
 					$info['TORRENT_SEEDS_CONNECTED'].'/'.$info['TORRENT_PEERS_SWARM'],
 					LinfoCommon::byteConvert($info['TORRENT_DOWNLOADED']),
 					LinfoCommon::byteConvert($info['TORRENT_UPLOADED']),
-					$info['TORRENT_RATIO'] > 0 ? round($info['TORRENT_RATIO'] / 1000, 2) : '0.0',
+					$info['TORRENT_RATIO'] > 0 ? (round($info['TORRENT_RATIO'] / 1000, 2) ?: '0.0') : '0.0',
 					LinfoCommon::byteConvert($info['TORRENT_DOWNSPEED']).'/s &darr; '.
 					LinfoCommon::byteConvert($info['TORRENT_UPSPEED']).'/s &uarr; '
 				)
