@@ -166,12 +166,6 @@ class LinfoCommon {
 		if (!is_array($needles) || !is_array($haystack))
 			return false;
 
-		foreach ($needles as $needle) {
-			if (in_array($needle, $haystack))
-				return true;
-		}
-
-		return false;
+		return count(array_intersect($needles, $haystack)) > 0;
 	}
-
 }
