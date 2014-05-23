@@ -88,6 +88,7 @@ class OS_Darwin extends OS_BSD_Common{
 			'Model' => empty($this->settings['show']) ? false : $this->getModel(), 		# done
 			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(), # done
 			'HD' => empty($this->settings['show']['hd']) ? '' : $this->getHD(),
+			'virtualization' => empty($this->settings['show']['virtualization']) ? array() : $this->getVirtualization(),
 			/*
 			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# todo
 			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# todo(
@@ -580,7 +581,6 @@ class OS_Darwin extends OS_BSD_Common{
 
 					// Try getting the name
 					$drive_name = false; // I'm pessimistic
-	//			/*	
 					try {
 						$drive_res = $this->exec->exec('diskutil', ' info /dev/'.$m[5]); 
 						if (preg_match('/^\s+Device \/ Media Name:\s+(.+)/m', $drive_res, $drive_m))
@@ -588,7 +588,6 @@ class OS_Darwin extends OS_BSD_Common{
 					}
 					catch(CallExtException $e) {
 					}
-	//			*/
 
 					// Start this one off
 					$tmp = array(
@@ -620,5 +619,18 @@ class OS_Darwin extends OS_BSD_Common{
 
 		// Give
 		return $drives;
+	}
+
+	public function getVirtualization() {
+
+		// Time?
+		if (!empty($this->settings['timer']))
+			$t = new LinfoTimerStart('Determining virtualization type');
+
+		// All results on google show this file only being present and related to VMware Fusion
+		if (file_exists('/dev/vmmon'))
+			return array('type' => 'host', 'method' => 'VMWare');
+
+		return false;
 	}
 }
