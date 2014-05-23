@@ -70,32 +70,6 @@ class OS_SunOS extends OS {
 		));
 	}
 	
-	// This function will likely be shared among all the info classes
-	public function getAll() {
-
-		// Return everything, whilst obeying display permissions
-		return array(
-			'OS' => empty($this->settings['show']) ? '' : $this->getOS(),
-			'Kernel' => empty($this->settings['show']) ? '' : $this->getKernel(),
-			'HostName' => empty($this->settings['show']) ? '' : $this->getHostName(),
-			'Mounts' => empty($this->settings['show']) ? array() : $this->getMounts(),
-			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(),
-			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(),
-			'Load' => empty($this->settings['show']) ? array() : $this->getLoad(),
-			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(),
-			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(),
-			'CPUArchitecture' => empty($this->settings['show']['cpu']) ? array() : $this->getCPUArchitecture(),
-			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),
-			/*
-			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# todo
-			'HD' => empty($this->settings['show']) ? '' : $this->getHD(), 			# todo
-			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# todo 
-			'Battery' => empty($this->settings['show']) ? array(): $this->getBattery(),		# todo
-			'Temps' => empty($this->settings['show']) ? array(): $this->getTemps(), 	# TODO
-			*/
-		);
-	}
-
 	// Get kstat values. *extremely* similar in practice to the sysctl nature of the bsd's
 	// - 
 	// Use kstat to get something, and cache result.

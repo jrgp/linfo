@@ -77,10 +77,182 @@ class Linfo {
 		$this->parser = new $distro_class($this->settings);
 	}
 
+	// Load everything, while obeying permissions...
 	public function scan() {
-		// Run OS prober
-		$this->info = $this->parser->getAll();
-		$this->info['contains'] = array_key_exists('contains', $this->info) ? (array) $this->info['contains'] : array();
+
+		// Prime parser. Do things not appropriate to do in constructor..
+		if (method_exists($this->parser, 'init'))
+			$this->parser->init();
+
+		// Array fields, tied to method names and default values...
+		$fields = array(
+			'OS' => array(
+				'show' => !empty($this->settings['show']['os']),
+				'default' => '',
+				'method' =>'getOS'
+			),
+
+			'Kernel' => array(
+				'show' => !empty($this->settings['show']['kernel']),
+				'default' => '',
+				'method' =>'getKernel'
+			),
+
+			'Distro' => array(
+				'show' => !empty($this->settings['show']['distro']),
+				'default' => '',
+				'method' =>'getDistro'
+			),
+
+			'RAM' => array(
+				'show' => !empty($this->settings['show']['ram']),
+				'default' => array(),
+				'method' =>'getRam'
+			),
+
+			'HD' => array(
+				'show' => !empty($this->settings['show']['hd']),
+				'default' => array(),
+				'method' =>'getHD'
+			),
+
+			'Mounts' => array(
+				'show' => !empty($this->settings['show']['mounts']),
+				'default' => array(),
+				'method' =>'getMounts'
+			),
+
+			'Load' => array(
+				'show' => !empty($this->settings['show']['load']),
+				'default' => array(),
+				'method' =>'getLoad'
+			),
+
+			'HostName' => array(
+				'show' => !empty($this->settings['show']['hostname']),
+				'default' => '',
+				'method' =>'getHostName'
+			),
+
+			'UpTime' => array(
+				'show' => !empty($this->settings['show']['uptime']),
+				'default' => '',
+				'method' =>'getUpTime'
+			),
+
+			'CPU' => array(
+				'show' => !empty($this->settings['show']['cpu']),
+				'default' => array(),
+				'method' =>'getCPU'
+			),
+
+			'Model' => array(
+				'show' => !empty($this->settings['show']['model']),
+				'default' => array(),
+				'method' =>'getModel'
+			),
+
+			'CPUArchitecture' => array(
+				'show' => !empty($this->settings['show']['cpu']),
+				'default' => '',
+				'method' =>'getCPUArchitecture'
+			),
+
+			'Network Devices' => array(
+				'show' => !empty($this->settings['show']['network']),
+				'default' => array(),
+				'method' =>'getNet'
+			),
+
+			'Devices' => array(
+				'show' => !empty($this->settings['show']['devices']),
+				'default' => array(),
+				'method' =>'getDevs'
+			),
+
+			'Temps' => array(
+				'show' => !empty($this->settings['show']['temps']),
+				'default' => array(),
+				'method' =>'getTemps'
+			),
+
+			'Battery' => array(
+				'show' => !empty($this->settings['show']['battery']),
+				'default' => array(),
+				'method' =>'getBattery'
+			),
+
+			'RAID' => array(
+				'show' => !empty($this->settings['show']['raid']),
+				'default' => array(),
+				'method' =>'getRAID'
+			),
+
+			'Wifi' => array(
+				'show' => !empty($this->settings['show']['wifi']),
+				'default' => array(),
+				'method' =>'getWifi'
+			),
+
+			'SoundCards' => array(
+				'show' => !empty($this->settings['show']['sound']),
+				'default' => array(),
+				'method' =>'getSoundCards'
+			),
+
+			'processStats' => array(
+				'show' => !empty($this->settings['show']['process_stats']),
+				'default' => array(),
+				'method' =>'getProcessStats'
+			),
+
+			'Services' => array(
+				'show' => !empty($this->settings['show']['services']),
+				'default' => array(),
+				'method' =>'getServices'
+			),
+
+			'numLoggedIn' => array(
+				'show' => !empty($this->settings['show']['numLoggedIn']),
+				'default' => 0,
+				'method' =>'getnumLoggedIn'
+			),
+
+			'Virtualization' => array(
+				'show' => !empty($this->settings['show']['virtualization']),
+				'default' => array(),
+				'method' =>'getVirtualization'
+			),
+
+			'cpuUsage' => array(
+				'show' => !empty($this->settings['show']['cpu_usage']),
+				'default' => array(),
+				'method' =>'getCPUUsage'
+			),
+
+			// Extra info such as which fields to not show
+			'contains' => array(
+				'show' => true,
+				'default' => array(),
+				'method' =>'getContains'
+			)
+		);
+
+		foreach ($fields as $key => $data) {
+			if (!$data['show']) {
+				$this->info[$key] = $data['default'];
+				continue;
+			}
+
+			if (method_exists($this->parser, $data['method'])) {
+				$this->info[$key] = call_user_func(array($this->parser, $data['method']));
+				continue;
+			}
+
+			$this->info[$key] = $data['default'];
+		}
+
+		// Add a timestamp
 		$this->info['timestamp'] = date('c');
 
 		// Run extra extensions

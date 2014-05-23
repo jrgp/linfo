@@ -49,30 +49,6 @@ class OS_NetBSD extends OS_BSD_Common {
 		$this->GetSysCTL(array('kern.boottime', 'vm.loadavg'), false);
 	}
 
-
-	// Get
-	public function getAll() {
-
-		// Return everything, whilst obeying display permissions
-		return array(
-			'OS' => empty($this->settings['show']) ? '' : $this->getOS(), 			# done
-			'Kernel' => empty($this->settings['show']) ? '' : $this->getKernel(), 		# done
-			'HostName' => empty($this->settings['show']) ? '' : $this->getHostName(), 	# done
-			'Mounts' => empty($this->settings['show']) ? array() : $this->getMounts(), 	# done
-			'Load' => empty($this->settings['show']) ? array() : $this->getLoad(), 		# done
-			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(), 		# done
-			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(), 		# done
-			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# done
-			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# done
-			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # lacks thread stats
-			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),# lacks type
-			'HD' => empty($this->settings['show']) ? '' : $this->getHD(), 			# Known to get hard drives and cdroms
-			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# TODO 
-			'Battery' => empty($this->settings['show']) ? array() : $this->getBattery(),  	# TODO
-			'Temps' => empty($this->settings['show']) ? array() : $this->getTemps() 	# TODO
-		);
-	}
-
 	// Operating System
 	private function getOS() {
 		return 'NetBSD';

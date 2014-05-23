@@ -69,41 +69,14 @@ class OS_Darwin extends OS_BSD_Common{
 		}
 	}
 	
-	// This function will likely be shared among all the info classes
-	public function getAll() {
-
-		// Return everything, whilst obeying display permissions
+	// What we should leave out
+	public function getContains() {
 		return array(
-			'OS' => empty($this->settings['show']) ? '' : $this->getOS(), 			# done
-			'Kernel' => empty($this->settings['show']) ? '' : $this->getKernel(), 		# done
-			'HostName' => empty($this->settings['show']) ? '' : $this->getHostName(), 	# done
-			'Mounts' => empty($this->settings['show']) ? array() : $this->getMounts(), 	# done
-			'Network Devices' => empty($this->settings['show']) ? array() : $this->getNet(),# done (possibly missing nics)
-			'CPUArchitecture' => empty($this->settings['show']['cpu']) ? array() : $this->getCPUArchitecture(),
-			'UpTime' => empty($this->settings['show']) ? '' : $this->getUpTime(), 		# done
-			'Load' => empty($this->settings['show']) ? array() : $this->getLoad(), 		# done
-			'processStats' => empty($this->settings['show']['process_stats']) ? array() : $this->getProcessStats(), # lacks thread stats
-			'CPU' => empty($this->settings['show']) ? array() : $this->getCPU(), 		# done
-			'RAM' => empty($this->settings['show']) ? array() : $this->getRam(), 		# done
-			'Model' => empty($this->settings['show']) ? false : $this->getModel(), 		# done
-			'Battery' => empty($this->settings['show']['battery']) ? array(): $this->getBattery(), # done
-			'HD' => empty($this->settings['show']['hd']) ? '' : $this->getHD(),
-			'virtualization' => empty($this->settings['show']['virtualization']) ? array() : $this->getVirtualization(),
-			/*
-			'Devices' => empty($this->settings['show']) ? array() : $this->getDevs(), 	# todo
-			'RAID' => empty($this->settings['show']) ? '' : $this->getRAID(),	 	# todo(
-			'Battery' => empty($this->settings['show']) ? array(): $this->getBattery(),  	# todo
-			'Temps' => empty($this->settings['show']) ? array(): $this->getTemps(), 	# TODO
-			*/
-			
-			// Columns we should leave out.
-			'contains' => array(
 				'hw_vendor' => false,
 				'drives_rw_stats' => false,
 				'drives_vendor' => false,
 				'nic_type' => false
-			)
-		);
+			);
 	}
 
 	// Operating system
