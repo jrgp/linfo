@@ -214,7 +214,7 @@ class Linfo {
 
 			'numLoggedIn' => array(
 				'show' => !empty($this->settings['show']['numLoggedIn']),
-				'default' => 0,
+				'default' => false,
 				'method' =>'getnumLoggedIn'
 			),
 
@@ -225,8 +225,8 @@ class Linfo {
 			),
 
 			'cpuUsage' => array(
-				'show' => !empty($this->settings['show']['cpu_usage']),
-				'default' => array(),
+				'show' => !empty($this->settings['cpu_usage']),
+				'default' => false,
 				'method' =>'getCPUUsage'
 			),
 
