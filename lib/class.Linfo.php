@@ -218,7 +218,7 @@ class Linfo {
 				'method' =>'getnumLoggedIn'
 			),
 
-			'Virtualization' => array(
+			'virtualization' => array(
 				'show' => !empty($this->settings['show']['virtualization']),
 				'default' => array(),
 				'method' =>'getVirtualization'
