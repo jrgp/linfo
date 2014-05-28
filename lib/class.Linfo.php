@@ -182,7 +182,7 @@ class Linfo {
 				'method' =>'getBattery'
 			),
 
-			'RAID' => array(
+			'Raid' => array(
 				'show' => !empty($this->settings['show']['raid']),
 				'default' => array(),
 				'method' =>'getRAID'
