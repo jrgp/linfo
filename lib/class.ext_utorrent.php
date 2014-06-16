@@ -17,6 +17,12 @@ $settings['utorrent_connection'] = array(
 				'pass' => ''
 );
 
+Optionally, you can add multiple regexes to filter torrents. Use something
+like the following to strip out torrents with XXX in their name:
+
+$settings['utorrent_filter'] = array(
+				'/XXX/i'
+);
 
 */
 
@@ -100,6 +106,7 @@ class ext_utorrent implements LinfoExtension {
 		$settings = $linfo->getSettings();
 		$this->LinfoError = LinfoError::Singleton();
 		$this->connectionSettings = $settings['utorrent_connection'];
+		$this->regexFilters = isset($settings['utorrent_filter']) && is_array($settings['utorrent_filter']) ? $settings['utorrent_filter'] : array();
 	}
 
 	public function work() {
@@ -185,6 +192,12 @@ class ext_utorrent implements LinfoExtension {
 			foreach (self::$torrent_keys as $key => $index) {
 				$torrent[$key] = $torrent_src[$index];
 			}
+
+			foreach ($this->regexFilters as $regex) {
+				if (preg_match($regex, $torrent['TORRENT_NAME']))
+					continue 2;
+			}
+
 			$this->torrents[] = $torrent;
 			$torrent_names[] = $torrent['TORRENT_NAME'];
 			$torrent_states[] = $torrent['TORRENT_STATUS_MESSAGE'];
