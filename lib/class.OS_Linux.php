@@ -1289,6 +1289,16 @@ class OS_Linux extends OS_Unix_Common {
 
 		$contents_distros = array(
 			array(
+				'file' => '/etc/redhat-release',
+				'regex' => '/^CentOS.+release (?P<version>[\d\.]+) \((?P<codename>[^)]+)\)$/i',
+				'distro' => 'CentOS'
+			),
+			array(
+				'file' => '/etc/redhat-release',
+				'regex' => '/^Red Hat.+release (?P<version>\S+) \((?P<codename>[^)]+)\)$/i',
+				'distro' => 'RedHat'
+			),
+			array(
 				'file' => '/etc/lsb-release',
 				'closure' => create_function('$ini', '
 					return ($info = @parse_ini_string($ini)) &&
@@ -1309,16 +1319,6 @@ class OS_Linux extends OS_Unix_Common {
 							"distro" => $info["ID"],
 							"version" => $info["VERSION"]
 						) : false;')
-			),
-			array(
-				'file' => '/etc/redhat-release',
-				'regex' => '/^CentOS release (?P<version>[\d\.]+) \((?P<codename>[^)]+)\)$/',
-				'distro' => 'CentOS'
-			),
-			array(
-				'file' => '/etc/redhat-release',
-				'regex' => '/^Red Hat.+release (?P<version>\S+) \((?P<codename>[^)]+)\)$/',
-				'distro' => 'RedHat'
 			),
 			array(
 				'file' => '/etc/fedora-release',
