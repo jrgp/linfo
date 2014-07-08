@@ -79,7 +79,7 @@ v1.11 5/2/2014
  - Virtualization detection for Linux
  - CPU Usage reporting for Linux
 
-v?.?? ?/??/20??
+v2.00 7/7/2014
  - Major refactor: no global vars; easier to use
    simply as a library by third party apps
  - Added unit tests via PHPUnit
