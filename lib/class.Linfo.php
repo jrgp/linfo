@@ -206,7 +206,7 @@ class Linfo {
 				'method' =>'getProcessStats'
 			),
 
-			'Services' => array(
+			'services' => array(
 				'show' => !empty($this->settings['show']['services']),
 				'default' => array(),
 				'method' =>'getServices'

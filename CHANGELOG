@@ -79,7 +79,7 @@ v1.11 5/2/2014
  - Virtualization detection for Linux
  - CPU Usage reporting for Linux
 
-v2.00 7/7/2014
+v2.0 7/7/2014
  - Major refactor: no global vars; easier to use
    simply as a library by third party apps
  - Added unit tests via PHPUnit
@@ -94,3 +94,6 @@ v2.00 7/7/2014
    behavior in the Linfo->scan() method
  - Tweaks to common functions
  - Biting composer koolaid
+
+ v2.0.1 7/7/2014
+ - Bugfix: services not showing up on Linux
