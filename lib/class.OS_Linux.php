@@ -1127,7 +1127,7 @@ class OS_Linux extends OS_Unix_Common {
 			$t = new LinfoTimerStart('Services');
 
 		// We allowed?
-		if (!empty($settings['show']['services']) || !is_array($this->settings['services']) || count($this->settings['services']) == 0)
+		if (empty($this->settings['show']['services']) || !is_array($this->settings['services']) || count($this->settings['services']) == 0)
 			return array();
 
 		// Temporarily keep statuses here
