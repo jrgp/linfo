@@ -64,7 +64,28 @@ table.mini th {background-color: inherit;}
 	}
 .bar_text { position: absolute; line-height: 18px;
 	font-size: 12px; text-indent: 2px; text-align: center; width: 100%; }
-.alt .bar_inner { background-color: rgb(255, 102, 0); }
+.new_bar_outer {
+	position: relative;
+	margin: auto;
+}
+.new_bar_text {
+	z-index: 2;
+	position: relative;
+	padding: 2px;
+	text-align: center;
+}
+.new_bar_bg {
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	z-index: 1;
+	height: 100%; position: absolute;
+	display: block;
+	background-color: rgb(255, 102, 0);
+}
+.new_bar_left .new_bar_text {
+	text-align: left;
+}
+.alt .bar_inner, .alt .new_bar_bg { background-color: rgb(255, 102, 0); }
 .service_up {color: green;}
 .service_down {color: maroon;}
 .service_zombie {color: orange;}

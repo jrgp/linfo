@@ -37,12 +37,9 @@ class LinfoOutput {
 	 */
 	public static function generateBarChart($percent, $text = false) {
 		return '
-			<div class="bar_chart">
-				<div class="bar_inner" style="width: '.$percent.'%;">
-					<div class="bar_text">
-						'.($text ?: $percent.'%').'
-					</div>
-				</div>
+			<div class="new_bar_outer">
+				<div class="new_bar_bg" style="width: '.$percent.'%; "></div>
+				<div class="new_bar_text">'.($text ?: $percent.'%').'</div>
 			</div>
 		';
 	}
@@ -252,7 +249,7 @@ class LinfoOutput {
 						(array_key_exists('usage_percentage', $cpu) ? ' ('.$cpu['usage_percentage'].'%)' : '');
 
 			if (array_key_exists('usage_percentage', $cpu))
-				$cpu_html = '<div class="smaller_bar_chart">'.self::generateBarChart($cpu['usage_percentage'], $cpu_html).'</div>';
+				$cpu_html = '<div class="new_bar_left" style="margin-top: 3px; margin-bottom: 3px;">'.self::generateBarChart($cpu['usage_percentage'], $cpu_html).'</div>';
 			else
 				$cpu_html .= '<br>';
 
