@@ -4,3 +4,4 @@ config.inc.php
 cache/*.json
 .DS_Store
 .sass-cache
+.idea
