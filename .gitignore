@@ -3,3 +3,4 @@ config.inc.php
 *.swp
 cache/*.json
 .DS_Store
+.sass-cache
