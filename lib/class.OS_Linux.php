@@ -1596,4 +1596,25 @@ class OS_Linux extends OS_Unix_Common {
 				 sleep(1);
 		 }
 	 }
+
+	/**
+	 * Get brand/name of motherboard/server through /sys' interface to dmidecode
+	 *
+	 * @access public
+	 */
+	 public function getModel() {
+		$info = array();
+		$vendor = LinfoCommon::getContents('/sys/devices/virtual/dmi/id/board_vendor', false);
+		$name = LinfoCommon::getContents('/sys/devices/virtual/dmi/id/board_name', false);
+		if (!$name)
+			return false;
+		
+		// Don't add vendor to the mix if the name starts with it
+		if ($vendor && strpos($name, $vendor) !== 0)
+			$info[] = $vendor;
+
+		$info[] = $name;
+
+		return implode(' ', $info);
+	 }
  }
