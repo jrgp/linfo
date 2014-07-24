@@ -101,3 +101,4 @@ v2.0 7/7/2014
  v? ?/?/????
  - Some layout/css fixes
  - Converted layout/themes to use sass templating
+ - Added motherboard detection for Linux
