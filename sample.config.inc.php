@@ -89,6 +89,7 @@ $settings['temps']['hwmon'] = true; // Requires no extra config, is fast, and is
 $settings['temps']['hddtemp'] = false;
 $settings['temps']['mbmon'] = false;
 $settings['temps']['sensord'] = false; // Part of lm-sensors; logs periodically to syslog. slow
+$settings['temps_show0rpmfans'] = false; // Set to true to show fans with 0 RPM
 
 // Configuration for getting temps with hddtemp
 $settings['hddtemp']['mode'] = 'daemon'; // Either daemon or syslog
