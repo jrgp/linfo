@@ -503,31 +503,44 @@ class OS_Linux extends OS_Unix_Common {
 			$hwmon_vals = array();
 
 			// Wacky location
-			foreach ((array) @glob('/sys/class/hwmon/hwmon*/*_label', GLOB_NOSORT) as $path) {
+			foreach ((array) @glob('/sys/class/hwmon/hwmon*/{,device/}*_input', GLOB_NOSORT | GLOB_BRACE) as $path) {
 
-				// Get info here
-				$section = rtrim($path, 'label');
-				$filename = basename($path);
-				$label = LinfoCommon::getContents($path);
-				$value = LinfoCommon::getContents($section.'input');
+				$initpath = rtrim($path, 'input');
+				$value = LinfoCommon::getContents($path);
+				$base = basename($path);
+				$labelpath = $initpath.'label';
+				$showemptyfans = isset($this->settings['temps_show0rpmfans']) ? $this->settings['temps_show0rpmfans'] : false;
+				$drivername = @basename(@readlink(dirname($path).'/driver')) ?: false;
 
-				// Determine units and possibly fix values
-				if (strpos($filename, 'fan') !== false)
+				// Temperatures
+				if (is_file($labelpath) && strpos($base, 'temp') === 0) {
+					$label = LinfoCommon::getContents($labelpath);
+					$value /= $value > 10000 ? 1000 : 1;
+					$unit = 'C'; // I don't think this is ever going to be in F
+				}
+
+				// Fan RPMs
+				elseif (preg_match('/^fan(\d+)_/', $base, $m)) {
+					$label = 'fan'.$m[1];
 					$unit = 'RPM';
-				elseif (strpos($filename, 'temp') !== false) {
-					$unit = 'C'; // Always seems to be in celsius
-					$value = strlen($value) == 5 ? substr($value, 0, 2) : $value; // Pointless extra 0's
+
+					if ($value == 0 && !$showemptyfans)
+						continue;
 				}
-				elseif (preg_match('/^in\d_label$/', $filename)) {
-					$unit = 'v'; 
+
+				// Volts
+				elseif (preg_match('/^in(\d+)_/', $base, $m)) {
+					$unit = 'V';
+					$value /= 1000;
+					$label = LinfoCommon::getContents($labelpath) ?: 'in'.$m[1];
 				}
-				else 
-					$unit = ''; // Not sure if there's a temp
+				else
+					continue;
 
 				// Append values
 				$hwmon_vals[] = array(
-					'path' => 'N/A',
-					'name' => $label,
+					'path' => '',
+					'name' => $label.($drivername ? ' <span class="faded">('.$drivername.')</span>' : ''),
 					'temp' => $value,
 					'unit' => $unit
 				);
