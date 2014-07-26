@@ -885,6 +885,8 @@ class OS_Linux extends OS_Unix_Common {
 				// TODO find some way of finding out what provides the virt-specific kvm vnet devices
 			}
 
+			$speed = LinfoCommon::getIntFromFile($path.'/speed');
+
 			// Save and get info for each
 			$return[$nic] = array(
 
@@ -902,7 +904,8 @@ class OS_Linux extends OS_Unix_Common {
 
 				// These were determined above
 				'state' => $state,
-				'type' => $type ?: 'N/A'
+				'type' => $type ?: 'N/A',
+				'port_speed' => $speed > 0 ? $speed : false
 			);
 		}
 

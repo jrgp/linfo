@@ -75,7 +75,8 @@ class OS_Darwin extends OS_BSD_Common{
 				'hw_vendor' => false,
 				'drives_rw_stats' => false,
 				'drives_vendor' => false,
-				'nic_type' => false
+				'nic_type' => false,
+				'nic_port_speed' => false,
 			);
 	}
 

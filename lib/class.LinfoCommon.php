@@ -63,15 +63,7 @@ class LinfoCommon {
 
 	// Get a file who's contents should just be an int. Returns zero on failure.
 	static function getIntFromFile($file) {
-		if (!file_exists($file))
-			return 0;
-
-		if (!($contents = @file_get_contents($file)))
-			return 0;
-
-		$int = trim($contents);
-
-		return $int;
+		return self::getContents($file, 0);
 	}
 
 	// Convert bytes to stuff like KB MB GB TB etc

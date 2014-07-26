@@ -76,7 +76,8 @@ class OS_FreeBSD extends OS_BSD_Common{
 	 */
 	public function getContains() {
 		return array(
-			'drives_rw_stats' => false
+			'drives_rw_stats' => false,
+			'nic_port_speed' => false,
 		);
 	}
 
