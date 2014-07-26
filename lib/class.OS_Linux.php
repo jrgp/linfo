@@ -1622,6 +1622,8 @@ class OS_Linux extends OS_Unix_Common {
 		$info = array();
 		$vendor = LinfoCommon::getContents('/sys/devices/virtual/dmi/id/board_vendor', false);
 		$name = LinfoCommon::getContents('/sys/devices/virtual/dmi/id/board_name', false);
+		$product = LinfoCommon::getContents('/sys/devices/virtual/dmi/id/product_name', false);
+
 		if (!$name)
 			return false;
 		
@@ -1631,6 +1633,13 @@ class OS_Linux extends OS_Unix_Common {
 
 		$info[] = $name;
 
-		return implode(' ', $info);
+		$infostr = implode(' ', $info);
+
+		// product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
+		// dell latitude e6500 or hp z260
+		if ($product && strpos($name, $product) === false && strpos($product, 'Filled') === false)
+			return $product . ' ('.$infostr.')';
+		else
+			return $infostr;
 	 }
  }
