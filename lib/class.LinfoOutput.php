@@ -44,6 +44,10 @@ class LinfoOutput {
 		';
 	}
 
+	public static function fadedText($text) {
+		return '<span class="faded">'.$text.'</span>';
+	}
+
 	// Create a table out of an array. Mostly used by extensions
 	/*
 		Example array structure:
@@ -389,13 +393,15 @@ class LinfoOutput {
 	// Network Devices?
 	if (!empty($settings['show']['network'])) {
 		$show_type = array_key_exists('nic_type', $info['contains']) ? $info['contains']['nic_type'] : true;
+		$show_speed = array_key_exists('nic_port_speed', $info['contains']) ? $info['contains']['nic_port_speed'] : true;
 		echo '
 		<div class="infoTable">
 			<h2>'.$lang['network_devices'].'</h2>
 			<table>
 				<tr>
-					<th>'.$lang['device_name'].'</th>',$show_type ? '
-					<th>'.$lang['type'].'</th>' : '','
+					<th>'.$lang['device_name'].'</th>'.($show_type ? '
+					<th>'.$lang['type'].'</th>' : '').($show_speed ? '
+					<th>'.$lang['port_speed'].'</th>' : '').'
 					<th>'.$lang['amount_sent'].'</th>
 					<th>'.$lang['amount_received'].'</th>
 					<th>'.$lang['state'].'</th>
@@ -405,8 +411,9 @@ class LinfoOutput {
 				foreach($info['Network Devices'] as $device => $stats)
 					echo '
 				<tr>
-					<td>'.$device.'</td>', $show_type ? '
-					<td>'.$stats['type'].'</td>' : '','
+					<td>'.$device.'</td>'.($show_type ? '
+					<td>'.$stats['type'].'</td>' : '').($show_speed ? '
+					<td>'.(isset($stats['port_speed']) && $stats['port_speed'] !== false ? $stats['port_speed'].'Mb/s' : '').'</td>' : '').'
 					<td>'.LinfoCommon::byteConvert($stats['sent']['bytes']).'</td>
 					<td>'.LinfoCommon::byteConvert($stats['recieved']['bytes']).'</td>
 					<td class="net_'.$stats['state'].'">'.ucfirst($stats['state']).'</td>
@@ -503,7 +510,7 @@ class LinfoOutput {
 					<td>'.$service.'</td>
 					<td>
 						<span class="service_'.strtolower($state_parts[0]).'">'.$state_parts[0].'</span>
-						'.(array_key_exists(1, $state_parts) ? '<span class="faded">'.$state_parts[1].'</span>' : '').'</td>
+						'.(array_key_exists(1, $state_parts) ? self::fadedText($state_parts[1]).'</span>' : '').'</td>
 					<td>'.$state['pid'].'</td>
 					<td>',$state['threads'] ? $state['threads'] : '?','</td>
 					<td>',$state['memory_usage'] ? LinfoCommon::byteConvert($state['memory_usage']) : '?','</td>

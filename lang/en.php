@@ -102,4 +102,5 @@ $lang = array(
 	'guest' => 'Guest',
 	'host' => 'Host',
 	'cpu_usage' => 'Overall CPU Usage',
+	'port_speed' => 'Port Speed'
 );

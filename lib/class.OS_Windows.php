@@ -66,7 +66,8 @@ class OS_Windows extends OS {
 	 */
 	public function getContains() {
 		return array(
-			'drives_rw_stats' => false
+			'drives_rw_stats' => false,
+			'nic_port_speed' => false,
 		);
 	}
 	
