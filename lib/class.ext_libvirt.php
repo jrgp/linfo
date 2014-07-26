@@ -9,7 +9,7 @@ To enable this extension, add/tweak the following to your config.inc.php
 
 $settings['extensions']['libvirt'] = true;
 $settings['libvirt_connection'] = array(
-        'url' => 'qemu:///system',
+        'url' => 'qemu:///system', // For xen do 'xen:///' instead
         'credentials' => NULL
 );
 
@@ -104,8 +104,13 @@ class ext_libvirt implements LinfoExtension {
 				if (!is_string($blockName))
 					continue;
 
-				if (!($blockInfo = libvirt_domain_get_block_info($domain, $blockName)) || !is_array($blockInfo))
+				// Sometime device exists but libvirt fails to get more docs. just settle for device name
+				if (!($blockInfo = libvirt_domain_get_block_info($domain, $blockName)) || !is_array($blockInfo)) {
+					$info['storage'][] = array(
+						'device' => $blockName
+					);
 					continue;
+				}
 
 				if (isset($blockInfo['partition']) && !isset($blockInfo['file']))
 					$blockInfo['file'] = $blockInfo['partition'];
@@ -141,7 +146,8 @@ class ext_libvirt implements LinfoExtension {
 			$disks = array();
 
 			foreach ($info['storage'] as $disk) {
-				$disks[] = $disk['device'].': '.$disk['file'].' ('.LinfoCommon::byteConvert($disk['capacity'], 2).')';
+				$disks[] = $disk['device']
+				.(isset($disk['file']) && isset($disk['capacity']) ? ': '.$disk['file'].' ('.LinfoCommon::byteConvert($disk['capacity'], 2).')' : '');
 			}
 
 			$rows[] = array(

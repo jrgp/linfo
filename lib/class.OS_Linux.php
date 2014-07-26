@@ -877,6 +877,8 @@ class OS_Linux extends OS_Unix_Common {
 					$type = 'VirtIO';
 				elseif ($type_contents == 'XEN:VIF')
 					$type = 'Xen (VIF)';
+				elseif ($type_contents == 'XEN-BACKEND:VIF')
+					$type = 'Xen Backend (VIF)';
 				elseif (is_dir($path.'/bridge'))
 					$type = 'Bridge';
 				elseif (is_dir($path.'/bonding'))
