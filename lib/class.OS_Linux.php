@@ -1379,9 +1379,9 @@ class OS_Linux extends OS_Unix_Common {
 					'version' => $info['version'].(isset($info['codename']) ? ' ('.ucfirst($info['codename']).')' : '')
 				);
 			}
-			elseif (isset($distro['name'])) {
+			elseif (isset($distro['distro'])) {
 				return array(
-					'name' => $distro['name'],
+					'name' => $distro['distro'],
 					'version' => $contents
 				);
 			}
