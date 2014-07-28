@@ -6,6 +6,7 @@
  - Github URL: https://github.com/jrgp/linfo
  - Sourceforge Project: https://sourceforge.net/projects/linfo
  - Ohloh SCM stats: https://www.ohloh.net/p/linfo
+ - See DEVELOPERS.md for contributing
 
 ### Currently runs on:
  - Linux
@@ -48,17 +49,7 @@
 
 ### Goals: 
  - Provide info such as disk space, temperatures, cpu, ram, etc
- - Be very fast on very old hardware; generation in under a second is most desired.
- - Call very few external programs (like df/load/uptime/etc), if any. (parse
-   the file system for info, if possible)
- - Linux version doesn't use external programs *at all* and rely exclusively on
-   /proc and /sys and connecting to locally listening daemons. (except for extensions, listed below)
- - Don't go nuts with eye candy. Don't use ajax. Make viewing the info on
-   text only browsers possible and easy.
- - Any javascript ever used must degrade gracefully
- - Don't give info that can be exploited and turned into a security risk, especially
-   not names and command line arguments given to running programs.
- - Don't use blatantly slow methods such as preg_split(), especially not in loops
+ - Run extremely fast on old hardware; parse files rather than calling external binaries
 
 ### Usable clients:
  - Any web browser should work, including text only ones
@@ -75,7 +66,7 @@ Windows system requirements:
 
 Linux system requirements:
  - /proc and /sys mounted appropriately, and readable by PHP
- - Tested with the 2.6 series of kernels. I'm not sure if it works with older ones.
+ - Tested with the 2.6.x/3.x series of kernels.
 
 FreeBSD system requirements:
  - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, etc
@@ -128,4 +119,5 @@ For cups/samba/truecrypt/extension support:
  - Joe Gillotti <joe@u13.net>  (I promise I'll reply)
  - IRC - #linfo @ freenode
  - Please email to joe@u13.net instead of contacting me over SourceForge.
+ - If you like and use Linfo, all I ask is that you send me suggestions or at least a thank you
 
