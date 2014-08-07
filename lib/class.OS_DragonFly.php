@@ -59,28 +59,28 @@ class OS_DragonFly extends OS_BSD_Common{
 	}
 
 	// Return OS type
-	private function getOS() {
+	public function getOS() {
 
 		// Obviously
 		return 'DragonFly BSD';	
 	}
 	
 	// Get kernel version
-	private function getKernel() {
+	public function getKernel() {
 		
 		// hmm. PHP has a native function for this
 		return php_uname('r');
 	}
 
 	// Get host name
-	private function getHostName() {
+	public function getHostName() {
 		
 		// Take advantage of that function again
 		return php_uname('n');
 	}
 
 	// Get mounted file systems
-	private function getMounts() {
+	public function getMounts() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -143,7 +143,7 @@ class OS_DragonFly extends OS_BSD_Common{
 	}
 
 	// Get ram usage
-	private function getRam(){
+	public function getRam(){
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -167,7 +167,7 @@ class OS_DragonFly extends OS_BSD_Common{
 	}
 	
 	// Get system load
-	private function getLoad() {
+	public function getLoad() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -185,7 +185,7 @@ class OS_DragonFly extends OS_BSD_Common{
 	}
 	
 	// Get uptime
-	private function getUpTime() {
+	public function getUpTime() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -203,11 +203,11 @@ class OS_DragonFly extends OS_BSD_Common{
 	}
 
 	// RAID Stats
-	private function getRAID() {
+	public function getRAID() {
 	}
 
 	// Done
-	private function getNet() {
+	public function getNet() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -298,7 +298,7 @@ class OS_DragonFly extends OS_BSD_Common{
 
 	// Get CPU's
 	// I still don't really like how this is done
-	private function getCPU() {
+	public function getCPU() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -321,7 +321,7 @@ class OS_DragonFly extends OS_BSD_Common{
 	}
 	
 	// TODO: Get reads/writes and partitions for the drives
-	private function getHD() {
+	public function getHD() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -331,7 +331,7 @@ class OS_DragonFly extends OS_BSD_Common{
 	}
 	
 	// Parse dmesg boot log
-	private function getDevs() {
+	public function getDevs() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -343,7 +343,7 @@ class OS_DragonFly extends OS_BSD_Common{
 	}
 		
 	// APM? Seems to only support either one battery of them all collectively
-	private function getBattery() {
+	public function getBattery() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -353,7 +353,7 @@ class OS_DragonFly extends OS_BSD_Common{
 	}
 	
 	// Get stats on processes
-	private function getProcessStats() {
+	public function getProcessStats() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -416,7 +416,7 @@ class OS_DragonFly extends OS_BSD_Common{
 	}
 	
 	// idk
-	private function getTemps() {
+	public function getTemps() {
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Temperature');
@@ -429,7 +429,7 @@ class OS_DragonFly extends OS_BSD_Common{
 	 * @access private
 	 * @return string the arch
 	 */
-	private function getCPUArchitecture() {
+	public function getCPUArchitecture() {
 		return php_uname('m');
 	}
 }

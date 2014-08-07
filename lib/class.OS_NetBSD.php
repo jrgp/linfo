@@ -50,22 +50,22 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Operating System
-	private function getOS() {
+	public function getOS() {
 		return 'NetBSD';
 	}
 
 	// Kernel version
-	private function getKernel() {
+	public function getKernel() {
 		return php_uname('r');
 	}
 
 	// Host name
-	private function getHostName() {
+	public function getHostName() {
 		return php_uname('n');
 	}
 
 	// Mounted file systems
-	private function getMounts() {
+	public function getMounts() {
 
 		// Time it
 		if (!empty($this->settings['timer']))
@@ -116,7 +116,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Get system load
-	private function getLoad() {
+	public function getLoad() {
 
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -139,7 +139,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Get the always gloatable uptime
-	private function getUpTime() {
+	public function getUpTime() {
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Uptime');
@@ -152,7 +152,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Get network devices
-	private function getNet() {
+	public function getNet() {
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Network Devices');
@@ -225,7 +225,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Get drives
-	private function getHD() {
+	public function getHD() {
 
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -296,7 +296,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Get cpu's
-	private function getCPU() {
+	public function getCPU() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -322,7 +322,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 
 	// Get ram usage
-	private function getRam() {
+	public function getRam() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -405,7 +405,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 	
 	// Get devices
-	private function getDevs() {
+	public function getDevs() {
 
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -449,7 +449,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 	
 	// Get stats on processes
-	private function getProcessStats() {
+	public function getProcessStats() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -509,7 +509,7 @@ class OS_NetBSD extends OS_BSD_Common {
 	}
 	
 	// TODO:
-	private function getRAID() {}
-	private function getBattery() {}
-	private function getTemps() {}
+	public function getRAID() {}
+	public function getBattery() {}
+	public function getTemps() {}
 }
