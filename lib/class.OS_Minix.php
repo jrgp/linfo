@@ -53,17 +53,17 @@ class OS_Minix {
 	}
 
 	// Operating system
-	private function getOS() {
+	public function getOS() {
 		return 'Minix';
 	}
 
 	// Take advantage of php_uname for kernel
-	private function getKernel() {
+	public function getKernel() {
 		return php_uname('r');
 	}
 
 	// Use that function again for host name
-	private function getHostName() {
+	public function getHostName() {
 		return php_uname('n');
 	}
 
@@ -72,7 +72,7 @@ class OS_Minix {
 	// Note: the `mount` command does not have file system type
 	// and php's disk_free_space/disk_total_space functions don't seem
 	// to work here
-	private function getMounts() {
+	public function getMounts() {
 
 		// Try using the `mount` command to get mounted file systems
 		try {
@@ -119,7 +119,7 @@ class OS_Minix {
 	// netstat isn't installed by default and ifconfig doesn't have
 	// much functionality for viewing status, so I can't seem to get
 	// more than just name of interface
-	private function getNet() {
+	public function getNet() {
 
 		// Try getting it. 
 		try {

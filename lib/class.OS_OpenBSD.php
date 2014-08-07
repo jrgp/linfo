@@ -73,22 +73,22 @@ class OS_OpenBSD extends OS_BSD_Common {
 	}
 
 	// OS
-	private function getOS() {
+	public function getOS() {
 		return 'OpenBSD';
 	}
 
 	// Kernel
-	private function getKernel() {
+	public function getKernel() {
 		return php_uname('r');
 	}
 
 	// Hostname
-	private function getHostName() {
+	public function getHostName() {
 		return php_uname('n');
 	}
 
 	// Get mounted file systems and their disk usage stats
-	private function getMounts() {
+	public function getMounts() {
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Mounted file systems');
@@ -139,7 +139,7 @@ class OS_OpenBSD extends OS_BSD_Common {
 	}
 
 	// Get memory usage statistics
-	private function getRam() {
+	public function getRam() {
 		
 		$return = array();
 		$return['swapTotal'] = 0;
@@ -187,7 +187,7 @@ class OS_OpenBSD extends OS_BSD_Common {
 	}
 
 	// System load averages
-	private function getLoad() {
+	public function getLoad() {
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Load Averages');
@@ -211,7 +211,7 @@ class OS_OpenBSD extends OS_BSD_Common {
 	}
 
 	// Get hardware devices
-	private function getDevs() {
+	public function getDevs() {
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Hardware Devices');
@@ -241,7 +241,7 @@ class OS_OpenBSD extends OS_BSD_Common {
 	}
 
 	// Get hard disk drives and the like
-	private function getHD() {
+	public function getHD() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -278,7 +278,7 @@ class OS_OpenBSD extends OS_BSD_Common {
 	}
 
 	// Get uptime
-	private function getUpTime() {
+	public function getUpTime() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -299,7 +299,7 @@ class OS_OpenBSD extends OS_BSD_Common {
 	}
 
 	// Get network devices, their stats, status, and type
-	private function getNet() {
+	public function getNet() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -403,7 +403,7 @@ class OS_OpenBSD extends OS_BSD_Common {
 	}
 
 	// processors...
-	private function getCPU() {
+	public function getCPU() {
 
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -427,7 +427,7 @@ class OS_OpenBSD extends OS_BSD_Common {
 	}
 	
 	// Get process stats
-	private function getProcessStats() {
+	public function getProcessStats() {
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Process Stats');
