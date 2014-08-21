@@ -11,7 +11,7 @@
 
 /* Set individual icons here. Notice not all have the same width. */
 .icon_os_linux { background-image: url('icons/os_linux.gif'); width: 14px; }
-.icon_os_windows { background-image: url('icons/os_windows.gif'); width: 14px; }
+.icon_os_windows { background-image: url('icons/os_windows.png'); width: 14px; }
 .icon_os_freebsd { background-image: url('icons/os_freebsd.png'); width: 14px; }
 .icon_os_netbsd { background-image: url('icons/os_netbsd.png'); width: 16px; }
 .icon_os_openbsd { background-image: url('icons/os_openbsd.png'); width: 16px; }
@@ -28,6 +28,6 @@
 .icon_vm_vmware { background-image: url('icons/vm_vmware.png'); width: 16px; }
 .icon_vm_virtualbox { background-image: url('icons/vm_virtualbox.png'); width: 16px; }
 .icon_vm_xen { background-image: url('icons/vm_xen.png'); width: 36px; }
-.icon_vm_qemu_kvm, .icon_vm_kvm { background-image: url('icons/vm_kvm.png'); width: 52px; } 
+.icon_vm_qemu_kvm, .icon_vm_kvm { background-image: url('icons/vm_kvm.png'); width: 52px; }
 .icon_vm_openvz { background-image: url('icons/vm_openvz.png'); width: 16px; }
 
