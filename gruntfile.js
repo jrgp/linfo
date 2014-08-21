@@ -1,0 +1,86 @@
+module.exports = function(grunt) {
+    'use strict';
+
+    function loadConfig(path) {
+        var glob = require('glob'),
+            object = {},
+            key;
+        glob.sync('*', {cwd: path}).forEach(function(option) {
+            key = option.replace(/\.js$/,'');
+            object[key] = require(path + option);
+        });
+        return object;
+    }
+
+    var asset_version = new Date().getTime();
+
+    // Base Config
+    var config = {
+
+        pkg: grunt.file.readJSON('package.json'),
+
+        build: {
+            buildId: '<%= pkg.version %>.<%= grunt.template.today("yyyymmddHHMM") %>',
+            temp: '_tmp',
+            source: '',    //'src'
+            dest: '',      //'dist/<%= build.buildId %>'
+            dest_dev: '',  //'dev',
+            banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+                    '<%= grunt.template.today("yyyy-mm-dd") %>\r\n' +
+                    '<%= pkg.homepage ? " * " + pkg.homepage + "\\r\\n" : "" %>' +
+                    ' * Copyright © <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
+                    ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") + "\\r\\n" %> */\r\n'
+        },
+
+        sass: {
+            dist: {
+                options: {
+                    style: 'compressed', //nested, compact, compressed, expanded
+                    banner: '<%= build.banner %>'
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'layout/sass',
+                    src: ['theme_neuro.sass'],
+                    dest: 'layout',
+                    ext: '.css'
+                }]
+            },
+            dev: {
+                options: {
+                    style: 'expanded',
+                    banner: '<%= build.banner %>'
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'layout/sass',
+                    src: ['theme_neuro.sass'],
+                    dest: 'layout',
+                    ext: '.css'
+                }]
+                //files: {
+                //    "<%= build.dest %>/layout/*.css": "<%= build.source %>/layout/sass/theme_neuro.sass",
+                //}
+            }
+        }
+
+    };
+
+
+    // Look for any option files inside of `/custom/grunt_tasks` folder.
+    // The file name would be `sass.js` or `watch.js` etc
+    // If found, extend and overwrite with custom one
+    grunt.util._.extend(config, loadConfig('./custom/grunt_tasks/'));
+
+    // Config the Options
+    grunt.initConfig(config);
+
+    // Load the Tasks
+    require('load-grunt-tasks')(grunt);
+
+    // Register Tasks
+    grunt.registerTask('default', [ 'sass:dist' ]); // Default Production Build
+
+    grunt.registerTask('dev', [ 'sass:dev' ]);
+
+};
