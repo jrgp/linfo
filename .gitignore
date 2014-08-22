@@ -6,3 +6,4 @@ cache/*.json
 .sass-cache
 .idea
 node_modules
+*.sublime-workspace
