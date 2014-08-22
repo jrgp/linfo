@@ -14,64 +14,73 @@ a:hover
 
 table
   border-collapse: collapse
-  width: 100% 
+  width: 100%
 
 table th
   font-weight: normal
-  color: $thcolor  
+  color: $thcolor
 
-table th, table td 
+table th, table td
   border-right: 1px solid $cellborder
   border-left: 1px solid $cellborder
   border-bottom: 1px solid $cellborder
   padding: 4px
   background-color: $cellbg
 
-table tr th, table tr.alt td 
+table tr th, table tr.alt td
   background-color: $cellaltbg
 
 .infoTable
-  margin: 10px 5px 0px 5px
-  clear: both 
+  margin: 10px 5px 10px 5px
+  clear: both
+  box-shadow: $tableShadow
 
-.infoTable h2 
+.infoTable h2
   margin: 0
   padding: 5px
   color: $h2color
   text-shadow: $h2shadow
   border: 1px solid $h2border
   background-color: $h2bg
-  border-top-left-radius: 3px
-  border-top-right-radius: 3px
-  -moz-border-radius-topleft: 3px
-  -moz-border-radius-topright: 3px
 
-.collapsed h2 
-  border-bottom-left-radius: 3px
-  border-bottom-right-radius: 3px 
-  -moz-border-radius-bottomleft: 3px
-  -moz-border-radius-bottomright: 3px 
+.infoTable, .infoTable h2
+  border-top-left-radius: $borderRadius
+  border-top-right-radius: $borderRadius
+  -moz-border-radius-topleft: $borderRadius
+  -moz-border-radius-topright: $borderRadius
 
-.collapsed table 
+.infoTable.collapsed
+  border-bottom-left-radius: $borderRadius + 1
+  border-bottom-right-radius: $borderRadius + 1
+  -moz-border-radius-bottomleft: $borderRadius + 1
+  -moz-border-radius-bottomright: $borderRadius + 1
+
+.collapsed h2
+  border-bottom-left-radius: $borderRadius
+  border-bottom-right-radius: $borderRadius
+  -moz-border-radius-bottomleft: $borderRadius
+  -moz-border-radius-bottomright: $borderRadius
+
+.collapsed table
   display: none
 
 #foot
   margin: 15px 0px 20px 15px
   color: $footcolor
-  float: left 
+  float: left
 
 #foot_time
   margin: 15px 15px 20px 0px
   color: $footcolor
   float: right
-  vertical-align: bottom 
+  vertical-align: bottom
 
-h1 
+h1
   font-size: 1.6em
   margin: 0
-  padding: 0 
+  padding: 0
 
-h2 
+h2
   font-size: 1.2em
   margin: 0
 
@@ -90,7 +99,7 @@ td.none
   font-size: 12px
   padding: 10px
   color: $nontdcolor
-  background-color: $nonetdbg 
+  background-color: $nonetdbg
 
 span.perc, span.faded
   color: $percfaded
@@ -111,16 +120,16 @@ td ul li
   margin-right: 0
 
 .raid_normal
-  color: green
+  color: $statusOk
 
 .raid_spare
-  color: blue
+  color: $statusNormal
 
 .raid_failed
-  color: maroon
+  color: $statusBad
 
 .raid_unknown
-  color: purple
+  color: $statusUnknown
 
 .margin_auto
   margin: auto
@@ -128,7 +137,7 @@ td ul li
 table.mini
   padding: 0
   font-size: 90%
-  border-collapse: collapse  
+  border-collapse: collapse
 
 table.mini th, table.mini td
   margin: 0
@@ -139,13 +148,13 @@ table.mini th
   background-color: inherit
 
 .net_up
-  color: green
+  color: $statusOk
 
 .net_down
-  color: maroon
+  color: $statusBad
 
 .net_unknown
-  color: purple
+  color: $statusUnknown
 
 #errorList, #timerList
   font-size: 75%
@@ -160,13 +169,13 @@ table.mini th
   padding-bottom: 2px
 
 .smaller_bar_chart .bar_text
-  text-align: left !important 
+  text-align: left !important
 
-.bar_inner 
+.bar_inner
   border-radius: 2px
   -moz-border-radius: 2px
   min-height: 18px
-  background-color: $barbg 
+  background-color: $barbg
 
 .bar_text
   position: absolute
@@ -174,19 +183,19 @@ table.mini th
   font-size: 12px
   text-indent: 2px
   text-align: center
-  width: 100% 
+  width: 100%
 
-.new_bar_outer 
+.new_bar_outer
   position: relative
   margin: auto
 
-.new_bar_text 
+.new_bar_text
   z-index: 2
   position: relative
   padding: 2px
   text-align: center
 
-.new_bar_bg 
+.new_bar_bg
   border-radius: 2px
   -moz-border-radius: 2px
   z-index: 1
@@ -195,11 +204,11 @@ table.mini th
   display: block
   background-color: $barbg
 
-.new_bar_left .new_bar_text 
+.new_bar_left .new_bar_text
   text-align: left
 
 .alt .bar_inner, .alt .new_bar_bg
-  background-color: $altbarbg 
+  background-color: $altbarbg
 
 .service_up
   color: green
@@ -210,7 +219,7 @@ table.mini th
 .service_zombie
   color: orange
 
-span.toggler 
+span.toggler
   line-height: 24px
   color: $togglercolor
   float: right
@@ -221,17 +230,17 @@ span.toggler
   padding-top: .2em
   padding-right: .4em
 
-.infoTable span.toggler:hover 
+.infoTable span.toggler:hover
   color: $togglerhover
 
-#header 
+#header
   padding: 5px 0px 0px 15px
 
-.subtitle 
+.subtitle
   color: $subtitlecolor
   font-size: 12px
 
-.time 
+.time
   padding: 5px 15px 0px 0px
   color: $time
   float: right
