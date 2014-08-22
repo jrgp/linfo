@@ -1,0 +1,18 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "."
+		}
+	],
+    "build_systems":
+    [
+        {
+            "name": "Build Linfo",
+            "working_dir": "${project_path}",
+            "cmd": ["grunt", "dev"],
+            "shell": true
+        }
+    ]
+}
