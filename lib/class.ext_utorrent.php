@@ -26,6 +26,16 @@ $settings['utorrent_filter'] = array(
 
 */
 
+/*
+
+Known to work with this verson of uTorrent:
+ Product Version 3.3
+ Source Revision 30235
+ Build Date 2013-10-14 10:42:53 -0700
+ UI Revision 30235
+
+*/
+
 /**
  * This file is part of Linfo (c) 2014 Joseph Gillotti.
  * 
