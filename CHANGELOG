@@ -98,7 +98,7 @@ v2.0 7/7/2014
  v2.0.1 7/7/2014
  - Bugfix: services not showing up on Linux
 
- v? ?/?/????
+ v2.0.2 11/24/2014
  - Some layout/css fixes
  - Converted layout/themes to use sass templating
  - Added motherboard detection for Linux
