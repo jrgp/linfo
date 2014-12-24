@@ -98,6 +98,12 @@ class Linfo {
 				'method' =>'getKernel'
 			),
 
+			'AccessedIP' => array(
+				'show' => !isset($this->settings['show']['ip']) || !empty($this->settings['show']['ip']),
+				'default' => '',
+				'method' =>'getAccessedIP'
+			),
+
 			'Distro' => array(
 				'show' => !empty($this->settings['show']['distro']),
 				'default' => '',
