@@ -107,3 +107,4 @@ v2.0.2 11/24/2014
 
 v?.?.? ??/??/????
  - Showing IP is now optional
+ - James Price added Grunt functionality, cleaned up sass themes, added new theme
