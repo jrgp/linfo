@@ -26,4 +26,8 @@ abstract class OS {
 	public function __call($name, $args) {
 		throw new LinfoFatalException('Method '.$name.' not present.');
 	}
+
+	public function getAccessedIP() {
+		return isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] ? $_SERVER['SERVER_ADDR'] : 'Unknown';
+	}
 }

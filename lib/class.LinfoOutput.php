@@ -230,7 +230,8 @@ class LinfoOutput {
 		$core[] = array($lang['model'], $info['Model']);
 
 	// IP
-	$core[] = array($lang['accessed_ip'], isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown');
+	if (!isset($settings['show']['ip']) || !empty($settings['show']['ip']))
+		$core[] = array($lang['accessed_ip'], $info['AccessedIP']);
 
 	// Uptime
 	if (!empty($settings['show']['uptime']))

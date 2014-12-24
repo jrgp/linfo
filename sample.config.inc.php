@@ -22,6 +22,7 @@ $settings['theme'] = 'default'; // Theme file (layout/theme_$n.css). Look at the
 // For certain reasons, some might choose to not display all we can
 // Set these to true to enable; false to disable. They default to false.
 $settings['show']['kernel'] = true;
+$settings['show']['ip'] = true;
 $settings['show']['os'] = true;
 $settings['show']['load'] = true;
 $settings['show']['ram'] = true;
