@@ -1,0 +1,57 @@
+{
+    "name": "Linfo",
+    "title": "Linfo",
+    "version": "2.0.2",
+    "homepage": "https://github.com/jrgp/linfo",
+    "description": "Linfo - PHP server health/stats script.",
+    "author": {
+        "name": "Joe Gillotti",
+        "email": "joe@u13.net"
+    },
+    "contributors": [
+        {
+            "name": "Lee Bradley",
+            "email": "elephanthunter@gmail.com"
+        },
+        {
+            "name": "Oliver Kuckertz",
+            "email": "oliver.kuckertz@mologie.de"
+        },
+        {
+            "name": "Ryan Rawdon",
+            "email": "ryan@u13.net"
+        },
+        {
+            "name": "Ralf van der Enden",
+            "email": "tremere@cainites.net"
+        },
+        {
+            "name": "Jean-Bernard Yata",
+            "email": "jb.yata@idsbox.eu"
+        },
+        {
+            "name": "James Price",
+            "email": "jprice@neurotechnics.com"
+        }
+    ],
+    "licenses": [
+        {
+            "type": "GNU"
+        }
+    ],
+    "bugs": {
+        "url": "https://github.com/jrgp/linfo/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jrgp/linfo"
+    },
+    "main": "gruntfile.js",
+    "devDependencies": {
+        "load-grunt-tasks": "~0.3.0",
+        "glob": "~3.2.9",
+        "grunt": "~0.4.4",
+        "grunt-contrib-sass": "~0.7.3",
+        "grunt-contrib-uglify": "~0.4.0"
+    }
+}
