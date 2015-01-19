@@ -278,13 +278,13 @@ class HW_IDS {
 			$this->_fetchPciNames();
 		}
 		else 
-			$this->_pci_devices = $this->_existing_cache_vals['hw']['pci'];
+			$this->_pci_devices = isset($this->_existing_cache_vals['hw']['pci']) ? $this->_existing_cache_vals['hw']['pci'] : array();
 		if (!$worthiness['usb']) {
 			$save_cache = true;
 			$this->_fetchUsbNames();
 		}
 		else 
-			$this->_usb_devices = $this->_existing_cache_vals['hw']['usb'];
+			$this->_usb_devices = isset($this->_existing_cache_vals['hw']['usb']) ? $this->_existing_cache_vals['hw']['usb'] : array();
 		if ($save_cache)
 			$this->_write_cache();
 	}
