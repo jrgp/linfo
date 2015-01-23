@@ -24,6 +24,10 @@ $settings['utorrent_filter'] = array(
 				'/XXX/i'
 );
 
+Set the following to not show torrent names and just show the hashes
+
+$settings['utorrent_hide_name'] = true;
+
 */
 
 /*
@@ -117,6 +121,7 @@ class ext_utorrent implements LinfoExtension {
 		$this->LinfoError = LinfoError::Singleton();
 		$this->connectionSettings = $settings['utorrent_connection'];
 		$this->regexFilters = isset($settings['utorrent_filter']) && is_array($settings['utorrent_filter']) ? $settings['utorrent_filter'] : array();
+		$this->hideName = isset($settings['utorrent_hide_name']) ? !empty($settings['utorrent_hide_name'])  : false;
 	}
 
 	public function work() {
@@ -249,8 +254,8 @@ class ext_utorrent implements LinfoExtension {
 			$rows[] = array(
 				'type' => 'values',
 				'columns' => array(
-					$info['TORRENT_NAME'].
-						'<br /><span style="font-size: 80%;">'.$info['TORRENT_HASH'].'</span>',
+					($this->hideName ? '' : $info['TORRENT_NAME'].'<br />')
+						.'<span style="font-size: 80%;">'.$info['TORRENT_HASH'].'</span>',
 					LinfoCommon::byteConvert($info['TORRENT_SIZE']),
 					LinfoOutput::generateBarChart($info['TORRENT_PROGRESS'] / 10),
 					$info['TORRENT_STATUS_MESSAGE'],
