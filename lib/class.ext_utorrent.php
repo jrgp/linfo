@@ -237,7 +237,7 @@ class ext_utorrent implements LinfoExtension {
 			'type' => 'header',
 			'columns' =>
 				array(
-				'Torrent/hash',
+				'Torrent/hash'.($this->hideName ? ' (names hidden)' : ''),
 				'Size',
 				'Progress',
 				'Status',
@@ -255,7 +255,7 @@ class ext_utorrent implements LinfoExtension {
 				'type' => 'values',
 				'columns' => array(
 					($this->hideName ? '' : $info['TORRENT_NAME'].'<br />')
-						.'<span style="font-size: 80%;">'.$info['TORRENT_HASH'].'</span>',
+						.'<span style="font-size: 80%; font-family: monaco, monospace, courier;">'.$info['TORRENT_HASH'].'</span>',
 					LinfoCommon::byteConvert($info['TORRENT_SIZE']),
 					LinfoOutput::generateBarChart($info['TORRENT_PROGRESS'] / 10),
 					$info['TORRENT_STATUS_MESSAGE'],
