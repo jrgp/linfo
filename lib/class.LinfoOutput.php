@@ -815,6 +815,9 @@ class LinfoOutput {
 					case 1:
 						$type = 'Mirror';
 					break;
+					case 10:
+						$type = 'Mirrored Stripe';
+					break;
 					case 5:
 					case 6:
 						$type = 'Distributed Parity Block-Level Striping';

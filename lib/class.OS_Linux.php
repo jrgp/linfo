@@ -710,7 +710,7 @@ class OS_Linux extends OS_Unix_Common {
 				$this->error->add('Linux softraid mdstat parser', '/proc/mdstat does not exist.');
 
 			// Parse
-			@preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks\s*(?:super \d\.\d\s*)?(level \d\, [\w\d]+ chunk\, algorithm \d\s*)?\[(\d\/\d)\] \[([U\_]+)\]/mi', (string) $mdadm_contents, $match, PREG_SET_ORDER);
+			@preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks[^[]+\[(\d\/\d)\] \[([U\_]+)\]/mi', (string) $mdadm_contents, $match, PREG_SET_ORDER);
 
 			// Store them here
 			$mdadm_arrays = array();
@@ -764,9 +764,8 @@ class OS_Linux extends OS_Unix_Common {
 					'level' => $array[3],
 					'drives' => $drives,
 					'size' => LinfoCommon::byteConvert($array[5]*1024),
-					'algorithm' => $array[6],
-					'count' => $array[7],
-					'chart' => $array[8]
+					'count' => $array[6],
+					'chart' => $array[7]
 				);
 			}
 
