@@ -982,7 +982,8 @@ class LinfoOutput {
 				$core[] = array($lang['distro'],	$info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
 			if (!empty($settings['show']['kernel']))
 				$core[] = array('kernel', $info['Kernel']);
-			$core[] = array('accessed_ip', (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
+			if (!isset($settings['show']['ip']) || !empty($settings['show']['ip']))
+				$core[] = array('accessed_ip', (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
 			if (!empty($settings['show']['uptime']))
 				$core[] = array('uptime', $info['UpTime']);
 			if (!empty($settings['show']['hostname']))
