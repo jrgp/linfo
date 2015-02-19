@@ -224,7 +224,7 @@ class OS_Linux extends OS_Unix_Common {
 		 */
 
 		// Get contents
-		$contents = trim(@file_get_contents($file));
+		$contents = LinfoCommon::getContents($file);
 
 		// Lines
 		$lines = explode("\n", $contents);
@@ -1364,7 +1364,7 @@ class OS_Linux extends OS_Unix_Common {
 		);
 
 		foreach ($contents_distros as $distro) {
-			if (!is_file($distro['file']) || !($contents = LinfoCommon::getContents($distro['file'], false)))
+			if (!($contents = LinfoCommon::getContents($distro['file'], false)))
 				continue;
 			if (isset($distro['closure']) && ($info = $distro['closure']($contents))) {
 				return array(
