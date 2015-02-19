@@ -1,5 +1,7 @@
 <?php
 
+if (PHP_OS == 'Darwin') {
+
 class OS_DarwinTest extends PHPUnit_Framework_TestCase {
 
   protected static $parser;
@@ -180,4 +182,7 @@ class OS_DarwinTest extends PHPUnit_Framework_TestCase {
     foreach (array('total', 'type', 'free', 'swapTotal', 'swapFree', 'swapInfo') as $key)
       self::assertArrayHasKey($key, $stats);
   }
+}
+
+
 }

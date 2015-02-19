@@ -1,12 +1,17 @@
 <?php
 
-class OS_LinuxTest extends PHPUnit_Framework_TestCase {
+if (PHP_OS == 'Linux') {
+
+/*
+ * Primarily validate return types
+ */
+class LinuxTest extends PHPUnit_Framework_TestCase {
 
   protected static $parser;
 
   public static function setUpBeforeClass() {
-    $linfo = new Linfo;
-    self::$parser = $linfo->getParser();
+    self::$parser = (new Linfo)
+      ->getParser();
 
     self::assertInstanceOf('OS_Linux', self::$parser);
 
@@ -50,7 +55,6 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
    * @test
    */
   public static function getTemps() {
-    // TODO: flesh this out
     self::assertInternalType('array', self::$parser->getTemps());
   }
 
@@ -58,7 +62,6 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
    * @test
    */
   public static function getRAID() {
-    // TODO: flesh this out
     self::assertInternalType('array', self::$parser->getRAID());
   }
 
@@ -211,5 +214,7 @@ class OS_LinuxTest extends PHPUnit_Framework_TestCase {
     foreach (array('total', 'type', 'free', 'swapTotal', 'swapFree', 'swapInfo') as $key)
       self::assertArrayHasKey($key, $stats);
   }
+
+}
 
 }

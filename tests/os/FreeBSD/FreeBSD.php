@@ -1,5 +1,7 @@
 <?php
 
+if (PHP_OS == 'FreeBSD') {
+
 class OS_FreeBSDTest extends PHPUnit_Framework_TestCase {
 
   protected static $parser;
@@ -166,4 +168,6 @@ class OS_FreeBSDTest extends PHPUnit_Framework_TestCase {
       }
     }
   }
+}
+
 }

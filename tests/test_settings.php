@@ -56,6 +56,7 @@ $settings['temps']['mbmon'] = true;
 $settings['temps']['sensord'] = true;
 
 $settings['raid'] = array();
+$settings['raid']['mdadm'] = true;
 
 
 $settings['additional_paths'] = array();

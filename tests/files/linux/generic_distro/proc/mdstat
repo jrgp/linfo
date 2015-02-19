@@ -1,0 +1,14 @@
+Personalities : [raid1] 
+md1 : active raid1 sdb2[0] sdc2[1]
+      976249472 blocks [2/2] [UU]
+      
+md0 : active raid1 sdb1[0] sdc1[1]
+      511936 blocks [2/2] [UU]
+      
+md2 : active raid10 sda2[0] sdc2[2] sdd2[3] sdb2[1]
+      135558144 blocks super 1.2 512K chunks 2 near-copies [4/4] [UUUU]
+
+md3 : active raid6 sdh[6] sde[3] sdg[5] sdf[4] sdd[2] sdb[0] sdc[1]
+      358436480 blocks level 6, 64k chunk, algorithm 2 [7/7] [UUUUUUU]
+
+unused devices: <none>
