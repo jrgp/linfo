@@ -28,6 +28,9 @@ class LinfoCommon {
 		$settings = array(),
 		$lang = array();
 
+	// Used for unit tests
+	public static $path_prefix = false;
+
 	public static function config(Linfo $linfo) {
 		self::$settings = $linfo->getSettings();
 		self::$lang = $linfo->getLang();
@@ -121,6 +124,8 @@ class LinfoCommon {
 
 	// Get a file's contents, or default to second param
 	static function getContents($file, $default = '') {
+		if (is_string(self::$path_prefix))
+			$file = self::$path_prefix.$file;
 		return !is_file($file) || !is_readable($file) || !($contents = @file_get_contents($file)) ? $default : trim($contents);
 	}
 
