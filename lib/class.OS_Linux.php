@@ -1540,6 +1540,46 @@ class OS_Linux extends OS_Unix_Common {
 	 }
 
 	/**
+	 * Parse lines from /proc/stat. Used by determineCPUPercentage function
+	 *
+	 * @access protected
+	 */
+	 private function cpuPercent($key, $line) {
+
+		 // With each iteration we compare what we got to last time's version
+		 // as the file changes every milisecond or something
+		 static $prev = array();
+
+		 // Using regex/explode is excessive here, not unlike rest of linfo :/
+		 $ret = sscanf($line, '%Lu %Lu %Lu %Lu %Lu %Lu %Lu %Lu');
+
+		 // Negative? That's crazy talk now
+		 foreach ($ret as $k => $v) {
+			 if ($v < 0)
+				 $ret[$k] = 0;
+		 }
+
+		 // First time; set our vals
+		 if (!isset($prev[$key]))
+			 $prev[$key] = $ret;
+
+		 // Subsequent time; difference with last time
+		 else {
+			 $orig = $ret;
+			 foreach ($ret as $k => $v)
+				 $ret[$k] -= $prev[$key][$k];
+			 $prev[$key] = $orig;
+		 }
+
+		 // Refer back to top.c for the reasoning here. I just copied the algorithm without
+		 // trying to understand why.
+		 $scale = 100.0 / (float)array_sum($ret);
+		 $cpu_percent = $ret[0] * $scale;
+
+		 return round($cpu_percent, 2);
+	 }
+
+	/**
 	 * Most controersial and different function in linfo. Updates $this->cpu_percent array. Sleeps 1 second
 	 * to do this which is how it gets accurate details. Code stolen from procps' source for the Linux top command
 	 *
@@ -1554,40 +1594,6 @@ class OS_Linux extends OS_Unix_Common {
 		 $iterations = 2;
 
 		 // Probably only inline function here. Only used once so it makes sense.
-		 function cpuPercent($key, $line) {
-
-			 // With each iteration we compare what we got to last time's version
-			 // as the file changes every milisecond or something
-			 static $prev = array();
-
-			 // Using regex/explode is excessive here, not unlike rest of linfo :/ 
-			 $ret = sscanf($line, '%Lu %Lu %Lu %Lu %Lu %Lu %Lu %Lu');
-
-			 // Negative? That's crazy talk now
-			 foreach ($ret as $k => $v) {
-				 if ($v < 0)
-					 $ret[$k] = 0;
-			 }
-
-			 // First time; set our vals
-			 if (!isset($prev[$key]))
-				 $prev[$key] = $ret;
-
-			 // Subsequent time; difference with last time
-			 else {
-				 $orig = $ret;
-				 foreach ($ret as $k => $v)
-					 $ret[$k] -= $prev[$key][$k];
-				 $prev[$key] = $orig;
-			 }
-
-			 // Refer back to top.c for the reasoning here. I just copied the algorithm without
-			 // trying to understand why. 
-			 $scale = 100.0 / (float)array_sum($ret);
-			 $cpu_percent = $ret[0] * $scale;
-
-			 return round($cpu_percent, 2);
-		 }
 
 		 for ($i = 0; $i < $iterations; $i++) {
 			 $contents = LinfoCommon::getContents('/proc/stat', false);
@@ -1598,12 +1604,12 @@ class OS_Linux extends OS_Unix_Common {
 
 			 // Overall system CPU usage
 			 if (preg_match('/^cpu\s+(.+)/', $contents, $m))
-				 $this->cpu_percent['overall'] = cpuPercent('overall', $m[1]);
+				 $this->cpu_percent['overall'] = $this->cpuPercent('overall', $m[1]);
 
 			 // CPU usage per CPU
 			 if (preg_match_all('/^cpu(\d+)\s+(.+)/m', $contents, $cpus, PREG_SET_ORDER)) {
 				 foreach ($cpus as $cpu)
-					 $this->cpu_percent['cpus'][$cpu[1]] = cpuPercent('c'.$cpu[1], $cpu[2]);
+					 $this->cpu_percent['cpus'][$cpu[1]] = $this->cpuPercent('c'.$cpu[1], $cpu[2]);
 			 }
 
 			 // Following two lines make me want to puke as they go against everything linfo stands for
