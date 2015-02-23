@@ -56,7 +56,7 @@ class ext_cups implements LinfoExtension {
 
 		// Deal with calling it
 		try {
-			$result = $this->_CallExt->exec('lpq');
+			$result = $this->_CallExt->exec('lpstat', '-p -o -l');
 		}
 		catch (CallExtException $e) {
 			// messed up somehow
@@ -84,6 +84,13 @@ class ext_cups implements LinfoExtension {
 			// If there are no entries, don't waste time and end here
 			if ($lines[$i] == 'no entries') {
 				break;	
+			}
+
+			elseif (preg_match('/^printer (.+) is idle\. (.+)$/', $lines[$i], $printers_match) == 1) {
+				$printers[] = array(
+					'name' => str_replace('_', ' ', $printers_match[1]),
+					'status' => $printers_match[2]
+				);
 			}
 
 			// A printer entry
