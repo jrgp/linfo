@@ -105,7 +105,7 @@ class ext_libvirt implements LinfoExtension {
 					continue;
 
 				// Sometime device exists but libvirt fails to get more docs. just settle for device name
-				if (!($blockInfo = libvirt_domain_get_block_info($domain, $blockName)) || !is_array($blockInfo)) {
+				if (!($blockInfo = @libvirt_domain_get_block_info($domain, $blockName)) || !is_array($blockInfo)) {
 					$info['storage'][] = array(
 						'device' => $blockName
 					);
