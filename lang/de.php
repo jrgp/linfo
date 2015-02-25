@@ -26,7 +26,7 @@ defined('IN_LINFO') or exit;
  */
 
 $lang = array(
-	'header' => 'Systeminformationen: %s',
+	'header' => 'Systeminformationen',
 	'core' => 'Kern',
 	'os' => 'OS',
 	'kernel' => 'Kernel',
