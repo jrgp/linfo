@@ -80,9 +80,12 @@ class Linfo {
 	// Load everything, while obeying permissions...
 	public function scan() {
 
-		// Prime parser. Do things not appropriate to do in constructor..
-		if (method_exists($this->parser, 'init'))
-			$this->parser->init();
+		$reflector = new ReflectionClass($this->parser);
+
+		// Prime parser. Do things not appropriate to do in constructor. Most OS classes
+		// don't have this.
+		if ($reflector->hasMethod('init') && ($method = $reflector->getMethod('init')))
+			$method->invoke($this->parser);
 
 		// Array fields, tied to method names and default values...
 		$fields = array(
@@ -250,12 +253,13 @@ class Linfo {
 				continue;
 			}
 
-			if (method_exists($this->parser, $data['method'])) {
-				$this->info[$key] = call_user_func(array($this->parser, $data['method']));
-				continue;
+			try {
+				$method = $reflector->getMethod($data['method']);
+				$this->info[$key] = $method->invoke($this->parser);
 			}
-
-			$this->info[$key] = $data['default'];
+			catch (ReflectionException $e) {
+				$this->info[$key] = $data['default'];
+			}
 		}
 
 		// Add a timestamp
@@ -425,23 +429,21 @@ class Linfo {
 				continue;
 			}
 
-			// Name of its class
-			$class = 'ext_'.$ext;
-
-			// Make sure it exists
-			if (!class_exists($class)) {
-				LinfoError::Singleton()->add('Extension Loader', 'Cannot find class for "'.$ext.'" extension.');
+			// Try loading our class..
+			try {
+				$reflector = new ReflectionClass('ext_'.$ext);
+				$ext_class = $reflector->newInstance($this);
+			}
+			catch (ReflectionException $e) {
+				LinfoError::Singleton()->add('Extension Loader', 'Cannot instantiate class for "'.$ext.'" extension: '.$e->getMessage());
 				continue;
 			}
-
-			// Load it
-			$ext_class = new $class($this);
 
 			// Deal with it
 			$ext_class->work();
 			
 			// Does this edit the $info directly, instead of creating a separate output table type thing?
-			if (!defined($class.'::LINFO_INTEGRATE')) {
+			if (!$reflector->hasConstant('LINFO_INTEGRATE')) {
 
 				// Result
 				$result = $ext_class->result();
