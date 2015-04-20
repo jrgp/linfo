@@ -231,7 +231,13 @@ span.toggler {
   color: #b5bd68; }
 
 #header {
-  padding: 5px 0px 0px 15px; }
+  padding: 5px 0px 5px 5px; }
+
+#header:before {
+  float: left;
+  content: url(icons/linfo.png);
+  display: inline-block;
+  margin-right:10px;}
 
 .subtitle {
   color: #999999;
@@ -253,3 +259,5 @@ span.toggler {
 .col2_side_right {
   float: left;
   width: 20%; }
+
+ 
