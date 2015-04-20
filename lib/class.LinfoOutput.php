@@ -174,6 +174,7 @@ class LinfoOutput {
 <html>
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>'.$appName.' - '.$info['HostName'].'</title>
 	<link href="'.LINFO_WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon">
 	<link href="'.LINFO_WEB_PATH.'layout/'.$theme_css.'" rel="stylesheet">'.( $show_icons ? '
@@ -185,6 +186,7 @@ class LinfoOutput {
 	<!--[if lt IE 8]>
 	<link href="'.LINFO_WEB_PATH.'layout/old_ie.css" type="text/css" rel="stylesheet">
 	<![endif]-->
+    <link rel="stylesheet" type="text/css" href="layout/mobile.css" media="screen and (max-width: 640px)">
 </head>
 <body id="info">
 <div id="header">
