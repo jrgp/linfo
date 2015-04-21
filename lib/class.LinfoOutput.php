@@ -243,6 +243,12 @@ class LinfoOutput {
 	if (!empty($settings['show']['hostname']))
 		$core[] = array($lang['hostname'], $info['HostName']);
 	
+	//Web server
+	$core[] = array($lang['webservice'], $_SERVER["SERVER_SOFTWARE"]);
+	
+	//Php version
+	$core[] = array($lang['phpversion'], phpversion());
+	
 	// The CPUs
 	if (!empty($settings['show']['cpu'])) {
 		$cpus = array();
@@ -269,13 +275,16 @@ class LinfoOutput {
 	if (!empty($settings['cpu_usage']) && isset($info['cpuUsage']) && $info['cpuUsage'] !== false)
 		$core[] = array($lang['cpu_usage'], $info['cpuUsage'].'%');
 
+	// System Load
+	if (!empty($settings['show']['load']))
+		{
+		foreach((array)$info['Load'] as $k=>$v)
+			{$core[] = array( $lang['load'].'('.$k.')',self::generateBarChart(round($v)));}		
+		}
+	
 	// CPU architecture. Permissions goes hand in hand with normal CPU
 	if (!empty($settings['show']['cpu']) && array_key_exists('CPUArchitecture', $info)) 
 		$core[] = array($lang['cpu_arch'], $info['CPUArchitecture']);
-	
-	// System Load
-	if (!empty($settings['show']['load']))
-		$core[] = array($lang['load'], implode(' ', (array) $info['Load']));
 	
 	// We very well may not have process stats
 	if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
@@ -303,6 +312,24 @@ class LinfoOutput {
 	if (!empty($settings['show']['numLoggedIn']) && array_key_exists('numLoggedIn', $info) && $info['numLoggedIn'])
 		$core[] = array($lang['numLoggedIn'], $info['numLoggedIn']);
 
+	// Shortcut view to memory
+		$core[] = array($lang['memory'], self::generateBarChart(round(($info['RAM']['total'] - $info['RAM']['free'])*100/$info['RAM']['total'])));
+	
+	// Shortcut view to disk usage
+	if (count($info['Mounts']) > 0)
+		{
+		// Go through each
+		$w=1;
+		foreach($info['Mounts'] as $mount)
+			{
+			if($mount['used_percent'])
+				{
+				$core[] = array($lang['drives'].' '.$w, self::generateBarChart((int) $mount['used_percent'], $mount['used_percent'] ? $mount['used_percent'].'%' : 'N/A'));
+				$w++;
+				}				
+			}
+		}
+	
 	// Show
 	foreach ($core as $val) {
 		echo '
@@ -311,9 +338,10 @@ class LinfoOutput {
 					<td>'.$val[1].'</td>
 				</tr>
 				';
-	}
+		}
+				
 
-	echo '
+		echo '
 			</table>
 		</div>';
 
@@ -325,22 +353,25 @@ class LinfoOutput {
 			<h2>'.$lang['memory'].'</h2>
 			<table>
 				<colgroup>
-					<col style="width: 10%;" />
-					<col style="width: 30%;" />
-					<col style="width: 30%;" />
-					<col style="width: 30%;" />
+					<col style="width: 12%;" />
+					<col style="width: 23%;" />
+					<col style="width: 23%;" />
+					<col style="width: 23%;" />
+					<col style="width: 23%;" />
 				</colgroup>
 				<tr>
 					<th>'.$lang['type'].'</th>
-					<th>'.$lang['free'].'</th>
-					<th>'.$lang['used'].'</th>
 					<th>'.$lang['size'].'</th>
+					<th>'.$lang['used'].'</th>
+					<th>'.$lang['free'].'</th>
+					<th>'.$lang['percent_used'].'</th>
 				</tr>
 				<tr>
 					<td>'.$info['RAM']['type'].'</td>
-					<td>'.LinfoCommon::byteConvert($info['RAM']['free']).'</td>
-					<td>'.LinfoCommon::byteConvert($info['RAM']['total'] - $info['RAM']['free']).'</td>
 					<td>'.LinfoCommon::byteConvert($info['RAM']['total']).'</td>
+					<td>'.LinfoCommon::byteConvert($info['RAM']['total'] - $info['RAM']['free']).'</td>
+					<td>'.LinfoCommon::byteConvert($info['RAM']['free']).'</td>
+					<td>'.self::generateBarChart(round(($info['RAM']['total'] - $info['RAM']['free'])*100/$info['RAM']['total'])).'</td>
 				</tr>';
 				$have_swap = (isset($info['RAM']['swapFree']) || isset($info['RAM']['swapTotal']));
 				if ($have_swap) {
@@ -349,16 +380,17 @@ class LinfoOutput {
 					echo'
 					<tr>
 						<td'.($show_detailed_swap ? ' rowspan="2"' : '').'>Swap</td>
-						<td>'.LinfoCommon::byteConvert(@$info['RAM']['swapFree']).'</td>
-						<td>'.LinfoCommon::byteConvert(@$info['RAM']['swapTotal'] - $info['RAM']['swapFree']).'</td>
 						<td>'.LinfoCommon::byteConvert(@$info['RAM']['swapTotal']).'</td>
+						<td>'.LinfoCommon::byteConvert(@$info['RAM']['swapTotal'] - $info['RAM']['swapFree']).'</td>
+						<td>'.LinfoCommon::byteConvert(@$info['RAM']['swapFree']).'</td>
+						<td>'.self::generateBarChart(round(($info['RAM']['swapTotal'] - $info['RAM']['swapFree'])*100/$info['RAM']['swapTotal'])).'</td>
 					</tr>';
 					
 					// As in we have at least one swap device present. Show them.
 					if ($show_detailed_swap) {
 						echo '
 						<tr>
-							<td colspan="3">
+							<td colspan="4">
 								<table class="mini center">
 									<colgroup>
 										<col style="width: 25%;" />
@@ -398,7 +430,7 @@ class LinfoOutput {
 		$show_type = array_key_exists('nic_type', $info['contains']) ? $info['contains']['nic_type'] : true;
 		$show_speed = array_key_exists('nic_port_speed', $info['contains']) ? $info['contains']['nic_port_speed'] : true;
 		echo '
-		<div class="infoTable">
+		<div class="infoTable network_devices">
 			<h2>'.$lang['network_devices'].'</h2>
 			<table>
 				<tr>
@@ -470,23 +502,18 @@ class LinfoOutput {
 		<div class="infoTable">
 			<h2>'.$lang['batteries'].'</h2>
 			<table>
-				<tr><th>'.$lang['device'].'</th><th>'.$lang['state'].'</th><th>'.$lang['charge'].' %</th></tr>
+				<tr>
+					<th>'.$lang['device'].'</th>
+					<th>'.$lang['state'].'</th>
+					<th>'.$lang['charge'].' %</th>
+				</tr>
 				';
 		foreach ($info['Battery'] as $bat) 
 			echo '
 					<tr>
 						<td>'.$bat['device'].'</td>
 						<td>'.$bat['state'].'</td>
-						<td>
-							<div class="bar_chart">
-								<div class="bar_inner" style="width: '.(int) $bat['percentage'].'%;">
-									<div class="bar_text">
-										'.($bat['percentage'] > -1 ? $bat['percentage']: '?').'
-									</div>
-								</div>
-							</div>
-						
-						</td>
+						<td>'.self::generateBarChart((int) $bat['percentage'], $bat['percentage']>-1 ? $bat['percentage'].'%' : 'N/A').'</td>
 					</tr>
 					';
 		echo '
@@ -501,7 +528,11 @@ class LinfoOutput {
 			<h2>'.$lang['services'].'</h2>
 			<table>
 				<tr>
-					<th>'.$lang['service'].'</th><th>'.$lang['state'].'</th><th>'.$lang['pid'].'</th><th>Threads</th><th>'.$lang['memory_usage'].'</th>
+					<th>'.$lang['service'].'</th>
+					<th>'.$lang['state'].'</th>
+					<th>'.$lang['pid'].'</th>
+					<th>Threads</th>
+					<th>'.$lang['memory_usage'].'</th>
 				</tr>
 				';
 
@@ -577,7 +608,7 @@ class LinfoOutput {
 
 		echo '
 		<div class="infoTable">
-			<h2>Drives</h2>
+			<h2>'.$lang['drives'].'</h2>
 			<table>
 				<tr>
 					<th>'.$lang['path'].'</th>
@@ -682,7 +713,7 @@ class LinfoOutput {
 		if ($has_types)
 			$addcolumns++;
 		echo '
-<div class="infoTable">
+<div class="infoTable filesystem_mounts">
 	<h2>'.$lang['filesystem_mounts'].'</h2>
 	<table>
 		<tr>';
@@ -786,7 +817,7 @@ class LinfoOutput {
 	// Show RAID Arrays?
 	if (!empty($settings['show']['raid']) && count($info['Raid']) > 0) {
 		echo '
-<div class="infoTable">
+<div class="infoTable drives">
 	<h2>'.$lang['raid_arrays'].'</h2>
 	<table>
 		<colgroup>
@@ -1003,8 +1034,6 @@ class LinfoOutput {
 			}
 			if (!empty($settings['show']['model']) && array_key_exists('Model', $info) && !empty($info['Model']))
 				$core[] = array($lang['model'], $info['Model']);
-			if (!empty($settings['show']['load']))
-				$core[] = array('load', implode(' ', (array) $info['Load']));
 			if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
 				$proc_stats = array();
 				if (array_key_exists('totals', $info['processStats']) && is_array($info['processStats']['totals']))
@@ -1015,9 +1044,13 @@ class LinfoOutput {
 				if ($info['processStats']['threads'] !== false)
 					$core[] = array('threads', number_format($info['processStats']['threads']));
 			}
+			if (!empty($settings['show']['load']))
+				$core[] = array('load', implode(' ', (array) $info['Load']));
 			for ($i = 0, $core_num = count($core); $i < $core_num; $i++) 
 				$core_elem->addChild($core[$i][0], $core[$i][1]);
 
+			
+			
 			// RAM
 			if (!empty($settings['show']['ram'])) {
 				$mem = $xml->addChild('memory');
