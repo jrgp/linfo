@@ -244,10 +244,12 @@ class LinfoOutput {
 		$core[] = array($lang['hostname'], $info['HostName']);
 	
 	//Web server
-	$core[] = array($lang['webservice'], $_SERVER["SERVER_SOFTWARE"]);
+	if($settings['show']['webservice'])
+		$core[] = array($lang['webservice'], $_SERVER["SERVER_SOFTWARE"]);
 	
 	//Php version
-	$core[] = array($lang['phpversion'], phpversion());
+	if($settings['show']['phpversion'])
+		$core[] = array($lang['phpversion'], phpversion());
 	
 	// The CPUs
 	if (!empty($settings['show']['cpu'])) {
