@@ -1,3 +1,6 @@
+// import icon for header
+@import _icons.sass
+
 // Base Linfo layout without colors: http://sass-lang.com/
 
 body
@@ -233,8 +236,15 @@ span.toggler
   color: $togglerhover
 
 #header
-  padding: 5px 0px 0px 15px
+  padding: 5px 0px 5px 5px
 
+#header:before
+  float: left
+  content: $icon-logo
+  display: inline-block
+  margin-right: 10px
+
+  
 .subtitle
   color: $subtitlecolor
   font-size: 12px
