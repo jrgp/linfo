@@ -1179,7 +1179,7 @@ class OS_Linux extends OS_Unix_Common {
 					if (is_array($exec)) {
 						$match = true;
 						foreach ($exec as $argn => $argv) {
-							if($cmdline[$argn] != $argv)
+							if(isset($cmdline[$argn]) && $cmdline[$argn] != $argv)
 								$match = false;
 						}
 					}

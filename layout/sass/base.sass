@@ -1,3 +1,6 @@
+// import icon for header
+@import _icons.sass
+
 // Base Linfo layout without colors: http://sass-lang.com/
 
 body
@@ -145,6 +148,7 @@ table.mini th, table.mini td
 
 table.mini th
   background-color: inherit
+  color: $thminicolor
 
 .net_up
   color: $statusOk
@@ -187,12 +191,14 @@ table.mini th
 .new_bar_outer
   position: relative
   margin: auto
-
+  background-color: $barnewoutbg
+ 
 .new_bar_text
   z-index: 2
   position: relative
   padding: 2px
   text-align: center
+  color: $barcolor
 
 .new_bar_bg
   border-radius: 2px
@@ -207,7 +213,7 @@ table.mini th
   text-align: left
 
 .alt .bar_inner, .alt .new_bar_bg
-  background-color: $altbarbg
+  background-color: $baraltbg
 
 .service_up
   color: green
@@ -233,8 +239,15 @@ span.toggler
   color: $togglerhover
 
 #header
-  padding: 5px 0px 0px 15px
+  padding: 5px 0px 5px 5px
 
+#header:before
+  float: left
+  content: $icon-logo
+  display: inline-block
+  margin-right: 10px
+
+  
 .subtitle
   color: $subtitlecolor
   font-size: 12px
