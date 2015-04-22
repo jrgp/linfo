@@ -244,12 +244,12 @@ class LinfoOutput {
 		$core[] = array($lang['hostname'], $info['HostName']);
 	
 	//Web server
-	if($settings['show']['webservice'])
-		$core[] = array($lang['webservice'], $_SERVER["SERVER_SOFTWARE"]);
+	if(!empty($settings['show']['webservice']))
+		$core[] = array($lang['webservice'], $info['webService']);
 	
 	//Php version
-	if($settings['show']['phpversion'])
-		$core[] = array($lang['phpversion'], phpversion());
+	if(!empty($settings['show']['phpversion']))
+		$core[] = array($lang['phpversion'], $info['phpVersion']);
 	
 	// The CPUs
 	if (!empty($settings['show']['cpu'])) {
@@ -275,14 +275,11 @@ class LinfoOutput {
 
 	// CPU Usage?
 	if (!empty($settings['cpu_usage']) && isset($info['cpuUsage']) && $info['cpuUsage'] !== false)
-		$core[] = array($lang['cpu_usage'], $info['cpuUsage'].'%');
+		$core[] = array($lang['cpu_usage'],self::generateBarChart($info['cpuUsage']));
 
 	// System Load
 	if (!empty($settings['show']['load']))
-		{
-		foreach((array)$info['Load'] as $k=>$v)
-			{$core[] = array( $lang['load'].'('.$k.')',self::generateBarChart(round($v)));}		
-		}
+		$core[] = array( $lang['load'],implode(' ',(array)$info['Load']));
 	
 	// CPU architecture. Permissions goes hand in hand with normal CPU
 	if (!empty($settings['show']['cpu']) && array_key_exists('CPUArchitecture', $info)) 
@@ -313,24 +310,6 @@ class LinfoOutput {
 	// Users with active shells
 	if (!empty($settings['show']['numLoggedIn']) && array_key_exists('numLoggedIn', $info) && $info['numLoggedIn'])
 		$core[] = array($lang['numLoggedIn'], $info['numLoggedIn']);
-
-	// Shortcut view to memory
-		$core[] = array($lang['memory'], self::generateBarChart(round(($info['RAM']['total'] - $info['RAM']['free'])*100/$info['RAM']['total'])));
-	
-	// Shortcut view to disk usage
-	if (count($info['Mounts']) > 0)
-		{
-		// Go through each
-		$w=1;
-		foreach($info['Mounts'] as $mount)
-			{
-			if($mount['used_percent'])
-				{
-				$core[] = array($lang['drives'].' '.$w, self::generateBarChart((int) $mount['used_percent'], $mount['used_percent'] ? $mount['used_percent'].'%' : 'N/A'));
-				$w++;
-				}				
-			}
-		}
 	
 	// Show
 	foreach ($core as $val) {
@@ -341,7 +320,6 @@ class LinfoOutput {
 				</tr>
 				';
 		}
-				
 
 		echo '
 			</table>
@@ -385,7 +363,7 @@ class LinfoOutput {
 						<td>'.LinfoCommon::byteConvert(@$info['RAM']['swapTotal']).'</td>
 						<td>'.LinfoCommon::byteConvert(@$info['RAM']['swapTotal'] - $info['RAM']['swapFree']).'</td>
 						<td>'.LinfoCommon::byteConvert(@$info['RAM']['swapFree']).'</td>
-						<td>'.self::generateBarChart(round(($info['RAM']['swapTotal'] - $info['RAM']['swapFree'])*100/$info['RAM']['swapTotal'])).'</td>
+						<td>'.self::generateBarChart(round(($info['RAM']['swapTotal'] - $info['RAM']['swapFree']) * 100 / $info['RAM']['swapTotal'])).'</td>
 					</tr>';
 					
 					// As in we have at least one swap device present. Show them.
