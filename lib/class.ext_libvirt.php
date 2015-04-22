@@ -9,8 +9,8 @@ To enable this extension, add/tweak the following to your config.inc.php
 
 $settings['extensions']['libvirt'] = true;
 $settings['libvirt_connection'] = array(
-        'url' => 'qemu:///system', // For xen do 'xen:///' instead
-        'credentials' => NULL
+	'url' => 'qemu:///system', // For xen do 'xen:///' instead
+	'credentials' => NULL
 );
 
 
@@ -98,6 +98,25 @@ class ext_libvirt implements LinfoExtension {
 			if (!($info = libvirt_domain_get_info($domain)) || !is_array($info))
 				continue;
 
+			$info['autostart'] = libvirt_domain_get_autostart($domain);
+
+			if ($info['autostart'] == 1)
+				$info['autostart'] = 'Yes';
+			elseif ($info['autostart'] == 0)
+				$info['autostart'] = 'No';
+			else
+				$info['autostart'] = 'N/A';
+
+			$info['nets'] = array();
+
+			$nets = @libvirt_domain_get_interface_devices($domain);
+
+			foreach ($nets as $key => $net) {
+				if (!is_numeric($key))
+					continue;
+				$info['nets'][] = $net;
+			}
+
 			$info['storage'] = array();
 
 			foreach ((array) @libvirt_domain_get_disk_devices($domain) as $blockName) {
@@ -137,7 +156,9 @@ class ext_libvirt implements LinfoExtension {
 				'RAM Allocation',
 				'CPUs',
 				'CPU Time',
-				'Block Storage'
+				'Autostart',
+				'Block Storage',
+				'Network Devices',
 			)
 		);
 
@@ -158,7 +179,9 @@ class ext_libvirt implements LinfoExtension {
 					LinfoCommon::byteConvert($info['memory']*1024, 2),
 					$info['nrVirtCpu'],
 					$info['cpuUsed'] ? $info['cpuUsed'] : 'N/A',
-					$disks ? implode('<br />', $disks) : 'None'
+					$info['autostart'],
+					$disks ? implode('<br />', $disks) : 'None',
+					$info['nets'] ? implode('<br />', $info['nets']) : 'None',
 				)
 			);
 		}
