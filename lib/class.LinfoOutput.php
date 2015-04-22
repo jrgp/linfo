@@ -992,9 +992,13 @@ class LinfoOutput {
 			if (!empty($settings['show']['os']))
 				$core[] = array('os', $info['OS']);
 			if (!empty($settings['show']['distro']) && isset($info['Distro']) && is_array($info['Distro']))
-				$core[] = array($lang['distro'],	$info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
+				$core[] = array('distro',	$info['Distro']['name'] . ($info['Distro']['version'] ? ' - '.$info['Distro']['version'] : ''));
 			if (!empty($settings['show']['kernel']))
 				$core[] = array('kernel', $info['Kernel']);
+			if(!empty($settings['show']['webservice']))
+				$core[] = array('webservice', $info['webService']);
+			if(!empty($settings['show']['phpversion']))
+				$core[] = array('phpversion', $info['phpVersion']);			
 			if (!isset($settings['show']['ip']) || !empty($settings['show']['ip']))
 				$core[] = array('accessed_ip', (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
 			if (!empty($settings['show']['uptime']))
@@ -1010,10 +1014,10 @@ class LinfoOutput {
 						(array_key_exists('MHz', $cpu) ?
 							($cpu['MHz'] < 1000 ? ' ('.$cpu['MHz'].' MHz)' : ' ('.round($cpu['MHz'] / 1000, 3).' GHz)') : '') .
 							'<br />';
-				$core[] = array('CPU', $cpus);
+				$core[] = array('cpus', $cpus);
 			}
 			if (!empty($settings['show']['model']) && array_key_exists('Model', $info) && !empty($info['Model']))
-				$core[] = array($lang['model'], $info['Model']);
+				$core[] = array('model', $info['Model']);
 			if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
 				$proc_stats = array();
 				if (array_key_exists('totals', $info['processStats']) && is_array($info['processStats']['totals']))
@@ -1026,10 +1030,10 @@ class LinfoOutput {
 			}
 			if (!empty($settings['show']['load']))
 				$core[] = array('load', implode(' ', (array) $info['Load']));
+			
+			// Adding each core stuff
 			for ($i = 0, $core_num = count($core); $i < $core_num; $i++) 
 				$core_elem->addChild($core[$i][0], $core[$i][1]);
-
-			
 			
 			// RAM
 			if (!empty($settings['show']['ram'])) {
