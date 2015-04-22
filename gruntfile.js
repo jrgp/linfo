@@ -32,40 +32,48 @@ module.exports = function(grunt) {
                     ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") + "\\r\\n" %> */\r\n'
         },
 
+		uglify: {
+			dist: {
+				options: {sourceMap: false},
+				files: {'layout/scripts.min.js': ['layout/scripts.js']}
+			},
+			dev: {
+				options: {sourceMap: true},
+				files: {'layout/scripts.min.js': ['layout/scripts.js']}
+			}			
+		},	
+		
         sass: {
             dist: {
                 options: {
-                    style: 'compressed', //nested, compact, compressed, expanded
-                    banner: '<%= build.banner %>'
+					sourceMap:false,
+                    style: 'compressed'
                 },
                 files: [{
-                    expand: true,
-                    cwd: 'layout/sass',
-                    src: ['theme_neuro.sass'],
-                    dest: 'layout',
-                    ext: '.css'
-                }]
+					expand: true,
+					cwd: 'layout/sass',
+					src: ['theme_default.sass','theme_neuro.sass','theme_frogg.sass','theme_dark.sass','theme_stb.sass','theme_photon.sass','mobile.sass','icons.sass'],
+					dest: 'layout',
+					ext: '.css'
+				}]
             },
             dev: {
                 options: {
-                    style: 'expanded',
+					sourceMap:true,
+                    style: 'expanded', //nested, compact, compressed, expanded
                     banner: '<%= build.banner %>'
                 },
                 files: [{
                     expand: true,
                     cwd: 'layout/sass',
-                    src: ['theme_neuro.sass'],
+                    src: ['theme_default.sass','theme_neuro.sass','theme_frogg.sass','theme_dark.sass','theme_stb.sass','theme_photon.sass','mobile.sass','icons.sass'], // not *.sass due to _icons & _base
                     dest: 'layout',
                     ext: '.css'
                 }]
-                //files: {
-                //    "<%= build.dest %>/layout/*.css": "<%= build.source %>/layout/sass/theme_neuro.sass",
-                //}
-            }
+             }
         }
 
     };
-
 
     // Look for any option files inside of `/custom/grunt_tasks` folder.
     // The file name would be `sass.js` or `watch.js` etc
@@ -79,8 +87,8 @@ module.exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
 
     // Register Tasks
-    grunt.registerTask('default', [ 'sass:dist' ]); // Default Production Build
+    grunt.registerTask('default', [ 'sass:dist','uglify:dist' ]); // Default Production Build
 
-    grunt.registerTask('dev', [ 'sass:dev' ]);
+    grunt.registerTask('dev', [ 'sass:dev','uglify:dev' ]);
 
 };
