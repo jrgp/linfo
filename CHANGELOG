@@ -111,3 +111,4 @@ v?.?.? ??/??/????
  - Fixed some CUPS parsing, and some other ideas from Stefan Briest
  - Adding icon for Raspbian distro, since I see a lot of RPI installs on google
  - Added linux mdadm raid10 detection
+ - Frogg added a new theme and better css for mobile
