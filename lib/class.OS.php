@@ -30,4 +30,12 @@ abstract class OS {
 	public function getAccessedIP() {
 		return isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] ? $_SERVER['SERVER_ADDR'] : 'Unknown';
 	}
+
+	public function getWebService() {
+		return isset($_SERVER['SERVER_SOFTWARE']) && $_SERVER['SERVER_SOFTWARE'] ? $_SERVER['SERVER_SOFTWARE'] : 'Unknown';
+	}
+
+	public function getPhpVersion() {
+		return phpversion();
+	}	
 }

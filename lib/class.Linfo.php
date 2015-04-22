@@ -238,7 +238,19 @@ class Linfo {
 				'default' => false,
 				'method' =>'getCPUUsage'
 			),
-
+			
+			'phpVersion' => array(
+				'show' => !empty($this->settings['show']['phpversion']),
+				'default' => false,
+				'method' =>'getPhpVersion'
+			),			
+			
+			'webService' => array(
+				'show' => !empty($this->settings['show']['webservice']),
+				'default' => false,
+				'method' =>'getWebService'
+			),	
+			
 			// Extra info such as which fields to not show
 			'contains' => array(
 				'show' => true,
