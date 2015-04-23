@@ -171,10 +171,10 @@ class OS_Windows extends OS {
 		
 		$cpus = array();
 		$alt = false;
-		$object = $this->wmi->ExecQuery("SELECT Name, Manufacturer, CurrentClockSpeed, NumberOfLogicalProcessors FROM Win32_Processor");
+		$object = $this->wmi->ExecQuery("SELECT Name, Manufacturer, CurrentClockSpeed, NumberOfLogicalProcessors,LoadPercentage FROM Win32_Processor");
 		
 		if (!is_object($object)) {
-			$object = $this->wmi->ExecQuery("SELECT Name, Manufacturer, CurrentClockSpeed FROM Win32_Processor");
+			$object = $this->wmi->ExecQuery("SELECT Name, Manufacturer, CurrentClockSpeed,LoadPercentage FROM Win32_Processor");
 			$alt = true;
 		}
 
@@ -183,8 +183,8 @@ class OS_Windows extends OS {
 				'Model' => $cpu->Name,
 				'Vendor' => $cpu->Manufacturer,
 				'MHz' => $cpu->CurrentClockSpeed,
+				'usage_percentage' => $cpu->LoadPercentage,
 			);
-			$curr['Model'] = $cpu->Name;
 			
 			if (!$alt) {
 				for ($i = 0; $i < $cpu->NumberOfLogicalProcessors; $i++)
