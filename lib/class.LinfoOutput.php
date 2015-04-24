@@ -150,7 +150,7 @@ class LinfoOutput {
 
 		// Fun icons
 		$show_icons = array_key_exists('icons', $settings) ? !empty($settings['icons']) : true;
-		$os_icon = defined('IS_WINDOWS') ? 'windows' : strtolower(str_replace(' ', '', current(explode('(', $info['OS']))));
+		$os_icon = $info['OS'] == 'Windows' ? 'windows' : strtolower(str_replace(' ', '', current(explode('(', $info['OS']))));
 		$distro_icon = $info['OS'] == 'Linux' && is_array($info['Distro']) && $info['Distro']['name'] ? strtolower(str_replace(' ', '', $info['Distro']['name'])) : false;
 
 		// Start compressed output buffering. Try to not do this if we've had errors or otherwise already outputted stuff
@@ -176,17 +176,17 @@ class LinfoOutput {
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>'.$appName.' - '.$info['HostName'].'</title>
-	<link href="'.LINFO_WEB_PATH.'layout/favicon.ico" type="image/x-icon" rel="shortcut icon">
-	<link href="'.LINFO_WEB_PATH.'layout/'.$theme_css.'" rel="stylesheet">'.( $show_icons ? '
-	<link href="'.LINFO_WEB_PATH.'layout/icons.css" rel="stylesheet">' : ''
+	<link href="./layout/favicon.ico" type="image/x-icon" rel="shortcut icon">
+	<link href="./layout/'.$theme_css.'" rel="stylesheet">'.( $show_icons ? '
+	<link href="./layout/icons.css" rel="stylesheet">' : ''
 	).'
-	<script src="'.LINFO_WEB_PATH.'layout/scripts.min.js"></script>
+	<script src="./layout/scripts.min.js"></script>
 	<meta name="generator" content="'.$appName.' ('.$version.')">
 	<meta name="author" content="Joseph Gillotti &amp; friends">
 	<!--[if lt IE 8]>
-	<link href="'.LINFO_WEB_PATH.'layout/old_ie.css" type="text/css" rel="stylesheet">
+	<link href="./layout/old_ie.css" type="text/css" rel="stylesheet">
 	<![endif]-->
-    <link rel="stylesheet" type="text/css" href="layout/mobile.css" media="screen and (max-width: 640px)">
+	<link rel="stylesheet" type="text/css" href="./layout/mobile.css" media="screen and (max-width: 640px)">
 </head>
 <body id="info">
 <div id="header">

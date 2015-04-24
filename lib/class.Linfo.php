@@ -367,7 +367,6 @@ class Linfo {
 				return PHP_OS;
 			break;
 			case 'WINNT':
-				define('IS_WINDOWS', true);
 				return 'Windows';
 			break;
 		}
