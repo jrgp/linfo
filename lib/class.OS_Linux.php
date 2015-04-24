@@ -940,13 +940,17 @@ class OS_Linux extends OS_Unix_Common {
 					continue 2;
 
 			// Get these from the simple text files
-			if(is_file($b.'/charge_full')){
-				$charge_full = LinfoCommon::getIntFromFile($b.'/charge_full');
-				$charge_now = LinfoCommon::getIntFromFile($b.'/charge_now');
-			}
-			else{
-				$charge_full = LinfoCommon::getIntFromFile($b.'/energy_full');
-				$charge_now = LinfoCommon::getIntFromFile($b.'/energy_now');
+			switch (true) {
+				case is_file($b.'/energy_full'):
+					$charge_full = LinfoCommon::getIntFromFile($b.'/energy_full');
+					$charge_now = LinfoCommon::getIntFromFile($b.'/energy_now');
+					break;
+				case is_file($b.'/charge_full'):
+					$charge_full = LinfoCommon::getIntFromFile($b.'/charge_full');
+					$charge_now = LinfoCommon::getIntFromFile($b.'/charge_now');
+					break;
+				default:
+					continue;
 			}
 
 			// Alleged percentage
