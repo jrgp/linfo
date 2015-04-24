@@ -936,18 +936,18 @@ class OS_Linux extends OS_Unix_Common {
 		foreach ($bats as $b) {
 
 			foreach(array($b.'/manufacturer', $b.'/status') as $f)
-				if (!is_file($f))continue;
+				if (!is_file($f))
+					continue 2;
 
 			// Get these from the simple text files
-			if(is_file($b.'/charge_full'))
-				{
+			if(is_file($b.'/charge_full')){
 				$charge_full = LinfoCommon::getIntFromFile($b.'/charge_full');
 				$charge_now = LinfoCommon::getIntFromFile($b.'/charge_now');
-				}
+			}
 			else{
 				$charge_full = LinfoCommon::getIntFromFile($b.'/energy_full');
 				$charge_now = LinfoCommon::getIntFromFile($b.'/energy_now');
-				}
+			}
 
 			// Alleged percentage
 			$percentage = $charge_now != 0 && $charge_full != 0 ? (round($charge_now / $charge_full, 4) * 100) : '?';
@@ -956,7 +956,7 @@ class OS_Linux extends OS_Unix_Common {
 			$return[] = array(
 				'charge_full' => $charge_full,
 				'charge_now' => $charge_now,
-				'percentage' => (is_numeric($percentage) && $percentage > 100 ? 100 : $percentage ),
+				'percentage' => (is_numeric($percentage) && $percentage > 100 ? 100 : $percentage),
 				'device' => LinfoCommon::getContents($b.'/manufacturer') . ' ' . LinfoCommon::getContents($b.'/model_name', 'Unknown'),
 				'state' => LinfoCommon::getContents($b.'/status', 'Unknown')
 			);

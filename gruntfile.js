@@ -1,16 +1,16 @@
 module.exports = function(grunt) {
     'use strict';
 
-    function loadConfig(path) {
-        var glob = require('glob'),
-            object = {},
-            key;
-        glob.sync('*', {cwd: path}).forEach(function(option) {
-            key = option.replace(/\.js$/,'');
-            object[key] = require(path + option);
-        });
-        return object;
-    }
+	function loadConfig(path) {
+		var glob = require('glob'),
+			object = {},
+			key;
+		glob.sync('*', {cwd: path}).forEach(function(option) {
+			key = option.replace(/\.js$/,'');
+			object[key] = require(path + option);
+		});
+		return object;
+	}
 
     var asset_version = new Date().getTime();
 
@@ -43,52 +43,51 @@ module.exports = function(grunt) {
 			}			
 		},	
 		
-        sass: {
-            dist: {
-                options: {
+		sass: {
+			dist: {
+				options: {
 					sourceMap:false,
-                    style: 'compressed'
-                },
-                files: [{
+					style: 'compressed'
+					},
+				files: [{
 					expand: true,
 					cwd: 'layout/sass',
 					src: ['theme_default.sass','theme_neuro.sass','theme_frogg.sass','theme_dark.sass','theme_stb.sass','theme_photon.sass','mobile.sass','icons.sass'],
 					dest: 'layout',
 					ext: '.css'
 				}]
-            },
-            dev: {
-                options: {
+			},
+			dev: {
+				options: {
 					sourceMap:true,
-                    style: 'expanded', //nested, compact, compressed, expanded
-                    banner: '<%= build.banner %>'
-                },
-                files: [{
-                    expand: true,
-                    cwd: 'layout/sass',
-                    src: ['theme_default.sass','theme_neuro.sass','theme_frogg.sass','theme_dark.sass','theme_stb.sass','theme_photon.sass','mobile.sass','icons.sass'], // not *.sass due to _icons & _base
-                    dest: 'layout',
-                    ext: '.css'
-                }]
-             }
+					style: 'expanded', //nested, compact, compressed, expanded
+					banner: '<%= build.banner %>'
+				},
+				files: [{
+					expand: true,
+					cwd: 'layout/sass',
+					src: ['theme_default.sass','theme_neuro.sass','theme_frogg.sass','theme_dark.sass','theme_stb.sass','theme_photon.sass','mobile.sass','icons.sass'], // not *.sass due to _icons & _base
+					dest: 'layout',
+					ext: '.css'
+				}]
+			}
         }
-
     };
 
-    // Look for any option files inside of `/custom/grunt_tasks` folder.
-    // The file name would be `sass.js` or `watch.js` etc
-    // If found, extend and overwrite with custom one
-    grunt.util._.extend(config, loadConfig('./custom/grunt_tasks/'));
+	// Look for any option files inside of `/custom/grunt_tasks` folder.
+	// The file name would be `sass.js` or `watch.js` etc
+	// If found, extend and overwrite with custom one
+	grunt.util._.extend(config, loadConfig('./custom/grunt_tasks/'));
 
-    // Config the Options
-    grunt.initConfig(config);
+	// Config the Options
+	grunt.initConfig(config);
 
-    // Load the Tasks
-    require('load-grunt-tasks')(grunt);
+	// Load the Tasks
+	require('load-grunt-tasks')(grunt);
 
-    // Register Tasks
-    grunt.registerTask('default', [ 'sass:dist','uglify:dist' ]); // Default Production Build
+	// Register Tasks
+	grunt.registerTask('default', [ 'sass:dist','uglify:dist' ]); // Default Production Build
 
-    grunt.registerTask('dev', [ 'sass:dev','uglify:dev' ]);
+	grunt.registerTask('dev', [ 'sass:dev','uglify:dev' ]);
 
 };
