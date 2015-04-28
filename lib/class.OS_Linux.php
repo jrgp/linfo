@@ -951,6 +951,7 @@ class OS_Linux extends OS_Unix_Common {
 					break;
 				default:
 					continue;
+					break;
 			}
 
 			// Alleged percentage
