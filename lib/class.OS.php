@@ -28,7 +28,7 @@ abstract class OS {
 	}
 
 	public function getAccessedIP() {
-		return isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] ? $_SERVER['SERVER_ADDR'] : isset($_SERVER['LOCAL_ADDR']) && $_SERVER['LOCAL_ADDR'] ? $_SERVER['LOCAL_ADDR'] : 'Unknown';
+		return isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] ? $_SERVER['SERVER_ADDR'] : (isset($_SERVER['LOCAL_ADDR']) && $_SERVER['LOCAL_ADDR'] ? $_SERVER['LOCAL_ADDR'] : 'Unknown');
 	}
 
 	public function getWebService() {

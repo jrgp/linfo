@@ -185,7 +185,7 @@ class OS_Windows extends OS {
 				'MHz' => $cpu->CurrentClockSpeed
 			);
 			
-			if($cpu->LoadPercentage!=''){
+			if($cpu->LoadPercentage != ''){
 				$curr['usage_percentage']= $cpu->LoadPercentage;
 			}
 			
