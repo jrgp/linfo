@@ -131,7 +131,7 @@ class OS_Windows extends OS {
 	 * @access public
 	 * @return array the memory information
 	 */
-	public function getRam(){
+	public function getRam() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -185,7 +185,7 @@ class OS_Windows extends OS {
 				'MHz' => $cpu->CurrentClockSpeed
 			);
 			
-			if($cpu->LoadPercentage != ''){
+			if($cpu->LoadPercentage != '') {
 				$curr['usage_percentage'] = $cpu->LoadPercentage;
 			}
 			
