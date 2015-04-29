@@ -131,7 +131,7 @@ class OS_Windows extends OS {
 	 * @access public
 	 * @return array the memory information
 	 */
-	public function getRam(){
+	public function getRam() {
 		
 		// Time?
 		if (!empty($this->settings['timer']))
@@ -182,9 +182,12 @@ class OS_Windows extends OS {
 			$curr = array(
 				'Model' => $cpu->Name,
 				'Vendor' => $cpu->Manufacturer,
-				'MHz' => $cpu->CurrentClockSpeed,
-				'usage_percentage' => $cpu->LoadPercentage,
+				'MHz' => $cpu->CurrentClockSpeed
 			);
+			
+			if($cpu->LoadPercentage != '') {
+				$curr['usage_percentage'] = $cpu->LoadPercentage;
+			}
 			
 			if (!$alt) {
 				for ($i = 0; $i < $cpu->NumberOfLogicalProcessors; $i++)

@@ -935,18 +935,24 @@ class OS_Linux extends OS_Unix_Common {
 		// Get vals for each battery
 		foreach ($bats as $b) {
 
-			$go_for_it = true;
-
-			foreach(array($b.'/manufacturer', $b.'/status', $b.'/charge_now') as $f)
+			foreach(array($b.'/manufacturer', $b.'/status') as $f)
 				if (!is_file($f))
-					$go_for_it = false; // Continue out of two nested loops
-
-			if (!$go_for_it) 
-				continue;
+					continue 2;
 
 			// Get these from the simple text files
-			$charge_full = LinfoCommon::getIntFromFile($b.'/charge_full');
-			$charge_now = LinfoCommon::getIntFromFile($b.'/charge_now');
+			switch (true) {
+				case is_file($b.'/energy_full'):
+					$charge_full = LinfoCommon::getIntFromFile($b.'/energy_full');
+					$charge_now = LinfoCommon::getIntFromFile($b.'/energy_now');
+					break;
+				case is_file($b.'/charge_full'):
+					$charge_full = LinfoCommon::getIntFromFile($b.'/charge_full');
+					$charge_now = LinfoCommon::getIntFromFile($b.'/charge_now');
+					break;
+				default:
+					continue;
+					break;
+			}
 
 			// Alleged percentage
 			$percentage = $charge_now != 0 && $charge_full != 0 ? (round($charge_now / $charge_full, 4) * 100) : '?';
@@ -955,7 +961,7 @@ class OS_Linux extends OS_Unix_Common {
 			$return[] = array(
 				'charge_full' => $charge_full,
 				'charge_now' => $charge_now,
-				'percentage' => (is_numeric($percentage) && $percentage > 100 ? 100 : $percentage ).'%',
+				'percentage' => (is_numeric($percentage) && $percentage > 100 ? 100 : $percentage),
 				'device' => LinfoCommon::getContents($b.'/manufacturer') . ' ' . LinfoCommon::getContents($b.'/model_name', 'Unknown'),
 				'state' => LinfoCommon::getContents($b.'/status', 'Unknown')
 			);
