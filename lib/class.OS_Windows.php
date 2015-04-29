@@ -186,7 +186,7 @@ class OS_Windows extends OS {
 			);
 			
 			if($cpu->LoadPercentage != ''){
-				$curr['usage_percentage']= $cpu->LoadPercentage;
+				$curr['usage_percentage'] = $cpu->LoadPercentage;
 			}
 			
 			if (!$alt) {
