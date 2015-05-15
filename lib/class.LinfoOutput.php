@@ -354,7 +354,7 @@ class LinfoOutput {
 					<td>'.self::generateBarChart(round(($info['RAM']['total'] - $info['RAM']['free'])*100/$info['RAM']['total'])).'</td>
 				</tr>';
 				$have_swap = (isset($info['RAM']['swapFree']) || isset($info['RAM']['swapTotal']));
-				if ($have_swap) {
+				if ($have_swap && $info['RAM']['swapTotal'] != 0) {
 					// Show detailed swap info?
 					$show_detailed_swap = is_array($info['RAM']['swapInfo']) && count($info['RAM']['swapInfo']) > 0;
 					echo'
