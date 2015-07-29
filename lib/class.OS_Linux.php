@@ -1626,6 +1626,31 @@ class OS_Linux extends OS_Unix_Common {
 		 }
 	 }
 
+	public function getCPUStats() {
+
+		$contents = LinfoCommon::getContents('/proc/stat', false);
+
+		$builder = function($name, $row){
+			return ['name' => $name, 'row' => $row];
+		};
+
+		$ret = [];
+
+		if (!$contents)
+			return;
+
+		if (preg_match('/^cpu\s+(.+)/', $contents, $m))
+			$ret[] = $builder('overall', $m[1]);
+
+		// CPU usage per CPU
+		if (preg_match_all('/^cpu(\d+)\s+(.+)/m', $contents, $cpus, PREG_SET_ORDER)) {
+			foreach ($cpus as $cpu)
+				$ret[] = $builder($cpu[1], $cpu[2]);
+		}
+
+		return $ret;
+	}
+
 	/**
 	 * Get brand/name of motherboard/server through /sys' interface to dmidecode
 	 *

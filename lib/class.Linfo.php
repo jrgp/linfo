@@ -238,6 +238,12 @@ class Linfo {
 				'default' => false,
 				'method' =>'getCPUUsage'
 			),
+
+			'cpuStats' => array(
+				'show' => !empty($this->settings['show']['cpu_stats']),
+				'default' => true,
+				'method' =>'getCPUStats'
+			),
 			
 			'phpVersion' => array(
 				'show' => !empty($this->settings['show']['phpversion']),

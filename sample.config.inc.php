@@ -34,6 +34,7 @@ $settings['show']['phpversion'] = false; // Might be dangerous/confidential info
 $settings['show']['network'] = true;
 $settings['show']['uptime'] = true;
 $settings['show']['cpu'] = true;
+$settings['show']['cpu_stats'] = true;
 $settings['show']['process_stats'] = true; 
 $settings['show']['hostname'] = true;
 $settings['show']['distro'] = true; # Attempt finding name and version of distribution on Linux systems
