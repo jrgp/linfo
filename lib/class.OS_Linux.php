@@ -1597,6 +1597,12 @@ class OS_Linux extends OS_Unix_Common {
 		 if (!empty($this->settings['timer']))
 			 $t = new LinfoTimerStart('Determining CPU usage');
 
+		 //Show overall cpu usage 
+		 $this->cpu_percent['overall'] = exec("top -bn 1 | awk '{print $9}' | tail -n +8 | awk '{s+=$1} END {print s}'");
+		 
+		 /*
+		 //Commented to prevent sleep(1) who add 1 sec to script execution
+		 //This way show cpu usage for each procs
 		 $iterations = 2;
 
 		 // Probably only inline function here. Only used once so it makes sense.
@@ -1624,6 +1630,7 @@ class OS_Linux extends OS_Unix_Common {
 			 if ($iterations > 1 && $i != $iterations - 1)
 				 sleep(1);
 		 }
+		 */
 	 }
 
 	/**
