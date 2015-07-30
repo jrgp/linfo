@@ -239,10 +239,10 @@ class Linfo {
 				'method' =>'getCPUUsage'
 			),
 
-			'cpuStats' => array(
-				'show' => !empty($this->settings['show']['cpu_stats']),
+			'kernelCpuStats' => array(
+				'show' => !empty($this->settings['show']['kernel_cpu_stats']),
 				'default' => true,
-				'method' =>'getCPUStats'
+				'method' =>'getKernelCPUStats'
 			),
 			
 			'phpVersion' => array(
