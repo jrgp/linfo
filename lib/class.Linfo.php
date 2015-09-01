@@ -49,7 +49,7 @@ class Linfo {
 
 		// Get our version from git setattribs
 		$scm = '$Format:%ci$';
-		$this->version = strpos($scm, '$') !== false ? 'git' : $scm;
+		list($this->version) = strpos($scm, '$') !== false ? array('git') : explode(' ', $scm);
 
 		// Run through dependencies / sanity checking
 		if (!extension_loaded('pcre') && !function_exists('preg_match') && !function_exists('preg_match_all'))
