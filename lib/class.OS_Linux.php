@@ -1510,7 +1510,7 @@ class OS_Linux extends OS_Unix_Common {
 		if (LinfoCommon::anyInArray(array('xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'), $modules) || is_dir('/proc/xen')) {
 
 			// Guest or host?
-			if (LinfoCommon::anyInArray(array('xen-netback', 'xen_blkback'), $modules) || (!empty(LinfoCommon::getContents('/proc/xen/capabilities', '')) && strpos('control_d', LinfoCommon::getContents('/proc/xen/capabilities', '')) !== false)) 
+			if (LinfoCommon::anyInArray(array('xen-netback', 'xen_blkback'), $modules) || strpos('control_d', LinfoCommon::getContents('/proc/xen/capabilities', '')) !== false)
 				return array('type' => 'host', 'method' => 'Xen');
 			else
 				return array('type' => 'guest', 'method' => 'Xen');
