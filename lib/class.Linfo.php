@@ -382,19 +382,8 @@ class Linfo {
 	 *
 	 * Returning reference so extensions can modify result
 	 */
-	public function &getInfo($filtered = false) {
-		if($filtered) {
-			$info = array_filter($this->info, function($item) {
-				if($item === '' || $item === [] || $item === false) {
-					return false;
-				} else {
-					return true;
-				}
-			});
-			return $info;
-		} else {
-			return $this->info;
-		}
+	public function &getInfo() {
+		return $this->info;
 	}
 
 	/*
