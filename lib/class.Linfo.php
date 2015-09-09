@@ -42,7 +42,7 @@ class Linfo {
 		$version = '',
 		$time_start = 0;
 
-	public function __construct(array $settings = []) {
+	public function __construct($settings = array()) {
 
 		// Time us
 		$this->time_start = microtime(true);
@@ -281,7 +281,7 @@ class Linfo {
 		$this->runExtensions();
 	}
 
-	protected function loadSettings(array $settings = []) {
+	protected function loadSettings($settings = array()) {
 
 		// Running unit tests?
 		if (defined('LINFO_TESTING')) {
@@ -291,7 +291,7 @@ class Linfo {
 			return;
 		}
 
-		if(empty($settings)) {
+		if(!$settings) {
 			// If configuration file does not exist but the sample does, say so
 			if (!is_file(LINFO_LOCAL_PATH . 'config.inc.php') && is_file(LINFO_LOCAL_PATH . 'sample.config.inc.php'))
 				throw new LinfoFatalException('Make changes to sample.config.inc.php then rename as config.inc.php');
