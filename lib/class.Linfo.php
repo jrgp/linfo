@@ -42,7 +42,7 @@ class Linfo {
 		$version = '',
 		$time_start = 0;
 
-	public function __construct() {
+	public function __construct(array $settings = []) {
 
 		// Time us
 		$this->time_start = microtime(true);
@@ -60,7 +60,7 @@ class Linfo {
 			@ini_set('date.timezone', 'Etc/UTC');
 
 		// Load our settings/language
-		$this->loadSettings();
+		$this->loadSettings($settings);
 		$this->loadLanguage();
 		
 		// Some classes need our vars; config them
@@ -281,7 +281,7 @@ class Linfo {
 		$this->runExtensions();
 	}
 
-	protected function loadSettings() {
+	protected function loadSettings(array $settings = []) {
 
 		// Running unit tests?
 		if (defined('LINFO_TESTING')) {
@@ -291,16 +291,18 @@ class Linfo {
 			return;
 		}
 
-		// If configuration file does not exist but the sample does, say so
-		if (!is_file(LINFO_LOCAL_PATH . 'config.inc.php') && is_file(LINFO_LOCAL_PATH . 'sample.config.inc.php'))
-			throw new LinfoFatalException('Make changes to sample.config.inc.php then rename as config.inc.php');
-
-		// If the config file is just gone, also say so
-		elseif(!is_file(LINFO_LOCAL_PATH . 'config.inc.php'))
-			throw new LinfoFatalException('Config file not found.');
-
-		// It exists; load it
-		$settings = LinfoCommon::getVarFromFile(LINFO_LOCAL_PATH . 'config.inc.php', 'settings');
+		if(empty($settings)) {
+			// If configuration file does not exist but the sample does, say so
+			if (!is_file(LINFO_LOCAL_PATH . 'config.inc.php') && is_file(LINFO_LOCAL_PATH . 'sample.config.inc.php'))
+				throw new LinfoFatalException('Make changes to sample.config.inc.php then rename as config.inc.php');
+	
+			// If the config file is just gone, also say so
+			elseif(!is_file(LINFO_LOCAL_PATH . 'config.inc.php'))
+				throw new LinfoFatalException('Config file not found.');
+	
+			// It exists; load it
+			$settings = LinfoCommon::getVarFromFile(LINFO_LOCAL_PATH . 'config.inc.php', 'settings');
+		}
 
 		// Don't just blindly assume we have the ob_* functions...
 		if (!function_exists('ob_start'))
