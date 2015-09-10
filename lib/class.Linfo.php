@@ -64,8 +64,8 @@ class Linfo {
 		$this->loadLanguage();
 		
 		// Some classes need our vars; config them
-		foreach (array('LinfoCommon', 'CallExt') as $class)
-			$class::config($this);
+		LinfoCommon::config($this);
+		CallExt::config($this);
 
 		// Determine OS
 		$os = $this->getOS();
