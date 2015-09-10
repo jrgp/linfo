@@ -1,3 +1,3 @@
 <?php
 
-require dirname(__DIR__).'/lang/en.php';
+require dirname(dirname(__FILE__)).'/lang/en.php';

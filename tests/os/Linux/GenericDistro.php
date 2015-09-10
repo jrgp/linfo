@@ -13,7 +13,7 @@ class LinuxGenericDistroTest extends PHPUnit_Framework_TestCase {
   protected static $parser;
 
   public static function setUpBeforeClass() {
-    LinfoCommon::$path_prefix = dirname(__DIR__).'/../files/linux/generic_distro';
+    LinfoCommon::$path_prefix = dirname(dirname(__FILE__)).'/../files/linux/generic_distro';
     $linfo = new Linfo;
     self::$parser = $linfo->getParser();
   }
