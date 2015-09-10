@@ -1,6 +1,6 @@
 language: php
 php:
- - 5.2
+# - 5.2 # Fuck this
  - 5.3
  - 5.4
  - 5.5
