@@ -10,8 +10,8 @@ class LinuxTest extends PHPUnit_Framework_TestCase {
   protected static $parser;
 
   public static function setUpBeforeClass() {
-    self::$parser = (new Linfo)
-      ->getParser();
+    $linfo = new Linfo;
+    self::$parser = $linfo->getParser();
 
     self::assertInstanceOf('OS_Linux', self::$parser);
 
