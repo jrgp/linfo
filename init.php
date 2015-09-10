@@ -28,10 +28,10 @@ if ((isset($argc) && is_array($argv)) || defined('LINFO_TESTING'))
 	defined('LINFO_CLI') or define('LINFO_CLI', true);
 
 // Configure absolute path to local directory
-defined('LINFO_LOCAL_PATH') or define('LINFO_LOCAL_PATH', __DIR__ . '/');
+defined('LINFO_LOCAL_PATH') or define('LINFO_LOCAL_PATH', dirname(__FILE__) . '/');
 
 defined('LINFO_CACHE_PATH') or define('LINFO_CACHE_PATH',
-	is_writable(__DIR__ . '/cache/') ? __DIR__ . '/cache/' : sys_get_temp_dir() . DIRECTORY_SEPARATOR
+	is_writable(dirname(__FILE__) . '/cache/') ? dirname(__FILE__) . '/cache/' : sys_get_temp_dir() . DIRECTORY_SEPARATOR
 );
 
 /**
