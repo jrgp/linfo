@@ -1627,6 +1627,32 @@ class OS_Linux extends OS_Unix_Common {
 	 }
 
 	/**
+	 * Get raw cpu values from /proc/stat file.
+	 *
+	 * @access private
+	 */
+	public function getKernelCPUStats() {
+		$contents = LinfoCommon::getContents('/proc/stat', false);
+
+		if (!$contents)
+			return null;
+
+		$ret = array();
+
+		// Overall system CPU usage
+		if (preg_match('/^cpu\s+(.+)/', $contents, $m))
+			$ret[] = ['name' => 'overall', 'row' => $m[1]];
+
+		// CPU usage per CPU
+		if (preg_match_all('/^cpu(\d+)\s+(.+)/m', $contents, $cpus, PREG_SET_ORDER)) {
+			foreach ($cpus as $cpu)
+				$ret[] = ['name' => $cpu[1], 'row' => $cpu[2]];
+		}
+
+		return $ret;
+	}
+
+	/**
 	 * Get brand/name of motherboard/server through /sys' interface to dmidecode
 	 *
 	 * @access public

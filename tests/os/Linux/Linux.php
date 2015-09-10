@@ -215,6 +215,20 @@ class LinuxTest extends PHPUnit_Framework_TestCase {
       self::assertArrayHasKey($key, $stats);
   }
 
+  /**
+   * @test
+   */
+  public static function getKernelCPUStats() {
+    $stats = self::$parser->getKernelCPUStats();
+    if (is_array($stats)) {
+      foreach ($stats as $row) {
+        self::assertArrayHasKey('name', $row);
+        self::assertArrayHasKey('row', $row);
+      }
+    } else {
+      self::markTestSkipped('Could not get `/proc/stats` file.');
+    }
+  }
 }
 
 }
