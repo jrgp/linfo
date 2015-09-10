@@ -8,6 +8,8 @@
  - Ohloh SCM stats: https://www.ohloh.net/p/linfo
  - See DEVELOPERS.md for contributing
 
+![Travis tests](https://api.travis-ci.org/jrgp/linfo.svg)
+
 ### Currently runs on:
  - Linux
  - FreeBSD
