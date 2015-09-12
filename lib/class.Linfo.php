@@ -145,7 +145,7 @@ class Linfo {
 
 			'UpTime' => array(
 				'show' => !empty($this->settings['show']['uptime']),
-				'default' => [],
+				'default' => array(),
 				'method' =>'getUpTime'
 			),
 
