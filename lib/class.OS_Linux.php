@@ -339,8 +339,10 @@ class OS_Linux extends OS_Unix_Common {
 		// Okay?
 		list(, $boot) = $boot;
 
-		// Return
-		return $uptime . '; booted '.date($this->settings['dates'], $boot);
+		return array(
+			'text' => $uptime,
+			'bootedTimestamp' => $boot
+		);
 	}
 
 	/**

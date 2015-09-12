@@ -145,7 +145,7 @@ class OS_DarwinTest extends PHPUnit_Framework_TestCase {
    * @test
    */
   public static function getUpTime() {
-    self::assertInternalType('string', self::$parser->getUpTime());
+    self::assertInternalType('array', self::$parser->getUpTime());
   }
 
   /**

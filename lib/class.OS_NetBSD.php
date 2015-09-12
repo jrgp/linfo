@@ -148,7 +148,10 @@ class OS_NetBSD extends OS_BSD_Common {
 		$booted = strtotime($this->sysctl['kern.boottime']);
 
 		// Give it
-		return LinfoCommon::secondsConvert(time() - $booted) . '; booted ' . date($this->settings['dates'], $booted);
+		return array(
+			'text' => LinfoCommon::secondsConvert(time() - $booted),
+			'bootedTimestamp' => $booted
+		);
 	}
 
 	// Get network devices

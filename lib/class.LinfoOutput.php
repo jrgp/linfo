@@ -236,8 +236,10 @@ class LinfoOutput {
 		$core[] = array($lang['accessed_ip'], $info['AccessedIP']);
 
 	// Uptime
-	if (!empty($settings['show']['uptime']))
-		$core[] = array($lang['uptime'], $info['UpTime']);
+	if (!empty($settings['show']['uptime']) && $info['UpTime'])
+		$core[] = array($lang['uptime'],
+			$info['UpTime']['text'] .
+				(isset($info['UpTime']['bootedTimestamp']) && $info['UpTime']['bootedTimestamp'] ? '; booted '.date($settings['dates'], $info['UpTime']['bootedTimestamp']) : ''));
 	
 	// Hostname
 	if (!empty($settings['show']['hostname']))
@@ -1002,7 +1004,7 @@ class LinfoOutput {
 			if (!isset($settings['show']['ip']) || !empty($settings['show']['ip']))
 				$core[] = array('accessed_ip', (isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : 'Unknown'));
 			if (!empty($settings['show']['uptime']))
-				$core[] = array('uptime', $info['UpTime']);
+				$core[] = array('uptime', $info['UpTime']['text']);
 			if (!empty($settings['show']['hostname']))
 				$core[] = array('hostname', $info['HostName']);
 			if (!empty($settings['show']['cpu'])) {

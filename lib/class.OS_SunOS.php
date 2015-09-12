@@ -289,7 +289,10 @@ class OS_SunOS extends OS {
 	// uptime
 	public function getUpTime() {
 		$booted = $this->kstat['unix:0:system_misc:boot_time'];
-		return LinfoCommon::secondsConvert(time() - $booted) . '; booted ' . date($this->settings['dates'], $booted);
+		return array(
+			'text' => LinfoCommon::secondsConvert(time() - $booted),
+			'bootedTimestamp' => $booted
+		);
 	}
 
 	// load
