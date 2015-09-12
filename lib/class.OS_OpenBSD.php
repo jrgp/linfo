@@ -295,7 +295,10 @@ class OS_OpenBSD extends OS_BSD_Common {
 			$booted = strtotime($booted);
 
 		// Give it
-		return LinfoCommon::secondsConvert(time() - $booted) . '; booted ' . date($this->settings['dates'], $booted);
+		return array(
+			'text' => LinfoCommon::secondsConvert(time() - $booted),
+			'bootedTimestamp' => $booted
+		);
 	}
 
 	// Get network devices, their stats, status, and type

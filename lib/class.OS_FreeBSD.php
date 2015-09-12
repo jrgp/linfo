@@ -254,8 +254,11 @@ class OS_FreeBSD extends OS_BSD_Common{
 		// Boot unix timestamp
 		$booted = $m[1];
 
-		// Get it textual, as in days/minutes/hours/etc
-		return LinfoCommon::secondsConvert(time() - $booted) . '; booted ' . date($this->settings['dates'], $booted);
+		// Give it
+		return array(
+			'text' => LinfoCommon::secondsConvert(time() - $booted),
+			'bootedTimestamp' => $booted
+		);
 	}
 
 	// RAID Stats
