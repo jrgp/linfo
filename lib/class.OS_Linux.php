@@ -393,7 +393,7 @@ class OS_Linux extends OS_Unix_Common {
 
 			// Append this drive on
 			$drives[] = array(
-				'name' => LinfoCommon::getContents($path, 'Unknown'),
+				'name' => LinfoCommon::getContents($path, 'Unknown').(LinfoCommon::getContents(dirname(dirname($path)).'/queue/rotational') == 0 ? ' (SSD)' : ''),
 				'vendor' => LinfoCommon::getContents(dirname($path).'/vendor', 'Unknown'),
 				'device' => '/dev/'.$parts[3],
 				'reads' => $reads,
@@ -872,8 +872,13 @@ class OS_Linux extends OS_Unix_Common {
 				$type_contents = strtoupper(LinfoCommon::getContents($path.'/device/modalias'));
 				list($type_match) = explode(':', $type_contents, 2);
 
-				if (in_array($type_match, array('PCI', 'USB')))
+				if (in_array($type_match, array('PCI', 'USB'))) {
 					$type = 'Ethernet ('.$type_match.')';
+
+					// Driver maybe?
+					if (($uevent_contents = @parse_ini_file($path.'/device/uevent')) && isset($uevent_contents['DRIVER']))
+						$type .= ' ('.$uevent_contents['DRIVER'].')';
+				}
 				elseif ($type_match == 'VIRTIO')
 					$type = 'VirtIO';
 				elseif ($type_contents == 'XEN:VIF')

@@ -111,4 +111,7 @@ v?.?.? ??/??/????
  - Fixed some CUPS parsing, and some other ideas from Stefan Briest
  - Adding icon for Raspbian distro, since I see a lot of RPI installs on google
  - Added linux mdadm raid10 detection
- - Frogg added a new theme and better css for mobile
+ - Frogg added a new theme and better css for mobile and various other improvements
+ - Composer improvements, thanks to Tom Witkowski
+ - Travis testing. Support definitely confirmed for 5.3+
+ - NIC Linux driver tection, Linux SSD detection
