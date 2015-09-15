@@ -34,94 +34,97 @@ Installation:
 */
 
 namespace Linfo\Extension;
-use \Linfo\Linfo;
-use \Linfo\Common;
-use \Linfo\Meta\Errors;
-use \Linfo\Meta\Timer;
-use \Linfo\Parsers\CallExt;
-use \Exception;
+
+use Linfo\Linfo;
+use Linfo\Meta\Errors;
+use Linfo\Meta\Timer;
+use Linfo\Parsers\CallExt;
+use Exception;
 
 /**
- * IPMI extension for temps/voltages
+ * IPMI extension for temps/voltages.
+ *
  * @author Joseph Gillotti
  */
-class Ipmi implements Extension {
-	
-	// Minimum version of Linfo required
-	const
-		LINFO_INTEGRATE	= true,
-		EXTENSION_NAME = 'ipmi';
-	
-	// Store these tucked away here
-	private
-		$_CallExt,
-		$_LinfoError,
+class Ipmi implements Extension
+{
+    // Minimum version of Linfo required
+    const
+        LINFO_INTEGRATE = true,
+        EXTENSION_NAME = 'ipmi';
+
+    // Store these tucked away here
+    private $_CallExt,
+        $_LinfoError,
     $linfo;
 
-	// Start us off
-	public function __construct(Linfo $linfo) {
-    $this->linfo = $linfo;
-		$this->_LinfoError = Errors::Singleton();
-		$this->_CallExt = new CallExt;
-		$this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
-	}
+    // Start us off
+    public function __construct(Linfo $linfo)
+    {
+        $this->linfo = $linfo;
+        $this->_LinfoError = Errors::Singleton();
+        $this->_CallExt = new CallExt();
+        $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
+    }
 
-	// Work it, baby
-	public function work() {
-		
-    $info = &$this->linfo->getInfo();
+    // Work it, baby
+    public function work()
+    {
+        $info = &$this->linfo->getInfo();
 
-		// Make sure this is an array
-		$info['Temps'] = (array) $info['Temps'];
+        // Make sure this is an array
+        $info['Temps'] = (array) $info['Temps'];
 
-		// Time this
-		$t = new Timer(self::EXTENSION_NAME.' Extension');
+        // Time this
+        $t = new Timer(self::EXTENSION_NAME.' Extension');
 
-		// Deal with calling it
-		try {
-			$result = $this->_CallExt->exec('ipmitool', ' sdr');
-		}
-		catch (Exception $e) {
-			// messed up somehow
-			$this->_LinfoError->add(self::EXTENSION_NAME.' Extension', $e->getMessage());
-			return false;
-		}
+        // Deal with calling it
+        try {
+            $result = $this->_CallExt->exec('ipmitool', ' sdr');
+        } catch (Exception $e) {
+            // messed up somehow
+            $this->_LinfoError->add(self::EXTENSION_NAME.' Extension', $e->getMessage());
 
-		// Match it up
-		if (!preg_match_all('/^([^|]+)\| ([\d\.]+ (?:Volts|degrees [CF]))\s+\| ok$/m', $result, $matches, PREG_SET_ORDER))
-			return;
-		
-		// Go through with it
-		foreach ($matches as $m) {
+            return false;
+        }
 
-			// Separate them by normal spaces
-			$v_parts = explode(' ', trim($m[2]));
-			
-			// Deal with the type of it
-			switch ($v_parts[1]) {
-				case 'Volts':
-					$unit = 'v';
-				break;
-				case 'degrees':
-					$unit = $v_parts[2];
-				break;
-				default:
-					$unit = '';
-				break;
-			}
+        // Match it up
+        if (!preg_match_all('/^([^|]+)\| ([\d\.]+ (?:Volts|degrees [CF]))\s+\| ok$/m', $result, $matches, PREG_SET_ORDER)) {
+            return;
+        }
 
-			// Save this one
-			$info['Temps'][] = array(
-				'path' => 'N/A',
-				'name' => trim($m[1]),
-				'temp' => $v_parts[0],
-				'unit' => $unit
-			);
-		}
-	}
+        // Go through with it
+        foreach ($matches as $m) {
 
-	// Not needed
-	public function result() {
-		return false;
-	}
+            // Separate them by normal spaces
+            $v_parts = explode(' ', trim($m[2]));
+
+            // Deal with the type of it
+            switch ($v_parts[1]) {
+                case 'Volts':
+                    $unit = 'v';
+                break;
+                case 'degrees':
+                    $unit = $v_parts[2];
+                break;
+                default:
+                    $unit = '';
+                break;
+            }
+
+            // Save this one
+            $info['Temps'][] = array(
+                'path' => 'N/A',
+                'name' => trim($m[1]),
+                'temp' => $v_parts[0],
+                'unit' => $unit,
+            );
+        }
+    }
+
+    // Not needed
+    public function result()
+    {
+        return false;
+    }
 }

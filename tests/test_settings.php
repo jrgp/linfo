@@ -5,10 +5,10 @@
 // json test will break if this is enabled
 $settings['compress_content'] = false;
 
-$settings['byte_notation'] = 1024; 
-$settings['dates'] = 'm/d/y h:i A (T)'; 
-$settings['language'] = 'en'; 
-$settings['icons'] = true; 
+$settings['byte_notation'] = 1024;
+$settings['dates'] = 'm/d/y h:i A (T)';
+$settings['language'] = 'en';
+$settings['icons'] = true;
 $settings['theme'] = 'default';
 
 $settings['show']['kernel'] = true;
@@ -21,12 +21,12 @@ $settings['show']['mounts_options'] = true;
 $settings['show']['network'] = true;
 $settings['show']['uptime'] = true;
 $settings['show']['cpu'] = true;
-$settings['show']['process_stats'] = true; 
+$settings['show']['process_stats'] = true;
 $settings['show']['hostname'] = true;
-$settings['show']['distro'] = true; 
-$settings['show']['devices'] = true; 
-$settings['show']['model'] = true; 
-$settings['show']['numLoggedIn'] = true; 
+$settings['show']['distro'] = true;
+$settings['show']['devices'] = true;
+$settings['show']['model'] = true;
+$settings['show']['numLoggedIn'] = true;
 $settings['show']['virtualization'] = true;
 
 $settings['cpu_usage'] = true;
@@ -38,7 +38,7 @@ $settings['show']['raid'] = true;
 
 $settings['show']['battery'] = true;
 $settings['show']['sound'] = true;
-$settings['show']['wifi'] = false; 
+$settings['show']['wifi'] = false;
 
 $settings['show']['services'] = false;
 
@@ -57,7 +57,6 @@ $settings['temps']['sensord'] = true;
 
 $settings['raid'] = array();
 $settings['raid']['mdadm'] = true;
-
 
 $settings['additional_paths'] = array();
 $settings['services'] = array();
