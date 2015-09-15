@@ -1,5 +1,8 @@
 <?php
 
+use \Linfo\Common;
+use \Linfo\Linfo;
+
 if (PHP_OS == 'FreeBSD') {
     class OS_FreeBSDTest extends PHPUnit_Framework_TestCase
     {
@@ -10,13 +13,13 @@ if (PHP_OS == 'FreeBSD') {
             $linfo = new Linfo();
             self::$parser = $linfo->getParser();
 
-            self::assertInstanceOf('OS_FreeBSD', self::$parser);
+            self::assertInstanceOf('\\Linfo\\OS\\FreeBSD', self::$parser);
         }
 
         public static function tearDownAfterClass()
         {
             self::$parser = null;
-            LinfoCommon::unconfig();
+            Common::unconfig();
         }
 
   /**
