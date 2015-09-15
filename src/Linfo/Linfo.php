@@ -311,6 +311,13 @@ class Linfo
             $settings['compress_content'] = false;
         }
 
+        if (!isset($settings['hide'])) {
+            $settings['hide'] = array(
+                'filesystems' => array(),
+                'storage_devices' => array(),
+            );
+        }
+
         // Make sure these are arrays
         $settings['hide']['filesystems'] = is_array($settings['hide']['filesystems']) ? $settings['hide']['filesystems'] : array();
         $settings['hide']['storage_devices'] = is_array($settings['hide']['storage_devices']) ? $settings['hide']['storage_devices'] : array();
@@ -328,7 +335,7 @@ class Linfo
         }
 
         // If it can't be found default to english
-        if (!is_file($this->linfo_localdir.'lang/'.$settings['language'].'.php')) {
+        if (!is_file($this->linfo_localdir.'src/Linfo/Lang/'.$settings['language'].'.php')) {
             $settings['language'] = 'en';
         }
 

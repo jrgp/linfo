@@ -64,7 +64,7 @@ if (!defined('LINFO_TESTING')) {
                 $output = new \Linfo\Output\Xml($linfo);
                 $output->output();
             break;
-    }
+        }
     } catch (FatalException $e) {
         echo $e->getMessage()."\n";
         exit(1);
