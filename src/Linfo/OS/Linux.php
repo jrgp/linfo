@@ -1392,25 +1392,27 @@ class Linux extends Unixcommon
             ),
             array(
                 'file' => '/etc/lsb-release',
-                'closure' => create_function('$ini', '
-					return ($info = @parse_ini_string($ini)) &&
-						isset($info["DISTRIB_ID"]) &&
-						isset($info["DISTRIB_RELEASE"]) &&
-						isset($info["DISTRIB_CODENAME"]) ? array(
-							"distro" => $info["DISTRIB_ID"],
-							"version" => $info["DISTRIB_RELEASE"],
-							"codename" => $info["DISTRIB_CODENAME"],
-						) : false;'),
+                'closure' => function ($ini) {
+                  return ($info = @parse_ini_string($ini)) &&
+                    isset($info['DISTRIB_ID']) &&
+                    isset($info['DISTRIB_RELEASE']) &&
+                    isset($info['DISTRIB_CODENAME']) ? array(
+                      'distro' => $info['DISTRIB_ID'],
+                      'version' => $info['DISTRIB_RELEASE'],
+                      'codename' => $info['DISTRIB_CODENAME'],
+                    ) : false;
+                }
             ),
             array(
                 'file' => '/etc/os-release',
-                'closure' => create_function('$ini', '
-					return ($info = @parse_ini_string($ini)) &&
-						isset($info["ID"]) &&
-						isset($info["VERSION"]) ? array(
-							"distro" => $info["ID"],
-							"version" => $info["VERSION"]
-						) : false;'),
+                'closure' => function ($ini) {
+                  return ($info = @parse_ini_string($ini)) &&
+                    isset($info['ID']) &&
+                    isset($info['VERSION']) ? array(
+                      'distro' => $info['ID'],
+                      'version' => $info['VERSION']
+                    ) : false;
+                 },
             ),
             array(
                 'file' => '/etc/fedora-release',
