@@ -22,6 +22,7 @@ namespace Linfo\OS;
 
 use Linfo\Meta\Timer;
 use Linfo\Common;
+use Linfo\Parsers\Hwpci;
 
 /*
  * Mostly complete FreeBSD info class.
@@ -30,7 +31,7 @@ use Linfo\Common;
  * contains process info; none of the hardware/system/network status that Linux /proc has.
  */
 
-class FreeBSD extends BSDCommon
+class FreeBSD extends BSDcommon
 {
     // Encapsulate these
     protected $settings,
@@ -603,7 +604,7 @@ class FreeBSD extends BSDCommon
         }
 
         // Class that does it
-        $hw = new HW_IDS(false, '/usr/share/misc/pci_vendors');
+        $hw = new Hwpci(false, '/usr/share/misc/pci_vendors');
         $hw->work('freebsd');
 
         return $hw->result();
