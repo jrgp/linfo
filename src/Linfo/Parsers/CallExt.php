@@ -15,112 +15,114 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with Linfo.	If not, see <http://www.gnu.org/licenses/>.
-*/
-
+ */
 namespace Linfo\Parsers;
 
-use \Linfo\Common;
-use \Linfo\Linfo;
-use \Exception;
+use Linfo\Common;
+use Linfo\Linfo;
+use Exception;
 
 /**
- * Class used to call external programs 
+ * Class used to call external programs.
  */
-class CallExt {
+class CallExt
+{
+    protected static $settings = array();
 
-	protected static
-		$settings = array();
+    public static function config(Linfo $linfo)
+    {
+        self::$settings = $linfo->getSettings();
+    }
 
-	public static function config(Linfo $linfo) {
-		self::$settings = $linfo->getSettings();
-	}
+    /**
+     * Maintain a count of how many external programs we call.
+     * 
+     * @var int
+     */
+    public static $callCount = 0;
 
-	/**
-	 * Maintain a count of how many external programs we call
-	 * 
-	 * @var int
-	 * @access public
-	 */
-	public static $callCount = 0;
-	
-	/**
-	 * Store results of commands here to avoid calling them more than once
-	 * 
-	 * @var array
-	 * @access protected
-	 */
-	protected $cliCache = array();
+    /**
+     * Store results of commands here to avoid calling them more than once.
+     * 
+     * @var array
+     */
+    protected $cliCache = array();
 
-	/**
-	 * Store paths to look for executables here
-	 * 
-	 * @var array
-	 * @access protected
-	 */
-	protected $searchPaths = array();
+    /**
+     * Store paths to look for executables here.
+     * 
+     * @var array
+     */
+    protected $searchPaths = array();
 
-	/**
-	 * Say where we'll search for execs
-	 *
-	 * @param array $paths list of paths
-	 */
-	public function setSearchPaths($paths) {
-		
-		// Merge in possible custom paths
-		if (is_array(self::$settings['additional_paths']) && count(self::$settings['additional_paths']) > 0)
-			$paths = array_merge(self::$settings['additional_paths'], $paths);
+    /**
+     * Say where we'll search for execs.
+     *
+     * @param array $paths list of paths
+     */
+    public function setSearchPaths($paths)
+    {
 
-		// Make sure they all have a trailing slash
-		foreach ($paths as $k => $v)
-			$paths[$k] .= substr($v, -1) == '/' ? '' : '/';
+        // Merge in possible custom paths
+        if (is_array(self::$settings['additional_paths']) && count(self::$settings['additional_paths']) > 0) {
+            $paths = array_merge(self::$settings['additional_paths'], $paths);
+        }
 
-		// Save them
-		$this->searchPaths = $paths;
-	}
-	
-	/**
-	 * Run a command and cache its output for later
-	 *
-	 * @throws Exception
-	 * @param string $name name of executable to call
-	 * @param string $switches command arguments
-	 */
-	public function exec($name, $switches = '') {
+        // Make sure they all have a trailing slash
+        foreach ($paths as $k => $v) {
+            $paths[$k] .= substr($v, -1) == '/' ? '' : '/';
+        }
 
-		// Sometimes it is necessary to call a program with sudo 
-		$attempt_sudo = array_key_exists('sudo_apps', self::$settings) && in_array($name, self::$settings['sudo_apps']);
-		
-		// Have we gotten it before?
-		if (array_key_exists($name.$switches, $this->cliCache))
-			return $this->cliCache[$name.$switches];
-		
-		// Try finding the exec
-		foreach ($this->searchPaths as $path) {
+        // Save them
+        $this->searchPaths = $paths;
+    }
 
-			// Found it; run it
-			if (is_file($path.$name) && is_executable($path.$name)) {
+    /**
+     * Run a command and cache its output for later.
+     *
+     * @throws Exception
+     *
+     * @param string $name     name of executable to call
+     * @param string $switches command arguments
+     */
+    public function exec($name, $switches = '')
+    {
 
-				// Complete command, path switches and all
-				$command = "$path$name $switches";
+        // Sometimes it is necessary to call a program with sudo 
+        $attempt_sudo = array_key_exists('sudo_apps', self::$settings) && in_array($name, self::$settings['sudo_apps']);
 
-				// Sudoing?
-				$command = $attempt_sudo ? Common::locateActualPath(Common::arrayAppendString($this->searchPaths, 'sudo', '%2s%1s')) . ' ' . $command : $command;
+        // Have we gotten it before?
+        if (array_key_exists($name.$switches, $this->cliCache)) {
+            return $this->cliCache[$name.$switches];
+        }
 
-				// Result of command
-				$result = `$command`;
+        // Try finding the exec
+        foreach ($this->searchPaths as $path) {
 
-				// Increment call count
-				self::$callCount++;
+            // Found it; run it
+            if (is_file($path.$name) && is_executable($path.$name)) {
 
-				// Cache that
-				$this->cliCache[$name.$switches] = $result;
+                // Complete command, path switches and all
+                $command = "$path$name $switches";
 
-				// Give result
-				return $result;
-			}
-		}
+                // Sudoing?
+                $command = $attempt_sudo ? Common::locateActualPath(Common::arrayAppendString($this->searchPaths, 'sudo', '%2s%1s')).' '.$command : $command;
 
-		// Never got it
-		throw new Exception('Exec `'.$name.'\' not found');
-	}
+                // Result of command
+                $result = `$command`;
+
+                // Increment call count
+                ++self::$callCount;
+
+                // Cache that
+                $this->cliCache[$name.$switches] = $result;
+
+                // Give result
+                return $result;
+            }
+        }
+
+        // Never got it
+        throw new Exception('Exec `'.$name.'\' not found');
+    }
 }

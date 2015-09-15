@@ -32,69 +32,73 @@ Installation:
 */
 
 namespace Linfo\Extension;
-use \Linfo\Linfo;
-use \Linfo\Common;
-use \Linfo\Meta\Errors;
-use \Linfo\Parsers\CallExt;
-use \Linfo\Meta\Timer;
-use \Exception;
+
+use Linfo\Linfo;
+use Linfo\Common;
+use Linfo\Meta\Errors;
+use Linfo\Parsers\CallExt;
+use Linfo\Meta\Timer;
+use Exception;
 
 /*
  * Get status on apcaccess volumes. 
  */
-class Apcaccess implements Extension {
+class Apcaccess implements Extension
+{
+    // Store these tucked away here
+    private $_CallExt,
+        $_LinfoError,
+        $_res;
 
-	// Store these tucked away here
-	private
-		$_CallExt,
-		$_LinfoError,
-		$_res;
+    // Localize important classes
+    public function __construct(Linfo $linfo)
+    {
+        $this->_LinfoError = Errors::Singleton();
+        $this->_CallExt = new CallExt();
+        $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
+    }
 
-	// Localize important classes
-	public function __construct(Linfo $linfo) {
-		$this->_LinfoError = Errors::Singleton();
-		$this->_CallExt = new CallExt;
-		$this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
-	}
+    // call apcaccess and parse it
+    private function _call()
+    {
 
-	// call apcaccess and parse it
-	private function _call() {
-		
-		// Time this
-		$t = new Timer('apcaccess Extension');
+        // Time this
+        $t = new Timer('apcaccess Extension');
 
-		// Deal with calling it
-		try {
-			$result = $this->_CallExt->exec('apcaccess');
-		}
-		catch (Exception $e) {
-			// messed up somehow
-			$this->_LinfoError->add('apcaccess Extension', $e->getMessage());
-			$this->_res = false;
+        // Deal with calling it
+        try {
+            $result = $this->_CallExt->exec('apcaccess');
+        } catch (Exception $e) {
+            // messed up somehow
+            $this->_LinfoError->add('apcaccess Extension', $e->getMessage());
+            $this->_res = false;
 
-			// Don't bother going any further
-			return false;
-		}
+            // Don't bother going any further
+            return false;
+        }
 
-		// Store them here
-		$this->_res = array();
+        // Store them here
+        $this->_res = array();
 
-		// Get name
-		if (preg_match('/^UPSNAME\s+:\s+(.+)$/m', $result, $m))
-			$this->_res['name'] = $m[1];
-		
-		// Get model
-		if (preg_match('/^MODEL\s+:\s+(.+)$/m', $result, $m))
-			$this->_res['model'] = $m[1];
-		
-		// Get battery voltage
-		if (preg_match('/^BATTV\s+:\s+(\d+\.\d+)/m', $result, $m))
-			$this->_res['volts'] = $m[1];
-		
-		// Get charge percentage, and get it cool
-		if (preg_match('/^BCHARGE\s+:\s+(\d+(?:\.\d+)?)/m', $result, $m)) {
-			$charge = (int) $m[1];
-			$this->_res['charge'] = '
+        // Get name
+        if (preg_match('/^UPSNAME\s+:\s+(.+)$/m', $result, $m)) {
+            $this->_res['name'] = $m[1];
+        }
+
+        // Get model
+        if (preg_match('/^MODEL\s+:\s+(.+)$/m', $result, $m)) {
+            $this->_res['model'] = $m[1];
+        }
+
+        // Get battery voltage
+        if (preg_match('/^BATTV\s+:\s+(\d+\.\d+)/m', $result, $m)) {
+            $this->_res['volts'] = $m[1];
+        }
+
+        // Get charge percentage, and get it cool
+        if (preg_match('/^BCHARGE\s+:\s+(\d+(?:\.\d+)?)/m', $result, $m)) {
+            $charge = (int) $m[1];
+            $this->_res['charge'] = '
 					<div class="bar_chart">
 						<div class="bar_inner" style="width: '.(int) $charge.'%;">
 							<div class="bar_text">
@@ -103,20 +107,22 @@ class Apcaccess implements Extension {
 						</div>
 					</div>
 			';
-		}
-		
-		// Get time remaning
-		if (preg_match('/^TIMELEFT\s+:\s+([\d\.]+)/m', $result, $m))
-			$this->_res['time_left'] = Common::secondsConvert($m[1] * 60);
-		
-		// Get status
-		if (preg_match('/^STATUS\s+:\s+([A-Z]+)/m', $result, $m))
-			$this->_res['status'] = $m[1] == 'ONBATT' ? 'On Battery' : ucfirst(strtolower($m[1]));
-		
-		// Load percentage looking cool
-		if (preg_match('/^LOADPCT\s+:\s+(\d+\.\d+)/m', $result, $m)) {
-			$load = (int) $m[1];
-			$this->_res['load'] = '
+        }
+
+        // Get time remaning
+        if (preg_match('/^TIMELEFT\s+:\s+([\d\.]+)/m', $result, $m)) {
+            $this->_res['time_left'] = Common::secondsConvert($m[1] * 60);
+        }
+
+        // Get status
+        if (preg_match('/^STATUS\s+:\s+([A-Z]+)/m', $result, $m)) {
+            $this->_res['status'] = $m[1] == 'ONBATT' ? 'On Battery' : ucfirst(strtolower($m[1]));
+        }
+
+        // Load percentage looking cool
+        if (preg_match('/^LOADPCT\s+:\s+(\d+\.\d+)/m', $result, $m)) {
+            $load = (int) $m[1];
+            $this->_res['load'] = '
 					<div class="bar_chart">
 						<div class="bar_inner" style="width: '.(int) $load.'%;">
 							<div class="bar_text">
@@ -125,71 +131,72 @@ class Apcaccess implements Extension {
 						</div>
 					</div>
 			';
-		}
+        }
 
-		// Attempt getting wattage 
-		if (isset($load) && preg_match('/^NOMPOWER\s+:\s+(\d+)/m', $result, $m)) {
-			$watts = (int) $m['1'];
-			$this->_res['watts_used'] = $load * round($watts / 100);
-		}
-		else
-			$this->_res['watts_used'] = false;
+        // Attempt getting wattage 
+        if (isset($load) && preg_match('/^NOMPOWER\s+:\s+(\d+)/m', $result, $m)) {
+            $watts = (int) $m['1'];
+            $this->_res['watts_used'] = $load * round($watts / 100);
+        } else {
+            $this->_res['watts_used'] = false;
+        }
 
-		// Apparent success
-		return true;
-	}
+        // Apparent success
+        return true;
+    }
 
-	// Called to get working
-	public function work() {
-		$this->_call();
-	}
+    // Called to get working
+    public function work()
+    {
+        $this->_call();
+    }
 
-	// Get result. Essentially take results and make it usable by the Common::createTable function
-	public function result() {
+    // Get result. Essentially take results and make it usable by the Common::createTable function
+    public function result()
+    {
 
-		// Don't bother if it didn't go well
-		if ($this->_res === false)
-			return false;
+        // Don't bother if it didn't go well
+        if ($this->_res === false) {
+            return false;
+        }
 
+        // Store rows here
+        $rows = array();
 
-		// Store rows here
-		$rows = array();
+        // Start showing connections
+        $rows[] = array(
+            'type' => 'header',
+            'columns' => array(
+                'UPS Name',
+                'Model',
+                'Battery Volts',
+                'Battery Charge',
+                'Time Left',
+                'Current Load',
+                $this->_res['watts_used'] ? 'Current Usage' : false,
+                'Status',
+            ),
+        );
 
-		// Start showing connections
-		$rows[] = array(
-			'type' => 'header',
-			'columns' => array(
-				'UPS Name',
-				'Model',
-				'Battery Volts',
-				'Battery Charge',
-				'Time Left',
-				'Current Load',
-				$this->_res['watts_used'] ? 'Current Usage' : false,
-				'Status'
-			)
-		);
-		
-		// And all the values
-		$rows[] = array(
-			'type' => 'values',
-			'columns' => array(
-				$this->_res['name'],
-				$this->_res['model'],
-				$this->_res['volts'],
-				$this->_res['charge'],
-				$this->_res['time_left'],
-				$this->_res['load'],
-				$this->_res['watts_used'] ? $this->_res['watts_used'] . 'W' : false,
-				$this->_res['status'],
-			)
-		);
+        // And all the values
+        $rows[] = array(
+            'type' => 'values',
+            'columns' => array(
+                $this->_res['name'],
+                $this->_res['model'],
+                $this->_res['volts'],
+                $this->_res['charge'],
+                $this->_res['time_left'],
+                $this->_res['load'],
+                $this->_res['watts_used'] ? $this->_res['watts_used'].'W' : false,
+                $this->_res['status'],
+            ),
+        );
 
-		// Give it off
-		return array(
-			'root_title' => 'APC UPS Status',
-			'rows' => $rows
-		);
-
-	}
+        // Give it off
+        return array(
+            'root_title' => 'APC UPS Status',
+            'rows' => $rows,
+        );
+    }
 }

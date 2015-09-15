@@ -9,8 +9,8 @@ To enable this extension, add/tweak the following to your config.inc.php
 
 $settings['extensions']['libvirt'] = true;
 $settings['libvirt_connection'] = array(
-	'url' => 'qemu:///system', // For xen do 'xen:///' instead
-	'credentials' => NULL
+    'url' => 'qemu:///system', // For xen do 'xen:///' instead
+    'credentials' => NULL
 );
 
 
@@ -37,165 +37,172 @@ $settings['libvirt_connection'] = array(
  * Keep out hackers...
  */
 namespace Linfo\Extension;
-use \Linfo\Linfo;
-use \Linfo\Common;
-use \Linfo\Meta\Errors;
-use \Linfo\Meta\Timer;
-use \Exception;
+
+use Linfo\Linfo;
+use Linfo\Common;
+use Linfo\Meta\Errors;
+use Linfo\Meta\Timer;
 
 /**
- * Get status on libvirt VMs
+ * Get status on libvirt VMs.
  */
-class Libvirt implements Extension {
-	
-	private
-		$Errors,
-		$VMs = array(),
-		$connection = false,
-		$connectionSettings = array(),
-		$res = false;
+class Libvirt implements Extension
+{
+    private $Errors,
+        $VMs = array(),
+        $connection = false,
+        $connectionSettings = array(),
+        $res = false;
 
-	public function __construct(Linfo $linfo) {
+    public function __construct(Linfo $linfo)
+    {
+        $settings = $linfo->getSettings();
 
-		$settings = $linfo->getSettings();
+        $this->Errors = Errors::Singleton();
 
-		$this->Errors = Errors::Singleton();
+        $this->connectionSettings = $settings['libvirt_connection'];
+    }
 
-		$this->connectionSettings = $settings['libvirt_connection'];
-	}
+    private function connect()
+    {
+        if (!($this->connection =
+            @libvirt_connect($this->connectionSettings['url'], true))) {
+            $this->Errors->add('libvirt extension', 'Error connecting');
+            $this->res = false;
 
-	private function connect() {
+            return false;
+        }
 
-		if (!($this->connection =
-			@libvirt_connect($this->connectionSettings['url'], true))) {
-			$this->Errors->add('libvirt extension', 'Error connecting');
-			$this->res = false;
-			return false;
-		}
+        return true;
+    }
 
-		return true;
-	}
+    public function work()
+    {
+        $t = new Timer('libvirt extension');
 
-	public function work() {
+        if (!extension_loaded('libvirt')) {
+            $this->Errors->add('libvirt extension', 'Libvirt PHP extension not installed');
+            $this->res = false;
 
-		$t = new Timer('libvirt extension');
+            return false;
+        }
 
-		if (!extension_loaded('libvirt')) {
-			$this->Errors->add('libvirt extension', 'Libvirt PHP extension not installed');
-			$this->res = false;
-			return false;
-		}
+        if (!$this->connect()) {
+            return false;
+        }
 
-		if (!$this->connect())
-			return false;
+        if (!($doms = libvirt_list_domains($this->connection))) {
+            $this->Errors->add('libvirt extension', 'Failed getting domain list');
+            $this->res = false;
 
-		if (!($doms = libvirt_list_domains($this->connection))) {
-			$this->Errors->add('libvirt extension', 'Failed getting domain list');
-			$this->res = false;
-			return false;
-		}
+            return false;
+        }
 
-		foreach ($doms as $name) {
-				
-			if (!($domain = libvirt_domain_lookup_by_name($this->connection, $name)))
-				continue;
+        foreach ($doms as $name) {
+            if (!($domain = libvirt_domain_lookup_by_name($this->connection, $name))) {
+                continue;
+            }
 
-			if (!($info = libvirt_domain_get_info($domain)) || !is_array($info))
-				continue;
+            if (!($info = libvirt_domain_get_info($domain)) || !is_array($info)) {
+                continue;
+            }
 
-			$info['autostart'] = libvirt_domain_get_autostart($domain);
+            $info['autostart'] = libvirt_domain_get_autostart($domain);
 
-			if ($info['autostart'] == 1)
-				$info['autostart'] = 'Yes';
-			elseif ($info['autostart'] == 0)
-				$info['autostart'] = 'No';
-			else
-				$info['autostart'] = 'N/A';
+            if ($info['autostart'] == 1) {
+                $info['autostart'] = 'Yes';
+            } elseif ($info['autostart'] == 0) {
+                $info['autostart'] = 'No';
+            } else {
+                $info['autostart'] = 'N/A';
+            }
 
-			$info['nets'] = array();
+            $info['nets'] = array();
 
-			$nets = @libvirt_domain_get_interface_devices($domain);
+            $nets = @libvirt_domain_get_interface_devices($domain);
 
-			foreach ($nets as $key => $net) {
-				if (!is_numeric($key))
-					continue;
-				$info['nets'][] = $net;
-			}
+            foreach ($nets as $key => $net) {
+                if (!is_numeric($key)) {
+                    continue;
+                }
+                $info['nets'][] = $net;
+            }
 
-			$info['storage'] = array();
+            $info['storage'] = array();
 
-			foreach ((array) @libvirt_domain_get_disk_devices($domain) as $blockName) {
-				if (!is_string($blockName))
-					continue;
+            foreach ((array) @libvirt_domain_get_disk_devices($domain) as $blockName) {
+                if (!is_string($blockName)) {
+                    continue;
+                }
 
-				// Sometime device exists but libvirt fails to get more docs. just settle for device name
-				if (!($blockInfo = @libvirt_domain_get_block_info($domain, $blockName)) || !is_array($blockInfo)) {
-					$info['storage'][] = array(
-						'device' => $blockName
-					);
-					continue;
-				}
+                // Sometime device exists but libvirt fails to get more docs. just settle for device name
+                if (!($blockInfo = @libvirt_domain_get_block_info($domain, $blockName)) || !is_array($blockInfo)) {
+                    $info['storage'][] = array(
+                        'device' => $blockName,
+                    );
+                    continue;
+                }
 
-				if (isset($blockInfo['partition']) && !isset($blockInfo['file']))
-					$blockInfo['file'] = $blockInfo['partition'];
+                if (isset($blockInfo['partition']) && !isset($blockInfo['file'])) {
+                    $blockInfo['file'] = $blockInfo['partition'];
+                }
 
-				$info['storage'][] = $blockInfo;
-			}
+                $info['storage'][] = $blockInfo;
+            }
 
-			$this->VMs[$name] = $info;
-		}
+            $this->VMs[$name] = $info;
+        }
 
-		$this->res = true;
-	}
+        $this->res = true;
+    }
 
-	public function result() {
-		if (!$this->res)
-			return false;
+    public function result()
+    {
+        if (!$this->res) {
+            return false;
+        }
 
-		$rows[] = array(
-			'type' => 'header',
-			'columns' =>
-				array(
-				'VM Name',
-				'Status',
-				'RAM Allocation',
-				'CPUs',
-				'CPU Time',
-				'Autostart',
-				'Block Storage',
-				'Network Devices',
-			)
-		);
+        $rows[] = array(
+            'type' => 'header',
+            'columns' => array(
+                'VM Name',
+                'Status',
+                'RAM Allocation',
+                'CPUs',
+                'CPU Time',
+                'Autostart',
+                'Block Storage',
+                'Network Devices',
+            ),
+        );
 
-		foreach ($this->VMs as $name => $info) {
+        foreach ($this->VMs as $name => $info) {
+            $disks = array();
 
-			$disks = array();
+            foreach ($info['storage'] as $disk) {
+                $disks[] = $disk['device']
+                .(isset($disk['file']) && isset($disk['capacity']) ? ': '.$disk['file'].' ('.Common::byteConvert($disk['capacity'], 2).')' : '');
+            }
 
-			foreach ($info['storage'] as $disk) {
-				$disks[] = $disk['device']
-				.(isset($disk['file']) && isset($disk['capacity']) ? ': '.$disk['file'].' ('.Common::byteConvert($disk['capacity'], 2).')' : '');
-			}
+            $rows[] = array(
+                'type' => 'values',
+                'columns' => array(
+                    $name,
+                    $info['state'] == 1 ? '<span style="color: green;">On</span>' : '<span style="color: maroon;">Off</span>',
+                    Common::byteConvert($info['memory'] * 1024, 2),
+                    $info['nrVirtCpu'],
+                    $info['cpuUsed'] ? $info['cpuUsed'] : 'N/A',
+                    $info['autostart'],
+                    $disks ? implode('<br />', $disks) : 'None',
+                    $info['nets'] ? implode('<br />', $info['nets']) : 'None',
+                ),
+            );
+        }
 
-			$rows[] = array(
-				'type' => 'values',
-				'columns' => array(
-					$name, 
-					$info['state'] == 1 ? '<span style="color: green;">On</span>' : '<span style="color: maroon;">Off</span>',
-					Common::byteConvert($info['memory']*1024, 2),
-					$info['nrVirtCpu'],
-					$info['cpuUsed'] ? $info['cpuUsed'] : 'N/A',
-					$info['autostart'],
-					$disks ? implode('<br />', $disks) : 'None',
-					$info['nets'] ? implode('<br />', $info['nets']) : 'None',
-				)
-			);
-		}
-
-		// Give it off
-		return array(
-			'root_title' => 'libvirt Virtual Machines',
-			'rows' => $rows
-		);
-	}
+        // Give it off
+        return array(
+            'root_title' => 'libvirt Virtual Machines',
+            'rows' => $rows,
+        );
+    }
 }
-

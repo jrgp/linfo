@@ -18,7 +18,6 @@
  * 
 */
 
-
 namespace Linfo\OS;
 
 use Linfo\Meta\Timer;
@@ -30,157 +29,166 @@ use Linfo\Common;
  * only root can access dmesg
  */
 
-class Darwin extends BSDcommon{
-	
-	// Encapsulate these
-	protected
-		$settings,
-		$exec,
-		$error,
-		$dmesg;
+class Darwin extends BSDcommon
+{
+    // Encapsulate these
+    protected $settings,
+        $exec,
+        $error,
+        $dmesg;
 
-	// Start us off
-	public function __construct($settings) {
+    // Start us off
+    public function __construct($settings)
+    {
 
-		// Instantiate parent
-		parent::__construct($settings);
+        // Instantiate parent
+        parent::__construct($settings);
 
-		// We search these folders for our commands
-		$this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/sbin'));
+        // We search these folders for our commands
+        $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/sbin'));
 
-		// We need these sysctl values
-		$this->GetSysCTL(array(
-			'machdep.cpu.vendor',
-			'machdep.cpu.brand_string',
-			'hw.cpufrequency',
-			'hw.ncpu',
-			'vm.swapusage',
-			'hw.memsize',
-			'hw.usermem',
-			'kern.boottime',
-			'vm.loadavg',
-			'hw.model'
-		),false);
+        // We need these sysctl values
+        $this->GetSysCTL(array(
+            'machdep.cpu.vendor',
+            'machdep.cpu.brand_string',
+            'hw.cpufrequency',
+            'hw.ncpu',
+            'vm.swapusage',
+            'hw.memsize',
+            'hw.usermem',
+            'kern.boottime',
+            'vm.loadavg',
+            'hw.model',
+        ), false);
 
-		// And get this info for when the above fails 
-		try {
-			$this->systemProfiler = $this->exec->exec('system_profiler', 'SPHardwareDataType SPSoftwareDataType SPPowerDataType');
-		}
-		catch(CallExtException $e) {
-			// Meh
-			$this->error->add('Linfo Mac OS 10', 'Error using system_profiler');
-		}
-	}
-	
-	// What we should leave out
-	public function getContains() {
-		return array(
-				'hw_vendor' => false,
-				'drives_rw_stats' => false,
-				'drives_vendor' => false,
-				'nic_type' => false,
-				'nic_port_speed' => false,
-			);
-	}
+        // And get this info for when the above fails 
+        try {
+            $this->systemProfiler = $this->exec->exec('system_profiler', 'SPHardwareDataType SPSoftwareDataType SPPowerDataType');
+        } catch (CallExtException $e) {
+            // Meh
+            $this->error->add('Linfo Mac OS 10', 'Error using system_profiler');
+        }
+    }
 
-	// Operating system
-	public function getOS() {
-		return 'Darwin (' . (preg_match('/^\s+System Version: ([^\(]+)/m', $this->systemProfiler, $m) ? $m[1] : 'Mac OS X').')';
-	}
+    // What we should leave out
+    public function getContains()
+    {
+        return array(
+                'hw_vendor' => false,
+                'drives_rw_stats' => false,
+                'drives_vendor' => false,
+                'nic_type' => false,
+                'nic_port_speed' => false,
+            );
+    }
 
-	// Kernel version
-	public function getKernel() {
-		return php_uname('r');
-	}
+    // Operating system
+    public function getOS()
+    {
+        return 'Darwin ('.(preg_match('/^\s+System Version: ([^\(]+)/m', $this->systemProfiler, $m) ? $m[1] : 'Mac OS X').')';
+    }
 
-	// Hostname
-	public function getHostname() {
-		return preg_match('/^\s*Computer Name:\s+(.+)\s*$/m', $this->systemProfiler, $m) ? $m[1] : php_uname('n');
-	}
+    // Kernel version
+    public function getKernel()
+    {
+        return php_uname('r');
+    }
 
-	public function getCPUArchitecture() {
-		return php_uname('m');
-	}
+    // Hostname
+    public function getHostname()
+    {
+        return preg_match('/^\s*Computer Name:\s+(.+)\s*$/m', $this->systemProfiler, $m) ? $m[1] : php_uname('n');
+    }
 
-	// Get mounted file systems
-	public function getMounts() {
-		// Time?
-		if (!empty($this->settings['timer']))
-			$t = new Timer('Mounted file systems');
-		
-		// Get result of mount command
-		try {
-			$res = $this->exec->exec('mount');
-		}
-		catch (CallExtException $e) {
-			$this->error->add('Linfo Core', 'Error running `mount` command');
-			return array();
-		}
-		
-		// Parse it
-		if (preg_match_all('/(.+)\s+on\s+(.+)\s+\((\w+).*\)\n/i', $res, $m, PREG_SET_ORDER) == 0)
-			return array();
-		
-		// Store them here
-		$mounts = array();
-		
-		// Deal with each entry
-		foreach ($m as $mount) {
+    public function getCPUArchitecture()
+    {
+        return php_uname('m');
+    }
 
-			// Should we not show this?
-			if (in_array($mount[1], $this->settings['hide']['storage_devices']) || in_array($mount[3], $this->settings['hide']['filesystems']))
-				continue;
-			
-			// Get these
-			$size = @disk_total_space($mount[2]);
-			$free = @disk_free_space($mount[2]);
-			$used = $size - $free;
-			
-			// Might be good, go for it
-			$mounts[] = array(
-				'device' => $mount[1],
-				'mount' => $mount[2],
-				'type' => $mount[3],
-				'size' => $size ,
-				'used' => $used,
-				'free' => $free,
-				'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
-				'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false)
-			);
-		}
+    // Get mounted file systems
+    public function getMounts()
+    {
+        // Time?
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Mounted file systems');
+        }
 
-		// Give it
-		return $mounts;
-		
-	}
+        // Get result of mount command
+        try {
+            $res = $this->exec->exec('mount');
+        } catch (CallExtException $e) {
+            $this->error->add('Linfo Core', 'Error running `mount` command');
 
-	// Get network interfaces
-	public function getNet() {
-		// Time?
-		if (!empty($this->settings['timer']))
-			$t = new Timer('Network Devices');
+            return array();
+        }
 
-		// Store return vals here
-		$return = array();
-		
-		// Use netstat to get info
-		try {
-			$netstat = $this->exec->exec('netstat', '-nbdi');
-		}
-		catch(CallExtException $e) {
-			$this->error->add('Linfo Core', 'Error using `netstat` to get network info');
-			return $return;
-		}
-		
-		// Initially get interfaces themselves along with numerical stats
-		//
-		// Example output:
-		// Name  Mtu   Network       Address            Ipkts Ierrs     Ibytes    Opkts Oerrs     Obytes  Coll Drop
-		// lo0   16384 <Link#1>                          1945     0     429565     1945     0     429565     0 
-		// en0   1500  <Link#4>    58:b0:35:f9:fd:2b        0     0          0        0     0      59166     0 
-		// fw0   4078  <Link#6>    d8:30:62:ff:fe:f5:c8:9c        0     0          0        0     0        346     0 
-		if (preg_match_all(
-			'/^
+        // Parse it
+        if (preg_match_all('/(.+)\s+on\s+(.+)\s+\((\w+).*\)\n/i', $res, $m, PREG_SET_ORDER) == 0) {
+            return array();
+        }
+
+        // Store them here
+        $mounts = array();
+
+        // Deal with each entry
+        foreach ($m as $mount) {
+
+            // Should we not show this?
+            if (in_array($mount[1], $this->settings['hide']['storage_devices']) || in_array($mount[3], $this->settings['hide']['filesystems'])) {
+                continue;
+            }
+
+            // Get these
+            $size = @disk_total_space($mount[2]);
+            $free = @disk_free_space($mount[2]);
+            $used = $size - $free;
+
+            // Might be good, go for it
+            $mounts[] = array(
+                'device' => $mount[1],
+                'mount' => $mount[2],
+                'type' => $mount[3],
+                'size' => $size ,
+                'used' => $used,
+                'free' => $free,
+                'free_percent' => ((bool) $free != false && (bool) $size != false ? round($free / $size, 2) * 100 : false),
+                'used_percent' => ((bool) $used != false && (bool) $size != false ? round($used / $size, 2) * 100 : false),
+            );
+        }
+
+        // Give it
+        return $mounts;
+    }
+
+    // Get network interfaces
+    public function getNet()
+    {
+        // Time?
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Network Devices');
+        }
+
+        // Store return vals here
+        $return = array();
+
+        // Use netstat to get info
+        try {
+            $netstat = $this->exec->exec('netstat', '-nbdi');
+        } catch (CallExtException $e) {
+            $this->error->add('Linfo Core', 'Error using `netstat` to get network info');
+
+            return $return;
+        }
+
+        // Initially get interfaces themselves along with numerical stats
+        //
+        // Example output:
+        // Name  Mtu   Network       Address            Ipkts Ierrs     Ibytes    Opkts Oerrs     Obytes  Coll Drop
+        // lo0   16384 <Link#1>                          1945     0     429565     1945     0     429565     0 
+        // en0   1500  <Link#4>    58:b0:35:f9:fd:2b        0     0          0        0     0      59166     0 
+        // fw0   4078  <Link#6>    d8:30:62:ff:fe:f5:c8:9c        0     0          0        0     0        346     0 
+        if (preg_match_all(
+            '/^
 			([a-z0-9*]+)\s*  # Name
 			\w+\s+           # Mtu
 			<Link\#\w+>      # Network
@@ -193,421 +201,440 @@ class Darwin extends BSDcommon{
 			(\w+)\s+  # Obytes
 			(\w+)\s+  # Coll
 			(\w+)?\s*  # Drop
-			$/mx', $netstat, $netstat_match, PREG_SET_ORDER) == 0)
-			return $return;
+			$/mx', $netstat, $netstat_match, PREG_SET_ORDER) == 0) {
+            return $return;
+        }
 
+        // Try using ifconfig to get states of the network interfaces
+        $statuses = array();
+        try {
+            // Output of ifconfig command
+            $ifconfig = $this->exec->exec('ifconfig', '-a');
 
+            // Set this to false to prevent wasted regexes
+            $current_nic = false;
 
-		// Try using ifconfig to get states of the network interfaces
-		$statuses = array();
-		try {
-			// Output of ifconfig command
-			$ifconfig = $this->exec->exec('ifconfig', '-a');
+            // Go through each line
+            foreach ((array) explode("\n", $ifconfig) as $line) {
 
-			// Set this to false to prevent wasted regexes
-			$current_nic = false;
+                // Approachign new nic def
+                if (preg_match('/^(\w+):/', $line, $m) == 1) {
+                    $current_nic = $m[1];
+                }
 
-			// Go through each line
-			foreach ((array) explode("\n", $ifconfig) as $line) {
+                // Hopefully match its status
+                elseif ($current_nic && preg_match('/status: (\w+)$/', $line, $m) == 1) {
+                    $statuses[$current_nic] = $m[1];
+                    $current_nic = false;
+                }
+            }
+        } catch (CallExtException $e) {
+        }
 
-				// Approachign new nic def
-				if (preg_match('/^(\w+):/', $line, $m) == 1)
-					$current_nic = $m[1];
+        // Save info
+        foreach ($netstat_match as $net) {
 
-				// Hopefully match its status
-				elseif ($current_nic && preg_match('/status: (\w+)$/', $line, $m) == 1) {
-					$statuses[$current_nic] = $m[1];
-					$current_nic = false;
-				}
-			}
-		}
-		catch(CallExtException $e) {}
+            // Determine status
+            switch (array_key_exists($net[1], $statuses) ? $statuses[$net[1]] : 'unknown') {
 
+                case 'active':
+                    $state = 'up';
+                break;
 
-		// Save info
-		foreach ($netstat_match as $net) {
+                case 'inactive':
+                    $state = 'down';
+                break;
 
-			// Determine status
-			switch (array_key_exists($net[1], $statuses) ? $statuses[$net[1]] : 'unknown') {
+                default:
+                    $state = 'unknown';
+                break;
+            }
 
-				case 'active':
-					$state = 'up';
-				break;
-				
-				case 'inactive':
-					$state = 'down';
-				break;
+            // Save info
+            $return[$net[1]] = array(
 
-				default:
-					$state = 'unknown';
-				break;
-			}
+                // These came from netstat
+                'recieved' => array(
+                    'bytes' => $net[4],
+                    'errors' => $net[3],
+                    'packets' => $net[2],
+                ),
+                'sent' => array(
+                    'bytes' => $net[7],
+                    'errors' => $net[6],
+                    'packets' => $net[5],
+                ),
 
-			// Save info
-			$return[$net[1]] = array(
-				
-				// These came from netstat
-				'recieved' => array(
-					'bytes' => $net[4],
-					'errors' => $net[3],
-					'packets' => $net[2] 
-				),
-				'sent' => array(
-					'bytes' => $net[7],
-					'errors' =>  $net[6],
-					'packets' => $net[5] 
-				),
+                // This came from ifconfig -a
+                'state' => $state,
 
-				// This came from ifconfig -a
-				'state' => $state,
+                // Not sure where to get his
+                'type' => '?',
+            );
+        }
 
-				// Not sure where to get his
-				'type' => '?'
-			);
-		}
+        // Return it
+        return $return;
+    }
 
-		// Return it
-		return $return;
-	
-	}
+    // Get uptime 
+    public function getUpTime()
+    {
 
-	// Get uptime 
-	public function getUpTime() {
-		
-		// Time?
-		if (!empty($this->settings['timer']))
-			$t = new Timer('Uptime');
-		
-		// Extract boot part of it
-		if (preg_match('/^\{ sec \= (\d+).+$/', $this->sysctl['kern.boottime'], $m) == 0)
-			return '';
+        // Time?
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Uptime');
+        }
 
-		// Get it textual, as in days/minutes/hours/etc
-		return Common::secondsConvert(time() - $m[1]) . '; booted ' . date($this->settings['dates'], $m[1]);
-	}
-	
-	// Get system load
-	public function getLoad() {
-		
-		// Time?
-		if (!empty($this->settings['timer']))
-			$t = new Timer('Load Averages');
+        // Extract boot part of it
+        if (preg_match('/^\{ sec \= (\d+).+$/', $this->sysctl['kern.boottime'], $m) == 0) {
+            return '';
+        }
 
-		// Parse it
-		if (preg_match('/([\d\.]+) ([\d\.]+) ([\d\.]+)/', $this->sysctl['vm.loadavg'], $m) == 0)
-			return array();
-		
-		// Give
-		return array(
-			'now' => $m[1],
-			'5min' => $m[2],
-			'15min' => $m[3]
-		);
-	
-	}
-	
-	// Get stats on processes
-	public function getProcessStats() {
-		
-		// Time?
-		if (!empty($this->settings['timer']))
-			$t = new Timer('Process Stats');
+        // Get it textual, as in days/minutes/hours/etc
+        return Common::secondsConvert(time() - $m[1]).'; booted '.date($this->settings['dates'], $m[1]);
+    }
 
-		// We'll return this after stuffing it with useful info
-		$result = array(
-			'exists' => true, 
-			'totals' => array(
-				'running' => 0,
-				'zombie' => 0,
-				'sleeping' => 0,
-				'stopped' => 0,
-				'idle' => 0
-			),
-			'proc_total' => 0,
-			'threads' => false // I'm not sure how to get this
-		);
+    // Get system load
+    public function getLoad()
+    {
 
-		// Use ps
-		try {
-			// Get it
-			$ps = $this->exec->exec('ps', 'ax');
+        // Time?
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Load Averages');
+        }
 
-			// Match them
-			preg_match_all('/^\s*\d+\s+[\w?]+\s+([A-Z])\S*\s+.+$/m', $ps, $processes, PREG_SET_ORDER);
-			
-			// Get total
-			$result['proc_total'] = count($processes);
-			
-			// Go through
-			foreach ($processes as $process) {
-				switch ($process[1]) {
-					case 'S':
-					case 'I':
-						$result['totals']['sleeping']++;
-					break;
-					case 'Z':
-						$result['totals']['zombie']++;
-					break;
-					case 'R':
-					case 'D':
-						$result['totals']['running']++;
-					break;
-					case 'T':
-						$result['totals']['stopped']++;
-					break;
-					case 'W':
-						$result['totals']['idle']++;
-					break;
-				}
-			}
-		}
-		catch (CallExtException $e) {
-			$this->error->add('Linfo Core', 'Error using `ps` to get process info');
-		}
+        // Parse it
+        if (preg_match('/([\d\.]+) ([\d\.]+) ([\d\.]+)/', $this->sysctl['vm.loadavg'], $m) == 0) {
+            return array();
+        }
 
-		// Give
-		return $result;
-	}
+        // Give
+        return array(
+            'now' => $m[1],
+            '5min' => $m[2],
+            '15min' => $m[3],
+        );
+    }
 
-	// Get cpus
-	public function getCPU() {
-		// Time?
-		if (!empty($this->settings['timer']))
-			$t = new Timer('CPUs');
+    // Get stats on processes
+    public function getProcessStats()
+    {
 
-		// Was machdep mean to us? Likely on ppc macs
-		if (empty($this->sysctl['machdep.cpu.brand_string']) && preg_match('/^\s+Processor Name:\s+(.+)(?= \([\d\.]+\))/m', $this->systemProfiler, $m)) {
-			$this->sysctl['machdep.cpu.brand_string'] = $m[1];
-		}
+        // Time?
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Process Stats');
+        }
 
-		if (empty($this->sysctl['machdep.cpu.vendor'])) 
-			$this->sysctl['machdep.cpu.vendor'] = false;
+        // We'll return this after stuffing it with useful info
+        $result = array(
+            'exists' => true,
+            'totals' => array(
+                'running' => 0,
+                'zombie' => 0,
+                'sleeping' => 0,
+                'stopped' => 0,
+                'idle' => 0,
+            ),
+            'proc_total' => 0,
+            'threads' => false, // I'm not sure how to get this
+        );
 
-		// Store them here
-		$cpus = array();
-		
-		// The same one multiple times
-		for ($i = 0; $i < $this->sysctl['hw.ncpu']; $i++)
-			$cpus[] = array(
-				'Model' => $this->sysctl['machdep.cpu.brand_string'],
-				'MHz' => $this->sysctl['hw.cpufrequency'] / 1000000,
-				'Vendor' => $this->sysctl['machdep.cpu.vendor']
-				
-			);
+        // Use ps
+        try {
+            // Get it
+            $ps = $this->exec->exec('ps', 'ax');
 
-		return $cpus;
-	}
-	
-	// Get ram usage
-	public function getRam() {
-		
-		// Time?
-		if (!empty($this->settings['timer']))
-			$t = new Timer('Memory');
+            // Match them
+            preg_match_all('/^\s*\d+\s+[\w?]+\s+([A-Z])\S*\s+.+$/m', $ps, $processes, PREG_SET_ORDER);
 
-		// Start us off
-		$return = array();
-		$return['type'] = 'Physical';
-		$return['total'] = $this->sysctl['hw.memsize'];
-		$return['free'] =  $this->sysctl['hw.memsize'] - $this->sysctl['hw.usermem'];
-		$return['swapTotal'] = 0;
-		$return['swapFree'] = 0;
-		$return['swapInfo'] = array();
+            // Get total
+            $result['proc_total'] = count($processes);
 
+            // Go through
+            foreach ($processes as $process) {
+                switch ($process[1]) {
+                    case 'S':
+                    case 'I':
+                        $result['totals']['sleeping']++;
+                    break;
+                    case 'Z':
+                        $result['totals']['zombie']++;
+                    break;
+                    case 'R':
+                    case 'D':
+                        $result['totals']['running']++;
+                    break;
+                    case 'T':
+                        $result['totals']['stopped']++;
+                    break;
+                    case 'W':
+                        $result['totals']['idle']++;
+                    break;
+                }
+            }
+        } catch (CallExtException $e) {
+            $this->error->add('Linfo Core', 'Error using `ps` to get process info');
+        }
 
-		// Sort out swap
-		if (preg_match('/total = ([\d\.]+)M\s+used = ([\d\.]+)M\s+free = ([\d\.]+)M/', $this->sysctl['vm.swapusage'], $swap_match)) {
-			list(, $swap_total, $swap_used, $swap_free) = $swap_match;
-			$return['swapTotal'] = $swap_total * 1000000;
-			$return['swapFree'] = $swap_free * 1000000;
-		}
+        // Give
+        return $result;
+    }
 
-		
-		// Return ram info
-		return $return;
-	
-	}
+    // Get cpus
+    public function getCPU()
+    {
+        // Time?
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('CPUs');
+        }
 
-	// Model of mac
-	public function getModel() {
-		if (preg_match('/^\s+Model Name:\s+(.+)/m', $this->systemProfiler, $m))
-			return $m[1];
+        // Was machdep mean to us? Likely on ppc macs
+        if (empty($this->sysctl['machdep.cpu.brand_string']) && preg_match('/^\s+Processor Name:\s+(.+)(?= \([\d\.]+\))/m', $this->systemProfiler, $m)) {
+            $this->sysctl['machdep.cpu.brand_string'] = $m[1];
+        }
 
-		if (preg_match('/^([a-zA-Z]+)/', $this->sysctl['hw.model'], $m))
-			return $m[1];
-		else
-			return $this->sysctl['hw.model'];
-	}
-	
-	// Battery
-	public function getBattery() {
-		// Time?
-		if (!empty($this->settings['timer']))
-			$t = new Timer('Battery');
-		
-		// Store any we find here
-		$batteries = array();
+        if (empty($this->sysctl['machdep.cpu.vendor'])) {
+            $this->sysctl['machdep.cpu.vendor'] = false;
+        }
 
-		// Lines
-		$lines = explode("\n", $this->systemProfiler);
+        // Store them here
+        $cpus = array();
 
-		// Hunt
-		$bat = array();
-		$in_bat_field = false;
+        // The same one multiple times
+        for ($i = 0; $i < $this->sysctl['hw.ncpu']; ++$i) {
+            $cpus[] = array(
+                'Model' => $this->sysctl['machdep.cpu.brand_string'],
+                'MHz' => $this->sysctl['hw.cpufrequency'] / 1000000,
+                'Vendor' => $this->sysctl['machdep.cpu.vendor'],
 
-		foreach ($lines as $line) {
-			if (preg_match('/^\s+Battery Information/', $line)) {
-				$in_bat_field = true;
-				continue;
-			}
-			elseif(preg_match('/^\s+System Power Settings/', $line)) {
-				$in_bat_field = false;
-				break;
-			}
-			elseif ($in_bat_field && preg_match('/^\s+Fully charged: ([a-zA-Z]+)/i', $line, $m))
-				$bat['charged'] = $m[1] == 'Yes';
-			elseif ($in_bat_field && preg_match('/^\s+Charging: ([a-zA-Z]+)/i', $line, $m))
-				$bat['charging'] = $m[1] == 'Yes';
-			elseif($in_bat_field && preg_match('/^\s+Charge remaining \(mAh\): (\d+)/i', $line, $m))
-				$bat['charge_now'] = (int) $m[1];
-			elseif($in_bat_field && preg_match('/^\s+Full charge capacity \(mAh\): (\d+)/i', $line, $m))
-				$bat['charge_full'] = (int) $m[1];
-			elseif($in_bat_field && preg_match('/^\s+Serial Number: ([A-Z0-9]+)/i', $line, $m))
-				$bat['serial'] = $m[1];
-			elseif($in_bat_field && preg_match('/^\s+Manufacturer: (\w+)/i', $line, $m))
-				$bat['vendor'] = $m[1];
-			elseif($in_bat_field && preg_match('/^\s+Device name: (\w+)/i', $line, $m))
-				$bat['name'] = $m[1];
-		}
+            );
+        }
 
-		// If we have what we need, append
-		if (isset($bat['charge_full']) && isset($bat['charge_now']) && isset($bat['charged']) && isset($bat['charging'])) 
-			$batteries[] = array(
-				'charge_full' => $bat['charge_full'],
-				'charge_now' => $bat['charge_now'],
-				'percentage' => $bat['charge_full'] > 0 && $bat['charge_now'] > 0 ? round($bat['charge_now'] / $bat['charge_full'], 4) * 100 . '%' : '?',
-				'device' => $bat['vendor'].' - '.$bat['name'],
-				'state' => $bat['charging'] ? 'Charging' : ($bat['charged'] ? 'Fully Charged' : 'Discharging')
-			);
-		
-		// Give
-		return $batteries;
-	}
+        return $cpus;
+    }
 
-	// drives
-	public function getHD() {
-		// Time?
-		if (!empty($this->settings['timer']))
-			$t = new Timer('Drives');
-		
-		// Store disks here
-		$disks = array();
-		
-		// Use system profiler to get info
-		try {
-			$res = $this->exec->exec('diskutil', ' list');
-		}
-		catch(CallExtException $e) {
-			$this->error->add('Linfo drives', 'Error using `diskutil list` to get drives');
-			return array();
-		}
+    // Get ram usage
+    public function getRam()
+    {
 
-		// Get it into lines
-		$lines = explode("\n", $res);
+        // Time?
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Memory');
+        }
 
-		// Keep drives here
-		$drives = array();
+        // Start us off
+        $return = array();
+        $return['type'] = 'Physical';
+        $return['total'] = $this->sysctl['hw.memsize'];
+        $return['free'] = $this->sysctl['hw.memsize'] - $this->sysctl['hw.usermem'];
+        $return['swapTotal'] = 0;
+        $return['swapFree'] = 0;
+        $return['swapInfo'] = array();
 
-		// Work on tmp drive here
-		$tmp = false;
-		
-		for ($i = 0, $num_lines = count($lines); $i < $num_lines; $i++) {
+        // Sort out swap
+        if (preg_match('/total = ([\d\.]+)M\s+used = ([\d\.]+)M\s+free = ([\d\.]+)M/', $this->sysctl['vm.swapusage'], $swap_match)) {
+            list(, $swap_total, $swap_used, $swap_free) = $swap_match;
+            $return['swapTotal'] = $swap_total * 1000000;
+            $return['swapFree'] = $swap_free * 1000000;
+        }
 
-			// A drive or partition entry
-			if(preg_match('/^\s+(\d+):\s+([a-zA-Z0-9\_]+)\s+([\s\w]*) \*?(\d+(?:\.\d+)? [A-Z])B\s+([a-z0-9]+)/', $lines[$i], $m)) {
+        // Return ram info
+        return $return;
+    }
 
-				// Get size sorted out
-				$size_parts = explode(' ', $m[4]);
-				switch($size_parts[1]) {
-					case 'K':
-						$size = $size_parts[0] * 1000;
-					break;
-					case 'M':
-						$size = $size_parts[0] * 1000000;
-					break;
-					case 'G':
-						$size = $size_parts[0] * 1000000000;
-					break;
-					case 'T':
-						$size = $size_parts[0] * 1000000000000;
-					break;
-					case 'P':
-						$size = $size_parts[0] * 1000000000000000;
-					break;
-					default:
-						$size = false;
-					break;
-				}
+    // Model of mac
+    public function getModel()
+    {
+        if (preg_match('/^\s+Model Name:\s+(.+)/m', $this->systemProfiler, $m)) {
+            return $m[1];
+        }
 
-				// A drive?
-				if ($m[1] == 0) {
+        if (preg_match('/^([a-zA-Z]+)/', $this->sysctl['hw.model'], $m)) {
+            return $m[1];
+        } else {
+            return $this->sysctl['hw.model'];
+        }
+    }
 
-					// Finish prior drive
-					if (is_array($tmp))
-						$drives[] = $tmp;
+    // Battery
+    public function getBattery()
+    {
+        // Time?
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Battery');
+        }
 
-					// Try getting the name
-					$drive_name = false; // I'm pessimistic
-					try {
-						$drive_res = $this->exec->exec('diskutil', ' info /dev/'.$m[5]); 
-						if (preg_match('/^\s+Device \/ Media Name:\s+(.+)/m', $drive_res, $drive_m))
-							$drive_name = $drive_m[1];
-					}
-					catch(CallExtException $e) {
-					}
+        // Store any we find here
+        $batteries = array();
 
-					// Start this one off
-					$tmp = array(
-						'name' =>  $drive_name,
-						'vendor' => 'Unknown',
-						'device' => '/dev/'.$m[5],
-						'reads' => false,
-						'writes' => false,
-						'size' => $size,
-						'partitions' =>  array()
-					);
-				}
+        // Lines
+        $lines = explode("\n", $this->systemProfiler);
 
-				// Or a partition
-				elseif($m[1] > 0) {
+        // Hunt
+        $bat = array();
+        $in_bat_field = false;
 
-					// Save it
-					$tmp['partitions'][] = array(
-						'size' => $size,
-						'name' => '/dev/'.$m[5]
-					);
-				}
-			}
-		}
-		
-		// Save a drive
-		if (is_array($tmp))
-			$drives[] = $tmp;
+        foreach ($lines as $line) {
+            if (preg_match('/^\s+Battery Information/', $line)) {
+                $in_bat_field = true;
+                continue;
+            } elseif (preg_match('/^\s+System Power Settings/', $line)) {
+                $in_bat_field = false;
+                break;
+            } elseif ($in_bat_field && preg_match('/^\s+Fully charged: ([a-zA-Z]+)/i', $line, $m)) {
+                $bat['charged'] = $m[1] == 'Yes';
+            } elseif ($in_bat_field && preg_match('/^\s+Charging: ([a-zA-Z]+)/i', $line, $m)) {
+                $bat['charging'] = $m[1] == 'Yes';
+            } elseif ($in_bat_field && preg_match('/^\s+Charge remaining \(mAh\): (\d+)/i', $line, $m)) {
+                $bat['charge_now'] = (int) $m[1];
+            } elseif ($in_bat_field && preg_match('/^\s+Full charge capacity \(mAh\): (\d+)/i', $line, $m)) {
+                $bat['charge_full'] = (int) $m[1];
+            } elseif ($in_bat_field && preg_match('/^\s+Serial Number: ([A-Z0-9]+)/i', $line, $m)) {
+                $bat['serial'] = $m[1];
+            } elseif ($in_bat_field && preg_match('/^\s+Manufacturer: (\w+)/i', $line, $m)) {
+                $bat['vendor'] = $m[1];
+            } elseif ($in_bat_field && preg_match('/^\s+Device name: (\w+)/i', $line, $m)) {
+                $bat['name'] = $m[1];
+            }
+        }
 
-		// Give
-		return $drives;
-	}
+        // If we have what we need, append
+        if (isset($bat['charge_full']) && isset($bat['charge_now']) && isset($bat['charged']) && isset($bat['charging'])) {
+            $batteries[] = array(
+                'charge_full' => $bat['charge_full'],
+                'charge_now' => $bat['charge_now'],
+                'percentage' => $bat['charge_full'] > 0 && $bat['charge_now'] > 0 ? round($bat['charge_now'] / $bat['charge_full'], 4) * 100 .'%' : '?',
+                'device' => $bat['vendor'].' - '.$bat['name'],
+                'state' => $bat['charging'] ? 'Charging' : ($bat['charged'] ? 'Fully Charged' : 'Discharging'),
+            );
+        }
 
-	public function getVirtualization() {
+        // Give
+        return $batteries;
+    }
 
-		// Time?
-		if (!empty($this->settings['timer']))
-			$t = new Timer('Determining virtualization type');
+    // drives
+    public function getHD()
+    {
+        // Time?
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Drives');
+        }
 
-		// All results on google show this file only being present and related to VMware Fusion
-		if (file_exists('/dev/vmmon'))
-			return array('type' => 'host', 'method' => 'VMWare');
+        // Store disks here
+        $disks = array();
 
-		return false;
-	}
+        // Use system profiler to get info
+        try {
+            $res = $this->exec->exec('diskutil', ' list');
+        } catch (CallExtException $e) {
+            $this->error->add('Linfo drives', 'Error using `diskutil list` to get drives');
+
+            return array();
+        }
+
+        // Get it into lines
+        $lines = explode("\n", $res);
+
+        // Keep drives here
+        $drives = array();
+
+        // Work on tmp drive here
+        $tmp = false;
+
+        for ($i = 0, $num_lines = count($lines); $i < $num_lines; ++$i) {
+
+            // A drive or partition entry
+            if (preg_match('/^\s+(\d+):\s+([a-zA-Z0-9\_]+)\s+([\s\w]*) \*?(\d+(?:\.\d+)? [A-Z])B\s+([a-z0-9]+)/', $lines[$i], $m)) {
+
+                // Get size sorted out
+                $size_parts = explode(' ', $m[4]);
+                switch ($size_parts[1]) {
+                    case 'K':
+                        $size = $size_parts[0] * 1000;
+                    break;
+                    case 'M':
+                        $size = $size_parts[0] * 1000000;
+                    break;
+                    case 'G':
+                        $size = $size_parts[0] * 1000000000;
+                    break;
+                    case 'T':
+                        $size = $size_parts[0] * 1000000000000;
+                    break;
+                    case 'P':
+                        $size = $size_parts[0] * 1000000000000000;
+                    break;
+                    default:
+                        $size = false;
+                    break;
+                }
+
+                // A drive?
+                if ($m[1] == 0) {
+
+                    // Finish prior drive
+                    if (is_array($tmp)) {
+                        $drives[] = $tmp;
+                    }
+
+                    // Try getting the name
+                    $drive_name = false; // I'm pessimistic
+                    try {
+                        $drive_res = $this->exec->exec('diskutil', ' info /dev/'.$m[5]);
+                        if (preg_match('/^\s+Device \/ Media Name:\s+(.+)/m', $drive_res, $drive_m)) {
+                            $drive_name = $drive_m[1];
+                        }
+                    } catch (CallExtException $e) {
+                    }
+
+                    // Start this one off
+                    $tmp = array(
+                        'name' => $drive_name,
+                        'vendor' => 'Unknown',
+                        'device' => '/dev/'.$m[5],
+                        'reads' => false,
+                        'writes' => false,
+                        'size' => $size,
+                        'partitions' => array(),
+                    );
+                }
+
+                // Or a partition
+                elseif ($m[1] > 0) {
+
+                    // Save it
+                    $tmp['partitions'][] = array(
+                        'size' => $size,
+                        'name' => '/dev/'.$m[5],
+                    );
+                }
+            }
+        }
+
+        // Save a drive
+        if (is_array($tmp)) {
+            $drives[] = $tmp;
+        }
+
+        // Give
+        return $drives;
+    }
+
+    public function getVirtualization()
+    {
+
+        // Time?
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Determining virtualization type');
+        }
+
+        // All results on google show this file only being present and related to VMware Fusion
+        if (file_exists('/dev/vmmon')) {
+            return array('type' => 'host', 'method' => 'VMWare');
+        }
+
+        return false;
+    }
 }

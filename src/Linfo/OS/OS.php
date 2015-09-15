@@ -15,28 +15,34 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with Linfo.	If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 /**
  * Keep out hackers...
  */
 namespace Linfo\OS;
+
 use Linfo\Exceptions\Fatal;
 
-abstract class OS {
-	public function __call($name, $args) {
-		throw new Fatal('Method '.$name.' not present.');
-	}
+abstract class OS
+{
+    public function __call($name, $args)
+    {
+        throw new Fatal('Method '.$name.' not present.');
+    }
 
-	public function getAccessedIP() {
-		return isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] ? $_SERVER['SERVER_ADDR'] : (isset($_SERVER['LOCAL_ADDR']) && $_SERVER['LOCAL_ADDR'] ? $_SERVER['LOCAL_ADDR'] : 'Unknown');
-	}
+    public function getAccessedIP()
+    {
+        return isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] ? $_SERVER['SERVER_ADDR'] : (isset($_SERVER['LOCAL_ADDR']) && $_SERVER['LOCAL_ADDR'] ? $_SERVER['LOCAL_ADDR'] : 'Unknown');
+    }
 
-	public function getWebService() {
-		return isset($_SERVER['SERVER_SOFTWARE']) && $_SERVER['SERVER_SOFTWARE'] ? $_SERVER['SERVER_SOFTWARE'] : 'Unknown';
-	}
+    public function getWebService()
+    {
+        return isset($_SERVER['SERVER_SOFTWARE']) && $_SERVER['SERVER_SOFTWARE'] ? $_SERVER['SERVER_SOFTWARE'] : 'Unknown';
+    }
 
-	public function getPhpVersion() {
-		return phpversion();
-	}	
+    public function getPhpVersion()
+    {
+        return phpversion();
+    }
 }

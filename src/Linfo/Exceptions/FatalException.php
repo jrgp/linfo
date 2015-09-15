@@ -16,8 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Linfo.	If not, see <http://www.gnu.org/licenses/>.
  */
-
 namespace Linfo\Exceptions;
-use \Exception;
 
-class FatalException extends Exception {}
+use Exception;
+
+class FatalException extends Exception
+{
+}

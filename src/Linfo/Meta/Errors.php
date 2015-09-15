@@ -15,84 +15,84 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+ */
 namespace Linfo\Meta;
 
 /**
- * Use this class for all error handling
+ * Use this class for all error handling.
  */
-class Errors {
-	
-	/**
-	 * Store singleton instance here 
-	 * 
-	 * @var object
-	 * @static
-	 * @access protected
-	 */
-	protected static $_fledging;
+class Errors
+{
+    /**
+     * Store singleton instance here.
+     * 
+     * @var object
+     * @static
+     */
+    protected static $_fledging;
 
-	/**
-	 * Singleton. Get singleton instance
-	 * 
-	 * @param array $settings linfo settings
-	 * @access public
-	 * @return object LinfoError instance
-	 */
-	static public function Singleton($settings = null) {
-		$c = __CLASS__;
-		if (!isset(self::$_fledging))
-			self::$_fledging = new $c($settings);
-		return self::$_fledging;
-	}
-	
-	/**
-	 * Store error messages here
-	 *
-	 * @var array
-	 * @access private
-	 */
-	private $_errors = array();
+    /**
+     * Singleton. Get singleton instance.
+     * 
+     * @param array $settings linfo settings
+     *
+     * @return object LinfoError instance
+     */
+    public static function Singleton($settings = null)
+    {
+        $c = __CLASS__;
+        if (!isset(self::$_fledging)) {
+            self::$_fledging = new $c($settings);
+        }
 
-	/**
-	 * Add an error message
-	 *
-	 * @access public
-	 * @param string $whence name of error message source
-	 * @param string $message error message text
-	 */
-	public function add($whence, $message) {
-		$this->_errors[] = array($whence, $message);
-	}
+        return self::$_fledging;
+    }
 
-	/**
-	 * Get all error messages
-	 *
-	 * @access public
-	 * @return array of errors
-	 */
-	public function show() {
-		return $this->_errors;
-	}
+    /**
+     * Store error messages here.
+     *
+     * @var array
+     */
+    private $_errors = array();
 
-	/**
-	 * How many are there?
-	 *
-	 * @access public
-	 * @return int number of errors
-	 */
-	public function num() {
-		return count($this->_errors);
-	}
+    /**
+     * Add an error message.
+     *
+     * @param string $whence  name of error message source
+     * @param string $message error message text
+     */
+    public function add($whence, $message)
+    {
+        $this->_errors[] = array($whence, $message);
+    }
 
-	/**
-	 * Wipe out singleton instance. Used mainly for unit tests
-	 *
-	 * @static
-	 * @return void
-	 */
-	public static function clear() {
-		self::$_fledging = null;
-	}
+    /**
+     * Get all error messages.
+     *
+     * @return array of errors
+     */
+    public function show()
+    {
+        return $this->_errors;
+    }
+
+    /**
+     * How many are there?
+     *
+     * @return int number of errors
+     */
+    public function num()
+    {
+        return count($this->_errors);
+    }
+
+    /**
+     * Wipe out singleton instance. Used mainly for unit tests.
+     *
+     * @static
+     */
+    public static function clear()
+    {
+        self::$_fledging = null;
+    }
 }

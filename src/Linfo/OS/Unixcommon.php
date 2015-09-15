@@ -15,57 +15,63 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 /**
  * Keep out hackers...
  */
 namespace Linfo\OS;
-use \Linfo\Common;
+
+use Linfo\Common;
 
 /*
  * The Unix os's are largely similar and thus draw from this class.
 */
-abstract class Unixcommon extends OS {
+abstract class Unixcommon extends OS
+{
+    public function ensureFQDN($hostname)
+    {
+        $parts = explode('.', $hostname);
+        $num_parts = count($parts);
 
-	public function ensureFQDN($hostname) {
+        // Already FQDN, like a boss..
+        if ($num_parts >= 2) {
+            return $hostname;
+        }
 
-		$parts = explode('.', $hostname);
-		$num_parts = count($parts);
+        // Don't bother trying to expand on .local
+        if ($num_parts > 0 && $parts[$num_parts - 1] == '.local') {
+            return $hostname;
+        }
 
-		// Already FQDN, like a boss..
-		if ($num_parts >= 2)
-			return $hostname;
+        // This relies on reading /etc/hosts. 
+        if (!($contents = Common::getContents('/etc/hosts', false))) {
+            return $hostname;
+        }
 
-		// Don't bother trying to expand on .local
-		if ($num_parts > 0 && $parts[$num_parts - 1] == '.local')
-			return $hostname;
+        preg_match_all('/^[^\s#]+\s+(.+)/m', $contents, $matches, PREG_SET_ORDER);
 
-		// This relies on reading /etc/hosts. 
-		if (!($contents = Common::getContents('/etc/hosts', false)))
-			return $hostname;
+        // Lets see if we can do some magic with /etc/hosts..
+        foreach ($matches as $match) {
+            if (!preg_match_all('/(\S+)/', $match[1], $hosts, PREG_SET_ORDER)) {
+                continue;
+            }
 
-		preg_match_all('/^[^\s#]+\s+(.+)/m', $contents, $matches, PREG_SET_ORDER);
+            foreach ($hosts as $host) {
 
-		// Lets see if we can do some magic with /etc/hosts..
-		foreach ($matches as $match) {
+                // I don't want to expand on localhost as it's pointlesss
+                if (strpos('localhost', $host[1]) !== false) {
+                    continue;
+                }
 
-			if (!preg_match_all('/(\S+)/', $match[1], $hosts, PREG_SET_ORDER))
-				continue;
+                $entry_parts = explode('.', $host[1]);
+                if (count($entry_parts) > 1 && $entry_parts[0] == $hostname) {
+                    return $host[1];
+                }
+            }
+        }
 
-			foreach ($hosts as $host) {
-
-				// I don't want to expand on localhost as it's pointlesss
-				if (strpos('localhost', $host[1]) !== false) 
-					continue;
-
-				$entry_parts = explode('.', $host[1]);
-				if (count($entry_parts) > 1 && $entry_parts[0] == $hostname) 
-					return $host[1];
-			}
-		}
-
-		// Couldn't make it better :/
-		return $hostname;
-	}
+        // Couldn't make it better :/
+        return $hostname;
+    }
 }

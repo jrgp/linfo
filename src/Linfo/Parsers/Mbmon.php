@@ -19,66 +19,75 @@
 */
 
 namespace Linfo\Parsers;
-use \Exception;
+
+use Exception;
 
 /*
  * Deal with MbMon
  */
-class GetMbMon {
-	// Store these
-	protected $host, $port;
+class Mbmon
+{
+    // Store these
+    protected $host, $port;
 
-	// Default socket connect timeout
-	const timeout = 3;
+    // Default socket connect timeout
+    const timeout = 3;
 
-	// Localize host and port
-	public function setAddress($host, $port = 411) {
-		$this->host = $host;
-		$this->port = $port;
-	}
+    // Localize host and port
+    public function setAddress($host, $port = 411)
+    {
+        $this->host = $host;
+        $this->port = $port;
+    }
 
-	// Connect to host/port and get info
-	private function getSock() {
-		// Try connecting
-		if (!($sock = @fsockopen($this->host, $this->port, $errno, $errstr, self::timeout)))
-			throw new Exception('Error connecting');
+    // Connect to host/port and get info
+    private function getSock()
+    {
+        // Try connecting
+        if (!($sock = @fsockopen($this->host, $this->port, $errno, $errstr, self::timeout))) {
+            throw new Exception('Error connecting');
+        }
 
-		// Try getting stuff
-		$buffer = '';
-		while ($mid = @fgets($sock))
-			$buffer .= $mid;
+        // Try getting stuff
+        $buffer = '';
+        while ($mid = @fgets($sock)) {
+            $buffer .= $mid;
+        }
 
-		// Quit
-		@fclose($sock);
+        // Quit
+        @fclose($sock);
 
-		// Output:
-		return $buffer;
-	}
+        // Output:
+        return $buffer;
+    }
 
-	// Parse and return info from daemon socket
-	private function parseSockData($data) {
+    // Parse and return info from daemon socket
+    private function parseSockData($data)
+    {
+        $return = array();
 
-		$return = array();
+        $lines = (array) explode("\n", trim($data));
 
-		$lines = (array) explode("\n", trim($data));
+        foreach ($lines as $line) {
+            if (preg_match('/(\w+)\s*:\s*([-+]?[\d\.]+)/i', $line, $match) == 1) {
+                $return[] = array(
+                    'path' => 'N/A',
+                    'name' => $match[1],
+                    'temp' => $match[2],
+                    'unit' => '', // TODO
+                );
+            }
+        }
 
-		foreach ($lines as $line) {
-			if (preg_match('/(\w+)\s*:\s*([-+]?[\d\.]+)/i', $line, $match) == 1)
-				$return[] = array(
-					'path' => 'N/A',
-					'name' => $match[1],
-					'temp' => $match[2],
-					'unit' => '' // TODO
-				);
-		}
+        return $return;
+    }
 
-		return $return;
-	}
+    // Do work and return temps
+    public function work()
+    {
+        $sockResult = $this->getSock();
+        $temps = $this->parseSockData($sockResult);
 
-	// Do work and return temps
-	public function work() {
-		$sockResult = $this->getSock();
-		$temps = $this->parseSockData($sockResult);
-		return $temps;
-	}
+        return $temps;
+    }
 }

@@ -18,10 +18,9 @@
  * 
 */
 
+namespace Linfo\OS;
 
-namespace Linfo\OS; 
 use Linfo\Parsers\CallExt;
-
 
 /*
  * Get info on a Minix system
@@ -31,123 +30,128 @@ use Linfo\Parsers\CallExt;
  * impossible. Nevertheless, this is my attempt at doing so.
  */
 
-class Minix {
+class Minix
+{
+    // Store these here
+    protected $settings,
+        $exec,
+        $error;
 
-	// Store these here
-	protected
-		$settings,
-		$exec,
-		$error;
-	
-	// Start us off by localizing the settings and initializing the external
-	// application running class
-	function __construct($settings) {
+    // Start us off by localizing the settings and initializing the external
+    // application running class
+    public function __construct($settings)
+    {
 
-		// Localize settings
-		$this->settings = $settings;
-		
-		// Start up external app loader
-		$this->exec = new CallExt;
+        // Localize settings
+        $this->settings = $settings;
 
-		// Have it look in these places
-		$this->exec->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/bin'));
-	}
+        // Start up external app loader
+        $this->exec = new CallExt();
 
-	// Operating system
-	public function getOS() {
-		return 'Minix';
-	}
+        // Have it look in these places
+        $this->exec->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/bin'));
+    }
 
-	// Take advantage of php_uname for kernel
-	public function getKernel() {
-		return php_uname('r');
-	}
+    // Operating system
+    public function getOS()
+    {
+        return 'Minix';
+    }
 
-	// Use that function again for host name
-	public function getHostName() {
-		return php_uname('n');
-	}
+    // Take advantage of php_uname for kernel
+    public function getKernel()
+    {
+        return php_uname('r');
+    }
 
-	// Mounted file systems
-	// --- 
-	// Note: the `mount` command does not have file system type
-	// and php's disk_free_space/disk_total_space functions don't seem
-	// to work here
-	public function getMounts() {
+    // Use that function again for host name
+    public function getHostName()
+    {
+        return php_uname('n');
+    }
 
-		// Try using the `mount` command to get mounted file systems
-		try {
-			$res = $this->exec->exec('mount');
-		}
-		catch (CallExtException $e){
-			return array();
-		}
+    // Mounted file systems
+    // --- 
+    // Note: the `mount` command does not have file system type
+    // and php's disk_free_space/disk_total_space functions don't seem
+    // to work here
+    public function getMounts()
+    {
 
-		// Try matching up the output
-		if (preg_match_all('/^(\S+) is .+ mounted on (\S+) \(.+\)$/m', $res, $mount_matches, PREG_SET_ORDER) == 0)
-			return array();
+        // Try using the `mount` command to get mounted file systems
+        try {
+            $res = $this->exec->exec('mount');
+        } catch (CallExtException $e) {
+            return array();
+        }
 
-		// Store them here
-		$mounts = array();
-		
-		// Go through each match
-		foreach ($mount_matches as $mount) {
+        // Try matching up the output
+        if (preg_match_all('/^(\S+) is .+ mounted on (\S+) \(.+\)$/m', $res, $mount_matches, PREG_SET_ORDER) == 0) {
+            return array();
+        }
 
-			// These might be a waste
-			$size = @disk_total_space($mount[2]); 
-			$free = @disk_free_space($mount[2]); 
-			$used = $size - $free; 
+        // Store them here
+        $mounts = array();
 
-			// Save it
-			$mounts[] = array(
-				'device' => $mount[1],
-				'mount' => $mount[2],
-				'type' => '?', // Haven't a clue on how to get this on minix
-				'size' => $size,
-				'used' => $used,
-				'free' => $free,
-				'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false), 
-				'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false) 
-			);
-		}
-		
-		// Return them
-		return $mounts;
-	}
+        // Go through each match
+        foreach ($mount_matches as $mount) {
 
-	// Get network interfaces
-	// --- 
-	// netstat isn't installed by default and ifconfig doesn't have
-	// much functionality for viewing status, so I can't seem to get
-	// more than just name of interface
-	public function getNet() {
+            // These might be a waste
+            $size = @disk_total_space($mount[2]);
+            $free = @disk_free_space($mount[2]);
+            $used = $size - $free;
 
-		// Try getting it. 
-		try {
-			$res = $this->exec->exec('ifconfig', '-a');
-		}
-		catch (CallExtException $e){
-			return array();
-		}
+            // Save it
+            $mounts[] = array(
+                'device' => $mount[1],
+                'mount' => $mount[2],
+                'type' => '?', // Haven't a clue on how to get this on minix
+                'size' => $size,
+                'used' => $used,
+                'free' => $free,
+                'free_percent' => ((bool) $free != false && (bool) $size != false ? round($free / $size, 2) * 100 : false),
+                'used_percent' => ((bool) $used != false && (bool) $size != false ? round($used / $size, 2) * 100 : false),
+            );
+        }
 
-		// Match up the entries
-		if (preg_match_all('/^([^:]+)/m', $res, $net_matches, PREG_SET_ORDER) == 0)
-			return array();
-		
-		// Store them here
-		$nets = array();
-		
-		// Go through each
-		foreach ($net_matches as $net) {
+        // Return them
+        return $mounts;
+    }
 
-			// Save this one
-			$nets[$net[1]] = array(
-				'state' => '?',
-				'type' => '?'
-			);
-		}
-		
-		// Give them
-		return $nets;
-	}
+    // Get network interfaces
+    // --- 
+    // netstat isn't installed by default and ifconfig doesn't have
+    // much functionality for viewing status, so I can't seem to get
+    // more than just name of interface
+    public function getNet()
+    {
+
+        // Try getting it. 
+        try {
+            $res = $this->exec->exec('ifconfig', '-a');
+        } catch (CallExtException $e) {
+            return array();
+        }
+
+        // Match up the entries
+        if (preg_match_all('/^([^:]+)/m', $res, $net_matches, PREG_SET_ORDER) == 0) {
+            return array();
+        }
+
+        // Store them here
+        $nets = array();
+
+        // Go through each
+        foreach ($net_matches as $net) {
+
+            // Save this one
+            $nets[$net[1]] = array(
+                'state' => '?',
+                'type' => '?',
+            );
+        }
+
+        // Give them
+        return $nets;
+    }
 }
