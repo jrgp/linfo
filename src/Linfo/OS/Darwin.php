@@ -291,8 +291,10 @@ class Darwin extends BSDcommon
             return '';
         }
 
-        // Get it textual, as in days/minutes/hours/etc
-        return Common::secondsConvert(time() - $m[1]).'; booted '.date($this->settings['dates'], $m[1]);
+        return array(
+            'text' => Common::secondsConvert(time() - $m[1]),
+            'bootedTimestamp' => $m[1],
+        );
     }
 
     // Get system load

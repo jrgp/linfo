@@ -1,5 +1,8 @@
 <?php
 
+use \Linfo\Common;
+use \Linfo\Linfo;
+
 if (PHP_OS == 'Darwin') {
     class OS_DarwinTest extends PHPUnit_Framework_TestCase
     {
@@ -10,13 +13,13 @@ if (PHP_OS == 'Darwin') {
             $linfo = new Linfo();
             self::$parser = $linfo->getParser();
 
-            self::assertInstanceOf('OS_Darwin', self::$parser);
+            self::assertInstanceOf('\\Linfo\\OS\\Darwin', self::$parser);
         }
 
         public static function tearDownAfterClass()
         {
             self::$parser = null;
-            LinfoCommon::unconfig();
+            Common::unconfig();
         }
 
   /**
