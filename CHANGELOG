@@ -105,7 +105,7 @@ v2.0.2 11/24/2014
  - Made hwmon Linux parsing more intricate and work on newer kernels
  - Fixed Windows and other OSs bug where parser functions are all private
 
-v?.?.? ??/??/????
+v2.0.3 9/15/2015
  - Showing IP is now optional
  - James Price added Grunt functionality, cleaned up sass themes, added new theme
  - Fixed some CUPS parsing, and some other ideas from Stefan Briest
@@ -115,3 +115,4 @@ v?.?.? ??/??/????
  - Composer improvements, thanks to Tom Witkowski
  - Travis testing. Support definitely confirmed for 5.3+
  - NIC Linux driver tection, Linux SSD detection
+ - Various suggestions from various people :)
