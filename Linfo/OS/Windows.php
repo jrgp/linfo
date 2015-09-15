@@ -231,7 +231,7 @@ class Windows extends OS {
 		$booted_ts = mktime($booted['hour'], $booted['minute'], $booted['second'], $booted['month'], $booted['day'], $booted['year']);
 		
 		return array(
-			'text' => LinfoCommon::secondsConvert(time() - $booted_ts),
+			'text' => Common::secondsConvert(time() - $booted_ts),
 			'bootedTimestamp' => $booted_ts
 		);
 	}

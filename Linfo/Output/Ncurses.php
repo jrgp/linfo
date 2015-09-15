@@ -20,6 +20,7 @@
 namespace Linfo\Output;
 
 use \Linfo\Linfo;
+use \Linfo\Common;
 use \Linfo\Exceptions\FatalException;
 
 /**
@@ -102,9 +103,9 @@ class LinfoNcurses {
 			array(
 				'name' => $lang['memory'],
 				'content' => array(
-					array($lang['size'], LinfoCommon::byteConvert($info['RAM']['total'])),
-					array($lang['used'], LinfoCommon::byteConvert($info['RAM']['total'] - $info['RAM']['free'])),
-					array($lang['free'], LinfoCommon::byteConvert($info['RAM']['free'])),
+					array($lang['size'], Common::byteConvert($info['RAM']['total'])),
+					array($lang['used'], Common::byteConvert($info['RAM']['total'] - $info['RAM']['free'])),
+					array($lang['free'], Common::byteConvert($info['RAM']['free'])),
 				)
 			)
 		);
