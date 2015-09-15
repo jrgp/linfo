@@ -21,6 +21,7 @@
  * Keep out hackers...
  */
 namespace Linfo\OS;
+use \Linfo\Common;
 
 /*
  * The Unix os's are largely similar and thus draw from this class.
@@ -41,7 +42,7 @@ abstract class Unixcommon extends OS {
 			return $hostname;
 
 		// This relies on reading /etc/hosts. 
-		if (!($contents = LinfoCommon::getContents('/etc/hosts', false)))
+		if (!($contents = Common::getContents('/etc/hosts', false)))
 			return $hostname;
 
 		preg_match_all('/^[^\s#]+\s+(.+)/m', $contents, $matches, PREG_SET_ORDER);
