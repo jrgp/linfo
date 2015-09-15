@@ -53,8 +53,8 @@ class Linfo {
 		$this->time_start = microtime(true);
 
     // Some paths..
-    $this->linfo_testdir = dirname(__DIR__).'/tests';
-    $this->linfo_localdir = dirname(__DIR__).'/';
+    $this->linfo_testdir = dirname(dirname(__DIR__)).'/tests';
+    $this->linfo_localdir = dirname(dirname(__DIR__)).'/';
 
 		// Get our version from git setattribs
 		$scm = '$Format:%ci$';
@@ -356,13 +356,13 @@ class Linfo {
 
 		// Load translation, defaulting to english of keys are missing (assuming
 		// we're not using english anyway and the english translation indeed exists)
-		if (is_file($this->linfo_localdir . 'Linfo/Lang/en.php') && $this->settings['language'] != 'en') 
-			$this->lang = array_merge(require($this->linfo_localdir . 'Linfo/Lang/en.php'), 
-				require($this->linfo_localdir . 'Linfo/Lang/'.$this->settings['language'].'.php'));
+		if (is_file($this->linfo_localdir . 'src/Linfo/Lang/en.php') && $this->settings['language'] != 'en') 
+			$this->lang = array_merge(require($this->linfo_localdir . 'src/Linfo/Lang/en.php'), 
+				require($this->linfo_localdir . 'src/Linfo/Lang/'.$this->settings['language'].'.php'));
 
 		// Otherwise snag desired translation, be it english or a non-english without english to fall back on
 		else
-			$this->lang = require($this->linfo_localdir . 'Linfo/Lang/'.$this->settings['language'].'.php');
+			$this->lang = require($this->linfo_localdir . 'src/Linfo/Lang/'.$this->settings['language'].'.php');
 	}
 
 	protected function getOS() {
@@ -482,7 +482,7 @@ class Linfo {
   }
 
   public function getCacheDir() {
-    return dirname(__DIR__).'/cache/';
+    return dirname(dirname(__DIR__)).'/cache/';
   }
 }
 

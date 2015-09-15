@@ -1,8 +1,9 @@
 <?php
 
+// Just used for when visiting Linfo's standalone web UI after a fresh checkout
 spl_autoload_register(function($n) {
 
-  $path = __DIR__.'/'.str_replace('\\', '/', $n).'.php';
+  $path = __DIR__.'/src/'.str_replace('\\', '/', $n).'.php';
 
   if (!$path)
     return;

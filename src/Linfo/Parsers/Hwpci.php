@@ -63,7 +63,7 @@ class Hwpci {
 			'_'.substr(md5(Common::getContents('/proc/sys/kernel/hostname')), 0, 10) : '_x';
 
 		// Path to the cache file
-		$this->_cache_file = dirname(dirname(__DIR__)).'/cache/ids_cache'.$sys_id.($this->_use_json ? '.json' : '');
+		$this->_cache_file = dirname(dirname(dirname(__DIR__))).'/cache/ids_cache'.$sys_id.($this->_use_json ? '.json' : '');
 
 		// Load contents of cache
 		$this->_populate_cache();
@@ -216,7 +216,7 @@ class Hwpci {
 	 * @access private
 	 */
 	private function _write_cache() {
-		if (is_writable(dirname(dirname(__DIR__)).'/cache')) 
+		if (is_writable(dirname(dirname(dirname(__DIR__))).'/cache')) 
 			@file_put_contents($this->_cache_file, $this->_use_json ? 
 				json_encode(array(
 					'hw' => array(
