@@ -19,14 +19,14 @@
 */
 
 
-defined('IN_LINFO') or exit;
+namespace Linfo\Lang;
 
 /*
  * Chinese translation
  * 如果您有任何对翻译的建议请联系:Digimoncn@Gmail.com
  */
 
-$lang = array(
+return array(
 	'header' => 'System Health and Information',
 	'core' => '核心信息',
 	'os' => '操作系统',

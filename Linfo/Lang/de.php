@@ -19,13 +19,13 @@
 */
 
 
-defined('IN_LINFO') or exit;
+namespace Linfo\Lang;
 
 /*
  * German translation
  */
 
-$lang = array(
+return array(
 	'header' => 'Systeminformationen',
 	'core' => 'Kern',
 	'os' => 'OS',

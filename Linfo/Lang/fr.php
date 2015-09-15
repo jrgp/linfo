@@ -19,13 +19,13 @@
 */
 
 
-defined('IN_LINFO') or exit;
+namespace Linfo\Lang;
 
 /*
  * Traduction française : Jean-Bernard Yata yata.jb@revolsys.fr
  */
 
-$lang = array(
+return array(
 	'header' => 'Informations Générales du Système',
 	'core' => 'Principal',
 	'os' => 'Système d\'exploitation',

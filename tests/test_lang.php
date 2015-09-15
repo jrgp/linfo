@@ -1,3 +1,3 @@
 <?php
 
-require dirname(dirname(__FILE__)).'/lang/en.php';
+return require dirname(dirname(__FILE__)).'/Linfo/Lang/en.php';

@@ -19,14 +19,14 @@
 */
 
 
-defined('IN_LINFO') or exit;
+namespace Linfo\Lang;
 
 /*
  * Italian translation
  * By mte90 - http://www.mte90.net
  */
 
-$lang = array(
+return array(
 	'header' => 'Informazioni e Stato del Sistema',
 	'core' => 'Sistema',
 	'os' => 'SO',

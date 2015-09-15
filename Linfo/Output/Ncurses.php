@@ -17,10 +17,10 @@
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**
- * Keep out hackers...
- */
-defined('IN_LINFO') or exit;
+namespace Linfo\Output;
+
+use \Linfo\Linfo;
+use \Linfo\Exceptions\FatalException;
 
 /**
  * Output in ncurses format for client side CLI functionality
@@ -45,7 +45,7 @@ class LinfoNcurses {
 		// We obviously need this
 		if (!extension_loaded('ncurses')) {
 			$this->loaded = false;
-			throw new LinfoFatalException('ncurses extension not loaded');
+			throw new FatalException('ncurses extension not loaded');
 		}
 
 		// Start ncurses

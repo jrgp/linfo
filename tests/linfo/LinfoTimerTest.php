@@ -1,26 +1,21 @@
 <?php
 
+use \Linfo\Meta\Timer;
+
 class LinfoTimerTest extends PHPUnit_Framework_TestCase {
 
   /**
    * @test
    */
-  public function Singleton() {
-    $this->assertInstanceOf('LinfoTimer', LinfoTimer::Singleton());
-  }
-
-  /**
-   * @test
-   */
   public function runTimers() {
-    $t1 = new LinfoTimerStart('test1');
+    $t1 = new Timer('test1');
     unset($t1);
-    $t2 = new LinfoTimerStart('test2');
+    $t2 = new Timer('test2');
     unset($t2);
-    $this->assertCount(2, LinfoTimer::Singleton()->getResults());
+    $this->assertCount(2, Timer::getResults());
   }
 
   public function tearDown() {
-    LinfoTimer::clear();
+    Timer::clear();
   }
 }

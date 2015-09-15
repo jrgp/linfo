@@ -1,24 +1,26 @@
 <?php
 
-class LinfoErrorTest extends PHPUnit_Framework_TestCase {
+use \Linfo\Meta\Errors;
+
+class ErrorTest extends PHPUnit_Framework_TestCase {
 
   /**
    * @test
    */
   public function Singleton() {
-    $this->assertInstanceOf('LinfoError', LinfoError::Singleton());
+    $this->assertInstanceOf('\\Linfo\\Meta\\Errors', Errors::Singleton());
   }
 
   /**
    * @test
    */
   public function add() {
-    LinfoError::Singleton()->add('testing', 'testing 123');
-    LinfoError::Singleton()->add('testing', 'testing 456');
-    $this->assertCount(2, LinfoError::Singleton()->show());
+    Errors::Singleton()->add('testing', 'testing 123');
+    Errors::Singleton()->add('testing', 'testing 456');
+    $this->assertCount(2, Errors::Singleton()->show());
   }
 
   public function tearDown() {
-    LinfoError::clear();
+    Errors::clear();
   }
 }
