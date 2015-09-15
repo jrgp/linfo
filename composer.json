@@ -24,5 +24,9 @@
   },
   "suggest":{
     "ext-com":"On Windows"
-  }
+  },
+"autoload": {
+"psr-4": {"Linfo\\": "Linfo"}
+}
+
 }
