@@ -301,23 +301,6 @@ class Linfo {
 			return;
 		}
 
-		if(!$settings) {
-
-      // Support legacy config files
-      define('IN_LINFO', '1');
-
-			// If configuration file does not exist but the sample does, say so
-			if (!is_file($this->linfo_localdir . 'config.inc.php') && is_file($this->linfo_localdir . 'sample.config.inc.php'))
-				throw new FatalException('Make changes to sample.config.inc.php then rename as config.inc.php');
-	
-			// If the config file is just gone, also say so
-			elseif(!is_file($this->linfo_localdir . 'config.inc.php'))
-				throw new FatalException('Config file not found.');
-	
-			// It exists; load it
-			$settings = Common::getVarFromFile($this->linfo_localdir . 'config.inc.php', 'settings');
-		}
-
 		// Don't just blindly assume we have the ob_* functions...
 		if (!function_exists('ob_start'))
 			$settings['compress_content'] = false;

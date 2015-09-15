@@ -19,11 +19,25 @@ spl_autoload_register(function($n) {
   }
 });
 
+use \Linfo\Exceptions\FatalException;
+use \Linfo\Linfo;
+use \Linfo\Common;
+
 if (!defined('LINFO_TESTING')) {
 
   try {
 
-    $linfo = new \Linfo\Linfo();
+    // Load settings file..
+    // Support legacy config files
+    define('IN_LINFO', '1');
+    if (!is_file(__DIR__.'/config.inc.php') && is_file(__DIR__.'/sample.config.inc.php'))
+      throw new FatalException('Make changes to sample.config.inc.php then rename as config.inc.php');
+    elseif(!is_file(__DIR__.'/config.inc.php'))
+      throw new FatalException('Config file not found.');
+
+    $settings = Common::getVarFromFile(__DIR__.'/config.inc.php', 'settings');
+
+    $linfo = new Linfo($settings);
     $linfo->scan();
 
     switch (array_key_exists('out', $_GET) ? strtolower($_GET['out']) : 'html') {
@@ -51,7 +65,7 @@ if (!defined('LINFO_TESTING')) {
     }
 
   }
-  catch (\Linfo\Exceptions\FatalException $e) {
+  catch (FatalException $e) {
     echo $e->getMessage()."\n";
     exit(1);
   }
