@@ -24,10 +24,5 @@
   },
   "suggest":{
     "ext-com":"On Windows"
-  },
-  "autoload":{
-    "files":[
-      "init.php"
-    ]
   }
 }
