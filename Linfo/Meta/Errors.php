@@ -17,15 +17,12 @@
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**
- * Keep out hackers...
- */
-defined('IN_LINFO') or exit;
+namespace Linfo\Meta;
 
 /**
- * Used to time how long it takes to fetch each bit of information. 
+ * Use this class for all error handling
  */
-class LinfoTimer {
+class Errors {
 	
 	/**
 	 * Store singleton instance here 
@@ -43,41 +40,50 @@ class LinfoTimer {
 	 * @access public
 	 * @return object LinfoError instance
 	 */
-	public static function Singleton($settings = null) {
+	static public function Singleton($settings = null) {
 		$c = __CLASS__;
 		if (!isset(self::$_fledging))
 			self::$_fledging = new $c($settings);
 		return self::$_fledging;
 	}
+	
+	/**
+	 * Store error messages here
+	 *
+	 * @var array
+	 * @access private
+	 */
+	private $_errors = array();
 
 	/**
-	 * Store the timer results here
-	 * 
-	 * @var array
-	 * @access protected
-	 */
-	protected $_results = array();  
-	
-	/**
-	 * Save a timed result. 
-	 * 
-	 * @param string $id timer name
-	 * @param float $duration amount taken
+	 * Add an error message
+	 *
 	 * @access public
-	 * @return void
+	 * @param string $whence name of error message source
+	 * @param string $message error message text
 	 */
-	public function save($id, $duration) {
-		$this->_results[] = array($id, $duration);
+	public function add($whence, $message) {
+		$this->_errors[] = array($whence, $message);
 	}
-	
+
 	/**
-	 * Return the results
-	 * 
+	 * Get all error messages
+	 *
 	 * @access public
-	 * @return array the results
+	 * @return array of errors
 	 */
-	public function getResults() {
-		return $this->_results;
+	public function show() {
+		return $this->_errors;
+	}
+
+	/**
+	 * How many are there?
+	 *
+	 * @access public
+	 * @return int number of errors
+	 */
+	public function num() {
+		return count($this->_errors);
 	}
 
 	/**
@@ -90,4 +96,3 @@ class LinfoTimer {
 		self::$_fledging = null;
 	}
 }
-

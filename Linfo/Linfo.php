@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of Linfo (c) 2014 Joseph Gillotti.
+ * This file is part of Linfo (c) 2014, 2015 Joseph Gillotti.
  * 
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,13 @@
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Keep out hackers...
- */
-defined('IN_LINFO') or exit;
+namespace Linfo;
+use \Linfo\Common;
+use \Linfo\Parsers\CallExt;
+use \Linfo\Exceptions\FatalException;
+use \Linfo\Meta\Errors;
+use \ReflectionClass;
+use \ReflectionException;
 
 /**
  * Linfo
@@ -28,7 +31,7 @@ defined('IN_LINFO') or exit;
  * Serve as the script's "controller". Leverages other classes. Loads settings,
  * outputs them in formats, runs extensions, etc.
  *
- * @throws LinfoFatalException
+ * @throws FatalException
  */
 class Linfo {
 
@@ -40,12 +43,18 @@ class Linfo {
 
 		$app_name = 'Linfo',
 		$version = '',
-		$time_start = 0;
+		$time_start = 0,
+    $linfo_testdir = null,
+    $linfo_localdir = null;
 
 	public function __construct($settings = array()) {
 
 		// Time us
 		$this->time_start = microtime(true);
+
+    // Some paths..
+    $this->linfo_testdir = dirname(__DIR__).'/tests';
+    $this->linfo_localdir = dirname(__DIR__).'/';
 
 		// Get our version from git setattribs
 		$scm = '$Format:%ci$';
@@ -53,27 +62,28 @@ class Linfo {
 
 		// Run through dependencies / sanity checking
 		if (!extension_loaded('pcre') && !function_exists('preg_match') && !function_exists('preg_match_all'))
-			throw new LinfoFatalException($this->app_name.' needs the `pcre\' extension to be loaded. http://us2.php.net/manual/en/book.pcre.php');
+			throw new FatalException($this->app_name.' needs the `pcre\' extension to be loaded. http://us2.php.net/manual/en/book.pcre.php');
 
 		// Warnings usually displayed to browser happen if date.timezone isn't set in php 5.3+
 		if (!ini_get('date.timezone')) 
 			@ini_set('date.timezone', 'Etc/UTC');
+
 
 		// Load our settings/language
 		$this->loadSettings($settings);
 		$this->loadLanguage();
 		
 		// Some classes need our vars; config them
-		LinfoCommon::config($this);
-		CallExt::config($this);
+		Common::config($this);
+    CallExt::config($this);
 
 		// Determine OS
 		$os = $this->getOS();
 
 		if (!$os)
-			throw new LinfoFatalException('Unknown/unsupported operating system');
+			throw new FatalException('Unknown/unsupported operating system');
 
-		$distro_class = 'OS_'.$os;
+		$distro_class = '\\Linfo\\OS\\'.$os;
 		$this->parser = new $distro_class($this->settings);
 	}
 
@@ -285,23 +295,27 @@ class Linfo {
 
 		// Running unit tests?
 		if (defined('LINFO_TESTING')) {
-			$this->settings = LinfoCommon::getVarFromFile(LINFO_TESTDIR . '/test_settings.php', 'settings');
+			$this->settings = Common::getVarFromFile($this->linfo_testdir . '/test_settings.php', 'settings');
 			if (!is_array($this->settings))
-				throw new LinfoFatalException('Failed getting test-specific settings');
+				throw new FatalException('Failed getting test-specific settings');
 			return;
 		}
 
 		if(!$settings) {
+
+      // Support legacy config files
+      define('IN_LINFO', '1');
+
 			// If configuration file does not exist but the sample does, say so
-			if (!is_file(LINFO_LOCAL_PATH . 'config.inc.php') && is_file(LINFO_LOCAL_PATH . 'sample.config.inc.php'))
-				throw new LinfoFatalException('Make changes to sample.config.inc.php then rename as config.inc.php');
+			if (!is_file($this->linfo_localdir . 'config.inc.php') && is_file($this->linfo_localdir . 'sample.config.inc.php'))
+				throw new FatalException('Make changes to sample.config.inc.php then rename as config.inc.php');
 	
 			// If the config file is just gone, also say so
-			elseif(!is_file(LINFO_LOCAL_PATH . 'config.inc.php'))
-				throw new LinfoFatalException('Config file not found.');
+			elseif(!is_file($this->linfo_localdir . 'config.inc.php'))
+				throw new FatalException('Config file not found.');
 	
 			// It exists; load it
-			$settings = LinfoCommon::getVarFromFile(LINFO_LOCAL_PATH . 'config.inc.php', 'settings');
+			$settings = Common::getVarFromFile($this->linfo_localdir . 'config.inc.php', 'settings');
 		}
 
 		// Don't just blindly assume we have the ob_* functions...
@@ -324,7 +338,7 @@ class Linfo {
 			$settings['language'] = 'en';
 
 		// If it can't be found default to english
-		if (!is_file(LINFO_LOCAL_PATH . 'lang/'.$settings['language'].'.php'))
+		if (!is_file($this->linfo_localdir . 'lang/'.$settings['language'].'.php'))
 			$settings['language'] = 'en';
 
 		$this->settings = $settings;
@@ -334,21 +348,21 @@ class Linfo {
 
 		// Running unit tests?
 		if (defined('LINFO_TESTING')) {
-			$this->lang = LinfoCommon::getVarFromFile(LINFO_TESTDIR . '/test_lang.php', 'lang');
+			$this->lang = require($this->linfo_testdir . '/test_lang.php');
 			if (!is_array($this->lang))
-				throw new LinfoFatalException('Failed getting test-specific language');
+				throw new FatalException('Failed getting test-specific language');
 			return;
 		}
 
 		// Load translation, defaulting to english of keys are missing (assuming
 		// we're not using english anyway and the english translation indeed exists)
-		if (is_file(LINFO_LOCAL_PATH . 'lang/en.php') && $this->settings['language'] != 'en') 
-			$this->lang = array_merge(LinfoCommon::getVarFromFile(LINFO_LOCAL_PATH . 'lang/en.php', 'lang'), 
-				LinfoCommon::getVarFromFile(LINFO_LOCAL_PATH . 'lang/'.$this->settings['language'].'.php', 'lang'));
+		if (is_file($this->linfo_localdir . 'Linfo/Lang/en.php') && $this->settings['language'] != 'en') 
+			$this->lang = array_merge(require($this->linfo_localdir . 'Linfo/Lang/en.php'), 
+				require($this->linfo_localdir . 'Linfo/Lang/'.$this->settings['language'].'.php'));
 
 		// Otherwise snag desired translation, be it english or a non-english without english to fall back on
 		else
-			$this->lang = LinfoCommon::getVarFromFile(LINFO_LOCAL_PATH . 'lang/'.$this->settings['language'].'.php', 'lang');
+			$this->lang = require($this->linfo_localdir . 'Linfo/Lang/'.$this->settings['language'].'.php');
 	}
 
 	protected function getOS() {
@@ -386,43 +400,6 @@ class Linfo {
 		return $this->info;
 	}
 
-	/*
-	 * getInfo()
-	 *
-	 * Output data in a variety of methods depending on situation
-	 */
-	public function output() {
-
-		$output = new LinfoOutput($this);
-
-		if (defined('LINFO_CLI') && extension_loaded('ncurses') && isset($_SERVER['argv']) && !in_array('--nocurses', $_SERVER['argv'])) {
-			$output->ncursesOut();
-			return;
-		}
-
-		switch (array_key_exists('out', $_GET) ? $_GET['out'] : 'html') {
-			case 'html':
-			default:
-				$output->htmlOut();
-			break;
-
-			case 'json':
-			case 'jsonp': // To use JSON-P, pass the GET arg - callback=function_name
-				$output->jsonOut();
-			break;
-
-			case 'php_array':
-				$output->serializedOut();
-			break;
-
-			case 'xml':
-				if (!extension_loaded('SimpleXML'))
-					throw new LinfoFatalException('Cannot generate XML. Install php\'s SimpleXML extension.');
-				$output->xmlOut();
-			break;
-		}
-	}
-
 	protected function runExtensions() {
 		$this->info['extensions'] = array();
 
@@ -438,17 +415,21 @@ class Linfo {
 
 			// Anti hack
 			if (!preg_match('/^[a-z0-9-_]+$/i', $ext)) {
-				LinfoError::Singleton()->add('Extension Loader', 'Not going to load "'.$ext.'" extension as only characters allowed in name are letters/numbers/-_');
+				Errors::Singleton()->add('Extension Loader', 'Not going to load "'.$ext.'" extension as only characters allowed in name are letters/numbers/-_');
 				continue;
 			}
 
+      // Support older config files with lowercase
+      if (preg_match('/^[a-z]/', $ext))
+        $ext = ucfirst($ext);
+
 			// Try loading our class..
 			try {
-				$reflector = new ReflectionClass('ext_'.$ext);
+				$reflector = new ReflectionClass('\\Linfo\\Extension\\'.$ext);
 				$ext_class = $reflector->newInstance($this);
 			}
 			catch (ReflectionException $e) {
-				LinfoError::Singleton()->add('Extension Loader', 'Cannot instantiate class for "'.$ext.'" extension: '.$e->getMessage());
+				Errors::Singleton()->add('Extension Loader', 'Cannot instantiate class for "'.$ext.'" extension: '.$e->getMessage());
 				continue;
 			}
 
@@ -491,6 +472,18 @@ class Linfo {
 	public function getParser() {
 		return $this->parser;
 	}
+
+  public function getLocalDir() {
+    return $this->linfo_localdir;
+  }
+
+  public function getTestDir() {
+    return $this->linfo_testdir;
+  }
+
+  public function getCacheDir() {
+    return dirname(__DIR__).'/cache/';
+  }
 }
 
 /*

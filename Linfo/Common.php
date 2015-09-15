@@ -17,12 +17,9 @@
  * along with Linfo.	If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**
- * Keep out hackers...
- */
-defined('IN_LINFO') or exit;
+namespace Linfo;
 
-class LinfoCommon {
+class Common {
 
 	protected static
 		$settings = array(),

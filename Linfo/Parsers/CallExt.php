@@ -17,15 +17,11 @@
  * along with Linfo.	If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**
- * Keep out hackers...
- */
-defined('IN_LINFO') or exit; 
+namespace Linfo\Parsers;
 
-/**
- * Exception for CallExt class
- */
-class CallExtException extends Exception {}
+use \Linfo\Common;
+use \Linfo\Linfo;
+use \Exception;
 
 /**
  * Class used to call external programs 
@@ -85,7 +81,7 @@ class CallExt {
 	/**
 	 * Run a command and cache its output for later
 	 *
-	 * @throws CallExtException
+	 * @throws Exception
 	 * @param string $name name of executable to call
 	 * @param string $switches command arguments
 	 */
@@ -108,7 +104,7 @@ class CallExt {
 				$command = "$path$name $switches";
 
 				// Sudoing?
-				$command = $attempt_sudo ? LinfoCommon::locateActualPath(LinfoCommon::arrayAppendString($this->searchPaths, 'sudo', '%2s%1s')) . ' ' . $command : $command;
+				$command = $attempt_sudo ? Common::locateActualPath(Common::arrayAppendString($this->searchPaths, 'sudo', '%2s%1s')) . ' ' . $command : $command;
 
 				// Result of command
 				$result = `$command`;
@@ -125,6 +121,6 @@ class CallExt {
 		}
 
 		// Never got it
-		throw new CallExtException('Exec `'.$name.'\' not found');
+		throw new Exception('Exec `'.$name.'\' not found');
 	}
 }

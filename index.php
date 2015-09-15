@@ -1,47 +1,58 @@
 <?php
 
-/*
- * This file is part of Linfo (c) 2010-2015 Joseph Gillotti.
- * 
- * Linfo is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * Linfo is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
- * 
-*/
+spl_autoload_register(function($n) {
 
-// Load libs
-require_once dirname(__FILE__).'/init.php';
+  $path = __DIR__.'/'.str_replace('\\', '/', $n).'.php';
 
-// Begin
-try {
+  if (!$path)
+    return;
 
-  // Load settings and language
-	$linfo = new Linfo;
+  if (!is_file($path)) 
+    return;
 
-  // Run through /proc or wherever and build our list of settings
-	$linfo->scan();
+  require_once $path;
 
-  // Give it off in html/json/whatever
-	$linfo->output();
+  if (!class_exists($n) && !interface_exists($n)) {
+    echo "$n not exists in $path\n";
+    die(1);
+  }
+});
+
+if (!defined('LINFO_TESTING')) {
+
+  try {
+
+    $linfo = new \Linfo\Linfo();
+    $linfo->scan();
+
+    switch (array_key_exists('out', $_GET) ? strtolower($_GET['out']) : 'html') {
+      case 'html':
+      default:
+        $output = new \Linfo\Output\Html($linfo);
+        $output->output();
+      break;
+
+      case 'json':
+      case 'jsonp': // To use JSON-P, pass the GET arg - callback=function_name
+        $output = new \Linfo\Output\Json($linfo, array_key_exists('callback', $_GET) ? $_GET['callback'] : null);
+        $output->output();
+      break;
+
+      case 'php_array':
+        $output = new \Linfo\Output\Serialized($linfo);
+        $output->output();
+      break;
+
+      case 'xml':
+        $output = new \Linfo\Output\Xml($linfo);
+        $output->output();
+      break;
+    }
+
+  }
+  catch (\Linfo\Exceptions\FatalException $e) {
+    echo $e->getMessage()."\n";
+    exit(1);
+  }
+
 }
-
-// No more inline exit's in any of Linfo's core code!
-catch (LinfoFatalException $e) {
-	echo $e->getMessage()."\n";
-	exit(1);
-}
-
-// Developers:
-// if you include init.php as above and instantiate a $linfo
-// object, you can get an associative array of all of the 
-// system info with $linfo->getInfo() after running $linfo->scan();
-// Just catch the LinfoFatalException for fatal errors

@@ -19,7 +19,7 @@
 */
 
 
-defined('IN_LINFO') or exit;
+namespace Linfo\Lang;
 
 /*
  * Portuguese translation
@@ -27,7 +27,7 @@ defined('IN_LINFO') or exit;
  * fdrossi@gmail.com
  */
 
-$lang = array(
+return array(
 	'header' => 'Informações do Sistema',
 	'core' => 'Hardware',
 	'os' => 'Sistema Operacional',

@@ -1,5 +1,8 @@
 <?php
 
+use \Linfo\Linfo;
+use \Linfo\Common;
+
 class LinfoTest extends PHPUnit_Framework_TestCase {
 
   protected static $linfo;
@@ -10,7 +13,7 @@ class LinfoTest extends PHPUnit_Framework_TestCase {
 
   public static function tearDownAfterClass() {
     self::$linfo = null;
-    LinfoCommon::unconfig();
+    Common::unconfig();
   }
 
   /**
@@ -52,7 +55,7 @@ class LinfoTest extends PHPUnit_Framework_TestCase {
    * @test
    */
   public static function getParser() {
-    self::assertInstanceOf('OS', self::$linfo->getParser());
+    self::assertInstanceOf('\\Linfo\\OS\\OS', self::$linfo->getParser());
   }
 }
 

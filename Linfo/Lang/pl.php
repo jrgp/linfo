@@ -19,13 +19,13 @@
 */
 
 
-defined('IN_LINFO') or exit;
+namespace Linfo\Lang;
 
 /*
  * Polish translation
  */
 
-$lang = array(
+return array(
 	'header' => 'Aktualny stan systemu i informacja',
 	'core' => 'Rdzeń',
 	'os' => 'OS',

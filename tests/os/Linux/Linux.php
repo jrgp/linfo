@@ -1,5 +1,8 @@
 <?php
 
+use \Linfo\Common;
+use \Linfo\Linfo;
+
 if (PHP_OS == 'Linux') {
 
 /*
@@ -13,14 +16,14 @@ class LinuxTest extends PHPUnit_Framework_TestCase {
     $linfo = new Linfo;
     self::$parser = $linfo->getParser();
 
-    self::assertInstanceOf('OS_Linux', self::$parser);
+    self::assertInstanceOf('\\Linfo\\OS\\Linux', self::$parser);
 
     self::$parser->determineCPUPercentage();
   }
 
   public static function tearDownAfterClass() {
     self::$parser = null;
-    LinfoCommon::unconfig();
+    Common::unconfig();
   }
 
   /**

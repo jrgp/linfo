@@ -1,5 +1,8 @@
 <?php
 
+use \Linfo\Common;
+use \Linfo\Linfo;
+
 if (PHP_OS == 'Linux') {
 
 /*
@@ -13,7 +16,7 @@ class LinuxGenericDistroTest extends PHPUnit_Framework_TestCase {
   protected static $parser;
 
   public static function setUpBeforeClass() {
-    LinfoCommon::$path_prefix = dirname(dirname(__FILE__)).'/../files/linux/generic_distro';
+    Common::$path_prefix = dirname(dirname(__FILE__)).'/../files/linux/generic_distro';
     $linfo = new Linfo;
     self::$parser = $linfo->getParser();
   }
@@ -228,8 +231,8 @@ class LinuxGenericDistroTest extends PHPUnit_Framework_TestCase {
 
   public static function tearDownAfterClass() {
     self::$parser = null;
-    LinfoCommon::unconfig();
-    LinfoCommon::$path_prefix = false;
+    Common::unconfig();
+    Common::$path_prefix = false;
   }
 }
 

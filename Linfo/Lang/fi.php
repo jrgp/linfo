@@ -19,13 +19,13 @@
 */
 
 
-defined('IN_LINFO') or exit;
+namespace Linfo\Lang;
 
 /*
  * Finnish translation
  */
 
-$lang = array(
+return array(
 	'header' => 'J&auml;rjestelm&auml;n kunto ja asetuksetn',
 	'core' => 'Perustiedot',
 	'os' => 'K&auml;ytt&ocirc;j&auml;rjestelm&auml;',
