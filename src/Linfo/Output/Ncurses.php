@@ -27,7 +27,7 @@ use Linfo\Exceptions\FatalException;
  *
  * @author Joseph Gillotti
  */
-class Ncurses
+class Ncurses implements Output
 {
     private $linfo,
 

@@ -4,7 +4,7 @@ namespace Linfo\Output;
 
 use Linfo\Linfo;
 
-class Serialized
+class Serialized implements Output
 {
     protected $linfo;
 
@@ -17,10 +17,10 @@ class Serialized
     {
         $settings = $this->linfo->getSettings();
 
-    // Output buffering, along with compression (if supported)
-    if (!isset($settings['compress_content']) || $settings['compress_content']) {
-        ob_start(function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
-    }
+        // Output buffering, along with compression (if supported)
+        if (!isset($settings['compress_content']) || $settings['compress_content']) {
+            ob_start(function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
+        }
 
         echo serialize($this->linfo->getInfo());
     }
