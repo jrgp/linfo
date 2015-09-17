@@ -10,7 +10,8 @@ try {
 
     // Load settings file..
     // Support legacy config files
-    define('IN_LINFO', '1');
+    define('IN_LINFO', 'true');
+    define('IN_INFO', 'true');
     if (!is_file(__DIR__.'/config.inc.php') && is_file(__DIR__.'/sample.config.inc.php')) {
         throw new FatalException('Make changes to sample.config.inc.php then rename as config.inc.php');
     } elseif (!is_file(__DIR__.'/config.inc.php')) {
