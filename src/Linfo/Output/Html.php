@@ -7,7 +7,7 @@ use Linfo\Common;
 use Linfo\Meta\Errors;
 use Linfo\Meta\Timer;
 
-class Html
+class Html implements Output
 {
     protected $linfo;
 
