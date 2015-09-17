@@ -3,7 +3,7 @@
 // Exclusively used for index.php functionality (not using a library) and unit tests
 spl_autoload_register(function ($n) {
 
-  $path = __DIR__.'/src/'.str_replace('\\', '/', $n).'.php';
+  $path = __DIR__.'/src/'.str_replace('\\', DIRECTORY_SEPARATOR, $n).'.php';
 
   if (!$path) {
       return;
