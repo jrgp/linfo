@@ -26,6 +26,7 @@ use Linfo\Parsers\Hwpci;
 use Linfo\Parsers\Sensord;
 use Linfo\Parsers\Hddtemp;
 use Linfo\Parsers\Mbmon;
+use Exception;
 
 /**
  * Get info on a usual linux system
@@ -474,7 +475,7 @@ class Linux extends Unixcommon
             }
 
             // There was an issue
-            catch (GetHddTempException $e) {
+            catch (\Exception $e) {
                 $this->error->add('hddtemp parser', $e->getMessage());
             }
         }
@@ -498,7 +499,7 @@ class Linux extends Unixcommon
                     // Save result
                     $return = array_merge($return, $mbmon_res);
                 }
-            } catch (GetMbMonException $e) {
+            } catch (Exception $e) {
                 $this->error->add('mbmon parser', $e->getMessage());
             }
         }
@@ -517,7 +518,7 @@ class Linux extends Unixcommon
                     // Save result
                     $return = array_merge($return, $sensord_res);
                 }
-            } catch (GetSensordException $e) {
+            } catch (Exception $e) {
                 $this->error->add('sensord parser', $e->getMessage());
             }
         }
