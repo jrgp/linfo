@@ -1,10 +1,39 @@
-# Linfo - PHP server stats library and web UI
-
-![Linfo Screenshot](http://jrgp.us/misc/linfo.png)
+# Linfo - Server stats UI/library
 
 ![Travis tests](https://api.travis-ci.org/jrgp/linfo.svg)
 
-## Supports
+
+### Linfo is a:
+
+ - Light themable Web UI and REST API displaying lots of system stats
+ - Ncurses CLI view of WebUI
+ - Extensible, easy (composer) to use PHP5 Library to get extensive system stats programmatically from your PHP app
+
+### web UI
+![Linfo WebUI Screenshot](http://jrgp.us/misc/linfo.png)
+
+### ncurses preview
+![Linfo Ncurses Screenshot](http://jrgp.us/misc/linfo_curses.png)
+
+(See ncurses.md)
+
+### PHP library usage
+
+```bash
+composer require linfo/linfo
+```
+
+```php
+<?php
+$linfo = new \Linfo\Linfo;
+$parser = $linfo->getParser();
+
+var_dump($parser->getCPU()); // and a whole lot more
+```
+
+
+
+## Runs on
  - Linux
  - Windows
  - FreeBSD
@@ -43,27 +72,27 @@
  - PHP 5.3
  - pcre extension
 
-### Windows
+#### Windows
  - You need to have [COM enabled](http://www.php.net/manual/en/class.com.php).
 
-### Linux
+#### Linux
  - /proc and /sys mounted and readable by PHP
  - Tested with the 2.6.x/3.x kernels
 
-### FreeBSD
+#### FreeBSD
  - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, etc
  - Tested on 8.0-RELEASE, 10.2-RELEASE
 
-### NetBSD
+#### NetBSD
  - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, /usr/pkg/bin, etc
  - Tested on NetBSD 5.0.2
 
-### OpenBSD
+#### OpenBSD
  - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin,  etc
  - Tested on OpenBSD 4.7
  - It will not work under the default httpd chroot
 
-## Installation
+## Web UI Installation
  1. Extract tarball contents to somewhere under your web root
  2. Rename ``sample.config.inc.php`` to ``config.inc.php``, after optionally changing values in it
  3. Visit page in web browser
@@ -83,29 +112,16 @@
  - Open them and look at the comment at the top of the file for usage
 
 
-#### Troubleshooting:
+## Troubleshooting:
 
 Set ``$settings['show_errors'] = true;`` in ``config.inc.php`` to yield useful error messages. 
 
-
-## API example:
-
-```bash
-composer require linfo/linfo
-```
-
-```php
-<?php
-$linfo = new \Linfo\Linfo;
-$parser = $linfo->getParser();
-
-var_dump($parser->getCPU());
-```
 
 ## TODO:
  - Support for other Unix operating systems (Hurd, IRIX, AIX, HP UX, etc)
  - Support for strange operating systems: Haiku/BeOS
  - More superfluous features/extensions
+ - Make ncurses mode rival htop (half kidding)
 
 ## Meta
  - By Joe Gillotti <joe@u13.net>
