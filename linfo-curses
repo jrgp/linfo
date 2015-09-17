@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export LINFO_NCURSES=1
+
+/usr/bin/env php index.php "$@"
