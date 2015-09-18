@@ -44,6 +44,8 @@ class Hwpci
 
     /**
      * Constructor.
+     * @param $usb_file
+     * @param $pci_file
      */
     public function __construct($usb_file, $pci_file)
     {
@@ -251,6 +253,7 @@ class Hwpci
 
     /**
      * Do its goddam job.
+     * @param $os
      */
     public function work($os)
     {

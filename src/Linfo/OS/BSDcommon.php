@@ -138,5 +138,8 @@ abstract class BSDcommon extends Unixcommon
         if ($do_return) {
             return count($results) == 1 ? reset($results) : $results;
         }
+        else {
+            return null;
+        }
     }
 }

@@ -85,7 +85,7 @@ class Ipmi implements Extension
             // messed up somehow
             $this->_LinfoError->add(self::EXTENSION_NAME.' Extension', $e->getMessage());
 
-            return false;
+            return;
         }
 
         // Match it up

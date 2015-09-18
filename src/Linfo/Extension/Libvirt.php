@@ -84,18 +84,19 @@ class Libvirt implements Extension
             $this->Errors->add('libvirt extension', 'Libvirt PHP extension not installed');
             $this->res = false;
 
-            return false;
+            return;
         }
 
         if (!$this->connect()) {
-            return false;
+            $this->Errors->add('libvirt extension', 'Failed connecting');
+            return;
         }
 
         if (!($doms = libvirt_list_domains($this->connection))) {
             $this->Errors->add('libvirt extension', 'Failed getting domain list');
             $this->res = false;
 
-            return false;
+            return;
         }
 
         foreach ($doms as $name) {

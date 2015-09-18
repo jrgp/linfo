@@ -20,6 +20,7 @@
 
 namespace Linfo\OS;
 
+use Exception;
 use Linfo\Meta\Timer;
 use Linfo\Meta\Errors;
 use Linfo\Common;
@@ -97,7 +98,7 @@ class SunOS extends OS
         try {
             $command = $this->exec->exec('kstat', ' -p '.implode(' ', array_map('escapeshellarg', $keys)));
             $lines = explode("\n", $command);
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             Errors::Singleton()->add('Solaris Core', 'Failed running kstat.');
         }
 
@@ -179,7 +180,7 @@ class SunOS extends OS
         // Run mount command
         try {
             $res = $this->exec->exec('mount', '-p');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error running `mount` command');
 
             return array();
@@ -294,7 +295,7 @@ class SunOS extends OS
         }
 
         // Something bad happened
-        catch (CallExtException $e) {
+        catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error using `ps` to get process info');
         }
 
@@ -364,7 +365,7 @@ class SunOS extends OS
         // ifconfig for nics/statuses
         try {
             $ifconfig = $this->exec->exec('ifconfig', '-a');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             Errors::Singleton()->add('Solaris Core', 'Failed running ifconfig -a.');
 
             return array();
@@ -458,7 +459,7 @@ class SunOS extends OS
                     $nets[$m[1]]['state'] = $m[3];
                 }
             }
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             Errors::Singleton()->add('Solaris Core', 'Failed running dladm show-link.');
 
             return array();

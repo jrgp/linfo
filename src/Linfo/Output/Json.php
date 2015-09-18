@@ -25,7 +25,6 @@ class Json implements Output
         // Make sure we have JSON
         if (!function_exists('json_encode')) {
             throw new FatalException('{"error":"JSON extension not loaded"}');
-            return;
         }
 
         // Output buffering, along with compression (if supported)

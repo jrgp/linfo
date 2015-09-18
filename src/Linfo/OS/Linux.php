@@ -44,8 +44,9 @@ class Linux extends Unixcommon
 
     /**
      * Constructor. Localizes settings.
-     * 
+     *
      * @param array $settings of linfo settings
+     * @throws FatalException
      */
     public function __construct($settings)
     {
@@ -399,9 +400,6 @@ class Linux extends Unixcommon
 
         // Get actual drives
         foreach ((array) @glob('/sys/block/*/device/model', GLOB_NOSORT) as $path) {
-
-            // Dirname of the drive's sys entry
-            $dirname = dirname(dirname($path));
 
             // Parts of the path
             $parts = explode('/', $path);
@@ -1628,9 +1626,12 @@ class Linux extends Unixcommon
          return $this->cpu_percent['overall'] === false ? false : $this->cpu_percent['overall'];
      }
 
-     /**
-      * Parse lines from /proc/stat. Used by determineCPUPercentage function.
-      */
+    /**
+     * Parse lines from /proc/stat. Used by determineCPUPercentage function.
+     * @param $key
+     * @param $line
+     * @return float
+     */
      private function cpuPercent($key, $line)
      {
 

@@ -31,7 +31,6 @@ Installation:
 namespace Linfo\Extension;
 
 use Linfo\Linfo;
-use Linfo\Common;
 use Linfo\Parsers\CallExt;
 use Linfo\Meta\Errors;
 use Linfo\Meta\Timer;

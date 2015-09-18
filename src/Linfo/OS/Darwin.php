@@ -20,6 +20,7 @@
 
 namespace Linfo\OS;
 
+use Exception;
 use Linfo\Meta\Timer;
 use Linfo\Common;
 
@@ -64,7 +65,7 @@ class Darwin extends BSDcommon
         // And get this info for when the above fails 
         try {
             $this->systemProfiler = $this->exec->exec('system_profiler', 'SPHardwareDataType SPSoftwareDataType SPPowerDataType');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             // Meh
             $this->error->add('Linfo Mac OS 10', 'Error using system_profiler');
         }
@@ -116,7 +117,7 @@ class Darwin extends BSDcommon
         // Get result of mount command
         try {
             $res = $this->exec->exec('mount');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error running `mount` command');
 
             return array();
@@ -174,7 +175,7 @@ class Darwin extends BSDcommon
         // Use netstat to get info
         try {
             $netstat = $this->exec->exec('netstat', '-nbdi');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error using `netstat` to get network info');
 
             return $return;
@@ -228,7 +229,7 @@ class Darwin extends BSDcommon
                     $current_nic = false;
                 }
             }
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
         }
 
         // Save info
@@ -375,7 +376,7 @@ class Darwin extends BSDcommon
                     break;
                 }
             }
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error using `ps` to get process info');
         }
 
@@ -524,13 +525,10 @@ class Darwin extends BSDcommon
             $t = new Timer('Drives');
         }
 
-        // Store disks here
-        $disks = array();
-
         // Use system profiler to get info
         try {
             $res = $this->exec->exec('diskutil', ' list');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo drives', 'Error using `diskutil list` to get drives');
 
             return array();
@@ -588,7 +586,7 @@ class Darwin extends BSDcommon
                         if (preg_match('/^\s+Device \/ Media Name:\s+(.+)/m', $drive_res, $drive_m)) {
                             $drive_name = $drive_m[1];
                         }
-                    } catch (CallExtException $e) {
+                    } catch (Exception $e) {
                     }
 
                     // Start this one off
