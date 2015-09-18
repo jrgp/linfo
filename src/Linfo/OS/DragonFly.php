@@ -20,8 +20,10 @@
 
 namespace Linfo\OS;
 
+use Exception;
 use Linfo\Meta\Timer;
 use Linfo\Common;
+use Linfo\Parsers\Hwpci;
 
 class DragonFly extends BSDcommon
 {
@@ -96,7 +98,7 @@ class DragonFly extends BSDcommon
         // Get result of mount command
         try {
             $res = $this->exec->exec('mount');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error running `mount` command');
 
             return array();
@@ -239,7 +241,7 @@ class DragonFly extends BSDcommon
         // Use netstat to get nic names and stats
         try {
             $netstat = $this->exec->exec('netstat', '-nibd');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'error using netstat');
 
             return array();
@@ -312,7 +314,7 @@ class DragonFly extends BSDcommon
                     $current_nic = false;
                 }
             }
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'error using ifconfig to get nic statuses');
         }
 
@@ -368,7 +370,7 @@ class DragonFly extends BSDcommon
             $t = new Timer('Hardware Devices');
         }
 
-        $hw = new HW_IDS($usb_ids, '/usr/share/misc/pci_vendors');
+        $hw = new Hwpci(null, '/usr/share/misc/pci_vendors');
         $hw->work('dragonfly');
 
         return $hw->result();
@@ -442,7 +444,7 @@ class DragonFly extends BSDcommon
                     break;
                 }
             }
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error using `ps` to get process info');
         }
 

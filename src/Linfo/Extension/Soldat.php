@@ -226,6 +226,7 @@ class Soldat implements Extension
         } else {
             $players_line = 6;
         }
+        $pla = '';
         //get the player info a string
         for ($l = $players_line; $line = $i[$l], $l < count($i); ++$l) {
             $pla .= $line;

@@ -66,6 +66,7 @@ use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
 use Linfo\Meta\Timer;
+use Linfo\Output\Html;
 
 /**
  * Get status on torrents running under uTorrent.
@@ -136,13 +137,13 @@ class Utorrent implements Extension
         if (!extension_loaded('curl')) {
             $this->LinfoError->add('utorrent extension', 'Curl PHP extension not installed');
 
-            return false;
+            return;
         }
 
         if (!isset($this->connectionSettings['host']) || !isset($this->connectionSettings['port']) || !isset($this->connectionSettings['user'])) {
             $this->LinfoError->add('utorrent extension', 'Missing $setting[\'utorrent_connection\'] details in config..');
 
-            return false;
+            return;
         }
 
         $token_url = sprintf(self::TOKEN_URL, $this->connectionSettings['host'], $this->connectionSettings['port']);
@@ -171,7 +172,7 @@ class Utorrent implements Extension
             $this->LinfoError->add('utorrent extension', 'Failed parsing token');
             $this->cleanup();
 
-            return false;
+            return;
         }
 
         // Get list of torrents? Do our best to forge this (ajax) request 
@@ -193,7 +194,7 @@ class Utorrent implements Extension
             $this->LinfoError->add('utorrent extension', 'Failed parsing json object');
             $this->cleanup();
 
-            return false;
+            return;
         }
 
         // Not going to be needing curl again
@@ -203,7 +204,7 @@ class Utorrent implements Extension
             $this->LinfoError->add('utorrent extension', 'torrents array key not found in json response object');
             $this->cleanup();
 
-            return false;
+            return;
         }
 
         $torrent_names = array();
@@ -266,7 +267,7 @@ class Utorrent implements Extension
                     ($this->hideName ? '' : $info['TORRENT_NAME'].'<br />')
                         .'<span style="font-size: 80%; font-family: monaco, monospace, courier;">'.$info['TORRENT_HASH'].'</span>',
                     Common::byteConvert($info['TORRENT_SIZE']),
-                    \Linfo\Output\Html::generateBarChart($info['TORRENT_PROGRESS'] / 10),
+                    Html::generateBarChart($info['TORRENT_PROGRESS'] / 10),
                     $info['TORRENT_STATUS_MESSAGE'],
                     $info['TORRENT_SEEDS_CONNECTED'].'/'.$info['TORRENT_SEEDS_SWARM'],
                     $info['TORRENT_SEEDS_CONNECTED'].'/'.$info['TORRENT_PEERS_SWARM'],

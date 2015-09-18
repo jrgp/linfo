@@ -19,12 +19,12 @@
 /**
  * Manages all Linfo javascript
  * @author Lee Bradley (elephanthunter)
- * 
+ *
  * Goals:
  *  - Keep the global scope squeaky clean (and, as a direct result, compression efficient)
  *  - Keep performance blazing fast
  */
-window['Linfo'] = (function() {
+window['Linfo'] = function () {
 	/**
 	 * Set a cookie key/value pair
 	 * @param key
@@ -71,7 +71,7 @@ window['Linfo'] = (function() {
 		var interval = 10,
 			time = 0,
 			iFinishTime = timeout - (timeout % interval),
-			fnCallback = function() {
+			fnCallback = function () {
 				var iPercentage = (time++ * interval) / iFinishTime;
 				fn(iPercentage);
 				if (iPercentage >= 1) {
@@ -96,15 +96,14 @@ window['Linfo'] = (function() {
 			iHeightDiff = iStartHeight - iEndHeight;
 
 		callCountdown(
-			function(i) {
+			function (i) {
 				var iCurrentHeight = ((1 - i) * iHeightDiff) + iEndHeight;
 				el.style.height = iCurrentHeight.toString() + 'px';
 			},
 			time || 100,
 			fnCallback
 		);
-	};
-
+	}
 	/**
 	 * Fade an element in
 	 * @param el the element to fade
@@ -113,12 +112,13 @@ window['Linfo'] = (function() {
 	 */
 	function fadeIn(el, fnCallback, time) {
 		callCountdown(
-			function(i) { setOpacity(el, i); },
+			function (i) {
+				setOpacity(el, i);
+			},
 			time || 100,
 			fnCallback
 		);
-	};
-	
+	}
 	/**
 	 * Fade an element out
 	 * @param el the element to fade
@@ -127,17 +127,18 @@ window['Linfo'] = (function() {
 	 */
 	function fadeOut(el, fnCallback, time) {
 		callCountdown(
-			function(i) { setOpacity(el, 1 - i); },
+			function (i) {
+				setOpacity(el, 1 - i);
+			},
 			time || 200,
 			fnCallback
 		);
-	};
-
+	}
 	/**
 	 * Check to see if the element has the specified class
 	 * @param el
 	 * @param strClass
-	 * @return true if the element has the class; otherwise false
+	 * @return bool if the element has the class
 	 */
 	function hasClass(el, strClass) {
 		return el.className.match(new RegExp('(\\s|^)' + strClass + '(\\s|$)'));
@@ -158,9 +159,9 @@ window['Linfo'] = (function() {
 	 * @param strClass
 	 */
 	function removeClass(el, strClass) {
-		if (hasClass(el,strClass)) {
+		if (hasClass(el, strClass)) {
 			var reg = new RegExp('(\\s|^)' + strClass + '(\\s|$)');
-			el.className = el.className.replace(reg,' ');
+			el.className = el.className.replace(reg, ' ');
 		}
 	}
 
@@ -179,7 +180,7 @@ window['Linfo'] = (function() {
 	 * Represents a graphical "Section" of data
 	 * ex: Core, Memory, etc...
 	 */
-	var Section = function(elSection) {
+	var Section = function (elSection) {
 		var m_elToggler, m_elTable;
 
 		/**
@@ -192,10 +193,10 @@ window['Linfo'] = (function() {
 
 		/**
 		 * Load the collapse state
-		 * @return true if the section is collapsed, otherwise false
+		 * @return bool if the section is collapsed
 		 */
 		function getCollapseState() {
-			return (getCookie(elSection.id) == '0') ? true : false;
+			return (getCookie(elSection.id) == '0');
 		}
 
 		/**
@@ -206,9 +207,9 @@ window['Linfo'] = (function() {
 			m_elToggler.innerHTML = "+";
 
 			// Fade out, then slide up
-			fadeOut(m_elTable, function() {
+			fadeOut(m_elTable, function () {
 				elSection.fullSize = elSection.offsetHeight;
-				slideTo(elSection, elSection.offsetHeight - m_elTable.offsetHeight, function() {
+				slideTo(elSection, elSection.offsetHeight - m_elTable.offsetHeight, function () {
 					elSection.sliding = false;
 				});
 				addClass(elSection, 'collapsed');
@@ -224,9 +225,9 @@ window['Linfo'] = (function() {
 			m_elToggler.innerHTML = "-";
 
 			// Slide down, then fade in
-			slideTo(elSection, elSection.fullSize, function() {
+			slideTo(elSection, elSection.fullSize, function () {
 				elSection.style.height = "";
-				fadeIn(m_elTable, function() {
+				fadeIn(m_elTable, function () {
 					elSection.sliding = false;
 				});
 			});
@@ -251,7 +252,7 @@ window['Linfo'] = (function() {
 		 * Collapse a section instantly
 		 */
 		function collapse() {
-			var iNewHeight = elSection.offsetHeight - m_elTable.offsetHeight; 
+			var iNewHeight = elSection.offsetHeight - m_elTable.offsetHeight;
 
 			m_elToggler.innerHTML = "+";
 			setOpacity(m_elTable, 0);
@@ -263,7 +264,6 @@ window['Linfo'] = (function() {
 
 		/**
 		 * Create a toggler for the specified section
-		 * @param elSection
 		 */
 		function createToggler() {
 			// Create a new toggler
@@ -278,7 +278,6 @@ window['Linfo'] = (function() {
 
 		/**
 		 * Set the section id from the section's title
-		 * @param elSection
 		 */
 		function generateIdFromTitle() {
 			// Get the title
@@ -297,9 +296,9 @@ window['Linfo'] = (function() {
 
 			// Get the information table
 			m_elTable = elSection.getElementsByTagName('table')[0];
-			
+
 			//collapse if set in cookie or not first element on mobile view
-			if((elSection.mobile && elSection.w!=0) || getCollapseState()){
+			if ((elSection.mobile && elSection.w != 0) || getCollapseState()) {
 				collapse();
 			}
 		}
@@ -312,14 +311,14 @@ window['Linfo'] = (function() {
 	 */
 	function initializeSections() {
 		// Get a list of divs
-		var aDivs = document.getElementsByTagName('div'),w=0,mobile=(document.body.clientWidth<=640);
+		var aDivs = document.getElementsByTagName('div'), w = 0, mobile = (document.body.clientWidth <= 640);
 
 		// Loop through them all
-		each(aDivs, function(i, elSection) {
+		each(aDivs, function (i, elSection) {
 			// If this is an infoTable
 			if (hasClass(elSection, 'infoTable')) {
-				elSection.w=w++;
-				elSection.mobile=mobile;
+				elSection.w = w++;
+				elSection.mobile = mobile;
 				new Section(elSection);
 			}
 		});
@@ -335,4 +334,4 @@ window['Linfo'] = (function() {
 	return {
 		'init': init
 	};
-}());
+}();

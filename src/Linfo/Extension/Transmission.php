@@ -69,6 +69,7 @@ class Transmission implements Extension
 
     /**
      * localize important stuff.
+     * @param Linfo $linfo
      */
     public function __construct(Linfo $linfo)
     {
@@ -126,7 +127,7 @@ class Transmission implements Extension
             $this->_res = false;
 
             // Don't bother going any further
-            return false;
+            return;
         }
 
         $this->_res = true;
@@ -139,7 +140,7 @@ class Transmission implements Extension
             $this->_LinfoError->add('Transmission extension: Invalid Host');
             $this->_res = false;
 
-            return false;
+            return;
         }
 
         // Invalid auth?
@@ -147,7 +148,7 @@ class Transmission implements Extension
             $this->_LinfoError->add('Transmission extension: Invalid Authentication');
             $this->_res = false;
 
-            return false;
+            return;
         }
 
         // Match teh torrents!

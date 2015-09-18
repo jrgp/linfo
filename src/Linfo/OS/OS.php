@@ -22,13 +22,13 @@
  */
 namespace Linfo\OS;
 
-use Linfo\Exceptions\Fatal;
+use Linfo\Exceptions\FatalException;
 
 abstract class OS
 {
     public function __call($name, $args)
     {
-        throw new Fatal('Method '.$name.' not present.');
+        throw new FatalException('Method '.$name.' not present.');
     }
 
     public function getAccessedIP()

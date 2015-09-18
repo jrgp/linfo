@@ -2,6 +2,7 @@
 
 namespace Linfo\Output;
 
+use Exception;
 use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
@@ -14,7 +15,7 @@ class Xml implements Output
     public function __construct(Linfo $linfo)
     {
         if (!extension_loaded('SimpleXML')) {
-            throw new \Linfo\Exceptions\FatalException('Cannot generate XML. Install php\'s SimpleXML extension.');
+            throw new FatalException('Cannot generate XML. Install php\'s SimpleXML extension.');
         }
 
         $this->linfo = $linfo;

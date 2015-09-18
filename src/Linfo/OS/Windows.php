@@ -38,8 +38,9 @@ class Windows extends OS
 
     /**
      * Constructor. Localizes settings.
-     * 
+     *
      * @param array $settings of linfo settings
+     * @throws FatalException
      */
     public function __construct($settings)
     {
@@ -718,6 +719,9 @@ class Windows extends OS
 
     /**
      * @ignore
+     * @param $a
+     * @param $b
+     * @return int
      */
     public static function compare_devices($a, $b)
     {
@@ -738,6 +742,9 @@ class Windows extends OS
 
     /**
      * @ignore
+     * @param $a
+     * @param $b
+     * @return int
      */
     public static function compare_drives($a, $b)
     {
@@ -750,6 +757,9 @@ class Windows extends OS
 
     /**
      * @ignore
+     * @param $a
+     * @param $b
+     * @return int
      */
     public static function compare_mounts($a, $b)
     {

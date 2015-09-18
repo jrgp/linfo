@@ -20,6 +20,7 @@
 
 namespace Linfo\OS;
 
+use Exception;
 use Linfo\Parsers\CallExt;
 
 /*
@@ -81,7 +82,7 @@ class Minix
         // Try using the `mount` command to get mounted file systems
         try {
             $res = $this->exec->exec('mount');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             return array();
         }
 
@@ -129,7 +130,7 @@ class Minix
         // Try getting it. 
         try {
             $res = $this->exec->exec('ifconfig', '-a');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             return array();
         }
 

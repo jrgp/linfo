@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 		return object;
 	}
 
-    var asset_version = new Date().getTime();
+
 
     // Base Config
     var config = {

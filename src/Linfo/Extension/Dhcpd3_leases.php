@@ -55,6 +55,7 @@ class Dhcpd3_leases implements Extension
 
     /**
      * localize important stuff.
+     * @param Linfo $linfo
      */
     public function __construct(Linfo $linfo)
     {
@@ -90,7 +91,7 @@ class Dhcpd3_leases implements Extension
             $this->_LinfoError->add('dhcpd3 leases extension', 'couldn\'t find leases file');
             $this->_res = false;
 
-            return false;
+            return;
         }
 
         // Get contents
@@ -101,7 +102,7 @@ class Dhcpd3_leases implements Extension
             $this->_LinfoError->add('dhcpd3 leases extension', 'Error getting contents of leases file');
             $this->_res = false;
 
-            return false;
+            return;
         }
 
         // All dates in the file are in UTC format. Attempt finding out local time zone to convert UTC to local.

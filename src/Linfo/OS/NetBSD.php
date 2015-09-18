@@ -20,6 +20,7 @@
 
 namespace Linfo\OS;
 
+use Exception;
 use Linfo\Meta\Timer;
 use Linfo\Common;
 
@@ -81,7 +82,7 @@ class NetBSD extends BSDcommon
         // Try getting mount command
         try {
             $res = $this->exec->exec('mount');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error running `mount` command');
 
             return array();
@@ -180,7 +181,7 @@ class NetBSD extends BSDcommon
         // Try using netstat
         try {
             $res = $this->exec->exec('netstat', '-nbdi');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error using `netstat` to get network info');
 
             return array();
@@ -206,7 +207,7 @@ class NetBSD extends BSDcommon
                     $current_nic = false;
                 }
             }
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
         }
 
         // Store interfaces here
@@ -404,10 +405,8 @@ class NetBSD extends BSDcommon
             // Okay, cool. Total them up
             $return['total'] = $available_ram * $bytes_per_page;
             $return['free'] = $free_ram * $bytes_per_page;
-        } catch (CallExtException $e) {
-            $this->error->add('Linfo Core', 'Error using `vmstat` to get memory usage');
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', $e->getMessage());
+            $this->error->add('Linfo Core', 'Error using `vmstat` to get memory usage');
         }
 
         // Get swap
@@ -417,7 +416,7 @@ class NetBSD extends BSDcommon
             foreach ($sm as $swap) {
                 $return['swapTotal'] += $swap[2] * 1024;
                 $return['swapFree'] += (($swap[2] - $swap[3]) * 1024);
-                $ft = is_file($ft) ? @filetype($swap[1]) : 'Unknown'; // TODO: I'd rather it be Partition or File
+                $ft = is_file($swap[1]) ? @filetype($swap[1]) : 'Unknown'; // TODO: I'd rather it be Partition or File
                 $return['swapInfo'][] = array(
                     'device' => $swap[1],
                     'size' => $swap[2] * 1024,
@@ -425,7 +424,7 @@ class NetBSD extends BSDcommon
                     'type' => ucfirst($ft),
                 );
             }
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error using `swapctl` to get swap usage');
         }
 
@@ -533,7 +532,7 @@ class NetBSD extends BSDcommon
                     break;
                 }
             }
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error using `ps` to get process info');
         }
 

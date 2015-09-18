@@ -20,6 +20,7 @@
 
 namespace Linfo\OS;
 
+use Exception;
 use Linfo\Meta\Timer;
 use Linfo\Common;
 
@@ -103,7 +104,7 @@ class OpenBSD extends BSDcommon
         // Get result of mount command
         try {
             $mount_res = $this->exec->exec('mount');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error running `mount` command');
 
             return array();
@@ -165,7 +166,7 @@ class OpenBSD extends BSDcommon
                 $return['type'] = 'Physical';
                 $return['free'] = $return['total'] - ($hard_ram_free * 1024);
             }
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error using `vmstat` to get memory usage usage');
         }
 
@@ -176,7 +177,7 @@ class OpenBSD extends BSDcommon
             foreach ($sm as $swap) {
                 $return['swapTotal'] += $swap[2] * 1024;
                 $return['swapFree'] += (($swap[2] - $swap[3]) * 1024);
-                $ft = is_file($ft) ? @filetype($swap[1]) : 'Unknown'; // TODO: I'd rather it be Partition or File
+                $ft = is_file($swap[1]) ? @filetype($swap[1]) : 'Unknown'; // TODO: I'd rather it be Partition or File
                 $return['swapInfo'][] = array(
                     'device' => $swap[1],
                     'size' => $swap[2] * 1024,
@@ -184,7 +185,7 @@ class OpenBSD extends BSDcommon
                     'type' => ucfirst($ft),
                 );
             }
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error using `swapctl` to get swap usage');
         }
 
@@ -329,10 +330,10 @@ class OpenBSD extends BSDcommon
         // Get result of netstat command
         try {
             $res = $this->exec->exec('netstat', '-nbi');
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error using `netstat` to get network info');
 
-            return $return;
+            return array();
         }
 
         // Get initial matches
@@ -355,7 +356,7 @@ class OpenBSD extends BSDcommon
                     $current_nic = false;
                 }
             }
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
         }
 
         // Get type from dmesg boot
@@ -503,7 +504,7 @@ class OpenBSD extends BSDcommon
                     break;
                 }
             }
-        } catch (CallExtException $e) {
+        } catch (Exception $e) {
             $this->error->add('Linfo Core', 'Error using `ps` to get process info');
         }
 

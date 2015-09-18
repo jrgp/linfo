@@ -18,7 +18,6 @@
  */
 namespace Linfo;
 
-use Linfo\Common;
 use Linfo\Parsers\CallExt;
 use Linfo\Exceptions\FatalException;
 use Linfo\Meta\Errors;

@@ -20,6 +20,9 @@ class Html implements Output
      * Create a progress bar looking thingy. Put into a function here
      * as its being increasingly used elsewhere. TODO refactor linfo and
      * stop leaving functions in global namespace.
+     * @param $percent
+     * @param bool $text
+     * @return string
      */
     public static function generateBarChart($percent, $text = false)
     {
