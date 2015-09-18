@@ -1573,6 +1573,11 @@ class Linux extends Unixcommon
              }
          }
 
+        // Sometimes /proc/modules is missing what is in this dir on VMs
+        foreach (@glob('/sys/bus/pci/drivers/*') as $name) {
+                $modules[] = basename($name);
+        }
+
         // VMware guest. Tested on debian under vmware fusion for mac...
         if (Common::anyInArray(array('vmw_balloon', 'vmwgfx', 'vmw_vmci'), $modules)) {
             return array('type' => 'guest', 'method' => 'VMWare');
@@ -1610,7 +1615,7 @@ class Linux extends Unixcommon
         }
 
         // Looks like it might be a KVM or QEMU guest! This is a bit lame since Xen can also use virtio but its less likely (?)
-        if (Common::anyInArray(array('virtio', 'virtio_balloon', 'virtio_pci', 'virtio_blk', 'virtio_net'), $modules)) {
+        if (Common::anyInArray(array('virtio', 'virtio_balloon', 'virtio_pci', 'virtio-pci', 'virtio_blk', 'virtio_net'), $modules)) {
             return array('type' => 'guest', 'method' => 'Qemu/KVM');
         }
 
