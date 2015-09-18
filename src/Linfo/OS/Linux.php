@@ -1605,7 +1605,7 @@ class Linux extends Unixcommon
         }
 
         // Looks like it might be KVM HOST!
-        if (in_array('kvm', $modules)) {
+        if (Common::anyInArray(array('kvm_intel', 'kvm_amd'), $modules)) {
             return array('type' => 'host', 'method' => 'KVM');
         }
 
