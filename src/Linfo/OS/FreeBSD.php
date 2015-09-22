@@ -693,4 +693,19 @@ class FreeBSD extends BSDcommon
             $t = new Timer('Temperature');
         }
     }
+
+    public function getLoad()
+    {
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Load Averages');
+        }
+
+        $loads = $this->sysctl['vm.loadavg'];
+
+        if (preg_match('/([\d\.]+) ([\d\.]+) ([\d\.]+)/', $loads, $m)) {
+            return array_combine(array('now', '5min', '15min'), array_slice($m, 1, 3));
+        } else {
+            return array();
+        }
+    }
 }
