@@ -100,6 +100,7 @@ abstract class OS
      */
     public function getOS()
     {
-        return array_pop(explode('\\', get_class($this)));
+        $parts = explode('\\', get_class($this));
+        return array_pop($parts);
     }
 }
