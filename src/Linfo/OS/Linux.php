@@ -1492,16 +1492,6 @@ class Linux extends Unixcommon
         return false;
     }
 
-    /**
-     * getCPUArchitecture.
-     * 
-     * @return string the arch and bits
-     */
-    public function getCPUArchitecture()
-    {
-        return php_uname('m');
-    }
-
      /**
       * getNumLoggedIn.
       * 

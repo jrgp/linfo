@@ -89,8 +89,8 @@ var_dump($parser->getCPU()); // and a whole lot more
 
 #### OpenBSD
  - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin,  etc
- - Tested on OpenBSD 4.7
- - It will not work under the default httpd chroot
+ - Tested on OpenBSD 4.7, 5.7
+ - Turn chroot of httpd/nginx/php-fpm off
 
 ## Web UI Installation
  1. Extract tarball contents to somewhere under your web root

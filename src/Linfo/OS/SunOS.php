@@ -163,11 +163,6 @@ class SunOS extends OS
         return php_uname('n');
     }
 
-    public function getCPUArchitecture()
-    {
-        return php_uname('m');
-    }
-
     // Mounted file systems
     public function getMounts()
     {
