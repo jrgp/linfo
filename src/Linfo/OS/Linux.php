@@ -832,7 +832,7 @@ class Linux extends Unixcommon
         }
 
         // Parts
-        $parts = explode(' ', $contents);
+        $parts = array_slice(explode(' ', $contents), 0, 3);
 
         if (!$parts) {
             return array();
