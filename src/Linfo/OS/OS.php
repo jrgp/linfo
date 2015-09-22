@@ -70,4 +70,36 @@ abstract class OS
     {
         return php_uname('m');
     }
+
+    /**
+     * getKernel
+     *
+     * @return string the OS kernel. A few OS classes override this.
+     */
+    public function getKernel()
+    {
+        return php_uname('r');
+    }
+
+    /**
+     * getHostName
+     *
+     * @return string the OS' hostname A few OS classes override this.
+     */
+    public function getHostName()
+    {
+
+        // Take advantage of that function again
+        return php_uname('n');
+    }
+
+    /**
+     * getOS
+     *
+     * @return string the OS' name.
+     */
+    public function getOS()
+    {
+        return array_pop(explode('\\', get_class($this)));
+    }
 }

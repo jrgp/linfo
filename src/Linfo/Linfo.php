@@ -426,10 +426,10 @@ class Linfo
                 continue;
             }
 
-      // Support older config files with lowercase
-      if (preg_match('/^[a-z]/', $ext)) {
-          $ext = ucfirst($ext);
-      }
+            // Support older config files with lowercase
+            if (preg_match('/^[a-z]/', $ext)) {
+                $ext = ucfirst($ext);
+            }
 
             // Try loading our class..
             try {
