@@ -52,24 +52,6 @@ class NetBSD extends BSDcommon
         $this->GetSysCTL(array('kern.boottime', 'vm.loadavg'), false);
     }
 
-    // Operating System
-    public function getOS()
-    {
-        return 'NetBSD';
-    }
-
-    // Kernel version
-    public function getKernel()
-    {
-        return php_uname('r');
-    }
-
-    // Host name
-    public function getHostName()
-    {
-        return php_uname('n');
-    }
-
     // Mounted file systems
     public function getMounts()
     {
@@ -123,33 +105,6 @@ class NetBSD extends BSDcommon
 
         // Give them
         return $mounts;
-    }
-
-    // Get system load
-    public function getLoad()
-    {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Load Averages');
-        }
-
-        // Try using sysctl to get load average
-        $res = $this->sysctl['vm.loadavg'];
-
-        // Match it
-        if (@preg_match('/([\d\.]+) ([\d\.]+) ([\d\.]+)$/', $res, $load_match)) {
-            return array(
-                'now' => $load_match[1],
-                '5min' => $load_match[2],
-                '15min' => $load_match[3],
-            );
-        }
-
-        // Match failed
-        else {
-            return false;
-        }
     }
 
     // Get the always gloatable uptime
@@ -538,16 +493,5 @@ class NetBSD extends BSDcommon
 
         // Give
         return $result;
-    }
-
-    // TODO:
-    public function getRAID()
-    {
-    }
-    public function getBattery()
-    {
-    }
-    public function getTemps()
-    {
     }
 }

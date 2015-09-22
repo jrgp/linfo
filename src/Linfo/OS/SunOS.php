@@ -155,14 +155,6 @@ class SunOS extends OS
         return $this->release;
     }
 
-    // Get host name
-    public function getHostName()
-    {
-
-        // Take advantage of that function again
-        return php_uname('n');
-    }
-
     // Mounted file systems
     public function getMounts()
     {

@@ -86,30 +86,6 @@ class FreeBSD extends BSDcommon
         );
     }
 
-    // Return OS type
-    public function getOS()
-    {
-
-        // Obviously
-        return 'FreeBSD';
-    }
-
-    // Get kernel version
-    public function getKernel()
-    {
-
-        // hmm. PHP has a native function for this
-        return php_uname('r');
-    }
-
-    // Get host name
-    public function getHostName()
-    {
-
-        // Take advantage of that function again
-        return php_uname('n');
-    }
-
     // Get mounted file systems
     public function getMounts()
     {
@@ -234,26 +210,6 @@ class FreeBSD extends BSDcommon
 
         // Return it
         return $return;
-    }
-
-    // Get system load
-    public function getLoad()
-    {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Load Averages');
-        }
-
-        // Parse sysctl value for system load
-        $m = explode(' ', $this->sysctl['vm.loadavg']);
-
-        // Give
-        return array(
-            'now' => $m[1],
-            '5min' => $m[2],
-            '15min' => $m[3],
-        );
     }
 
     // Get uptime

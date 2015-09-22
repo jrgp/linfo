@@ -31,7 +31,7 @@ use Linfo\Parsers\CallExt;
  * impossible. Nevertheless, this is my attempt at doing so.
  */
 
-class Minix
+class Minix extends OS
 {
     // Store these here
     protected $settings,
@@ -51,24 +51,6 @@ class Minix
 
         // Have it look in these places
         $this->exec->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/bin'));
-    }
-
-    // Operating system
-    public function getOS()
-    {
-        return 'Minix';
-    }
-
-    // Take advantage of php_uname for kernel
-    public function getKernel()
-    {
-        return php_uname('r');
-    }
-
-    // Use that function again for host name
-    public function getHostName()
-    {
-        return php_uname('n');
     }
 
     // Mounted file systems

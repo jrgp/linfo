@@ -89,12 +89,6 @@ class Darwin extends BSDcommon
         return 'Darwin ('.(preg_match('/^\s+System Version: ([^\(]+)/m', $this->systemProfiler, $m) ? $m[1] : 'Mac OS X').')';
     }
 
-    // Kernel version
-    public function getKernel()
-    {
-        return php_uname('r');
-    }
-
     // Hostname
     public function getHostname()
     {
@@ -290,28 +284,6 @@ class Darwin extends BSDcommon
         return array(
             'text' => Common::secondsConvert(time() - $m[1]),
             'bootedTimestamp' => $m[1],
-        );
-    }
-
-    // Get system load
-    public function getLoad()
-    {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Load Averages');
-        }
-
-        // Parse it
-        if (preg_match('/([\d\.]+) ([\d\.]+) ([\d\.]+)/', $this->sysctl['vm.loadavg'], $m) == 0) {
-            return array();
-        }
-
-        // Give
-        return array(
-            'now' => $m[1],
-            '5min' => $m[2],
-            '15min' => $m[3],
         );
     }
 

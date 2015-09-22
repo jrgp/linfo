@@ -75,24 +75,6 @@ class OpenBSD extends BSDcommon
             );
     }
 
-    // OS
-    public function getOS()
-    {
-        return 'OpenBSD';
-    }
-
-    // Kernel
-    public function getKernel()
-    {
-        return php_uname('r');
-    }
-
-    // Hostname
-    public function getHostName()
-    {
-        return php_uname('n');
-    }
-
     // Get mounted file systems and their disk usage stats
     public function getMounts()
     {
@@ -191,33 +173,6 @@ class OpenBSD extends BSDcommon
 
         // Give it
         return $return;
-    }
-
-    // System load averages
-    public function getLoad()
-    {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Load Averages');
-        }
-
-        // Use sysctl
-        $loads = $this->sysctl['vm.loadavg'];
-
-        // hmm?
-        if ($loads == false) {
-            return 'unknown';
-        }
-
-        // Blow your load
-        $parts = explode(' ', $loads);
-
-        // Give
-        return array(
-            'now' => $parts[0],
-            '5partsin' => $parts[1],
-            '15partsin' => $parts[2],
-        );
     }
 
     // Get hardware devices

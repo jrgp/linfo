@@ -142,4 +142,21 @@ abstract class BSDcommon extends Unixcommon
             return null;
         }
     }
+
+
+    // System load averages
+    public function getLoad()
+    {
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Load Averages');
+        }
+
+        $parts = explode(' ', trim($this->sysctl['vm.loadavg']));
+
+        if (!$parts) {
+            return array();
+        }
+
+        return array_combine(array('now', '5min', '15min'), $parts);
+    }
 }

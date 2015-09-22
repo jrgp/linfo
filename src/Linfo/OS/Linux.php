@@ -71,18 +71,6 @@ class Linux extends Unixcommon
     }
 
     /**
-     * getOS.
-     * 
-     * @return string Linux
-     */
-    public function getOS()
-    {
-
-        // Linux, obviously
-        return 'Linux';
-    }
-
-    /**
      * getKernel.
      * 
      * @return string kernel version
@@ -840,19 +828,17 @@ class Linux extends Unixcommon
         // ugh
         if ($contents === false) {
             $this->error->add('Linfo Core', '/proc/loadavg unreadable');
-
             return array();
         }
 
         // Parts
         $parts = explode(' ', $contents);
 
-        // Return array of info
-        return array(
-            'now' => $parts[0],
-            '5min' => $parts[1],
-            '15min' => $parts[2],
-        );
+        if (!$parts) {
+            return array();
+        }
+
+        return array_combine(array('now', '5min', '15min'), $parts);
     }
 
     /**
