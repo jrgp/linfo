@@ -737,14 +737,4 @@ class FreeBSD extends BSDcommon
             $t = new Timer('Temperature');
         }
     }
-
-    /**
-     * getCPUArchitecture.
-     * 
-     * @return string the arch
-     */
-    public function getCPUArchitecture()
-    {
-        return php_uname('m');
-    }
 }

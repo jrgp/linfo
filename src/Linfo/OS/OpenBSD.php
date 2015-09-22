@@ -266,11 +266,11 @@ class OpenBSD extends BSDcommon
 
         // Parse dmesg
         foreach (explode("\n", $this->dmesg) as $dmesg_line) {
-            if (preg_match('/^(\w+) at .+<(.+)>/', $dmesg_line, $hd_start_match)) {
+            if (preg_match('/^(\w+) at .+<([^>]+)>/', $dmesg_line, $hd_start_match)) {
                 $curr_hd = $hd_start_match;
-            } elseif ($curr_hd !== false && preg_match('/^'.preg_quote($curr_hd[1]).': \d+\-sector \w+, \w+, (\d+)MB/', $dmesg_line, $hd_spec_match)) {
+            } elseif ($curr_hd !== false && preg_match('/^'.preg_quote($curr_hd[1]).':.*\b(\d+)MB/', $dmesg_line, $hd_spec_match)) {
                 $drives[] = array(
-                    'name' => $curr_hd[2],
+                    'name' => trim($curr_hd[2], ', '),
                     'vendor' => false,
                     'device' => '/dev/'.$curr_hd[1],
                     'size' => $hd_spec_match[1] * 1048576,

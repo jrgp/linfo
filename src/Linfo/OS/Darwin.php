@@ -101,11 +101,6 @@ class Darwin extends BSDcommon
         return preg_match('/^\s*Computer Name:\s+(.+)\s*$/m', $this->systemProfiler, $m) ? $m[1] : php_uname('n');
     }
 
-    public function getCPUArchitecture()
-    {
-        return php_uname('m');
-    }
-
     // Get mounted file systems
     public function getMounts()
     {
