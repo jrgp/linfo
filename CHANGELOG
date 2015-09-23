@@ -123,3 +123,4 @@ v3.0.1 ?/??/????
  - Tested on modern releases of FreeBSD and OpenBSD and some tweaks for each
  - Misc tweaks
  - First new version bump in a long time
+ - Adding dnsmasq dhcpd leases parsing extension
