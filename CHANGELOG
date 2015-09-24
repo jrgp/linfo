@@ -124,3 +124,4 @@ v3.0.1 ?/??/????
  - Misc tweaks
  - First new version bump in a long time
  - Adding dnsmasq dhcpd leases parsing extension
+ - FreeBSD KVM guest detection

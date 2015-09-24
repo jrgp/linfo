@@ -708,4 +708,22 @@ class FreeBSD extends BSDcommon
             return array();
         }
     }
+
+    public function getVirtualization()
+    {
+
+       // Time?
+       if (!empty($this->settings['timer'])) {
+           $t = new Timer('Determining virtualization type');
+       }
+
+       // KVM guest? Try to expand this with support for other hypervisors..
+       if (preg_match('/^Hypervisor:\s+Origin\s+=\s+"([^"]+)"/m', $this->dmesg, $m)) {
+           if (strpos($m[1], 'KVM') !== false) {
+               return array('type' => 'guest', 'method' => 'KVM');
+           }
+       }
+
+       return false;
+    }
 }
