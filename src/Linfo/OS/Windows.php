@@ -24,6 +24,7 @@ use Linfo\Meta\Timer;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
+use COM;
 
 /**
  * Get info on Windows systems
