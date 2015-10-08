@@ -422,7 +422,7 @@ class Linfo
 
             // Anti hack
             if (!preg_match('/^[a-z0-9-_]+$/i', $ext)) {
-                Errors::Singleton()->add('Extension Loader', 'Not going to load "'.$ext.'" extension as only characters allowed in name are letters/numbers/-_');
+                Errors::add('Extension Loader', 'Not going to load "'.$ext.'" extension as only characters allowed in name are letters/numbers/-_');
                 continue;
             }
 
@@ -436,7 +436,7 @@ class Linfo
                 $reflector = new ReflectionClass('\\Linfo\\Extension\\'.$ext);
                 $ext_class = $reflector->newInstance($this);
             } catch (ReflectionException $e) {
-                Errors::Singleton()->add('Extension Loader', 'Cannot instantiate class for "'.$ext.'" extension: '.$e->getMessage());
+                Errors::add('Extension Loader', 'Cannot instantiate class for "'.$ext.'" extension: '.$e->getMessage());
                 continue;
             }
 

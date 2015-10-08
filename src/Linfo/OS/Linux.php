@@ -37,7 +37,7 @@ use Exception;
 class Linux extends Unixcommon
 {
     // Keep these tucked away
-    protected $settings, $error;
+    protected $settings;
 
     // Generally disabled as it's slowww
     protected $cpu_percent = array('overall' => false, 'cpus' => array());
@@ -53,9 +53,6 @@ class Linux extends Unixcommon
 
         // Localize settings
         $this->settings = $settings;
-
-        // Localize error handler
-        $this->error = Errors::Singleton();
 
         // Make sure we have what we need
         if (!is_dir('/sys') || !is_dir('/proc')) {
@@ -88,7 +85,7 @@ class Linux extends Unixcommon
 
         // Make sure we can use it
         if (!is_file($file) || !is_readable($file)) {
-            $this->error->add('Linfo Core', '/proc/version not found');
+            Errors::add('Linfo Core', '/proc/version not found');
 
             return 'Unknown';
         }
@@ -98,7 +95,7 @@ class Linux extends Unixcommon
 
         // Parse it
         if (preg_match('/^Linux version (\S+).+$/', $contents, $match) != 1) {
-            $this->error->add('Linfo Core', 'Error parsing /proc/version');
+            Errors::add('Linfo Core', 'Error parsing /proc/version');
 
             return 'Unknown';
         }
@@ -128,7 +125,7 @@ class Linux extends Unixcommon
 
         // Failed?
         if ($hostname === false) {
-            $this->error->add('Linfo Core', 'Error getting /proc/sys/kernel/hostname');
+            Errors::add('Linfo Core', 'Error getting /proc/sys/kernel/hostname');
 
             return 'Unknown';
         }
@@ -159,7 +156,7 @@ class Linux extends Unixcommon
 
         // First off, these need to exist..
         if (!is_readable($procFileSwap) || !is_readable($procFileMem)) {
-            $this->error->add('Linfo Core', '/proc/swaps and/or /proc/meminfo are not readable');
+            Errors::add('Linfo Core', '/proc/swaps and/or /proc/meminfo are not readable');
 
             return array();
         }
@@ -220,7 +217,7 @@ class Linux extends Unixcommon
 
         // Not there?
         if (!is_file($file) || !is_readable($file)) {
-            $this->error->add('Linfo Core', '/proc/cpuinfo not readable');
+            Errors::add('Linfo Core', '/proc/cpuinfo not readable');
 
             return array();
         }
@@ -324,7 +321,7 @@ class Linux extends Unixcommon
 
         // eh?
         if ($contents === false) {
-            $this->error->add('Linfo Core', '/proc/uptime does not exist.');
+            Errors::add('Linfo Core', '/proc/uptime does not exist.');
 
             return 'Unknown';
         }
@@ -462,7 +459,7 @@ class Linux extends Unixcommon
 
             // There was an issue
             catch (\Exception $e) {
-                $this->error->add('hddtemp parser', $e->getMessage());
+                Errors::add('hddtemp parser', $e->getMessage());
             }
         }
 
@@ -486,7 +483,7 @@ class Linux extends Unixcommon
                     $return = array_merge($return, $mbmon_res);
                 }
             } catch (Exception $e) {
-                $this->error->add('mbmon parser', $e->getMessage());
+                Errors::add('mbmon parser', $e->getMessage());
             }
         }
 
@@ -505,7 +502,7 @@ class Linux extends Unixcommon
                     $return = array_merge($return, $sensord_res);
                 }
             } catch (Exception $e) {
-                $this->error->add('sensord parser', $e->getMessage());
+                Errors::add('sensord parser', $e->getMessage());
             }
         }
 
@@ -608,12 +605,12 @@ class Linux extends Unixcommon
 
         // Can't?
         if ($contents == false) {
-            $this->error->add('Linfo Core', '/proc/mounts does not exist');
+            Errors::add('Linfo Core', '/proc/mounts does not exist');
         }
 
         // Parse
         if (@preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $match, PREG_SET_ORDER) === false) {
-            $this->error->add('Linfo Core', 'Error parsing /proc/mounts');
+            Errors::add('Linfo Core', 'Error parsing /proc/mounts');
         }
 
         // Return these
@@ -699,8 +696,8 @@ class Linux extends Unixcommon
         ));
 
         // Did we not get them?
-        $pci_ids || $this->error->add('Linux Device Finder', 'Cannot find pci.ids; ensure pciutils is installed.');
-        $usb_ids || $this->error->add('Linux Device Finder', 'Cannot find usb.ids; ensure usbutils is installed.');
+        $pci_ids || Errors::add('Linux Device Finder', 'Cannot find pci.ids; ensure pciutils is installed.');
+        $usb_ids || Errors::add('Linux Device Finder', 'Cannot find usb.ids; ensure usbutils is installed.');
 
         // Class that does it
         $hw = new Hwpci($usb_ids, $pci_ids);
@@ -733,7 +730,7 @@ class Linux extends Unixcommon
 
             // No?
             if ($mdadm_contents === false) {
-                $this->error->add('Linux softraid mdstat parser', '/proc/mdstat does not exist.');
+                Errors::add('Linux softraid mdstat parser', '/proc/mdstat does not exist.');
             }
 
             // Parse
@@ -827,7 +824,7 @@ class Linux extends Unixcommon
 
         // ugh
         if ($contents === false) {
-            $this->error->add('Linfo Core', '/proc/loadavg unreadable');
+            Errors::add('Linfo Core', '/proc/loadavg unreadable');
             return array();
         }
 
@@ -1030,7 +1027,7 @@ class Linux extends Unixcommon
 
         // Oi
         if ($contents == false) {
-            $this->error->add('Linux WiFi info parser', '/proc/net/wireless does not exist');
+            Errors::add('Linux WiFi info parser', '/proc/net/wireless does not exist');
 
             return $return;
         }
@@ -1077,7 +1074,7 @@ class Linux extends Unixcommon
 
         // eh?
         if (!is_file($file)) {
-            $this->error->add('Linux sound card detector', '/proc/asound/cards does not exist');
+            Errors::add('Linux sound card detector', '/proc/asound/cards does not exist');
         }
 
         // Get contents and parse

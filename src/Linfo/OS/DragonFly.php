@@ -22,6 +22,7 @@ namespace Linfo\OS;
 
 use Exception;
 use Linfo\Meta\Timer;
+use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Parsers\Hwpci;
 
@@ -30,7 +31,6 @@ class DragonFly extends BSDcommon
     // Encapsulate these
     protected $settings,
         $exec,
-        $error,
         $dmesg;
 
     // Start us off
@@ -83,7 +83,7 @@ class DragonFly extends BSDcommon
         try {
             $res = $this->exec->exec('mount');
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error running `mount` command');
+            Errors::add('Linfo Core', 'Error running `mount` command');
 
             return array();
         }
@@ -206,7 +206,7 @@ class DragonFly extends BSDcommon
         try {
             $netstat = $this->exec->exec('netstat', '-nibd');
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'error using netstat');
+            Errors::add('Linfo Core', 'error using netstat');
 
             return array();
         }
@@ -279,7 +279,7 @@ class DragonFly extends BSDcommon
                 }
             }
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'error using ifconfig to get nic statuses');
+            Errors::add('Linfo Core', 'error using ifconfig to get nic statuses');
         }
 
         // Give nets
@@ -397,7 +397,7 @@ class DragonFly extends BSDcommon
                 }
             }
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `ps` to get process info');
+            Errors::add('Linfo Core', 'Error using `ps` to get process info');
         }
 
         // Give

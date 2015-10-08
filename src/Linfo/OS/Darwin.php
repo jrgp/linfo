@@ -22,6 +22,7 @@ namespace Linfo\OS;
 
 use Exception;
 use Linfo\Meta\Timer;
+use Linfo\Meta\Errors;
 use Linfo\Common;
 
 /*
@@ -35,7 +36,6 @@ class Darwin extends BSDcommon
     // Encapsulate these
     protected $settings,
         $exec,
-        $error,
         $dmesg;
 
     // Start us off
@@ -67,7 +67,7 @@ class Darwin extends BSDcommon
             $this->systemProfiler = $this->exec->exec('system_profiler', 'SPHardwareDataType SPSoftwareDataType SPPowerDataType');
         } catch (Exception $e) {
             // Meh
-            $this->error->add('Linfo Mac OS 10', 'Error using system_profiler');
+            Errors::add('Linfo Mac OS 10', 'Error using system_profiler');
         }
     }
 
@@ -107,7 +107,7 @@ class Darwin extends BSDcommon
         try {
             $res = $this->exec->exec('mount');
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error running `mount` command');
+            Errors::add('Linfo Core', 'Error running `mount` command');
 
             return array();
         }
@@ -165,7 +165,7 @@ class Darwin extends BSDcommon
         try {
             $netstat = $this->exec->exec('netstat', '-nbdi');
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `netstat` to get network info');
+            Errors::add('Linfo Core', 'Error using `netstat` to get network info');
 
             return $return;
         }
@@ -344,7 +344,7 @@ class Darwin extends BSDcommon
                 }
             }
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `ps` to get process info');
+            Errors::add('Linfo Core', 'Error using `ps` to get process info');
         }
 
         // Give
@@ -496,7 +496,7 @@ class Darwin extends BSDcommon
         try {
             $res = $this->exec->exec('diskutil', ' list');
         } catch (Exception $e) {
-            $this->error->add('Linfo drives', 'Error using `diskutil list` to get drives');
+            Errors::add('Linfo drives', 'Error using `diskutil list` to get drives');
 
             return array();
         }

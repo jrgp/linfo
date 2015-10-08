@@ -50,7 +50,7 @@ class Dnsmasq_dhcpd implements Extension
         DATE_FORMAT = 'm/d/y h:i A';
 
     // Store these tucked away here
-    private $_LinfoError,
+    private
         $_hide_mac,
         $_leases = array();
 
@@ -61,9 +61,6 @@ class Dnsmasq_dhcpd implements Extension
     public function __construct(Linfo $linfo)
     {
         $settings = $linfo->getSettings();
-
-        // Localize error handler
-        $this->_LinfoError = Errors::Singleton();
 
         // Should we hide mac addresses, to prevent stuff like mac address spoofing?
         $this->_hide_mac = array_key_exists('dnsmasq_hide_mac', $settings) ? (bool) $settings['dnsmasq_hide_mac'] : false;

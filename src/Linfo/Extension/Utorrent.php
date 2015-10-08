@@ -73,7 +73,7 @@ use Linfo\Output\Html;
  */
 class Utorrent implements Extension
 {
-    private $LinfoError,
+    private
         $torrents = array(),
         $connectionSettings = array(),
         $stats = array('uploaded' => 0, 'downloaded' => 0),
@@ -122,7 +122,6 @@ class Utorrent implements Extension
     public function __construct(Linfo $linfo)
     {
         $settings = $linfo->getSettings();
-        $this->LinfoError = Errors::Singleton();
         $this->connectionSettings = $settings['utorrent_connection'];
         $this->regexFilters = isset($settings['utorrent_filter']) && is_array($settings['utorrent_filter']) ? $settings['utorrent_filter'] : array();
         $this->hideName = isset($settings['utorrent_hide_name']) ? !empty($settings['utorrent_hide_name'])  : false;
@@ -135,13 +134,13 @@ class Utorrent implements Extension
         $this->res = false;
 
         if (!extension_loaded('curl')) {
-            $this->LinfoError->add('utorrent extension', 'Curl PHP extension not installed');
+            Errors::add('utorrent extension', 'Curl PHP extension not installed');
 
             return;
         }
 
         if (!isset($this->connectionSettings['host']) || !isset($this->connectionSettings['port']) || !isset($this->connectionSettings['user'])) {
-            $this->LinfoError->add('utorrent extension', 'Missing $setting[\'utorrent_connection\'] details in config..');
+            Errors::add('utorrent extension', 'Missing $setting[\'utorrent_connection\'] details in config..');
 
             return;
         }
@@ -169,7 +168,7 @@ class Utorrent implements Extension
         if (preg_match('/\>([^<]+)\</', $result, $m)) {
             $token = $m[1];
         } else {
-            $this->LinfoError->add('utorrent extension', 'Failed parsing token');
+            Errors::add('utorrent extension', 'Failed parsing token');
             $this->cleanup();
 
             return;
@@ -191,7 +190,7 @@ class Utorrent implements Extension
         $result = curl_exec($curl);
 
         if (!($response = @json_decode($result, true))) {
-            $this->LinfoError->add('utorrent extension', 'Failed parsing json object');
+            Errors::add('utorrent extension', 'Failed parsing json object');
             $this->cleanup();
 
             return;
@@ -201,7 +200,7 @@ class Utorrent implements Extension
         curl_close($curl);
 
         if (!isset($response['torrents']) || !is_array($response['torrents'])) {
-            $this->LinfoError->add('utorrent extension', 'torrents array key not found in json response object');
+            Errors::add('utorrent extension', 'torrents array key not found in json response object');
             $this->cleanup();
 
             return;

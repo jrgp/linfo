@@ -49,7 +49,7 @@ use Linfo\Meta\Timer;
  */
 class Libvirt implements Extension
 {
-    private $Errors,
+    private
         $VMs = array(),
         $connection = false,
         $connectionSettings = array(),
@@ -59,8 +59,6 @@ class Libvirt implements Extension
     {
         $settings = $linfo->getSettings();
 
-        $this->Errors = Errors::Singleton();
-
         $this->connectionSettings = $settings['libvirt_connection'];
     }
 
@@ -68,7 +66,7 @@ class Libvirt implements Extension
     {
         if (!($this->connection =
             @libvirt_connect($this->connectionSettings['url'], true))) {
-            $this->Errors->add('libvirt extension', 'Error connecting');
+            Errors::add('libvirt extension', 'Error connecting');
             $this->res = false;
 
             return false;
@@ -82,19 +80,19 @@ class Libvirt implements Extension
         $t = new Timer('libvirt extension');
 
         if (!extension_loaded('libvirt')) {
-            $this->Errors->add('libvirt extension', 'Libvirt PHP extension not installed');
+            Errors::add('libvirt extension', 'Libvirt PHP extension not installed');
             $this->res = false;
 
             return;
         }
 
         if (!$this->connect()) {
-            $this->Errors->add('libvirt extension', 'Failed connecting');
+            Errors::add('libvirt extension', 'Failed connecting');
             return;
         }
 
         if (!($doms = libvirt_list_domains($this->connection))) {
-            $this->Errors->add('libvirt extension', 'Failed getting domain list');
+            Errors::add('libvirt extension', 'Failed getting domain list');
             $this->res = false;
 
             return;

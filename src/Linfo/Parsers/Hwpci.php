@@ -39,8 +39,7 @@ class Hwpci
         $_usb_devices = array(),
         $_pci_devices = array(),
         $_result = array(),
-        $exec,
-        $error;
+        $exec;
 
     /**
      * Constructor.
@@ -71,7 +70,6 @@ class Hwpci
         // Might need these
         $this->exec = new CallExt();
         $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
-        $this->error = Errors::Singleton();
     }
 
     /**
@@ -237,7 +235,7 @@ class Hwpci
         try {
             $pciconf = $this->exec->exec('pciconf', '-l');
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `pciconf -l` to get hardware info');
+            Errors::add('Linfo Core', 'Error using `pciconf -l` to get hardware info');
 
             return;
         }

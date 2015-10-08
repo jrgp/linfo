@@ -23,76 +23,55 @@ namespace Linfo\Meta;
  */
 class Errors
 {
-    /**
-     * Store singleton instance here.
-     * 
-     * @var object
-     * @static
-     */
-    protected static $_fledging;
-
-    /**
-     * Singleton. Get singleton instance.
-     * 
-     * @param array $settings linfo settings
-     *
-     * @return object LinfoError instance
-     */
-    public static function Singleton($settings = null)
-    {
-        $c = __CLASS__;
-        if (!isset(self::$_fledging)) {
-            self::$_fledging = new $c($settings);
-        }
-
-        return self::$_fledging;
-    }
 
     /**
      * Store error messages here.
      *
      * @var array
      */
-    private $_errors = array();
+    private static $errors = array();
 
     /**
      * Add an error message.
      *
+     * @static
      * @param string $whence  name of error message source
      * @param string $message error message text
      */
-    public function add($whence, $message)
+    public static function add($whence, $message)
     {
-        $this->_errors[] = array($whence, $message);
+        self::$errors[] = array($whence, $message);
     }
 
     /**
      * Get all error messages.
      *
+     * @static
      * @return array of errors
      */
-    public function show()
+    public static function show()
     {
-        return $this->_errors;
+        return self::$errors;
     }
 
     /**
      * How many are there?
      *
+     * @static
      * @return int number of errors
      */
-    public function num()
+    public static function num()
     {
-        return count($this->_errors);
+        return count(self::$errors);
     }
 
     /**
-     * Wipe out singleton instance. Used mainly for unit tests.
+     * Used mainly for unit tests.
      *
      * @static
      */
     public static function clear()
     {
-        self::$_fledging = null;
+        self::$errors = array();
     }
 }

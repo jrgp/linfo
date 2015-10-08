@@ -891,7 +891,7 @@ class Html implements Output
     }
 
     // Feel like showing errors? Are there any even?
-    if (!empty($settings['show_errors']) && Errors::Singleton()->num() > 0) {
+    if (!empty($settings['show_errors']) && Errors::num() > 0) {
         echo '
 	<div id="errorList" class="infoTable">
 		<h2>'.$lang['error_head'].'</h2>
@@ -901,7 +901,7 @@ class Html implements Output
 				<th>'.$lang['message'].'</th>
 			</tr>';
 
-        foreach (Errors::Singleton()->show() as $error) {
+        foreach (Errors::show() as $error) {
             echo '
 				<tr>
 					<td>'.$error[0].'</td>

@@ -21,7 +21,6 @@
 namespace Linfo\OS;
 
 use Linfo\Meta\Timer;
-use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
 use COM;
@@ -33,7 +32,7 @@ use COM;
 class Windows extends OS
 {
     // Keep these tucked away
-    protected $settings, $error;
+    protected $settings;
 
     private $wmi, $windows_version;
 
@@ -48,9 +47,6 @@ class Windows extends OS
 
         // Localize settings
         $this->settings = $settings;
-
-        // Localize error handler
-        $this->error = Errors::Singleton();
 
         // Get WMI instance
         $this->wmi = new COM('winmgmts:{impersonationLevel=impersonate}//./root/cimv2');
