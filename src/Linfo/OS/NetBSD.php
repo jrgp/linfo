@@ -22,6 +22,7 @@ namespace Linfo\OS;
 
 use Exception;
 use Linfo\Meta\Timer;
+use Linfo\Meta\Errors;
 use Linfo\Common;
 
 /*
@@ -65,7 +66,7 @@ class NetBSD extends BSDcommon
         try {
             $res = $this->exec->exec('mount');
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error running `mount` command');
+            Errors::add('Linfo Core', 'Error running `mount` command');
 
             return array();
         }
@@ -137,7 +138,7 @@ class NetBSD extends BSDcommon
         try {
             $res = $this->exec->exec('netstat', '-nbdi');
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `netstat` to get network info');
+            Errors::add('Linfo Core', 'Error using `netstat` to get network info');
 
             return array();
         }
@@ -361,7 +362,7 @@ class NetBSD extends BSDcommon
             $return['total'] = $available_ram * $bytes_per_page;
             $return['free'] = $free_ram * $bytes_per_page;
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `vmstat` to get memory usage');
+            Errors::add('Linfo Core', 'Error using `vmstat` to get memory usage');
         }
 
         // Get swap
@@ -380,7 +381,7 @@ class NetBSD extends BSDcommon
                 );
             }
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `swapctl` to get swap usage');
+            Errors::add('Linfo Core', 'Error using `swapctl` to get swap usage');
         }
 
         // Give it off
@@ -488,7 +489,7 @@ class NetBSD extends BSDcommon
                 }
             }
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `ps` to get process info');
+            Errors::add('Linfo Core', 'Error using `ps` to get process info');
         }
 
         // Give

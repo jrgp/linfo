@@ -46,7 +46,7 @@ use Linfo\Meta\Errors;
 class Soldat implements Extension
 {
     // Store these tucked away here
-    private $_LinfoError,
+    private
         $_res,
         $_servers;
 
@@ -54,7 +54,6 @@ class Soldat implements Extension
     public function __construct(Linfo $linfo)
     {
         $settings = $linfo->getSettings();
-        $this->_LinfoError = Errors::Singleton();
         $this->_servers = (array) $settings['soldat_servers'];
     }
 

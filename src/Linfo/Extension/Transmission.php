@@ -60,7 +60,6 @@ class Transmission implements Extension
 {
     // Store these tucked away here
     private $_CallExt,
-        $_LinfoError,
         $_res,
         $_torrents = array(),
         $_stats = false,
@@ -78,7 +77,6 @@ class Transmission implements Extension
         // Classes we need
         $this->_CallExt = new CallExt();
         $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin'));
-        $this->_LinfoError = Errors::Singleton();
 
         // Transmission specific settings
         $this->_auth = array_key_exists('transmission_auth', $settings) ? (array) $settings['transmission_auth'] : array();
@@ -123,7 +121,7 @@ class Transmission implements Extension
             $result = $this->_CallExt->exec('transmission-remote', $args.' -l');
         } catch (Exception $e) {
             // messed up somehow
-            $this->_LinfoError->add('Transmission extension: ', $e->getMessage());
+            Errors::add('Transmission extension: ', $e->getMessage());
             $this->_res = false;
 
             // Don't bother going any further
@@ -137,7 +135,7 @@ class Transmission implements Extension
 
         // Invalid host?
         if (strpos($first_line, 'Couldn\'t resolve host name') !== false) {
-            $this->_LinfoError->add('Transmission extension: Invalid Host');
+            Errors::add('Transmission extension: Invalid Host');
             $this->_res = false;
 
             return;
@@ -145,7 +143,7 @@ class Transmission implements Extension
 
         // Invalid auth?
         if (strpos($first_line, '401: Unauthorized') !== false) {
-            $this->_LinfoError->add('Transmission extension: Invalid Authentication');
+            Errors::add('Transmission extension: Invalid Authentication');
             $this->_res = false;
 
             return;

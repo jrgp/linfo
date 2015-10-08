@@ -43,13 +43,11 @@ class Truecrypt implements Extension
 {
     // Store these tucked away here
     private $_CallExt,
-        $_LinfoError,
         $_res;
 
     // Localize important classes
     public function __construct(Linfo $linfo)
     {
-        $this->_LinfoError = Errors::Singleton();
         $this->_CallExt = new CallExt();
         $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
     }
@@ -66,7 +64,7 @@ class Truecrypt implements Extension
             $result = $this->_CallExt->exec('truecrypt', '-l -v');
         } catch (Exception $e) {
             // messed up somehow
-            $this->_LinfoError->add('Truecrypt Extension', $e->getMessage());
+            Errors::add('Truecrypt Extension', $e->getMessage());
             $this->_res = false;
 
             // Don't bother going any further

@@ -21,7 +21,6 @@
 namespace Linfo\OS;
 
 use Linfo\Common;
-use Linfo\Meta\Errors;
 use Linfo\Parsers\CallExt;
 use Exception;
 
@@ -34,7 +33,6 @@ abstract class BSDcommon extends Unixcommon
     // Store these
     protected $settings,
         $exec,
-        $error,
         $dmesg,
         $sysctl = array();
 
@@ -44,9 +42,6 @@ abstract class BSDcommon extends Unixcommon
 
         // Localize settings
         $this->settings = $settings;
-
-        // Localize error handler
-        $this->error = Errors::Singleton();
 
         // Exec running
         $this->exec = new CallExt();

@@ -44,13 +44,11 @@ class Cups implements Extension
 {
     // Store these tucked away here
     private $_CallExt,
-        $_LinfoError,
         $_res;
 
     // Localize important classes
     public function __construct(Linfo $linfo)
     {
-        $this->_LinfoError = Errors::Singleton();
         $this->_CallExt = new CallExt();
         $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
     }
@@ -67,7 +65,7 @@ class Cups implements Extension
             $result = $this->_CallExt->exec('lpstat', '-p -o -l');
         } catch (Exception $e) {
             // messed up somehow
-            $this->_LinfoError->add('CUPS Extension', $e->getMessage());
+            Errors::add('CUPS Extension', $e->getMessage());
             $this->_res = false;
 
             // Don't bother going any further

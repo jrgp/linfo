@@ -47,13 +47,11 @@ class Apcaccess implements Extension
 {
     // Store these tucked away here
     private $_CallExt,
-        $_LinfoError,
         $_res;
 
     // Localize important classes
     public function __construct(Linfo $linfo)
     {
-        $this->_LinfoError = Errors::Singleton();
         $this->_CallExt = new CallExt();
         $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
     }
@@ -70,7 +68,7 @@ class Apcaccess implements Extension
             $result = $this->_CallExt->exec('apcaccess');
         } catch (Exception $e) {
             // messed up somehow
-            $this->_LinfoError->add('apcaccess Extension', $e->getMessage());
+            Errors::add('apcaccess Extension', $e->getMessage());
             $this->_res = false;
 
             // Don't bother going any further

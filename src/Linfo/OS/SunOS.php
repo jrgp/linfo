@@ -31,8 +31,7 @@ class SunOS extends OS
     // Encapsulate these
     protected $settings,
         $exec,
-        $kstat = array(),
-        $error;
+        $kstat = array();
 
     // Start us off
     public function __construct($settings)
@@ -99,7 +98,7 @@ class SunOS extends OS
             $command = $this->exec->exec('kstat', ' -p '.implode(' ', array_map('escapeshellarg', $keys)));
             $lines = explode("\n", $command);
         } catch (Exception $e) {
-            Errors::Singleton()->add('Solaris Core', 'Failed running kstat.');
+            Errors::add('Solaris Core', 'Failed running kstat.');
         }
 
         if (!is_array($lines)) {
@@ -168,7 +167,7 @@ class SunOS extends OS
         try {
             $res = $this->exec->exec('mount', '-p');
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error running `mount` command');
+            Errors::add('Linfo Core', 'Error running `mount` command');
 
             return array();
         }
@@ -283,7 +282,7 @@ class SunOS extends OS
 
         // Something bad happened
         catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `ps` to get process info');
+            Errors::add('Linfo Core', 'Error using `ps` to get process info');
         }
 
         // Give
@@ -353,7 +352,7 @@ class SunOS extends OS
         try {
             $ifconfig = $this->exec->exec('ifconfig', '-a');
         } catch (Exception $e) {
-            Errors::Singleton()->add('Solaris Core', 'Failed running ifconfig -a.');
+            Errors::add('Solaris Core', 'Failed running ifconfig -a.');
 
             return array();
         }
@@ -447,7 +446,7 @@ class SunOS extends OS
                 }
             }
         } catch (Exception $e) {
-            Errors::Singleton()->add('Solaris Core', 'Failed running dladm show-link.');
+            Errors::add('Solaris Core', 'Failed running dladm show-link.');
 
             return array();
         }

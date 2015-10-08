@@ -35,8 +35,7 @@ class Minix extends OS
 {
     // Store these here
     protected $settings,
-        $exec,
-        $error;
+        $exec;
 
     // Start us off by localizing the settings and initializing the external
     // application running class

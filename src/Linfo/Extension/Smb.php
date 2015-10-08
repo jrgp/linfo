@@ -44,14 +44,12 @@ class Smb implements Extension
 {
     // Store these tucked away here
     private $_CallExt,
-        $_LinfoError,
         $_res,
         $_date_format = 'm/d/y @ h:i A';
 
     // Localize important classes
     public function __construct(Linfo $linfo)
     {
-        $this->_LinfoError = Errors::Singleton();
         $this->_CallExt = new CallExt();
         $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
     }
@@ -68,7 +66,7 @@ class Smb implements Extension
             $result = $this->_CallExt->exec('smbstatus');
         } catch (Exception $e) {
             // messed up somehow
-            $this->_LinfoError->add('Samba Status Extension', $e->getMessage());
+            Errors::add('Samba Status Extension', $e->getMessage());
             $this->_res = false;
 
             // Don't bother going any further

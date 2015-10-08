@@ -48,7 +48,7 @@ class Dhcpd3_leases implements Extension
         DATE_FORMAT = 'm/d/y h:i A';
 
     // Store these tucked away here
-    private $_LinfoError,
+    private
         $_hide_mac,
         $_res,
         $_leases = array();
@@ -60,9 +60,6 @@ class Dhcpd3_leases implements Extension
     public function __construct(Linfo $linfo)
     {
         $settings = $linfo->getSettings();
-
-        // Localize error handler
-        $this->_LinfoError = Errors::Singleton();
 
         // Should we hide mac addresses, to prevent stuff like mac address spoofing?
         $this->_hide_mac = array_key_exists('dhcpd3_hide_mac', $settings) ? (bool) $settings['dhcpd3_hide_mac'] : false;
@@ -88,7 +85,7 @@ class Dhcpd3_leases implements Extension
 
         // We couldn't find leases file?
         if ($this->_leases_file === false) {
-            $this->_LinfoError->add('dhcpd3 leases extension', 'couldn\'t find leases file');
+            Errors::add('dhcpd3 leases extension', 'couldn\'t find leases file');
             $this->_res = false;
 
             return;
@@ -99,7 +96,7 @@ class Dhcpd3_leases implements Extension
 
         // Couldn't?
         if ($contents === false) {
-            $this->_LinfoError->add('dhcpd3 leases extension', 'Error getting contents of leases file');
+            Errors::add('dhcpd3 leases extension', 'Error getting contents of leases file');
             $this->_res = false;
 
             return;

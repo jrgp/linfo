@@ -22,6 +22,7 @@ namespace Linfo\OS;
 
 use Exception;
 use Linfo\Meta\Timer;
+use Linfo\Meta\Errors;
 use Linfo\Common;
 
 /*
@@ -34,7 +35,6 @@ class OpenBSD extends BSDcommon
     // Encapsulate these
     protected $settings,
         $exec,
-        $error,
         $dmesg;
 
     // Start us off
@@ -87,7 +87,7 @@ class OpenBSD extends BSDcommon
         try {
             $mount_res = $this->exec->exec('mount');
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error running `mount` command');
+            Errors::add('Linfo Core', 'Error running `mount` command');
 
             return array();
         }
@@ -149,7 +149,7 @@ class OpenBSD extends BSDcommon
                 $return['free'] = $return['total'] - ($hard_ram_free * 1024);
             }
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `vmstat` to get memory usage usage');
+            Errors::add('Linfo Core', 'Error using `vmstat` to get memory usage usage');
         }
 
         // Get swap
@@ -168,7 +168,7 @@ class OpenBSD extends BSDcommon
                 );
             }
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `swapctl` to get swap usage');
+            Errors::add('Linfo Core', 'Error using `swapctl` to get swap usage');
         }
 
         // Give it
@@ -286,7 +286,7 @@ class OpenBSD extends BSDcommon
         try {
             $res = $this->exec->exec('netstat', '-nbi');
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `netstat` to get network info');
+            Errors::add('Linfo Core', 'Error using `netstat` to get network info');
 
             return array();
         }
@@ -460,7 +460,7 @@ class OpenBSD extends BSDcommon
                 }
             }
         } catch (Exception $e) {
-            $this->error->add('Linfo Core', 'Error using `ps` to get process info');
+            Errors::add('Linfo Core', 'Error using `ps` to get process info');
         }
 
         // Give

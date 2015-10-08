@@ -55,14 +55,12 @@ class Ipmi implements Extension
 
     // Store these tucked away here
     private $_CallExt,
-        $_LinfoError,
     $linfo;
 
     // Start us off
     public function __construct(Linfo $linfo)
     {
         $this->linfo = $linfo;
-        $this->_LinfoError = Errors::Singleton();
         $this->_CallExt = new CallExt();
         $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
     }
@@ -83,7 +81,7 @@ class Ipmi implements Extension
             $result = $this->_CallExt->exec('ipmitool', ' sdr');
         } catch (Exception $e) {
             // messed up somehow
-            $this->_LinfoError->add(self::EXTENSION_NAME.' Extension', $e->getMessage());
+            Errors::add(self::EXTENSION_NAME.' Extension', $e->getMessage());
 
             return;
         }
