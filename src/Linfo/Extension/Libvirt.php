@@ -176,6 +176,8 @@ class Libvirt implements Extension
             ),
         );
 
+        $running = 0;
+
         foreach ($this->VMs as $name => $info) {
             $disks = array();
 
@@ -197,11 +199,14 @@ class Libvirt implements Extension
                     $info['nets'] ? implode('<br />', $info['nets']) : 'None',
                 ),
             );
+
+            if ($info['state'])
+                $running++;
         }
 
         // Give it off
         return array(
-            'root_title' => 'libvirt Virtual Machines',
+            'root_title' => 'libvirt Virtual Machines <span style="font-size: 80%;">('.$running.' running)</span>',
             'rows' => $rows,
         );
     }
