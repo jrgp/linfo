@@ -177,6 +177,7 @@ class Libvirt implements Extension
         );
 
         $running = 0;
+        $allram = 0;
 
         foreach ($this->VMs as $name => $info) {
             $disks = array();
@@ -200,13 +201,15 @@ class Libvirt implements Extension
                 ),
             );
 
-            if ($info['state'])
+            if ($info['state'] == 1)
                 $running++;
+
+            $allram += $info['memory'];
         }
 
         // Give it off
         return array(
-            'root_title' => 'libvirt Virtual Machines <span style="font-size: 80%;">('.$running.' running)</span>',
+            'root_title' => 'libvirt Virtual Machines <span style="font-size: 80%;">('.$running.' running - using '.Common::byteConvert($allram * 1024, 2).' RAM)</span>',
             'rows' => $rows,
         );
     }
