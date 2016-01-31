@@ -1,8 +1,18 @@
-# Enabling ncurses (Debian/Ubuntu)
+# Enabling ncurses
 
-Linfo has a simple ncurses-based UI, relying on php's ncurses extension. This
-extension is not bundled in apt on debian/ubuntu, but installing it from source
-is easy enough:
+Linfo has a simple ncurses-based UI, relying on php's ncurses extension.
+
+## Fedora
+
+One must only use the duke nukem forever package manager:
+
+```bash
+sudo dnf install php-pecl-ncurses
+```
+
+## Ubuntu/debian
+
+This extension is not bundled in apt on debian/ubuntu, but installing it from source is easy enough:
 
 #### Install dependencies:
 
