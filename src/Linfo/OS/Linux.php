@@ -1565,7 +1565,7 @@ class Linux extends Unixcommon
         if (Common::anyInArray(array('xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'), $modules) || is_dir('/proc/xen')) {
 
             // Guest or host?
-            if (Common::anyInArray(array('xen-netback', 'xen_blkback'), $modules) || strpos('control_d', Common::getContents('/proc/xen/capabilities', '')) !== false) {
+            if (Common::anyInArray(array('xen-netback', 'xen_blkback'), $modules) || strpos(Common::getContents('/proc/xen/capabilities', ''), 'control_d') !== false) {
                 return array('type' => 'host', 'method' => 'Xen');
             } else {
                 return array('type' => 'guest', 'method' => 'Xen');
