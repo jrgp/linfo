@@ -1582,6 +1582,11 @@ class Linux extends Unixcommon
             return array('type' => 'guest', 'method' => 'VirtualBox');
         }
 
+        // Hyper-V guest. Tested on Windows 10 Pro. Needs to be checked before KVM/QEMU
+        if (Common::anyInArray(array('hid_hyperv', 'hv_vmbus', 'hv_utils'), $modules)) {
+            return array('type' => 'guest', 'method' => 'Hyper-V');
+        }
+
         // Looks like it might be KVM HOST!
         if (Common::anyInArray(array('kvm_intel', 'kvm_amd'), $modules)) {
             return array('type' => 'host', 'method' => 'KVM');
