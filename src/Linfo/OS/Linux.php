@@ -1582,7 +1582,7 @@ class Linux extends Unixcommon
             return array('type' => 'guest', 'method' => 'VirtualBox');
         }
 
-        // Hyper-V guest. Tested on Windows 10 Pro. Needs to be checked before KVM/QEMU
+        // Hyper-V guest. Tested with Trusty under Client Hyper-V in Windows 10 Pro. Needs to be checked before KVM/QEMU!
         if (Common::anyInArray(array('hid_hyperv', 'hv_vmbus', 'hv_utils'), $modules)) {
             return array('type' => 'guest', 'method' => 'Hyper-V');
         }
