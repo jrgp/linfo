@@ -1648,7 +1648,12 @@ class Linux extends Unixcommon
 
          // Refer back to top.c for the reasoning here. I just copied the algorithm without
          // trying to understand why.
-         $scale = 100.0 / (float) array_sum($ret);
+         $retSum = (float) array_sum($ret);
+         if($retSum > 0) {
+             $scale = 100 / $retSum;
+         } else {
+             $scale = 100;
+         }
          $cpu_percent = $ret[0] * $scale;
 
          return round($cpu_percent, 2);
