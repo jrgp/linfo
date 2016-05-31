@@ -79,6 +79,9 @@ $settings['hide']['fs_mount_options'] = array('ecryptfs');
 // Hide hard drives that begin with /dev/sg?. These are duplicates of usual ones, like /dev/sd?
 $settings['hide']['sg'] = true; # Linux only
 
+// Set to true to not resolve symlinks in the mountpoint device paths. Eg don't convert /dev/mapper/root to /dev/dm-0
+$settings['hide']['dont_resolve_mountpoint_symlinks'] = false; # Linux only
+
 // Various softraids. Set to true to enable.
 // Only works if it's available on your system; otherwise does nothing
 $settings['raid']['gmirror'] = false;  # For FreeBSD

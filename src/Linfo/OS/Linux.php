@@ -643,7 +643,11 @@ class Linux extends Unixcommon
 
             // If it's a symlink, find out where it really goes.
             // (using realpath instead of readlink because the former gives absolute paths)
-            $symlink = is_link($mount[1]) ? realpath($mount[1]) : false;
+            if (isset($this->settings['hide']['dont_resolve_mountpoint_symlinks']) && $this->settings['hide']['dont_resolve_mountpoint_symlinks']) {
+                $symlink = false;
+            } else {
+                $symlink = is_link($mount[1]) ? realpath($mount[1]) : false;
+            }
 
             // Optionally get mount options
             if ($this->settings['show']['mounts_options'] && !in_array($mount[3], (array) $this->settings['hide']['fs_mount_options'])) {
