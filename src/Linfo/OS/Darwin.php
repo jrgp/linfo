@@ -613,7 +613,7 @@ class Darwin extends BSDcommon
 
         $loads = $this->sysctl['vm.loadavg'];
 
-        if (preg_match('/([\d\.]+) ([\d\.]+) ([\d\.]+)/', $loads, $m)) {
+        if (preg_match('/([\d\.\,]+) ([\d\.\,]+) ([\d\.\,]+)/', $loads, $m)) {
             return array_combine(array('now', '5min', '15min'), array_slice($m, 1, 3));
         } else {
             return array();
