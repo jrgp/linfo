@@ -1,3 +1,5 @@
+# v.3.0.1 8/24/2016
+
 # v3.0.0 10/21/2015
  - Full code reorganization. Uses namespaces now. Easily used as a library from within composer
  - Tested on modern releases of FreeBSD and OpenBSD and some tweaks for each
