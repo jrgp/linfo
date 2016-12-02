@@ -86,7 +86,7 @@ class Darwin extends BSDcommon
     // Operating system
     public function getOS()
     {
-        return 'Darwin ('.(preg_match('/^\s+System Version: ([^\(]+)/m', $this->systemProfiler, $m) ? $m[1] : 'Mac OS X').')';
+        return 'Darwin ('.(preg_match('/^\s+System Version: ([^\(]+)/m', $this->systemProfiler, $m) ? trim($m[1]) : 'Mac OS X').')';
     }
 
     // Hostname
