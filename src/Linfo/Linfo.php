@@ -96,7 +96,7 @@ class Linfo
            return call_user_func(array($this->parser,$name), $args);
 			
         }
-	}
+    }
             
     // Load everything, while obeying permissions...
     public function scan()
