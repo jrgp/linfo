@@ -2,7 +2,7 @@
 
 /*
 
-This shows a cursory list of running VMs managed by libvirt and their stats. 
+This shows a cursory list of running VMs managed by libvirt and their stats.
 Requires libvirt php extension (http://libvirt.org/php/):
   sudo apt-get install php5-libvirt-php
 
@@ -19,17 +19,17 @@ $settings['libvirt_connection'] = array(
 
 /**
  * This file is part of Linfo (c) 2013 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -53,6 +53,7 @@ class Libvirt implements Extension
         $VMs = array(),
         $connection = false,
         $connectionSettings = array(),
+        $hypervisor = false,
         $res = false;
 
     public function __construct(Linfo $linfo)
@@ -91,10 +92,17 @@ class Libvirt implements Extension
             return;
         }
 
+        if ($hypervisor = libvirt_connect_get_hypervisor($this->connection)) {
+          if (isset($hypervisor['hypervisor_string']) && $hypervisor['hypervisor_string'] != '') {
+              $this->hypervisor = $hypervisor['hypervisor_string'];
+          } else if (isset($hypervisor['hypervisor']) && $hypervisor['hypervisor'] != '') {
+              $this->hypervisor = $hypervisor['hypervisor'];
+          }
+        }
+
         if (!($doms = libvirt_list_domains($this->connection))) {
             Errors::add('libvirt extension', 'Failed getting domain list');
             $this->res = false;
-
             return;
         }
 
@@ -143,6 +151,10 @@ class Libvirt implements Extension
                     continue;
                 }
 
+                if ($stats = @libvirt_domain_block_stats($domain, $blockName)) {
+                    $blockInfo['stats'] = $stats;
+                }
+
                 if (isset($blockInfo['partition']) && !isset($blockInfo['file'])) {
                     $blockInfo['file'] = $blockInfo['partition'];
                 }
@@ -183,8 +195,28 @@ class Libvirt implements Extension
             $disks = array();
 
             foreach ($info['storage'] as $disk) {
-                $disks[] = $disk['device']
-                .(isset($disk['file']) && isset($disk['capacity']) ? ': '.$disk['file'].' ('.Common::byteConvert($disk['capacity'], 2).')' : '');
+                $extra_info = array();
+
+                if (isset($disk['capacity'])) {
+                    $extra_info[] = Common::byteConvert($disk['capacity'], 2) . ' size';
+                }
+
+                if (isset($disk['stats']) && is_array($disk['stats'])) {
+                    $extra_info[] = Common::byteConvert($disk['stats']['rd_bytes'], 2) . ' read';
+                    $extra_info[] = Common::byteConvert($disk['stats']['wr_bytes'], 2) . ' written';
+                }
+
+                $line = $disk['device'];
+
+                if (isset($disk['file'])) {
+                    $line .= ': ' . $disk['file'];
+                }
+
+                if (count($extra_info) > 0) {
+                    $line .= ' <span class="caption">('.implode(', ', $extra_info).')</span>';
+                }
+
+                $disks[] = $line;
             }
 
             $rows[] = array(
@@ -209,7 +241,8 @@ class Libvirt implements Extension
 
         // Give it off
         return array(
-            'root_title' => 'libvirt Virtual Machines <span style="font-size: 80%;">('.$running.' running - using '.Common::byteConvert($allram * 1024, 2).' RAM)</span>',
+            'root_title' => 'libvirt Virtual Machines <span style="font-size: 80%;">'.($this->hypervisor ? ' ('.$this->hypervisor.') ' : '').
+                            '('.$running.' running - using '.Common::byteConvert($allram * 1024, 2).' RAM)</span>',
             'rows' => $rows,
         );
     }
