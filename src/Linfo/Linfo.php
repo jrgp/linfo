@@ -91,7 +91,7 @@ class Linfo
     // Forward missing method request to the parser
     public function __call ( $name , $args )
     {
-        if (method_exists($this->parser, $name) && is_callable ( array($this->parser, $name))) {
+        if (method_exists($this->parser, $name) && is_callable (array($this->parser, $name))) {
 			
            return call_user_func(array($this->parser,$name), $args);
 			
