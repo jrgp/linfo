@@ -87,7 +87,17 @@ class Linfo
         $distro_class = '\\Linfo\\OS\\'.$os;
         $this->parser = new $distro_class($this->settings);
     }
-
+    
+    // Forward missing method request to the parser
+    public function __call ($name, $args)
+    {
+        if (method_exists($this->parser, $name) && is_callable (array($this->parser, $name))) {
+			
+           return call_user_func(array($this->parser,$name), $args);
+			
+        }
+    }
+            
     // Load everything, while obeying permissions...
     public function scan()
     {
