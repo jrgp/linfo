@@ -1542,6 +1542,11 @@ class Linux extends Unixcommon
             return array('type' => 'guest', 'method' => 'OpenVZ');
         }
 
+        // Veertu guest?
+        if (Common::getContents('/sys/devices/virtual/dmi/id/bios_vendor') == 'Veertu') {
+            return array('type' => 'guest', 'method' => 'Veertu');
+        }
+
         // Try getting kernel modules
         $modules = array();
          if (preg_match_all('/^(\S+)/m', Common::getContents('/proc/modules', ''), $matches, PREG_SET_ORDER)) {
