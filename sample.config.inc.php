@@ -66,9 +66,10 @@ $settings['show']['services'] = false;
 
 // Hide certain file systems / devices
 $settings['hide']['filesystems'] = array(
-	'tmpfs', 'ecryptfs', 'nfsd', 'rpc_pipefs',
-	'usbfs', 'devpts', 'fusectl', 'securityfs', 'fuse.truecrypt');
-$settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none');
+	'tmpfs', 'ecryptfs', 'nfsd', 'rpc_pipefs', 'proc', 'sysfs',
+	'usbfs', 'devpts', 'fusectl', 'securityfs', 'fuse.truecrypt',
+  'cgroup', 'debugfs', 'mqueue', 'hugetlbfs', 'pstore');
+$settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none', 'systemd-1', 'udev');
 
 // filter mountpoints based on PCRE regex, eg '@^/proc@', '@^/sys@', '@^/dev@'
 $settings['hide']['mountpoints_regex'] = array();
