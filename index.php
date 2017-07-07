@@ -6,6 +6,13 @@ use \Linfo\Exceptions\FatalException;
 use \Linfo\Linfo;
 use \Linfo\Common;
 
+// If we're using php's built in server, enable static files
+if (php_sapi_name() == 'cli-server') {
+    if (preg_match('/\.(?:png|jpg|jpeg|gif|css|js|ico)$/', $_SERVER["REQUEST_URI"])) {
+        return false;
+    }
+}
+
 try {
 
     // Load settings file..
