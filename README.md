@@ -128,3 +128,5 @@ Set ``$settings['show_errors'] = true;`` in ``config.inc.php`` to yield useful e
  - Licensed under GPL
  - Pull requests! [Linfo on Github](http://github.com/jrgp/linfo)
  - [Commit stats from OpenHub/Ohloh](https://www.openhub.net/p/linfo)
+
+_This project is dedicated to the memory of Eric Looper._
