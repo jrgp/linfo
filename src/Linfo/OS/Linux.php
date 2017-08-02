@@ -1424,6 +1424,11 @@ class Linux extends Unixcommon
                 'file' => '/etc/debian_version',
                 'distro' => 'Debian',
             ),
+            array(
+                'file' => '/etc/alpine-release',
+                'regex' => '/(?P<version>[\d\.]+)$/',
+                'distro' => 'Alpine Linux',
+            ),
         );
 
         foreach ($contents_distros as $distro) {
