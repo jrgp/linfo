@@ -16,6 +16,9 @@ before_install:
  - travis_retry composer self-update
  - travis_retry composer require "phpunit/phpunit:${PHPUNIT_VERSION}" --no-interaction --no-update
 
+install: 
+ - travis_retry composer update --prefer-dist --no-interaction
+
 script: 
  - cd tests
  - ../vendor/bin/phpunit
