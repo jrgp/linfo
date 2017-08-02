@@ -13,11 +13,8 @@ php:
  - hhvm
 
 before_install:
-  - travis_retry composer self-update
-  - travis_retry composer require "phpunit/phpunit:${PHPUNIT_VERSION}" --no-interaction --no-update
-
-install: 
-  - travis_retry composer update --prefer-source --no-interaction
+ - travis_retry composer self-update
+ - travis_retry composer require "phpunit/phpunit:${PHPUNIT_VERSION}" --no-interaction --no-update
 
 script: 
  - cd tests
