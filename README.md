@@ -69,7 +69,7 @@ var_dump($parser->getCPU()); // and a whole lot more
    - more
 
 ## System requirements: 
- - PHP 5.3
+ - PHP 5.4
  - pcre extension
 
 #### Windows
