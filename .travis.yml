@@ -21,4 +21,4 @@ install:
 
 script: 
  - cd tests
- - ../vendor/bin/phpunit'
+ - ../vendor/bin/phpunit
