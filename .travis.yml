@@ -1,7 +1,7 @@
 language: php
 php:
 # - 5.2 # Fuck this
- - 5.3
+# - 5.3 # PHP 5.3 is no longer supported
  - 5.4
  - 5.5
  - 5.6
