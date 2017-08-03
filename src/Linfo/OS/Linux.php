@@ -1424,6 +1424,11 @@ class Linux extends Unixcommon
                 'file' => '/etc/debian_version',
                 'distro' => 'Debian',
             ),
+            array(
+                'file' => '/etc/alpine-release',
+                'regex' => '/(?P<version>[\d\.]+)$/',
+                'distro' => 'Alpine Linux',
+            ),
         );
 
         foreach ($contents_distros as $distro) {
@@ -1545,6 +1550,16 @@ class Linux extends Unixcommon
         // Veertu guest?
         if (Common::getContents('/sys/devices/virtual/dmi/id/bios_vendor') == 'Veertu') {
             return array('type' => 'guest', 'method' => 'Veertu');
+        }
+
+	// LXC guest?
+        if (strpos(Common::getContents('/proc/mounts'), 'lxcfs /proc/') !== false) {
+            return array('type' => 'guest', 'method' => 'LXC');
+        }
+        
+        // Docker guest?
+        if (is_file('/.dockerenv') || is_file('/.dockerinit') || strpos(Common::getContents('/proc/1/cgroup'), 'docker') !== false) {
+            return array('type' => 'guest', 'method' => 'Docker');
         }
 
         // Try getting kernel modules

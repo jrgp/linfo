@@ -233,10 +233,11 @@ class Libvirt implements Extension
                 ),
             );
 
-            if ($info['state'] == 1)
+            if ($info['state'] == 1) {
                 $running++;
+                $allram += $info['memory'];
+            }
 
-            $allram += $info['memory'];
         }
 
         // Give it off
