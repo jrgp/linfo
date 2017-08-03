@@ -1551,6 +1551,11 @@ class Linux extends Unixcommon
         if (Common::getContents('/sys/devices/virtual/dmi/id/bios_vendor') == 'Veertu') {
             return array('type' => 'guest', 'method' => 'Veertu');
         }
+
+	// LXC guest?
+        if (strpos(Common::getContents('/proc/mounts'), 'lxcfs /proc/') !== false) {
+            return array('type' => 'guest', 'method' => 'LXC');
+        }
         
         // Docker guest?
         if (is_file('/.dockerenv') || is_file('/.dockerinit') || strpos(Common::getContents('/proc/1/cgroup'), 'docker') !== false) {
