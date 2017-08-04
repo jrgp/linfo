@@ -17,6 +17,16 @@
  - Opening curly braces go on same line. Closing curly braces go on their own line. 
  - Look at existing code for more details
 
+## Basic development environment setup
+
+1. Install [Docker Compose](https://docs.docker.com/compose/install/)
+2. `git clone` the project anywhere you'd like
+3. Run `cp sample.config.inc.php config.inc.php`
+4. Run `docker-compose up -d`
+5. Access the web interface at http://localhost:8081/
+
+Since your project root is mounted to the virtualized environment, any changes you make will appear immediately.
+
 ## Contributing
 
  - E-mail diffs to joe@u13.net
