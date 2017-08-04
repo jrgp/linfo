@@ -9,6 +9,10 @@
  - Ncurses CLI view of WebUI
  - Extensible, easy (composer) to use PHP5 Library to get extensive system stats programmatically from your PHP app
 
+### Contributing
+
+Interested in contributing? Check out [Development Readme](DEVELOPERS.md)
+
 ### web UI
 ![Linfo WebUI Screenshot](http://jrgp.us/misc/linfo.png)
 
