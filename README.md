@@ -15,7 +15,7 @@
 ### ncurses preview
 ![Linfo Ncurses Screenshot](http://jrgp.us/misc/linfo_curses.png)
 
-(See ncurses.md)
+See: [Enabling ncurses](ncurses.md)
 
 ### PHP library usage
 
