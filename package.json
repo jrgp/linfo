@@ -46,12 +46,18 @@
         "type": "git",
         "url": "https://github.com/jrgp/linfo"
     },
-    "main": "gruntfile.js",
+    "scripts": {
+        "dev": "gulp",
+        "production": "gulp --type production"
+    },
     "devDependencies": {
-        "load-grunt-tasks": "~0.3.0",
-        "glob": "~3.2.9",
-        "grunt": "~0.4.4",
-        "grunt-contrib-sass": "~0.7.3",
-        "grunt-contrib-uglify": "~0.4.0"
+        "gulp": "^3.9.1",
+        "gulp-if": "^2.0.2",
+        "gulp-rename": "^1.2.2",
+        "gulp-sass": "^3.1.0",
+        "gulp-sourcemaps": "^2.6.0",
+        "gulp-uglify": "^3.0.0",
+        "gulp-util": "^3.0.8",
+        "pump": "^1.0.2"
     }
 }

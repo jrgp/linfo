@@ -27,6 +27,15 @@
 
 Since your project root is mounted to the virtualized environment, any changes you make will appear immediately.
 
+## Rebuilding Javascript and Sass
+
+This is only necessary if you are editing Javascript or Sass files.
+
+1. Install [NPM](https://npmjs.com/)
+2. Run `npm install` to install dependencies
+3. Run `npm run dev` for the development build
+4. Before checking in, run `npm run production`
+
 ## Contributing
 
  - E-mail diffs to joe@u13.net
