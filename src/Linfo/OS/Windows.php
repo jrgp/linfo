@@ -49,8 +49,7 @@ class Windows extends OS
         $this->settings = $settings;
 
         if (!class_exists('COM')) {
-            echo 'You need to install the COM extension for linfo to work on Windows: http://php.net/manual/en/book.com.php';
-            exit;
+            throw new FatalException('You need to install the COM extension for linfo to work on Windows: http://php.net/manual/en/book.com.php');
         }
 
         // Get WMI instance
