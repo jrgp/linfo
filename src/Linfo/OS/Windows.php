@@ -2,20 +2,20 @@
 
 /*
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
 */
 
 namespace Linfo\OS;
@@ -76,7 +76,7 @@ class Windows extends OS
 
     /**
      * getOS.
-     * 
+     *
      * @return string current windows version
      */
     public function getOS()
@@ -90,7 +90,7 @@ class Windows extends OS
 
     /**
      * getKernel.
-     * 
+     *
      * @return string kernel version
      */
     public function getKernel()
@@ -112,7 +112,7 @@ class Windows extends OS
 
     /**
      * getHostName.
-     * 
+     *
      * @return string the host name
      */
     public function getHostName()
@@ -132,7 +132,7 @@ class Windows extends OS
 
     /**
      * getRam.
-     * 
+     *
      * @return array the memory information
      */
     public function getRam()
@@ -165,7 +165,7 @@ class Windows extends OS
 
     /**
      * getCPU.
-     * 
+     *
      * @return array of cpu info
      */
     public function getCPU()
@@ -210,7 +210,7 @@ class Windows extends OS
 
     /**
      * getUpTime.
-     * 
+     *
      * @return string uptime
      */
     public function getUpTime()
@@ -246,7 +246,7 @@ class Windows extends OS
 
     /**
      * getHD.
-     * 
+     *
      * @return array the hard drive info
      */
     public function getHD()
@@ -287,7 +287,7 @@ class Windows extends OS
 
     /**
      * getTemps.
-     * 
+     *
      * @return array the temps
      */
     public function getTemps()
@@ -303,7 +303,7 @@ class Windows extends OS
 
     /**
      * getMounts.
-     * 
+     *
      * @return array the mounted the file systems
      */
     public function getMounts()
@@ -391,7 +391,7 @@ class Windows extends OS
 
     /**
      * getDevs.
-     * 
+     *
      * @return array of devices
      */
     public function getDevs()
@@ -431,7 +431,7 @@ class Windows extends OS
 
     /**
      * getRAID.
-     * 
+     *
      * @return array of raid arrays
      */
     public function getRAID()
@@ -447,7 +447,7 @@ class Windows extends OS
 
     /**
      * getLoad.
-     * 
+     *
      * @return array of current system load values
      */
     public function getLoad()
@@ -468,7 +468,7 @@ class Windows extends OS
 
     /**
      * getNet.
-     * 
+     *
      * @return array of network devices
      */
     public function getNet()
@@ -577,7 +577,7 @@ class Windows extends OS
 
     /**
      * getBattery.
-     * 
+     *
      * @return array of battery status
      */
     public function getBattery()
@@ -593,7 +593,7 @@ class Windows extends OS
 
     /**
      * getWifi.
-     * 
+     *
      * @return array of wifi devices
      */
     public function getWifi()
@@ -607,7 +607,7 @@ class Windows extends OS
 
     /**
      * getSoundCards.
-     * 
+     *
      * @return array of soundcards
      */
     public function getSoundCards()
@@ -641,7 +641,7 @@ class Windows extends OS
 
     /**
      * getProcessStats.
-     * 
+     *
      * @return array of process stats
      */
     public function getProcessStats()
@@ -668,7 +668,7 @@ class Windows extends OS
 
     /**
      * getServices.
-     * 
+     *
      * @return array the services
      */
     public function getServices()
@@ -678,7 +678,7 @@ class Windows extends OS
 
     /**
      * getDistro.
-     * 
+     *
      * @return array the distro,version or false
      */
     public function getDistro()
@@ -688,7 +688,7 @@ class Windows extends OS
 
     /**
      * getCPUArchitecture.
-     * 
+     *
      * @return string the arch and bits
      */
     public function getCPUArchitecture()
