@@ -48,6 +48,11 @@ class Windows extends OS
         // Localize settings
         $this->settings = $settings;
 
+        if (!class_exists('COM')) {
+            echo 'You need to install the COM extension for linfo to work on Windows: http://php.net/manual/en/book.com.php';
+            exit;
+        }
+
         // Get WMI instance
         $this->wmi = new COM('winmgmts:{impersonationLevel=impersonate}//./root/cimv2');
 
