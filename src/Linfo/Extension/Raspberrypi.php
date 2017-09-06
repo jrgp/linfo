@@ -71,21 +71,30 @@ class Raspberrypi implements Extension
         // Time this
         $t = new Timer(self::EXTENSION_NAME.' Extension');
 
-
-        for ($v = false, $file = @fopen('/sys/class/thermal/thermal_zone0/temp', 'r'); $file != false && $contents = fgets($file);)
-        {
-            $temp = floatval($contents);
-            $temp = $temp / 1000;
-
-            // Save this one
-            $info['Temps'][] = array(
-                'path' => '',
-                'name' => 'cpu',
-                'temp' => strval($temp),
-                'unit' => 'degree',
-            );
+        // Open temp sensor file
+        $sensorPath = '/sys/class/thermal/thermal_zone0/temp';
+        $file = fopen($sensorPath, 'r');
+        if ($file == false) {
+            Errors::add(self::EXTENSION_NAME.' Extension', 'open sensor file error!');
+            return;
         }
-        $file && @fclose($file);
+
+        // Get the real temp
+        $contents = fgets($file);
+        $temp = floatval($contents);
+        $temp = $temp / 1000;
+
+        // Save this one
+        $info['Temps'][] = array(
+            'path' => $sensorPath,
+            'name' => 'cpu',
+            'temp' => strval($temp),
+            'unit' => '°C',
+        );
+
+        // Close file
+        fclose($file);
+
     }
 
     // Not needed
