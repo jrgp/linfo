@@ -87,14 +87,13 @@ class Raspberrypi implements Extension
         // Save this one
         $info['Temps'][] = array(
             'path' => $sensorPath,
-            'name' => 'cpu',
+            'name' => 'core',
             'temp' => strval($temp),
             'unit' => '°C',
         );
 
         // Close file
         fclose($file);
-
     }
 
     // Not needed
