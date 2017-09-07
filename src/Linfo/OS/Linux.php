@@ -573,21 +573,22 @@ class Linux extends Unixcommon
             foreach ((array) @glob('/sys/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE) as $path) {
                 $labelpath = $path.DIRECTORY_SEPARATOR.'type';
                 $valuepath = $path.DIRECTORY_SEPARATOR.'temp';
+                
+                if (!is_file($labelpath) || !is_file($valuepath)) {
+                    continue;
+                }
 
                 // Temperatures
-                if (is_file($labelpath)) {
-                    $label = Common::getContents($labelpath);
-                    $value = Common::getIntFromFile($valuepath);
-                    $value /= $value > 10000 ? 1000 : 1;
-                    $unit = 'C'; // I don't think this is ever going to be in F
-                }
+                $label = Common::getContents($labelpath);
+                $value = Common::getIntFromFile($valuepath);
+                $value /= $value > 10000 ? 1000 : 1;
 
                 // Append values
                 $thermal_zone_vals[] = array(
                     'path' => $path,
                     'name' => $label,
                     'temp' => $value,
-                    'unit' => $unit,
+                    'unit' => 'C', // I don't think this is ever going to be in F
                 );
             }
 
