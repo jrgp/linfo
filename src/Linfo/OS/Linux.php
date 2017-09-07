@@ -562,6 +562,40 @@ class Linux extends Unixcommon
                 $return = array_merge($return, $hwmon_vals);
             }
         }
+        
+        // thermal_zone? 
+        if (array_key_exists('thermal_zone', (array) $this->settings['temps']) && !empty($this->settings['temps']['thermal_zone'])) {
+
+            // Store them here
+            $thermal_zone_vals = array();
+
+            // Wacky location
+            foreach ((array) @glob('/sys/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE) as $path) {
+                $labelpath = $path.DIRECTORY_SEPARATOR.'type';
+                $valuepath = $path.DIRECTORY_SEPARATOR.'temp';
+
+                // Temperatures
+                if (is_file($labelpath)) {
+                    $label = Common::getContents($labelpath);
+                    $value = Common::getIntFromFile($valuepath);
+                    $value /= $value > 10000 ? 1000 : 1;
+                    $unit = 'C'; // I don't think this is ever going to be in F
+                }
+
+                // Append values
+                $thermal_zone_vals[] = array(
+                    'path' => $path,
+                    'name' => $label,
+                    'temp' => $value,
+                    'unit' => $unit,
+                );
+            }
+
+            // Save any if we have any
+            if (count($thermal_zone_vals) > 0) {
+                $return = array_merge($return, $thermal_zone_vals);
+            }
+        }
 
         // Laptop backlight percentage
         foreach ((array) @glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', GLOB_NOSORT | GLOB_BRACE) as $bl) {
