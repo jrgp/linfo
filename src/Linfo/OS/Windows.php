@@ -770,4 +770,15 @@ class Windows extends OS
 
         return ($a['mount'] > $b['mount']) ? 1 : -1;
     }
+    
+    /**
+     * Fix error 'Method getModel not present' in Windows (XAMPP).
+     * 
+     * @access public
+     * @return void
+     */
+    public function getModel()
+    {
+        return null;
+    }
 }
