@@ -22,6 +22,10 @@ Installation:
    // running as
    $settings['transmission_folder'] = '/home/user/.config/transmission/';
 
+   // If you have transmission-remote present somewhere else from /usr/bin or /usr/local/bin, you can specify
+   // the bin path like this:
+   $settings['transmission_bin_path'] = '/opt/transmission/bin';
+
 */
 
 /**
@@ -76,7 +80,13 @@ class Transmission implements Extension
 
         // Classes we need
         $this->_CallExt = new CallExt();
-        $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin'));
+
+        if (isset($settings['transmission_bin_path'])) {
+            $this->_CallExt->setSearchPaths(array($settings['transmission_bin_path']));
+
+        } else {
+            $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin'));
+        }
 
         // Transmission specific settings
         $this->_auth = array_key_exists('transmission_auth', $settings) ? (array) $settings['transmission_auth'] : array();
