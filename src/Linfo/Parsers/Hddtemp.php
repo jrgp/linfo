@@ -94,7 +94,12 @@ class Hddtemp
             // Extract stuff from it
             list($path, $name, $temp, $unit) = explode('|', trim($drive));
 
-            // Ignore /dev/sg? 
+            // Ignore garbled output from SSDs that hddtemp cant parse
+            if (strpos($temp, 'UNK') !== false) {
+                continue;
+            }
+
+            // Ignore /dev/sg?
             if (!empty($this->settings['hide']['sg']) && substr($path, 0, 7) == '/dev/sg') {
                 continue;
             }
