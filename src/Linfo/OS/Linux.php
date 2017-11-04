@@ -972,7 +972,7 @@ class Linux extends Unixcommon
                 'sent' => array(
                     'bytes' => Common::getIntFromFile($path.'/statistics/tx_bytes'),
                     'errors' => Common::getIntFromFile($path.'/statistics/tx_errors'),
-                    'packets' => Common::getIntFromFile($path.'/statistics/rx_packets'),
+                    'packets' => Common::getIntFromFile($path.'/statistics/tx_packets'),
                 ),
 
                 // These were determined above
