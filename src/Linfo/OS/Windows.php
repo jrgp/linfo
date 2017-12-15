@@ -564,7 +564,7 @@ class Windows extends OS
                 );
                 $return[$net->Name]['sent'] = array(
                     'bytes' => (int) $netspeed->BytesSentPersec,
-                    'erros' => 0,
+                    'errors' => 0,
                     'packets' => (int) $netspeed->PacketsSentPersec,
                 );
             }
