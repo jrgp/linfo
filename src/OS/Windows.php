@@ -43,7 +43,6 @@ class Windows extends OS
      */
     public function __construct($settings)
     {
-
         // Localize settings
         $this->settings = $settings;
 
@@ -80,7 +79,7 @@ class Windows extends OS
     public function getOS()
     {
         foreach ($this->wmi->ExecQuery('SELECT Caption FROM Win32_OperatingSystem') as $os) {
-            return $os->Caption;
+            return mb_convert_encoding($os->Caption, 'UTF-8', 'Windows-1252');
         }
 
         return 'Windows';
@@ -354,12 +353,10 @@ class Windows extends OS
             if (($type != 'USB' && $type != 'PCI') || (empty($pnpdev->Caption) || $pnpdev->Manufacturer[0] == '(')) {
                 continue;
             }
-            $manufacturer = $pnpdev->Manufacturer;
-            $caption = $pnpdev->Caption;
-            if (function_exists('iconv')) {
-                $manufacturer = iconv('Windows-1252', 'UTF-8//TRANSLIT', $manufacturer);
-                $caption = iconv('Windows-1252', 'UTF-8//TRANSLIT', $caption);
-            }
+
+            $manufacturer = mb_convert_encoding($pnpdev->Manufacturer, 'UTF-8', 'Windows-1252');
+            $caption = mb_convert_encoding($pnpdev->Caption, 'UTF-8', 'Windows-1252');
+
             $devs[] = array(
                 'vendor' => $manufacturer,
                 'device' => $caption,
@@ -532,12 +529,9 @@ class Windows extends OS
         $i = 1;
 
         foreach ($this->wmi->ExecQuery('SELECT Caption, Manufacturer FROM Win32_SoundDevice') as $card) {
-            $manufacturer = $card->Manufacturer;
-            $caption = $card->Caption;
-            if (function_exists('iconv')) {
-                $manufacturer = iconv('Windows-1252', 'UTF-8//TRANSLIT', $manufacturer);
-                $caption = iconv('Windows-1252', 'UTF-8//TRANSLIT', $caption);
-            }
+            $manufacturer = mb_convert_encoding($card->Manufacturer, 'UTF-8', 'Windows-1252');
+            $caption = mb_convert_encoding($card->Caption, 'UTF-8', 'Windows-1252');
+
             $cards[] = array(
                 'number' => $i,
                 'vendor' => $manufacturer,
@@ -587,7 +581,7 @@ class Windows extends OS
      */
     public function getDistro()
     {
-        return false;
+        return array();
     }
 
     /**

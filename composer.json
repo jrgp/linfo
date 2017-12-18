@@ -23,7 +23,8 @@
     ],
     "require": {
         "php": ">=5.6",
-        "ext-pcre": "*"
+        "ext-pcre": "*",
+        "ext-mbstring": "*"
     },
     "suggest": {
         "ext-com": "On Windows"

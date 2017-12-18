@@ -53,16 +53,6 @@ class Linfo
         // Some paths..
         $this->linfo_localdir = dirname(dirname(__DIR__)) . '/';
 
-        // Run through dependencies / sanity checking
-        if (!extension_loaded('pcre') && !function_exists('preg_match') && !function_exists('preg_match_all')) {
-            throw new FatalException('Linfo needs the `pcre` extension to be loaded. https://php.net/pcre');
-        }
-
-        // Warnings usually displayed to browser happen if date.timezone isn't set in php 5.3+
-        if (!ini_get('date.timezone')) {
-            @ini_set('date.timezone', 'Etc/UTC');
-        }
-
         // Load our settings/language
         $this->loadSettings(array_merge($this->getDefaultSettings(), $userSettings));
         $this->loadLanguage();
@@ -101,7 +91,7 @@ class Linfo
      */
     public function scan()
     {
-        $reflector = new ReflectionClass($this->parser);
+        $reflector = new \ReflectionClass($this->parser);
 
         // Prime parser. Do things not appropriate to do in constructor. Most OS classes
         // don't have this.

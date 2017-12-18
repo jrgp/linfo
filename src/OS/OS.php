@@ -89,7 +89,6 @@ abstract class OS
      */
     public function getHostName()
     {
-
         // Take advantage of that function again
         return php_uname('n');
     }

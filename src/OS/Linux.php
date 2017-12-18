@@ -1417,7 +1417,7 @@ class Linux extends Unixcommon
         }
 
         // Return lack of result if we didn't find it
-        return false;
+        return array();
     }
 
     /**
@@ -1550,7 +1550,7 @@ class Linux extends Unixcommon
         }
 
         // idk
-        return false;
+        return array();
     }
 
     /**
@@ -1661,7 +1661,7 @@ class Linux extends Unixcommon
         $product = Common::getContents('/sys/devices/virtual/dmi/id/product_name', false);
 
         if (!$name) {
-            return false;
+            return null;
         }
 
         // Don't add vendor to the mix if the name starts with it

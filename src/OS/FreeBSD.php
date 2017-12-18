@@ -642,6 +642,6 @@ class FreeBSD extends BSDcommon
             }
         }
 
-        return false;
+        return array();
     }
 }

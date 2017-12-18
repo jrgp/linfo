@@ -549,7 +549,7 @@ class Darwin extends BSDcommon
             return array('type' => 'host', 'method' => 'VMWare');
         }
 
-        return false;
+        return array();
     }
 
     public function getLoad()

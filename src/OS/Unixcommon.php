@@ -31,6 +31,10 @@ use Linfo\Common;
 
 abstract class Unixcommon extends OS
 {
+    /**
+     * @param string $hostname
+     * @return string
+     */
     public function ensureFQDN($hostname)
     {
         $parts = explode('.', $hostname);

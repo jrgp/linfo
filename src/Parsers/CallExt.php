@@ -30,6 +30,9 @@ class CallExt
 {
     protected static $settings = array();
 
+    /**
+     * @param Linfo $linfo
+     */
     public static function config(Linfo $linfo)
     {
         self::$settings = $linfo->getSettings();
@@ -88,6 +91,7 @@ class CallExt
      *
      * @param string $name name of executable to call
      * @param string $switches command arguments
+     * @return string
      */
     public function exec($name, $switches = '')
     {
