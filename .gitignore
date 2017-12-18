@@ -1,13 +1,4 @@
-config.inc.php
-*.swo
-*.swp
-cache/*.json
-.DS_Store
-.sass-cache
 .idea
-node_modules
-*.sublime-workspace
 /vendor
-yarn.lock
 composer.lock
 composer.phar

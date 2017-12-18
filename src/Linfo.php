@@ -304,17 +304,6 @@ class Linfo
 
     protected function loadSettings($settings = array())
     {
-
-        // Running unit tests?
-        if (defined('LINFO_TESTING')) {
-            $this->settings = Common::getVarFromFile($this->linfo_testdir.'/test_settings.php', 'settings');
-            if (!is_array($this->settings)) {
-                throw new FatalException('Failed getting test-specific settings');
-            }
-
-            return;
-        }
-
         // Don't just blindly assume we have the ob_* functions...
         if (!function_exists('ob_start')) {
             $settings['compress_content'] = false;
@@ -353,17 +342,6 @@ class Linfo
 
     protected function loadLanguage()
     {
-
-        // Running unit tests?
-        if (defined('LINFO_TESTING')) {
-            $this->lang = require $this->linfo_testdir.'/test_lang.php';
-            if (!is_array($this->lang)) {
-                throw new FatalException('Failed getting test-specific language');
-            }
-
-            return;
-        }
-
         // Load translation, defaulting to english of keys are missing (assuming
         // we're not using english anyway and the english translation indeed exists)
         if (is_file($this->linfo_localdir.'src/Linfo/Lang/en.php') && $this->settings['language'] != 'en') {
