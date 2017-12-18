@@ -9,3 +9,5 @@ node_modules
 *.sublime-workspace
 /vendor
 yarn.lock
+composer.lock
+composer.phar
