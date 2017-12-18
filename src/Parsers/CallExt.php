@@ -66,7 +66,6 @@ class CallExt
      */
     public function setSearchPaths($paths)
     {
-
         // Merge in possible custom paths
         if (array_key_exists('additional_paths', self::$settings) &&
             is_array(self::$settings['additional_paths']) &&
@@ -131,6 +130,6 @@ class CallExt
         }
 
         // Never got it
-        throw new Exception('Exec `' . $name . '\' not found');
+        throw new Exception('Exec `' . $name . '` not found');
     }
 }

@@ -62,6 +62,9 @@ class Linux extends Unixcommon
 
         // Exec running
         $this->exec = new CallExt();
+
+        // We search these folders for our commands
+        $this->exec->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
     }
 
     public function init()
