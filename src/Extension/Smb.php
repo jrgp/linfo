@@ -40,6 +40,7 @@ use Exception;
 /*
  * Get info on a samba install by running smbstatus
  */
+
 class Smb implements Extension
 {
     // Store these tucked away here
@@ -91,14 +92,10 @@ class Smb implements Extension
             // Is this pointless?
             if ($lines[$i] == '' || preg_match('/^\-+$/', $lines[$i])) {
                 continue;
-            }
-
-            // Beginning connections list?
+            } // Beginning connections list?
             elseif (preg_match('/^PID\s+Username\s+Group\s+Machine$/', $lines[$i])) {
                 $current_location = 'c';
-            }
-
-            // A connection?
+            } // A connection?
             elseif ($current_location == 'c' && preg_match('/^(\d+)\s+(\w+)\s+(\w+)\s+(\S+)\s+\(([^)]+)\)$/', $lines[$i], $connection_match)) {
                 $connections[] = array(
                     'pid' => $connection_match[1],
@@ -107,14 +104,10 @@ class Smb implements Extension
                     'hostname' => $connection_match[4],
                     'ip' => $connection_match[5],
                 );
-            }
-
-            // Beginning services list?
+            } // Beginning services list?
             elseif (preg_match('/^Service\s+pid\s+machine\s+Connected at$/', $lines[$i])) {
                 $current_location = 's';
-            }
-
-            // A service?
+            } // A service?
             elseif ($current_location == 's' && preg_match('/^(\w+)\s+(\d+)\s+(\S+)\s+([a-zA-z]+ [a-zA-Z]+ \d+ \d+:\d+:\d+ \d+)$/', $lines[$i], $service_match)) {
                 $services[] = array(
                     'service' => $service_match[1],
@@ -122,14 +115,10 @@ class Smb implements Extension
                     'machine' => $service_match[3],
                     'date' => strtotime($service_match[4]),
                 );
-            }
-
-            // Beginning locked files list?
+            } // Beginning locked files list?
             elseif (preg_match('/^Pid\s+Uid\s+DenyMode\s+Access\s+R\/W\s+Oplock\s+SharePath\s+Name\s+Time$/', $lines[$i])) {
                 $current_location = 'f';
-            }
-
-            // A locked file?
+            } // A locked file?
             elseif ($current_location == 'f' && preg_match('/^(\d+)\s+(\d+)\s+(\S+)\s+(\S+)\s+([A-Z]+)\s+([A-Z+]+)\s+(\S+)\s+(.+)\s+([a-zA-Z]+ [a-zA-Z]+ \d+ \d+:\d+:\d+ \d+)$/', $lines[$i], $file_match)) {
                 $files[] = array(
                     'pid' => $file_match[1],
@@ -160,13 +149,13 @@ class Smb implements Extension
     {
         $this->_call();
     }
+
     public function result()
     {
         // Don't bother if it didn't go well
         if ($this->_res === false) {
             return false;
-        }
-        // it did; continue
+        } // it did; continue
         else {
 
             // Store rows here
@@ -184,7 +173,7 @@ class Smb implements Extension
                 'columns' => array(
                     'Username',
                     'Group',
-                    array(3,'Machine'),
+                    array(3, 'Machine'),
                 ),
             );
 
@@ -196,7 +185,7 @@ class Smb implements Extension
                         'columns' => array(
                             $conn['username'],
                             $conn['group'],
-                            array(3,$conn['hostname'].($conn['hostname'] != $conn['ip'] ? ' <span class="perc">('.$conn['ip'].')</span>' : '')),
+                            array(3, $conn['hostname'] . ($conn['hostname'] != $conn['ip'] ? ' <span class="perc">(' . $conn['ip'] . ')</span>' : '')),
                         ),
                     );
                 }
@@ -221,7 +210,7 @@ class Smb implements Extension
                 'columns' => array(
                     'Service',
                     'Machine',
-                    array(3,'Date'),
+                    array(3, 'Date'),
                 ),
             );
 
@@ -281,28 +270,28 @@ class Smb implements Extension
                     switch ($f['rw']) {
                         case 'RDONLY':
                             $rw = 'Read Only';
-                        break;
+                            break;
                         case 'RDWR':
                             $rw = 'Read/Write';
-                        break;
+                            break;
                         case 'WRONLY':
                             $rw = 'Write Only';
-                        break;
+                            break;
                         default:
                             $rw = false;
-                        break;
+                            break;
                     }
 
                     // Save entry
                     $rows[] = array(
                         'type' => 'values',
                         'columns' => array(
-                            $f['uid'].($username != false ? ' ('.$username.')' : ''),
+                            $f['uid'] . ($username != false ? ' (' . $username . ')' : ''),
                             $rw ? $rw : $f['rw'],
                             $f['share'],
                             $f['filename'],
                             date($this->_date_format, $f['date']),
-                    ), );
+                        ),);
                 }
             } else {
                 $rows[] = array(

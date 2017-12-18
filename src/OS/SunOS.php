@@ -95,7 +95,7 @@ class SunOS extends OS
         }
 
         try {
-            $command = $this->exec->exec('kstat', ' -p '.implode(' ', array_map('escapeshellarg', $keys)));
+            $command = $this->exec->exec('kstat', ' -p ' . implode(' ', array_map('escapeshellarg', $keys)));
             $lines = explode("\n", $command);
         } catch (Exception $e) {
             Errors::add('Solaris Core', 'Failed running kstat.');
@@ -117,7 +117,7 @@ class SunOS extends OS
 
                 $value = ltrim(substr($line, strlen($key)));
                 if (isset($results[$key])) {
-                    $results[$key] .= "\n".$value;
+                    $results[$key] .= "\n" . $value;
                 } else {
                     $results[$key] = $value;
                 }
@@ -138,10 +138,10 @@ class SunOS extends OS
         switch ($v) {
             case ($v > 4):
                 return 'Solaris';
-            break;
+                break;
             default:
                 return 'SunOS';
-            break;
+                break;
         }
 
         // What's next is determining what variant of Solaris,
@@ -198,11 +198,11 @@ class SunOS extends OS
                 'device' => $mount[1],
                 'mount' => $mount[2],
                 'type' => $mount[3],
-                'size' => $size ,
+                'size' => $size,
                 'used' => $used,
                 'free' => $free,
-                'free_percent' => ((bool) $free != false && (bool) $size != false ? round($free / $size, 2) * 100 : false),
-                'used_percent' => ((bool) $used != false && (bool) $size != false ? round($used / $size, 2) * 100 : false),
+                'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
+                'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false),
             );
         }
 
@@ -262,25 +262,23 @@ class SunOS extends OS
                 switch ($process) {
                     case 'S':
                         $result['totals']['sleeping']++;
-                    break;
+                        break;
                     case 'Z':
                         $result['totals']['zombie']++;
-                    break;
+                        break;
                     case 'R':
                     case 'O':
                         $result['totals']['running']++;
-                    break;
+                        break;
                     case 'T':
                         $result['totals']['stopped']++;
-                    break;
+                        break;
                 }
 
                 // Increment total
                 ++$result['proc_total'];
             }
-        }
-
-        // Something bad happened
+        } // Something bad happened
         catch (Exception $e) {
             Errors::add('Linfo Core', 'Error using `ps` to get process info');
         }
@@ -329,15 +327,15 @@ class SunOS extends OS
             switch ($m[2]) {
                 case 'vendor_id':
                     $cur_cpu['Vendor'] = $value;
-                break;
+                    break;
 
                 case 'clock_MHz':
                     $cur_cpu['MHz'] = $value;
-                break;
+                    break;
 
                 case 'brand':
                     $cur_cpu['Model'] = $value;
-                break;
+                    break;
             }
         }
 
@@ -412,16 +410,16 @@ class SunOS extends OS
             switch ($key) {
                 case 'ipackets64':
                     $cur_nic['recieved']['packets'] = $value;
-                break;
+                    break;
                 case 'opackets64':
                     $cur_nic['sent']['packets'] = $value;
-                break;
+                    break;
                 case 'rbytes64':
                     $cur_nic['recieved']['bytes'] = $value;
-                break;
+                    break;
                 case 'obytes64':
                     $cur_nic['sent']['bytes'] = $value;
-                break;
+                    break;
             }
         }
 

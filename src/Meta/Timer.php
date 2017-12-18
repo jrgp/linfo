@@ -28,8 +28,8 @@ class Timer
     {
         $duration = microtime(true) - $this->start;
         self::$timers[] = array(
-          'id' => $this->id,
-          'duration' => $duration,
+            'id' => $this->id,
+            'duration' => $duration,
         );
     }
 }

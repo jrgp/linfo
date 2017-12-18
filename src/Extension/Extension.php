@@ -25,9 +25,12 @@ use Linfo\Linfo;
 /*
  * Extensions must conform to this
  */
+
 interface Extension
 {
     public function __construct(Linfo $linfo);    // Have them localize useful things
+
     public function work();        // Do the job
+
     public function result();    // Return the result
 }

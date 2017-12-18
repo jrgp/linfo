@@ -2,20 +2,21 @@
 
 /**
  * This file is part of Linfo (c) 2014, 2015 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Linfo;
 
 use Linfo\Parsers\CallExt;
@@ -50,7 +51,7 @@ class Linfo
         $this->time_start = microtime(true);
 
         // Some paths..
-        $this->linfo_localdir = dirname(dirname(__DIR__)).'/';
+        $this->linfo_localdir = dirname(dirname(__DIR__)) . '/';
 
         // Get our version from git setattribs
         $scm = '$Format:%ci$';
@@ -58,7 +59,7 @@ class Linfo
 
         // Run through dependencies / sanity checking
         if (!extension_loaded('pcre') && !function_exists('preg_match') && !function_exists('preg_match_all')) {
-            throw new FatalException($this->app_name.' needs the `pcre\' extension to be loaded. http://us2.php.net/manual/en/book.pcre.php');
+            throw new FatalException($this->app_name . ' needs the `pcre\' extension to be loaded. http://us2.php.net/manual/en/book.pcre.php');
         }
 
         // Warnings usually displayed to browser happen if date.timezone isn't set in php 5.3+
@@ -81,20 +82,20 @@ class Linfo
             throw new FatalException('Unknown/unsupported operating system');
         }
 
-        $distro_class = '\\Linfo\\OS\\'.$os;
+        $distro_class = '\\Linfo\\OS\\' . $os;
         $this->parser = new $distro_class($this->settings);
     }
-    
+
     // Forward missing method request to the parser
-    public function __call ($name, $args)
+    public function __call($name, $args)
     {
-        if (method_exists($this->parser, $name) && is_callable (array($this->parser, $name))) {
-			
-           return call_user_func(array($this->parser,$name), $args);
-			
+        if (method_exists($this->parser, $name) && is_callable(array($this->parser, $name))) {
+
+            return call_user_func(array($this->parser, $name), $args);
+
         }
     }
-            
+
     // Load everything, while obeying permissions...
     public function scan()
     {
@@ -330,7 +331,7 @@ class Linfo
         }
 
         // If it can't be found default to english
-        if (!is_file($this->linfo_localdir.'src/Linfo/Lang/'.$settings['language'].'.php')) {
+        if (!is_file($this->linfo_localdir . 'src/Linfo/Lang/' . $settings['language'] . '.php')) {
             $settings['language'] = 'en';
         }
 
@@ -341,14 +342,12 @@ class Linfo
     {
         // Load translation, defaulting to english of keys are missing (assuming
         // we're not using english anyway and the english translation indeed exists)
-        if (is_file($this->linfo_localdir.'src/Linfo/Lang/en.php') && $this->settings['language'] != 'en') {
-            $this->lang = array_merge(require($this->linfo_localdir.'src/Linfo/Lang/en.php'),
-                require($this->linfo_localdir.'src/Linfo/Lang/'.$this->settings['language'].'.php'));
-        }
-
-        // Otherwise snag desired translation, be it english or a non-english without english to fall back on
+        if (is_file($this->linfo_localdir . 'src/Linfo/Lang/en.php') && $this->settings['language'] != 'en') {
+            $this->lang = array_merge(require($this->linfo_localdir . 'src/Linfo/Lang/en.php'),
+                require($this->linfo_localdir . 'src/Linfo/Lang/' . $this->settings['language'] . '.php'));
+        } // Otherwise snag desired translation, be it english or a non-english without english to fall back on
         else {
-            $this->lang = require $this->linfo_localdir.'src/Linfo/Lang/'.$this->settings['language'].'.php';
+            $this->lang = require $this->linfo_localdir . 'src/Linfo/Lang/' . $this->settings['language'] . '.php';
         }
     }
 
@@ -369,10 +368,10 @@ class Linfo
             case 'Darwin':
             case 'SunOS':
                 return PHP_OS;
-            break;
+                break;
             case 'WINNT':
                 return 'Windows';
-            break;
+                break;
         }
 
         // So anything else isn't
@@ -398,7 +397,7 @@ class Linfo
         }
 
         // Go through each enabled extension
-        foreach ((array) $this->settings['extensions'] as $ext => $enabled) {
+        foreach ((array)$this->settings['extensions'] as $ext => $enabled) {
 
             // Is it really enabled?
             if (empty($enabled)) {
@@ -407,7 +406,7 @@ class Linfo
 
             // Anti hack
             if (!preg_match('/^[a-z0-9-_]+$/i', $ext)) {
-                Errors::add('Extension Loader', 'Not going to load "'.$ext.'" extension as only characters allowed in name are letters/numbers/-_');
+                Errors::add('Extension Loader', 'Not going to load "' . $ext . '" extension as only characters allowed in name are letters/numbers/-_');
                 continue;
             }
 
@@ -418,10 +417,10 @@ class Linfo
 
             // Try loading our class..
             try {
-                $reflector = new ReflectionClass('\\Linfo\\Extension\\'.$ext);
+                $reflector = new ReflectionClass('\\Linfo\\Extension\\' . $ext);
                 $ext_class = $reflector->newInstance($this);
             } catch (ReflectionException $e) {
-                Errors::add('Extension Loader', 'Cannot instantiate class for "'.$ext.'" extension: '.$e->getMessage());
+                Errors::add('Extension Loader', 'Cannot instantiate class for "' . $ext . '" extension: ' . $e->getMessage());
                 continue;
             }
 
@@ -498,16 +497,16 @@ class Linfo
         // (note, duplicates are not shown twice in the file system totals)
         $settings['show']['duplicate_mounts'] = true;
 
-    // Disabled by default as they require extra config below
+        // Disabled by default as they require extra config below
         $settings['show']['temps'] = false;
         $settings['show']['raid'] = false;
 
-    // Following are probably only useful on laptop/desktop/workstation systems, not servers, although they work just as well
+        // Following are probably only useful on laptop/desktop/workstation systems, not servers, although they work just as well
         $settings['show']['battery'] = false;
         $settings['show']['sound'] = false;
         $settings['show']['wifi'] = false; # Not finished
 
-    // Service monitoring
+        // Service monitoring
         $settings['show']['services'] = false;
 
         /*
@@ -562,8 +561,7 @@ class Linfo
          * For the things that require executing external programs, such as non-linux OS's
          * and the extensions, you may specify other paths to search for them here:
          */
-        $settings['additional_paths'] = array(
-            //'/opt/bin' # for example
+        $settings['additional_paths'] = array(//'/opt/bin' # for example
         );
 
 
@@ -617,8 +615,7 @@ class Linfo
          *
          * Note: this is extremely dangerous if done wrong
          */
-        $settings['sudo_apps'] = array(
-            //'ps' // For example
+        $settings['sudo_apps'] = array(//'ps' // For example
         );
 
         return $settings;

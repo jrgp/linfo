@@ -40,6 +40,7 @@ use Exception;
 /*
  * Get info on a cups install by running lpq
  */
+
 class Cups implements Extension
 {
     // Store these tucked away here
@@ -94,22 +95,16 @@ class Cups implements Extension
                     'name' => str_replace('_', ' ', $printers_match[1]),
                     'status' => $printers_match[2],
                 );
-            }
-
-            // A printer entry
+            } // A printer entry
             elseif (preg_match('/^(.+)+ is (ready|ready and printing|not ready)$/', $lines[$i], $printers_match) == 1) {
                 $printers[] = array(
                     'name' => str_replace('_', ' ', $printers_match[1]),
                     'status' => $printers_match[2],
                 );
-            }
-
-            // The beginning of the queue list
+            } // The beginning of the queue list
             elseif (preg_match('/^Rank\s+Owner\s+Job\s+File\(s\)\s+Total Size$/', $lines[$i])) {
                 $begin_queue_list = true;
-            }
-
-            // A job in the queue
+            } // A job in the queue
             elseif ($begin_queue_list && preg_match('/^([a-z0-9]+)\s+(\S+)\s+(\d+)\s+(.+)\s+(\d+) bytes$/', $lines[$i], $queue_match)) {
                 $queue[] = array(
                     'rank' => $queue_match[1],
@@ -144,9 +139,7 @@ class Cups implements Extension
         // Don't bother if it didn't go well
         if ($this->_res == false) {
             return false;
-        }
-
-        // it did; continue
+        } // it did; continue
         else {
 
             // Store rows here

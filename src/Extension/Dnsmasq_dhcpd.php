@@ -15,17 +15,17 @@ Installation:
 
 /**
  * This file is part of Linfo (c) 2015 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -33,6 +33,7 @@ Installation:
 /**
  * Keep out hackers...
  */
+
 namespace Linfo\Extension;
 
 use Linfo\Linfo;
@@ -63,13 +64,13 @@ class Dnsmasq_dhcpd implements Extension
         $settings = $linfo->getSettings();
 
         // Should we hide mac addresses, to prevent stuff like mac address spoofing?
-        $this->_hide_mac = array_key_exists('dnsmasq_hide_mac', $settings) ? (bool) $settings['dnsmasq_hide_mac'] : false;
+        $this->_hide_mac = array_key_exists('dnsmasq_hide_mac', $settings) ? (bool)$settings['dnsmasq_hide_mac'] : false;
 
         // Find leases file
         $this->_leases_file = isset($settings['dnsmasq_leases']) && is_file($settings['dnsmasq_leases']) ?
-          $settings['dnsmasq_leases'] : Common::locateActualPath(array(
-              '/var/lib/libvirt/dnsmasq/default.leases', 
-          ));
+            $settings['dnsmasq_leases'] : Common::locateActualPath(array(
+                '/var/lib/libvirt/dnsmasq/default.leases',
+            ));
     }
 
     /**
@@ -88,7 +89,7 @@ class Dnsmasq_dhcpd implements Extension
 
     /**
      * Return result.
-     * 
+     *
      * @return array of the leases
      */
     public function result()
@@ -102,19 +103,19 @@ class Dnsmasq_dhcpd implements Extension
             'columns' =>
 
             // Not hiding mac address?
-            !$this->_hide_mac ? array(
-                'IP Address',
-                'MAC Address',
-                'Hostname',
-                'Lease End',
-            ) :
+                !$this->_hide_mac ? array(
+                    'IP Address',
+                    'MAC Address',
+                    'Hostname',
+                    'Lease End',
+                ) :
 
-            // Hiding it indeed
-                array(
-                'IP Address',
-                'Hostname',
-                'Lease End',
-            ),
+                    // Hiding it indeed
+                    array(
+                        'IP Address',
+                        'Hostname',
+                        'Lease End',
+                    ),
         );
 
         // Append each lease
@@ -124,21 +125,21 @@ class Dnsmasq_dhcpd implements Extension
                 'columns' =>
 
                 // Not hiding mac addresses?
-                !$this->_hide_mac ? array(
-                    $lease['ip'],
-                    $lease['mac'],
-                    array_key_exists('hostname', $lease) ?
-                        $lease['hostname'] : '<em>unknown</em>',
-                    date(self::DATE_FORMAT, $lease['lease_end']),
-                ) :
+                    !$this->_hide_mac ? array(
+                        $lease['ip'],
+                        $lease['mac'],
+                        array_key_exists('hostname', $lease) ?
+                            $lease['hostname'] : '<em>unknown</em>',
+                        date(self::DATE_FORMAT, $lease['lease_end']),
+                    ) :
 
-                // Hiding them indeed
-                array(
-                    $lease['ip'],
-                    array_key_exists('hostname', $lease) ?
-                        $lease['hostname'] : '<em>unknown</em>',
-                    date(self::DATE_FORMAT, $lease['lease_end']),
-                ),
+                        // Hiding them indeed
+                        array(
+                            $lease['ip'],
+                            array_key_exists('hostname', $lease) ?
+                                $lease['hostname'] : '<em>unknown</em>',
+                            date(self::DATE_FORMAT, $lease['lease_end']),
+                        ),
             );
         }
 

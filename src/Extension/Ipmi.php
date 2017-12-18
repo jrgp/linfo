@@ -55,7 +55,7 @@ class Ipmi implements Extension
 
     // Store these tucked away here
     private $_CallExt,
-    $linfo;
+        $linfo;
 
     // Start us off
     public function __construct(Linfo $linfo)
@@ -71,17 +71,17 @@ class Ipmi implements Extension
         $info = &$this->linfo->getInfo();
 
         // Make sure this is an array
-        $info['Temps'] = (array) $info['Temps'];
+        $info['Temps'] = (array)$info['Temps'];
 
         // Time this
-        $t = new Timer(self::EXTENSION_NAME.' Extension');
+        $t = new Timer(self::EXTENSION_NAME . ' Extension');
 
         // Deal with calling it
         try {
             $result = $this->_CallExt->exec('ipmitool', ' sdr');
         } catch (Exception $e) {
             // messed up somehow
-            Errors::add(self::EXTENSION_NAME.' Extension', $e->getMessage());
+            Errors::add(self::EXTENSION_NAME . ' Extension', $e->getMessage());
 
             return;
         }
@@ -101,13 +101,13 @@ class Ipmi implements Extension
             switch ($v_parts[1]) {
                 case 'Volts':
                     $unit = 'v';
-                break;
+                    break;
                 case 'degrees':
                     $unit = $v_parts[2];
-                break;
+                    break;
                 default:
                     $unit = '';
-                break;
+                    break;
             }
 
             // Save this one

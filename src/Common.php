@@ -2,20 +2,21 @@
 
 /**
  * This file is part of Linfo (c) 2014 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with Linfo.	If not, see <http://www.gnu.org/licenses/>.
+ * along with Linfo.    If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Linfo;
 
 class Common
@@ -44,7 +45,7 @@ class Common
     // none are found, it returns false
     public static function locateActualPath($paths)
     {
-        foreach ((array) $paths as $path) {
+        foreach ((array)$paths as $path) {
             if (is_file($path)) {
                 return $path;
             }
@@ -88,9 +89,9 @@ class Common
         // Found at http://www.php.net/manual/en/function.disk-free-space.php#81207
         $types = array('B', 'KB', 'MB', 'GB', 'TB');
         $types_i = array('B', 'KiB', 'MiB', 'GiB', 'TiB');
-        for ($i = 0; $size >= $notation && $i < (count($types) - 1); $size /= $notation, $i++);
+        for ($i = 0; $size >= $notation && $i < (count($types) - 1); $size /= $notation, $i++) ;
 
-        return(round($size, $precision).' '.($notation == 1000 ? $types[$i] : $types_i[$i]));
+        return (round($size, $precision) . ' ' . ($notation == 1000 ? $types[$i] : $types_i[$i]));
     }
 
     // Like above, but for seconds
@@ -112,23 +113,23 @@ class Common
         $return = array();
 
         if ($years > 0) {
-            $return[] = $years.' '.($years > 1 ? self::$lang['years'] : substr(self::$lang['years'], 0, strlen(self::$lang['years']) - 1));
+            $return[] = $years . ' ' . ($years > 1 ? self::$lang['years'] : substr(self::$lang['years'], 0, strlen(self::$lang['years']) - 1));
         }
 
         if ($days > 0) {
-            $return[] = $days.' '.self::$lang['days'];
+            $return[] = $days . ' ' . self::$lang['days'];
         }
 
         if ($hours > 0) {
-            $return[] = $hours.' '.self::$lang['hours'];
+            $return[] = $hours . ' ' . self::$lang['hours'];
         }
 
         if ($minutes > 0) {
-            $return[] = $minutes.' '.self::$lang['minutes'];
+            $return[] = $minutes . ' ' . self::$lang['minutes'];
         }
 
         if ($seconds > 0) {
-            $return[] = $seconds.(date('m/d') == '06/03' ? ' sex' : ' '.self::$lang['seconds']);
+            $return[] = $seconds . (date('m/d') == '06/03' ? ' sex' : ' ' . self::$lang['seconds']);
         }
 
         return implode(', ', $return);
@@ -138,7 +139,7 @@ class Common
     public static function getContents($file, $default = '')
     {
         if (is_string(self::$path_prefix)) {
-            $file = self::$path_prefix.$file;
+            $file = self::$path_prefix . $file;
         }
 
         return !is_file($file) || !is_readable($file) || !($contents = @file_get_contents($file)) ? $default : trim($contents);

@@ -2,20 +2,21 @@
 
 /**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Linfo\OS;
 
 use Linfo\Meta\Timer;
@@ -73,7 +74,7 @@ class Linux extends Unixcommon
 
     /**
      * getKernel.
-     * 
+     *
      * @return string kernel version
      */
     public function getKernel()
@@ -110,7 +111,7 @@ class Linux extends Unixcommon
 
     /**
      * getHostName.
-     * 
+     *
      * @return string the host name
      */
     public function getHostName()
@@ -140,7 +141,7 @@ class Linux extends Unixcommon
 
     /**
      * getRam.
-     * 
+     *
      * @return array the memory information
      */
     public function getRam()
@@ -173,13 +174,13 @@ class Linux extends Unixcommon
         @preg_match_all('/^([^:]+)\:\s+(\d+)\s*(?:k[bB])?\s*/m', Common::getContents($procFileMem), $matches, PREG_SET_ORDER);
 
         // Deal with it
-        foreach ((array) $matches as $memInfo) {
+        foreach ((array)$matches as $memInfo) {
             $memVals[$memInfo[1]] = $memInfo[2];
         }
 
         // Get swapContents
         @preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)/m', Common::getContents($procFileSwap), $matches, PREG_SET_ORDER);
-        foreach ((array) $matches as $swapDevice) {
+        foreach ((array)$matches as $swapDevice) {
 
             // Append each swap device
             $swapVals[] = array(
@@ -205,7 +206,7 @@ class Linux extends Unixcommon
 
     /**
      * getCPU.
-     * 
+     *
      * @return array of cpu info
      */
     public function getCPU()
@@ -277,28 +278,28 @@ class Linux extends Unixcommon
                 case 'cpu':
                 case 'Processor':
                     $cur_cpu['Model'] = $value;
-                break;
+                    break;
 
                 // Speed in MHz
                 case 'cpu MHz':
                     $cur_cpu['MHz'] = $value;
-                break;
+                    break;
 
                 case 'Cpu0ClkTck': // Old sun boxes
                     $cur_cpu['MHz'] = hexdec($value) / 1000000;
-                break;
+                    break;
 
                 // Brand/vendor
                 case 'vendor_id':
                     $cur_cpu['Vendor'] = $value;
-                break;
+                    break;
 
                 // ID. Corresponds to percentage if enabled below
                 case 'processor':
                     if (isset($this->cpu_percent['cpus'][$value])) {
                         $cur_cpu['usage_percentage'] = $this->cpu_percent['cpus'][$value];
                     }
-                break;
+                    break;
             }
         }
 
@@ -360,7 +361,7 @@ class Linux extends Unixcommon
 
     /**
      * getHD.
-     * 
+     *
      * @return array the hard drive info
      */
     public function getHD()
@@ -388,13 +389,13 @@ class Linux extends Unixcommon
         $drives = array();
 
         // Get actual drives
-        foreach ((array) @glob('/sys/block/*/device/model', GLOB_NOSORT) as $path) {
+        foreach ((array)@glob('/sys/block/*/device/model', GLOB_NOSORT) as $path) {
 
             // Parts of the path
             $parts = explode('/', $path);
 
             // Attempt getting read/write stats
-            if (preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', Common::getContents(dirname(dirname($path)).'/stat'), $statMatches) !== 1) {
+            if (preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', Common::getContents(dirname(dirname($path)) . '/stat'), $statMatches) !== 1) {
                 // Didn't get it
                 $reads = false;
                 $writes = false;
@@ -405,12 +406,12 @@ class Linux extends Unixcommon
 
             // Append this drive on
             $drives[] = array(
-                'name' => Common::getContents($path, 'Unknown').(Common::getContents(dirname(dirname($path)).'/queue/rotational') == 0 ? ' (SSD)' : ''),
-                'vendor' => Common::getContents(dirname($path).'/vendor', 'Unknown'),
-                'device' => '/dev/'.$parts[3],
+                'name' => Common::getContents($path, 'Unknown') . (Common::getContents(dirname(dirname($path)) . '/queue/rotational') == 0 ? ' (SSD)' : ''),
+                'vendor' => Common::getContents(dirname($path) . '/vendor', 'Unknown'),
+                'device' => '/dev/' . $parts[3],
                 'reads' => $reads,
                 'writes' => $writes,
-                'size' => Common::getContents(dirname(dirname($path)).'/size', 0) * 512,
+                'size' => Common::getContents(dirname(dirname($path)) . '/size', 0) * 512,
                 'partitions' => array_key_exists($parts[3], $partitions) && is_array($partitions[$parts[3]]) ? $partitions[$parts[3]] : false,
             );
         }
@@ -421,7 +422,7 @@ class Linux extends Unixcommon
 
     /**
      * getTemps.
-     * 
+     *
      * @return array the temps
      */
     public function getTemps()
@@ -436,7 +437,7 @@ class Linux extends Unixcommon
         $return = array();
 
         // hddtemp?
-        if (array_key_exists('hddtemp', (array) $this->settings['temps']) && !empty($this->settings['temps']['hddtemp']) && isset($this->settings['hddtemp'])) {
+        if (array_key_exists('hddtemp', (array)$this->settings['temps']) && !empty($this->settings['temps']['hddtemp']) && isset($this->settings['hddtemp'])) {
             try {
                 // Initiate class
                 $hddtemp = new Hddtemp($this->settings);
@@ -459,16 +460,14 @@ class Linux extends Unixcommon
                     // Save result
                     $return = array_merge($return, $hddtemp_res);
                 }
-            }
-
-            // There was an issue
+            } // There was an issue
             catch (\Exception $e) {
                 Errors::add('hddtemp parser', $e->getMessage());
             }
         }
 
         // mbmon?
-        if (array_key_exists('mbmon', (array) $this->settings['temps']) && !empty($this->settings['temps']['mbmon']) && isset($this->settings['mbmon'])) {
+        if (array_key_exists('mbmon', (array)$this->settings['temps']) && !empty($this->settings['temps']['mbmon']) && isset($this->settings['mbmon'])) {
             try {
                 // Initiate class
                 $mbmon = new Mbmon();
@@ -492,7 +491,7 @@ class Linux extends Unixcommon
         }
 
         // sensord? (part of lm-sensors)
-        if (array_key_exists('sensord', (array) $this->settings['temps']) && !empty($this->settings['temps']['sensord'])) {
+        if (array_key_exists('sensord', (array)$this->settings['temps']) && !empty($this->settings['temps']['sensord'])) {
             try {
                 // Iniatate class
                 $sensord = new Sensord();
@@ -512,42 +511,38 @@ class Linux extends Unixcommon
 
         // hwmon? (probably the fastest of what's here)
         // too simple to be in its own class
-        if (array_key_exists('hwmon', (array) $this->settings['temps']) && !empty($this->settings['temps']['hwmon'])) {
+        if (array_key_exists('hwmon', (array)$this->settings['temps']) && !empty($this->settings['temps']['hwmon'])) {
 
             // Store them here
             $hwmon_vals = array();
 
             // Wacky location
-            foreach ((array) @glob('/sys/class/hwmon/hwmon*/{,device/}*_input', GLOB_NOSORT | GLOB_BRACE) as $path) {
+            foreach ((array)@glob('/sys/class/hwmon/hwmon*/{,device/}*_input', GLOB_NOSORT | GLOB_BRACE) as $path) {
                 $initpath = rtrim($path, 'input');
                 $value = Common::getContents($path);
                 $base = basename($path);
-                $labelpath = $initpath.'label';
+                $labelpath = $initpath . 'label';
                 $showemptyfans = isset($this->settings['temps_show0rpmfans']) ? $this->settings['temps_show0rpmfans'] : false;
-                $drivername = @basename(@readlink(dirname($path).'/driver')) ?: false;
+                $drivername = @basename(@readlink(dirname($path) . '/driver')) ?: false;
 
                 // Temperatures
                 if (is_file($labelpath) && strpos($base, 'temp') === 0) {
                     $label = Common::getContents($labelpath);
                     $value /= $value > 10000 ? 1000 : 1;
                     $unit = 'C'; // I don't think this is ever going to be in F
-                }
-
-                // Fan RPMs
+                } // Fan RPMs
                 elseif (preg_match('/^fan(\d+)_/', $base, $m)) {
-                    $label = 'fan'.$m[1];
+                    $label = 'fan' . $m[1];
                     $unit = 'RPM';
 
                     if ($value == 0 && !$showemptyfans) {
                         continue;
                     }
-                }
-
-                // Volts
+                } // Volts
                 elseif (preg_match('/^in(\d+)_/', $base, $m)) {
                     $unit = 'V';
                     $value /= 1000;
-                    $label = Common::getContents($labelpath) ?: 'in'.$m[1];
+                    $label = Common::getContents($labelpath) ?: 'in' . $m[1];
                 } else {
                     continue;
                 }
@@ -555,7 +550,7 @@ class Linux extends Unixcommon
                 // Append values
                 $hwmon_vals[] = array(
                     'path' => '',
-                    'name' => $label.($drivername ? ' <span class="faded">('.$drivername.')</span>' : ''),
+                    'name' => $label . ($drivername ? ' <span class="faded">(' . $drivername . ')</span>' : ''),
                     'temp' => $value,
                     'unit' => $unit,
                 );
@@ -566,18 +561,18 @@ class Linux extends Unixcommon
                 $return = array_merge($return, $hwmon_vals);
             }
         }
-        
+
         // thermal_zone? 
-        if (array_key_exists('thermal_zone', (array) $this->settings['temps']) && !empty($this->settings['temps']['thermal_zone'])) {
+        if (array_key_exists('thermal_zone', (array)$this->settings['temps']) && !empty($this->settings['temps']['thermal_zone'])) {
 
             // Store them here
             $thermal_zone_vals = array();
 
             // Wacky location
-            foreach ((array) @glob('/sys/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE) as $path) {
-                $labelpath = $path.DIRECTORY_SEPARATOR.'type';
-                $valuepath = $path.DIRECTORY_SEPARATOR.'temp';
-                
+            foreach ((array)@glob('/sys/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE) as $path) {
+                $labelpath = $path . DIRECTORY_SEPARATOR . 'type';
+                $valuepath = $path . DIRECTORY_SEPARATOR . 'temp';
+
                 if (!is_file($labelpath) || !is_file($valuepath)) {
                     continue;
                 }
@@ -603,13 +598,13 @@ class Linux extends Unixcommon
         }
 
         // Laptop backlight percentage
-        foreach ((array) @glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', GLOB_NOSORT | GLOB_BRACE) as $bl) {
+        foreach ((array)@glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', GLOB_NOSORT | GLOB_BRACE) as $bl) {
             $dir = dirname($bl);
-            if (!is_file($dir.'/actual_brightness')) {
+            if (!is_file($dir . '/actual_brightness')) {
                 continue;
             }
             $max = Common::getIntFromFile($bl);
-            $cur = Common::getIntFromFile($dir.'/actual_brightness');
+            $cur = Common::getIntFromFile($dir . '/actual_brightness');
             if ($max < 0 || $cur < 0) {
                 continue;
             }
@@ -628,7 +623,7 @@ class Linux extends Unixcommon
 
     /**
      * getMounts.
-     * 
+     *
      * @return array the mounted the file systems
      */
     public function getMounts()
@@ -689,7 +684,7 @@ class Linux extends Unixcommon
             }
 
             // Optionally get mount options
-            if ($this->settings['show']['mounts_options'] && !in_array($mount[3], (array) $this->settings['hide']['fs_mount_options'])) {
+            if ($this->settings['show']['mounts_options'] && !in_array($mount[3], (array)$this->settings['hide']['fs_mount_options'])) {
                 $mount_options = explode(',', $mount[4]);
             } else {
                 $mount_options = array();
@@ -703,8 +698,8 @@ class Linux extends Unixcommon
                 'size' => $size,
                 'used' => $used,
                 'free' => $free,
-                'free_percent' => ((bool) $free != false && (bool) $size != false ? round($free / $size, 2) * 100 : false),
-                'used_percent' => ((bool) $used != false && (bool) $size != false ? round($used / $size, 2) * 100 : false),
+                'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
+                'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false),
                 'options' => $mount_options,
             );
         }
@@ -715,7 +710,7 @@ class Linux extends Unixcommon
 
     /**
      * getDevs.
-     * 
+     *
      * @return array of devices
      */
     public function getDevs()
@@ -751,7 +746,7 @@ class Linux extends Unixcommon
 
     /**
      * getRAID.
-     * 
+     *
      * @return array of raid arrays
      */
     public function getRAID()
@@ -766,7 +761,7 @@ class Linux extends Unixcommon
         $raidinfo = array();
 
         // mdadm?
-        if (array_key_exists('mdadm', (array) $this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
+        if (array_key_exists('mdadm', (array)$this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
 
             // Try getting contents
             $mdadm_contents = Common::getContents('/proc/mdstat', false);
@@ -777,13 +772,13 @@ class Linux extends Unixcommon
             }
 
             // Parse
-            @preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks[^[]+\[(\d\/\d)\] \[([U\_]+)\]/mi', (string) $mdadm_contents, $match, PREG_SET_ORDER);
+            @preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks[^[]+\[(\d\/\d)\] \[([U\_]+)\]/mi', (string)$mdadm_contents, $match, PREG_SET_ORDER);
 
             // Store them here
             $mdadm_arrays = array();
 
             // Deal with entries
-            foreach ((array) $match as $array) {
+            foreach ((array)$match as $array) {
 
                 // Temporarily store drives here
                 $drives = array();
@@ -799,18 +794,18 @@ class Linux extends Unixcommon
                             switch ($match_drive[2]) {
                                 case '(S)':
                                     $drive_state = 'spare';
-                                break;
+                                    break;
                                 case '(F)':
                                     $drive_state = 'failed';
-                                break;
+                                    break;
                                 case null:
                                     $drive_state = 'normal';
-                                break;
+                                    break;
 
                                 // I'm not sure if there are status codes other than the above
                                 default:
                                     $drive_state = 'unknown';
-                                break;
+                                    break;
                             }
                         } else {
                             $drive_state = 'normal';
@@ -818,7 +813,7 @@ class Linux extends Unixcommon
 
                         // Append this drive to the temp drives array
                         $drives[] = array(
-                            'drive' => '/dev/'.$match_drive[1],
+                            'drive' => '/dev/' . $match_drive[1],
                             'state' => $drive_state,
                         );
                     }
@@ -826,7 +821,7 @@ class Linux extends Unixcommon
 
                 // Add record of this array to arrays list
                 $mdadm_arrays[] = array(
-                    'device' => '/dev/'.$array[1],
+                    'device' => '/dev/' . $array[1],
                     'status' => $array[2],
                     'level' => $array[3],
                     'drives' => $drives,
@@ -848,7 +843,7 @@ class Linux extends Unixcommon
 
     /**
      * getLoad.
-     * 
+     *
      * @return array of current system load values
      */
     public function getLoad()
@@ -883,7 +878,7 @@ class Linux extends Unixcommon
 
     /**
      * getNet.
-     * 
+     *
      * @return array of network devices
      */
     public function getNet()
@@ -898,25 +893,25 @@ class Linux extends Unixcommon
         $return = array();
 
         // Get values for each device
-        foreach ((array) @glob('/sys/class/net/*', GLOB_NOSORT) as $path) {
+        foreach ((array)@glob('/sys/class/net/*', GLOB_NOSORT) as $path) {
             $nic = basename($path);
 
             // States
-            $operstate_contents = Common::getContents($path.'/operstate');
+            $operstate_contents = Common::getContents($path . '/operstate');
             switch ($operstate_contents) {
                 case 'down':
                 case 'up':
                 case 'unknown':
                     $state = $operstate_contents;
-                break;
+                    break;
 
                 default:
                     $state = 'unknown';
-                break;
+                    break;
             }
 
-            if ($state = 'unknown' && file_exists($path.'/carrier')) {
-                $carrier = Common::getContents($path.'/carrier', false);
+            if ($state = 'unknown' && file_exists($path . '/carrier')) {
+                $carrier = Common::getContents($path . '/carrier', false);
                 if (!empty($carrier)) {
                     $state = 'up';
                 } else {
@@ -926,7 +921,7 @@ class Linux extends Unixcommon
 
             // Try the weird ways of getting type (https://stackoverflow.com/a/16060638)
             $type = false;
-            $typeCode = Common::getIntFromFile($path.'/type');
+            $typeCode = Common::getIntFromFile($path . '/type');
 
             if ($typeCode == 772) {
                 $type = 'Loopback';
@@ -937,15 +932,15 @@ class Linux extends Unixcommon
             }
 
             if (!$type) {
-                $type_contents = strtoupper(Common::getContents($path.'/device/modalias'));
+                $type_contents = strtoupper(Common::getContents($path . '/device/modalias'));
                 list($type_match) = explode(':', $type_contents, 2);
 
                 if (in_array($type_match, array('PCI', 'USB'))) {
-                    $type = 'Ethernet ('.$type_match.')';
+                    $type = 'Ethernet (' . $type_match . ')';
 
                     // Driver maybe?
-                    if (($uevent_contents = @parse_ini_file($path.'/device/uevent')) && isset($uevent_contents['DRIVER'])) {
-                        $type .= ' ('.$uevent_contents['DRIVER'].')';
+                    if (($uevent_contents = @parse_ini_file($path . '/device/uevent')) && isset($uevent_contents['DRIVER'])) {
+                        $type .= ' (' . $uevent_contents['DRIVER'] . ')';
                     }
                 } elseif ($type_match == 'VIRTIO') {
                     $type = 'VirtIO';
@@ -953,30 +948,30 @@ class Linux extends Unixcommon
                     $type = 'Xen (VIF)';
                 } elseif ($type_contents == 'XEN-BACKEND:VIF') {
                     $type = 'Xen Backend (VIF)';
-                } elseif (is_dir($path.'/bridge')) {
+                } elseif (is_dir($path . '/bridge')) {
                     $type = 'Bridge';
-                } elseif (is_dir($path.'/bonding')) {
+                } elseif (is_dir($path . '/bonding')) {
                     $type = 'Bond';
                 }
 
                 // TODO find some way of finding out what provides the virt-specific kvm vnet devices
             }
 
-            $speed = Common::getIntFromFile($path.'/speed');
+            $speed = Common::getIntFromFile($path . '/speed');
 
             // Save and get info for each
             $return[$nic] = array(
 
                 // Stats are stored in simple files just containing the number
                 'recieved' => array(
-                    'bytes' => Common::getIntFromFile($path.'/statistics/rx_bytes'),
-                    'errors' => Common::getIntFromFile($path.'/statistics/rx_errors'),
-                    'packets' => Common::getIntFromFile($path.'/statistics/rx_packets'),
+                    'bytes' => Common::getIntFromFile($path . '/statistics/rx_bytes'),
+                    'errors' => Common::getIntFromFile($path . '/statistics/rx_errors'),
+                    'packets' => Common::getIntFromFile($path . '/statistics/rx_packets'),
                 ),
                 'sent' => array(
-                    'bytes' => Common::getIntFromFile($path.'/statistics/tx_bytes'),
-                    'errors' => Common::getIntFromFile($path.'/statistics/tx_errors'),
-                    'packets' => Common::getIntFromFile($path.'/statistics/tx_packets'),
+                    'bytes' => Common::getIntFromFile($path . '/statistics/tx_bytes'),
+                    'errors' => Common::getIntFromFile($path . '/statistics/tx_errors'),
+                    'packets' => Common::getIntFromFile($path . '/statistics/tx_packets'),
                 ),
 
                 // These were determined above
@@ -992,7 +987,7 @@ class Linux extends Unixcommon
 
     /**
      * getBattery.
-     * 
+     *
      * @return array of battery status
      */
     public function getBattery()
@@ -1007,11 +1002,11 @@ class Linux extends Unixcommon
         $return = array();
 
         // Here they should be
-        $bats = (array) @glob('/sys/class/power_supply/BAT*', GLOB_NOSORT);
+        $bats = (array)@glob('/sys/class/power_supply/BAT*', GLOB_NOSORT);
 
         // Get vals for each battery
         foreach ($bats as $b) {
-            foreach (array($b.'/manufacturer', $b.'/status') as $f) {
+            foreach (array($b . '/manufacturer', $b . '/status') as $f) {
                 if (!is_file($f)) {
                     continue 2;
                 }
@@ -1019,13 +1014,13 @@ class Linux extends Unixcommon
 
             // Get these from the simple text files
             switch (true) {
-                case is_file($b.'/energy_full'):
-                    $charge_full = Common::getIntFromFile($b.'/energy_full');
-                    $charge_now = Common::getIntFromFile($b.'/energy_now');
+                case is_file($b . '/energy_full'):
+                    $charge_full = Common::getIntFromFile($b . '/energy_full');
+                    $charge_now = Common::getIntFromFile($b . '/energy_now');
                     break;
-                case is_file($b.'/charge_full'):
-                    $charge_full = Common::getIntFromFile($b.'/charge_full');
-                    $charge_now = Common::getIntFromFile($b.'/charge_now');
+                case is_file($b . '/charge_full'):
+                    $charge_full = Common::getIntFromFile($b . '/charge_full');
+                    $charge_now = Common::getIntFromFile($b . '/charge_now');
                     break;
                 default:
                     continue;
@@ -1040,8 +1035,8 @@ class Linux extends Unixcommon
                 'charge_full' => $charge_full,
                 'charge_now' => $charge_now,
                 'percentage' => (is_numeric($percentage) && $percentage > 100 ? 100 : $percentage),
-                'device' => Common::getContents($b.'/manufacturer').' '.Common::getContents($b.'/model_name', 'Unknown'),
-                'state' => Common::getContents($b.'/status', 'Unknown'),
+                'device' => Common::getContents($b . '/manufacturer') . ' ' . Common::getContents($b . '/model_name', 'Unknown'),
+                'state' => Common::getContents($b . '/status', 'Unknown'),
             );
         }
 
@@ -1051,7 +1046,7 @@ class Linux extends Unixcommon
 
     /**
      * getWifi.
-     * 
+     *
      * @return array of wifi devices
      */
     public function getWifi()
@@ -1101,7 +1096,7 @@ class Linux extends Unixcommon
 
     /**
      * getSoundCards.
-     * 
+     *
      * @return array of soundcards
      */
     public function getSoundCards()
@@ -1145,7 +1140,7 @@ class Linux extends Unixcommon
 
     /**
      * getProcessStats.
-     * 
+     *
      * @return array of process stats
      */
     public function getProcessStats()
@@ -1170,7 +1165,7 @@ class Linux extends Unixcommon
         );
 
         // Get all the paths to each process' status file
-        $processes = (array) @glob('/proc/*/status', GLOB_NOSORT);
+        $processes = (array)@glob('/proc/*/status', GLOB_NOSORT);
 
         // Total
         $result['proc_total'] = count($processes);
@@ -1194,16 +1189,16 @@ class Linux extends Unixcommon
                 case 'D': // disk sleep? wtf?
                 case 'S':
                     $result['totals']['sleeping']++;
-                break;
+                    break;
                 case 'Z':
                     $result['totals']['zombie']++;
-                break;
+                    break;
                 case 'R':
                     $result['totals']['running']++;
-                break;
+                    break;
                 case 'T':
                     $result['totals']['stopped']++;
-                break;
+                    break;
             }
 
             // Try getting number of threads
@@ -1226,7 +1221,7 @@ class Linux extends Unixcommon
 
     /**
      * getServices.
-     * 
+     *
      * @return array the services
      */
     public function getServices()
@@ -1245,9 +1240,9 @@ class Linux extends Unixcommon
         // Temporarily keep statuses here
         $statuses = array();
 
-        $this->settings['services']['executables'] = (array) $this->settings['services']['executables'];
-        $this->settings['services']['pidFiles'] = (array) $this->settings['services']['pidFiles'];
-        $this->settings['services']['systemdServices'] = (array) $this->settings['services']['systemdServices'];
+        $this->settings['services']['executables'] = (array)$this->settings['services']['executables'];
+        $this->settings['services']['pidFiles'] = (array)$this->settings['services']['pidFiles'];
+        $this->settings['services']['systemdServices'] = (array)$this->settings['services']['systemdServices'];
 
         // Convert paths of executables to PID files
         $pids = array();
@@ -1287,7 +1282,7 @@ class Linux extends Unixcommon
                     if ($match) {
                         // Get pid out of path to cmdline file
                         $pids[$service] = substr($potential_paths[$i], 6 /*strlen('/proc/')*/,
-                                                strpos($potential_paths[$i], '/', 7) - 6);
+                            strpos($potential_paths[$i], '/', 7) - 6);
                         break;
                     }
                 }
@@ -1314,7 +1309,7 @@ class Linux extends Unixcommon
 
         // Deal with PIDs
         foreach ($pids as $service => $pid) {
-            $path = '/proc/'.$pid.'/status';
+            $path = '/proc/' . $pid . '/status';
             $status_contents = Common::getContents($path, false);
             if ($status_contents == false) {
                 $statuses[$service] = array('state' => 'Down', 'threads' => 'N/A', 'pid' => $pid);
@@ -1343,30 +1338,30 @@ class Linux extends Unixcommon
                             case 'D': // disk sleep? wtf?
                             case 'S':
                                 $state = 'Up (Sleeping)';
-                            break;
+                                break;
                             case 'Z':
                                 $state = 'Zombie';
-                            break;
+                                break;
                             // running
                             case 'R':
                                 $state = 'Up (Running)';
-                            break;
+                                break;
                             // stopped
                             case 'T':
                                 $state = 'Up (Stopped)';
-                            break;
+                                break;
                             default:
                                 continue;
-                            break;
+                                break;
                         }
-                    break;
+                        break;
 
                     // Mem usage
                     case 'VmRSS':
                         if (is_numeric($status_matches[$i][2])) {
                             $mem = $status_matches[$i][2] * 1024;
                         } // Measured in kilobytes; we want bytes
-                    break;
+                        break;
 
                     // Thread count
                     case 'Threads':
@@ -1378,7 +1373,7 @@ class Linux extends Unixcommon
                         if ($state !== false && $mem !== false && $threads !== false) {
                             break;
                         }
-                    break;
+                        break;
                 }
             }
 
@@ -1396,7 +1391,7 @@ class Linux extends Unixcommon
 
     /**
      * getDistro.
-     * 
+     *
      * @return array the distro,version or false
      */
     public function getDistro()
@@ -1429,26 +1424,26 @@ class Linux extends Unixcommon
             array(
                 'file' => '/etc/lsb-release',
                 'closure' => function ($ini) {
-                  return ($info = @parse_ini_string($ini)) &&
+                    return ($info = @parse_ini_string($ini)) &&
                     isset($info['DISTRIB_ID']) &&
                     isset($info['DISTRIB_RELEASE']) &&
                     isset($info['DISTRIB_CODENAME']) ? array(
-                      'distro' => $info['DISTRIB_ID'],
-                      'version' => $info['DISTRIB_RELEASE'],
-                      'codename' => $info['DISTRIB_CODENAME'],
+                        'distro' => $info['DISTRIB_ID'],
+                        'version' => $info['DISTRIB_RELEASE'],
+                        'codename' => $info['DISTRIB_CODENAME'],
                     ) : false;
                 }
             ),
             array(
                 'file' => '/etc/os-release',
                 'closure' => function ($ini) {
-                  return ($info = @parse_ini_string($ini)) &&
+                    return ($info = @parse_ini_string($ini)) &&
                     isset($info['ID']) &&
                     isset($info['VERSION']) ? array(
-                      'distro' => $info['ID'],
-                      'version' => $info['VERSION']
+                        'distro' => $info['ID'],
+                        'version' => $info['VERSION']
                     ) : false;
-                 },
+                },
             ),
             array(
                 'file' => '/etc/fedora-release',
@@ -1488,12 +1483,12 @@ class Linux extends Unixcommon
             if (isset($distro['closure']) && ($info = $distro['closure']($contents))) {
                 return array(
                     'name' => ucfirst($info['distro']),
-                    'version' => $info['version'].(isset($info['codename']) ? ' ('.ucfirst($info['codename']).')' : ''),
+                    'version' => $info['version'] . (isset($info['codename']) ? ' (' . ucfirst($info['codename']) . ')' : ''),
                 );
             } elseif (isset($distro['regex']) && preg_match($distro['regex'], $contents, $info)) {
                 return array(
                     'name' => $distro['distro'],
-                    'version' => $info['version'].(isset($info['codename']) ? ' ('.ucfirst($info['codename']).')' : ''),
+                    'version' => $info['version'] . (isset($info['codename']) ? ' (' . ucfirst($info['codename']) . ')' : ''),
                 );
             } elseif (isset($distro['distro'])) {
                 return array(
@@ -1534,13 +1529,13 @@ class Linux extends Unixcommon
         return false;
     }
 
-     /**
-      * getNumLoggedIn.
-      * 
-      * @return number of logged in users with shells
-      */
-     public function getNumLoggedIn()
-     {
+    /**
+     * getNumLoggedIn.
+     *
+     * @return number of logged in users with shells
+     */
+    public function getNumLoggedIn()
+    {
 
         // Snag command line of every process in system
         $procs = glob('/proc/*/cmdline', GLOB_NOSORT);
@@ -1571,16 +1566,16 @@ class Linux extends Unixcommon
 
         // Give number of unique users with shells running
         return count($users);
-     }
+    }
 
-     /**
-      * getVirtualization. Potentially not very accurate especially since you can virtualize hypervisors,
-      * kernel module names change frequently, you can load (some of) these modules if you aren't a host/guest, etc.
-      *
-      * @return array('type' => 'guest', 'method' => kvm or vmware or xen or openvz) or array('type' => 'host', 'methods' = ['intel', 'amd'])
-      */
-     public function getVirtualization()
-     {
+    /**
+     * getVirtualization. Potentially not very accurate especially since you can virtualize hypervisors,
+     * kernel module names change frequently, you can load (some of) these modules if you aren't a host/guest, etc.
+     *
+     * @return array('type' => 'guest', 'method' => kvm or vmware or xen or openvz) or array('type' => 'host', 'methods' = ['intel', 'amd'])
+     */
+    public function getVirtualization()
+    {
 
         // Time?
         if (!empty($this->settings['timer'])) {
@@ -1590,9 +1585,7 @@ class Linux extends Unixcommon
         // OpenVZ host?
         if (is_file('/proc/vz/version')) {
             return array('type' => 'host', 'method' => 'OpenVZ');
-        }
-
-        // OpenVZ guest?
+        } // OpenVZ guest?
         elseif (is_file('/proc/vz/veinfo')) {
             return array('type' => 'guest', 'method' => 'OpenVZ');
         }
@@ -1602,11 +1595,11 @@ class Linux extends Unixcommon
             return array('type' => 'guest', 'method' => 'Veertu');
         }
 
-	// LXC guest?
+        // LXC guest?
         if (strpos(Common::getContents('/proc/mounts'), 'lxcfs /proc/') !== false) {
             return array('type' => 'guest', 'method' => 'LXC');
         }
-        
+
         // Docker guest?
         if (is_file('/.dockerenv') || is_file('/.dockerinit') || strpos(Common::getContents('/proc/1/cgroup'), 'docker') !== false) {
             return array('type' => 'guest', 'method' => 'Docker');
@@ -1614,15 +1607,15 @@ class Linux extends Unixcommon
 
         // Try getting kernel modules
         $modules = array();
-         if (preg_match_all('/^(\S+)/m', Common::getContents('/proc/modules', ''), $matches, PREG_SET_ORDER)) {
-             foreach ($matches as $match) {
-                 $modules[] = $match[1];
-             }
-         }
+        if (preg_match_all('/^(\S+)/m', Common::getContents('/proc/modules', ''), $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                $modules[] = $match[1];
+            }
+        }
 
         // Sometimes /proc/modules is missing what is in this dir on VMs
         foreach (@glob('/sys/bus/pci/drivers/*') as $name) {
-                $modules[] = basename($name);
+            $modules[] = basename($name);
         }
 
         // VMware guest. Tested on debian under vmware fusion for mac...
@@ -1673,15 +1666,15 @@ class Linux extends Unixcommon
 
         // idk
         return false;
-     }
+    }
 
-     /**
-      * Get overall CPU usage. Depends on determineCPUPercentage() being called prior.
-      */
-     public function getCPUUsage()
-     {
-         return $this->cpu_percent['overall'] === false ? false : $this->cpu_percent['overall'];
-     }
+    /**
+     * Get overall CPU usage. Depends on determineCPUPercentage() being called prior.
+     */
+    public function getCPUUsage()
+    {
+        return $this->cpu_percent['overall'] === false ? false : $this->cpu_percent['overall'];
+    }
 
     /**
      * Parse lines from /proc/stat. Used by determineCPUPercentage function.
@@ -1689,125 +1682,123 @@ class Linux extends Unixcommon
      * @param $line
      * @return float
      */
-     private function cpuPercent($key, $line)
-     {
+    private function cpuPercent($key, $line)
+    {
 
-         // With each iteration we compare what we got to last time's version
-         // as the file changes every milisecond or something
-         static $prev = array();
+        // With each iteration we compare what we got to last time's version
+        // as the file changes every milisecond or something
+        static $prev = array();
 
-         // Using regex/explode is excessive here, not unlike rest of linfo :/
-         $ret = sscanf($line, '%Lu %Lu %Lu %Lu %Lu %Lu %Lu %Lu');
+        // Using regex/explode is excessive here, not unlike rest of linfo :/
+        $ret = sscanf($line, '%Lu %Lu %Lu %Lu %Lu %Lu %Lu %Lu');
 
-         // Negative? That's crazy talk now
-         foreach ($ret as $k => $v) {
-             if ($v < 0) {
-                 $ret[$k] = 0;
-             }
-         }
+        // Negative? That's crazy talk now
+        foreach ($ret as $k => $v) {
+            if ($v < 0) {
+                $ret[$k] = 0;
+            }
+        }
 
-         // First time; set our vals
-         if (!isset($prev[$key])) {
-             $prev[$key] = $ret;
-         }
+        // First time; set our vals
+        if (!isset($prev[$key])) {
+            $prev[$key] = $ret;
+        } // Subsequent time; difference with last time
+        else {
+            $orig = $ret;
+            foreach ($ret as $k => $v) {
+                $ret[$k] -= $prev[$key][$k];
+            }
+            $prev[$key] = $orig;
+        }
 
-         // Subsequent time; difference with last time
-         else {
-             $orig = $ret;
-             foreach ($ret as $k => $v) {
-                 $ret[$k] -= $prev[$key][$k];
-             }
-             $prev[$key] = $orig;
-         }
+        // Refer back to top.c for the reasoning here. I just copied the algorithm without
+        // trying to understand why.
+        $retSum = (float)array_sum($ret);
+        if ($retSum > 0) {
+            $scale = 100 / $retSum;
+        } else {
+            $scale = 100;
+        }
+        $cpu_percent = $ret[0] * $scale;
 
-         // Refer back to top.c for the reasoning here. I just copied the algorithm without
-         // trying to understand why.
-         $retSum = (float) array_sum($ret);
-         if($retSum > 0) {
-             $scale = 100 / $retSum;
-         } else {
-             $scale = 100;
-         }
-         $cpu_percent = $ret[0] * $scale;
+        return round($cpu_percent, 2);
+    }
 
-         return round($cpu_percent, 2);
-     }
+    /**
+     * Most controersial and different function in linfo. Updates $this->cpu_percent array. Sleeps 1 second
+     * to do this which is how it gets accurate details. Code stolen from procps' source for the Linux top command.
+     *
+     * @void
+     */
+    public function determineCPUPercentage()
+    {
+        // Time?
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Determining CPU usage');
+        }
 
-     /**
-      * Most controersial and different function in linfo. Updates $this->cpu_percent array. Sleeps 1 second
-      * to do this which is how it gets accurate details. Code stolen from procps' source for the Linux top command.
-      *
-      * @void
-      */
-     public function determineCPUPercentage()
-     {
-         // Time?
-         if (!empty($this->settings['timer'])) {
-             $t = new Timer('Determining CPU usage');
-         }
+        $iterations = 2;
 
-         $iterations = 2;
+        // Probably only inline function here. Only used once so it makes sense.
 
-         // Probably only inline function here. Only used once so it makes sense.
+        for ($i = 0; $i < $iterations; ++$i) {
+            $contents = Common::getContents('/proc/stat', false);
 
-         for ($i = 0; $i < $iterations; ++$i) {
-             $contents = Common::getContents('/proc/stat', false);
+            // Yay we can't read it so we won't sleep below!
+            if (!$contents) {
+                continue;
+            }
 
-             // Yay we can't read it so we won't sleep below!
-             if (!$contents) {
-                 continue;
-             }
+            // Overall system CPU usage
+            if (preg_match('/^cpu\s+(.+)/', $contents, $m)) {
+                $this->cpu_percent['overall'] = $this->cpuPercent('overall', $m[1]);
+            }
 
-             // Overall system CPU usage
-             if (preg_match('/^cpu\s+(.+)/', $contents, $m)) {
-                 $this->cpu_percent['overall'] = $this->cpuPercent('overall', $m[1]);
-             }
+            // CPU usage per CPU
+            if (preg_match_all('/^cpu(\d+)\s+(.+)/m', $contents, $cpus, PREG_SET_ORDER)) {
+                foreach ($cpus as $cpu) {
+                    $this->cpu_percent['cpus'][$cpu[1]] = $this->cpuPercent('c' . $cpu[1], $cpu[2]);
+                }
+            }
 
-             // CPU usage per CPU
-             if (preg_match_all('/^cpu(\d+)\s+(.+)/m', $contents, $cpus, PREG_SET_ORDER)) {
-                 foreach ($cpus as $cpu) {
-                     $this->cpu_percent['cpus'][$cpu[1]] = $this->cpuPercent('c'.$cpu[1], $cpu[2]);
-                 }
-             }
+            // Following two lines make me want to puke as they go against everything linfo stands for
+            // this functionality will always be disabled by default
+            // Sleep *between* iterations and only if we're doing at least two of them
+            if ($iterations > 1 && $i != $iterations - 1) {
+                sleep(1);
+            }
+        }
+    }
 
-             // Following two lines make me want to puke as they go against everything linfo stands for
-             // this functionality will always be disabled by default
-             // Sleep *between* iterations and only if we're doing at least two of them
-             if ($iterations > 1 && $i != $iterations - 1) {
-                 sleep(1);
-             }
-         }
-     }
+    /**
+     * Get brand/name of motherboard/server through /sys' interface to dmidecode.
+     */
+    public function getModel()
+    {
+        $info = array();
+        $vendor = Common::getContents('/sys/devices/virtual/dmi/id/board_vendor', false);
+        $name = Common::getContents('/sys/devices/virtual/dmi/id/board_name', false);
+        $product = Common::getContents('/sys/devices/virtual/dmi/id/product_name', false);
 
-     /**
-      * Get brand/name of motherboard/server through /sys' interface to dmidecode.
-      */
-     public function getModel()
-     {
-         $info = array();
-         $vendor = Common::getContents('/sys/devices/virtual/dmi/id/board_vendor', false);
-         $name = Common::getContents('/sys/devices/virtual/dmi/id/board_name', false);
-         $product = Common::getContents('/sys/devices/virtual/dmi/id/product_name', false);
-
-         if (!$name) {
-             return false;
-         }
+        if (!$name) {
+            return false;
+        }
 
         // Don't add vendor to the mix if the name starts with it
         if ($vendor && strpos($name, $vendor) !== 0) {
             $info[] = $vendor;
         }
 
-         $info[] = $name;
+        $info[] = $name;
 
-         $infostr = implode(' ', $info);
+        $infostr = implode(' ', $info);
 
         // product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
         // dell latitude e6500 or hp z260
         if ($product && strpos($name, $product) === false && strpos($product, 'Filled') === false) {
-            return $product.' ('.$infostr.')';
+            return $product . ' (' . $infostr . ')';
         } else {
             return $infostr;
         }
-     }
+    }
 }

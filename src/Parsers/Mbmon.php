@@ -25,6 +25,7 @@ use Exception;
 /*
  * Deal with MbMon
  */
+
 class Mbmon
 {
     // Store these
@@ -66,7 +67,7 @@ class Mbmon
     {
         $return = array();
 
-        $lines = (array) explode("\n", trim($data));
+        $lines = (array)explode("\n", trim($data));
 
         foreach ($lines as $line) {
             if (preg_match('/(\w+)\s*:\s*([-+]?[\d\.]+)/i', $line, $match) == 1) {

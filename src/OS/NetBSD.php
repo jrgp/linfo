@@ -96,11 +96,11 @@ class NetBSD extends BSDcommon
                 'device' => $mount[1],
                 'mount' => $mount[2],
                 'type' => $mount[3],
-                'size' => $size ,
+                'size' => $size,
                 'used' => $used,
                 'free' => $free,
-                'free_percent' => ((bool) $free != false && (bool) $size != false ? round($free / $size, 2) * 100 : false),
-                'used_percent' => ((bool) $used != false && (bool) $size != false ? round($used / $size, 2) * 100 : false),
+                'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
+                'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false),
             );
         }
 
@@ -155,7 +155,7 @@ class NetBSD extends BSDcommon
         try {
             $ifconfig = $this->exec->exec('ifconfig', '-a');
             $current_nic = false;
-            foreach ((array) explode("\n", $ifconfig) as $line) {
+            foreach ((array)explode("\n", $ifconfig) as $line) {
                 if (preg_match('/^(\w+):/m', $line, $m) == 1) {
                     $current_nic = $m[1];
                 } elseif ($current_nic != false && preg_match('/^\s+status: (\w+)$/m', $line, $m) == 1) {
@@ -176,13 +176,13 @@ class NetBSD extends BSDcommon
             switch (array_key_exists($net[1], $statuses) ? $statuses[$net[1]] : 'unknown') {
                 case 'active':
                     $state = 'up';
-                break;
+                    break;
                 case 'inactive':
                     $state = 'down';
-                break;
+                    break;
                 default:
                     $state = 'unknown';
-                break;
+                    break;
             }
 
             // Save this interface
@@ -227,26 +227,22 @@ class NetBSD extends BSDcommon
                     $drives[] = array(
                         'name' => preg_match('/^([^,]+)/', $init_match[2], $cd_match) ? $cd_match[1] : $init_match[2],
                         'vendor' => false, // I don't know if this is possible
-                        'device' => '/dev/'.$init_match[1],
+                        'device' => '/dev/' . $init_match[1],
 
                         // Not sure how to get the following:
                         'size' => false,
                         'reads' => false,
                         'writes' => false,
                     );
-                }
-
-                // Otherwise prep for further info on a later line
+                } // Otherwise prep for further info on a later line
                 elseif ($init_match[3] == 'disk') {
                     $curr_hd = array($init_match[1], $init_match[2], $init_match[3]);
                 }
 
                 // Don't go any farther with this line
                 continue;
-            }
-
-            // A hard drive setting line, that has size and stuff
-            elseif ($curr_hd != false && preg_match('/^'.preg_quote($curr_hd[0]).': (\d+) MB/', $dmesg_line, $drive_match)) {
+            } // A hard drive setting line, that has size and stuff
+            elseif ($curr_hd != false && preg_match('/^' . preg_quote($curr_hd[0]) . ': (\d+) MB/', $dmesg_line, $drive_match)) {
 
                 // Try getting vendor or name
                 $make = preg_match('/^([^,]+), ([^,]+)/', $curr_hd[1], $v_match) ? array($v_match[1], $v_match[2]) : false;
@@ -255,7 +251,7 @@ class NetBSD extends BSDcommon
                 $drives[] = array(
                     'name' => $make ? $make[1] : $curr_hd[1],
                     'vendor' => $make ? $make[0] : false,
-                    'device' => '/dev/'.$curr_hd[0],
+                    'device' => '/dev/' . $curr_hd[0],
                     'size' => $drive_match[1] * 1048576,
 
                     // Not sure how to get the following:
@@ -474,18 +470,18 @@ class NetBSD extends BSDcommon
                     case 'S':
                     case 'I':
                         $result['totals']['sleeping']++;
-                    break;
+                        break;
                     case 'Z':
                         $result['totals']['zombie']++;
-                    break;
+                        break;
                     case 'R':
                     case 'D':
                     case 'O':
                         $result['totals']['running']++;
-                    break;
+                        break;
                     case 'T':
                         $result['totals']['stopped']++;
-                    break;
+                        break;
                 }
             }
         } catch (Exception $e) {

@@ -13,17 +13,17 @@ Installation:
 
 /**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -31,6 +31,7 @@ Installation:
 /**
  * Keep out hackers...
  */
+
 namespace Linfo\Extension;
 
 use Linfo\Linfo;
@@ -62,7 +63,7 @@ class Dhcpd3_leases implements Extension
         $settings = $linfo->getSettings();
 
         // Should we hide mac addresses, to prevent stuff like mac address spoofing?
-        $this->_hide_mac = array_key_exists('dhcpd3_hide_mac', $settings) ? (bool) $settings['dhcpd3_hide_mac'] : false;
+        $this->_hide_mac = array_key_exists('dhcpd3_hide_mac', $settings) ? (bool)$settings['dhcpd3_hide_mac'] : false;
 
         // Find leases file
         $this->_leases_file = Common::locateActualPath(array(
@@ -140,14 +141,10 @@ class Dhcpd3_leases implements Extension
 
                 // Make it empty for next time
                 $curr = false;
-            }
-
-            // First line in entry. Save IP
+            } // First line in entry. Save IP
             elseif (preg_match('/^lease (\d+\.\d+\.\d+\.\d+) \{$/', $lines[$i], $m)) {
                 $curr = array('ip' => $m[1]);
-            }
-
-            // Line with lease start
+            } // Line with lease start
             elseif ($curr && preg_match('/^starts \d+ (\d+\/\d+\/\d+ \d+:\d+:\d+);$/', $lines[$i], $m)) {
 
                 // Get it in unix time stamp for prettier formatting later and easier tz offset conversion
@@ -165,9 +162,7 @@ class Dhcpd3_leases implements Extension
                         $curr['lease_start'] += $offset;
                     }
                 }
-            }
-
-            // Line with lease end
+            } // Line with lease end
             elseif ($curr && preg_match('/^ends \d+ (\d+\/\d+\/\d+ \d+:\d+:\d+);$/', $lines[$i], $m)) {
 
                 // Get it in unix time stamp for prettier formatting later and easier tz offset conversion
@@ -196,14 +191,10 @@ class Dhcpd3_leases implements Extension
                     // Jump out right now
                     continue;
                 }
-            }
-
-            // Line with MAC address
+            } // Line with MAC address
             elseif (!$this->_hide_mac && $curr && preg_match('/^hardware ethernet (\w+:\w+:\w+:\w+:\w+:\w+);$/', $lines[$i], $m)) {
                 $curr['mac'] = $m[1];
-            }
-
-            // [optional] Line with hostname
+            } // [optional] Line with hostname
             elseif ($curr && preg_match('/^client\-hostname "([^"]+)";$/', $lines[$i], $m)) {
                 $curr['hostname'] = $m[1];
             }
@@ -220,7 +211,7 @@ class Dhcpd3_leases implements Extension
 
     /**
      * Return result.
-     * 
+     *
      * @return false on failure|array of the leases
      */
     public function result()
@@ -239,21 +230,21 @@ class Dhcpd3_leases implements Extension
             'columns' =>
 
             // Not hiding mac address?
-            !$this->_hide_mac ? array(
-                'IP Address',
-                'MAC Address',
-                'Hostname',
-                'Lease Start',
-                'Lease End',
-            ) :
+                !$this->_hide_mac ? array(
+                    'IP Address',
+                    'MAC Address',
+                    'Hostname',
+                    'Lease Start',
+                    'Lease End',
+                ) :
 
-            // Hiding it indeed
-                array(
-                'IP Address',
-                'Hostname',
-                'Lease Start',
-                'Lease End',
-            ),
+                    // Hiding it indeed
+                    array(
+                        'IP Address',
+                        'Hostname',
+                        'Lease Start',
+                        'Lease End',
+                    ),
         );
 
         // Append each lease
@@ -263,23 +254,23 @@ class Dhcpd3_leases implements Extension
                 'columns' =>
 
                 // Not hiding mac addresses?
-                !$this->_hide_mac ? array(
-                    $this->_leases[$i]['ip'],
-                    $this->_leases[$i]['mac'],
-                    array_key_exists('hostname', $this->_leases[$i]) ?
-                        $this->_leases[$i]['hostname'] : '<em>unknown</em>',
-                    date(self::DATE_FORMAT, $this->_leases[$i]['lease_start']),
-                    date(self::DATE_FORMAT, $this->_leases[$i]['lease_end']),
-                ) :
+                    !$this->_hide_mac ? array(
+                        $this->_leases[$i]['ip'],
+                        $this->_leases[$i]['mac'],
+                        array_key_exists('hostname', $this->_leases[$i]) ?
+                            $this->_leases[$i]['hostname'] : '<em>unknown</em>',
+                        date(self::DATE_FORMAT, $this->_leases[$i]['lease_start']),
+                        date(self::DATE_FORMAT, $this->_leases[$i]['lease_end']),
+                    ) :
 
-                // Hiding them indeed
-                array(
-                    $this->_leases[$i]['ip'],
-                    array_key_exists('hostname', $this->_leases[$i]) ?
-                        $this->_leases[$i]['hostname'] : '<em>unknown</em>',
-                    date(self::DATE_FORMAT, $this->_leases[$i]['lease_start']),
-                    date(self::DATE_FORMAT, $this->_leases[$i]['lease_end']),
-                ),
+                        // Hiding them indeed
+                        array(
+                            $this->_leases[$i]['ip'],
+                            array_key_exists('hostname', $this->_leases[$i]) ?
+                                $this->_leases[$i]['hostname'] : '<em>unknown</em>',
+                            date(self::DATE_FORMAT, $this->_leases[$i]['lease_start']),
+                            date(self::DATE_FORMAT, $this->_leases[$i]['lease_end']),
+                        ),
             );
         }
 

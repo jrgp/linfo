@@ -20,9 +20,9 @@
 
 namespace Linfo\OS;
 
+use Exception;
 use Linfo\Common;
 use Linfo\Parsers\CallExt;
-use Exception;
 
 /*
  * The BSD os's are largely similar and thus draw from this class.
@@ -63,7 +63,7 @@ abstract class BSDcommon extends Unixcommon
     {
 
         // Get the keys as an array, so we can treat it as an array of keys
-        $keys = (array) $keys;
+        $keys = (array)$keys;
 
         // Store the results of which here
         $results = array();
@@ -97,17 +97,15 @@ abstract class BSDcommon extends Unixcommon
                         $current_key = $line_match[1];
                         $results[$line_match[1]] = trim($line_match[2]);
                     }
-                }
-
-                // If this line is a continuation of one of the keys' values
+                } // If this line is a continuation of one of the keys' values
                 elseif ($current_key != false) {
-                    $results[$current_key] .= "\n".trim($line);
+                    $results[$current_key] .= "\n" . trim($line);
                 }
             }
         }
 
-        // Something broke with that sysctl call; try getting
-        // all the values separately (slower)
+            // Something broke with that sysctl call; try getting
+            // all the values separately (slower)
         catch (Exception $e) {
 
             // Go through each
@@ -116,9 +114,7 @@ abstract class BSDcommon extends Unixcommon
                 // Try it
                 try {
                     $results[$v] = $this->exec->exec('sysctl', $v);
-                }
-
-                // Didn't work again... just forget it and set value to empty string
+                } // Didn't work again... just forget it and set value to empty string
                 catch (Exception $e) {
                     $results[$v] = '';
                 }
@@ -132,8 +128,7 @@ abstract class BSDcommon extends Unixcommon
         // requested, then that one as a string
         if ($do_return) {
             return count($results) == 1 ? reset($results) : $results;
-        }
-        else {
+        } else {
             return null;
         }
     }

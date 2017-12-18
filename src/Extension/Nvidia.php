@@ -50,7 +50,7 @@ class Nvidia implements Extension
 
     // Store these tucked away here
     private $_CallExt,
-    $linfo;
+        $linfo;
 
     // Start us off
     public function __construct(Linfo $linfo)
@@ -66,17 +66,17 @@ class Nvidia implements Extension
         $info = &$this->linfo->getInfo();
 
         // Make sure this is an array
-        $info['Temps'] = (array) $info['Temps'];
+        $info['Temps'] = (array)$info['Temps'];
 
         // Time this
-        $t = new Timer(self::EXTENSION_NAME.' Extension');
+        $t = new Timer(self::EXTENSION_NAME . ' Extension');
 
         // Get card names and their IDs
         try {
             $cards_list = $this->_CallExt->exec('nvidia-smi', ' -L');
         } catch (Exception $e) {
             // messed up somehow
-            Errors::add(self::EXTENSION_NAME.' Extension', $e->getMessage());
+            Errors::add(self::EXTENSION_NAME . ' Extension', $e->getMessage());
             return;
         }
 
@@ -91,9 +91,9 @@ class Nvidia implements Extension
 
             // Get temp and power for this card
             try {
-                $card_stat = $this->_CallExt->exec('nvidia-smi', ' dmon -s p -c 1 -i '.$id);
+                $card_stat = $this->_CallExt->exec('nvidia-smi', ' dmon -s p -c 1 -i ' . $id);
             } catch (Exception $e) {
-                Errors::add(self::EXTENSION_NAME.' Extension', $e->getMessage());
+                Errors::add(self::EXTENSION_NAME . ' Extension', $e->getMessage());
                 continue;
             }
 
@@ -101,19 +101,19 @@ class Nvidia implements Extension
                 if ($match[1] != $id)
                     continue;
 
-            $info['Temps'][] = array(
-                'path' => '',
-                'name' => $name . ' Power',
-                'temp' => $match[2],
-                'unit' => 'W',
-            );
+                $info['Temps'][] = array(
+                    'path' => '',
+                    'name' => $name . ' Power',
+                    'temp' => $match[2],
+                    'unit' => 'W',
+                );
 
-            $info['Temps'][] = array(
-                'path' => '',
-                'name' => $name . ' Temperature',
-                'temp' => $match[3],
-                'unit' => 'C',
-            );
+                $info['Temps'][] = array(
+                    'path' => '',
+                    'name' => $name . ' Temperature',
+                    'temp' => $match[3],
+                    'unit' => 'C',
+                );
             }
         }
     }

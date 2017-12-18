@@ -57,9 +57,9 @@ class DragonFly extends BSDcommon
     public function getContains()
     {
         return array(
-                'drives_rw_stats' => false,
-                'nic_type' => false,
-            );
+            'drives_rw_stats' => false,
+            'nic_type' => false,
+        );
     }
 
     // Return OS type
@@ -112,7 +112,7 @@ class DragonFly extends BSDcommon
             // Optionally get mount options
             if (
                 $this->settings['show']['mounts_options'] &&
-                !in_array($mount[3], (array) $this->settings['hide']['fs_mount_options']) &&
+                !in_array($mount[3], (array)$this->settings['hide']['fs_mount_options']) &&
                 isset($mount[4])
             ) {
                 $mount_options = explode(', ', $mount[4]);
@@ -125,11 +125,11 @@ class DragonFly extends BSDcommon
                 'device' => $mount[1],
                 'mount' => $mount[2],
                 'type' => $mount[3],
-                'size' => $size ,
+                'size' => $size,
                 'used' => $used,
                 'free' => $free,
-                'free_percent' => ((bool) $free != false && (bool) $size != false ? round($free / $size, 2) * 100 : false),
-                'used_percent' => ((bool) $used != false && (bool) $size != false ? round($used / $size, 2) * 100 : false),
+                'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
+                'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false),
                 'options' => $mount_options,
             );
         }
@@ -255,23 +255,21 @@ class DragonFly extends BSDcommon
                     } else {
                         $current_nic = false;
                     }
-                }
-
-                // In a nick and found a status entry
+                } // In a nick and found a status entry
                 elseif ($current_nic && preg_match('/^\s+status: ([^$]+)$/', $line, $m)) {
 
                     // Decide what it is and save it
                     switch ($m[1]) {
                         case 'active':
                             $nets[$current_nic]['state'] = 'up';
-                        break;
+                            break;
                         case 'inactive':
                         case 'no carrier':
                             $nets[$current_nic]['state'] = 'down';
-                        break;
+                            break;
                         default:
                             $nets[$current_nic]['state'] = 'unknown';
-                        break;
+                            break;
                     }
 
                     // Don't waste further time until we find another nic entry
@@ -380,20 +378,20 @@ class DragonFly extends BSDcommon
                     case 'S':
                     case 'I':
                         $result['totals']['sleeping']++;
-                    break;
+                        break;
                     case 'Z':
                         $result['totals']['zombie']++;
-                    break;
+                        break;
                     case 'R':
                     case 'D':
                         $result['totals']['running']++;
-                    break;
+                        break;
                     case 'T':
                         $result['totals']['stopped']++;
-                    break;
+                        break;
                     case 'W':
                         $result['totals']['idle']++;
-                    break;
+                        break;
                 }
             }
         } catch (Exception $e) {

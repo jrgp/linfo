@@ -69,10 +69,10 @@ class OpenBSD extends BSDcommon
     public function getContains()
     {
         return array(
-                'drives_rw_stats' => false,
-                'hw_vendor' => false,
-                'drives_vendor' => false,
-            );
+            'drives_rw_stats' => false,
+            'hw_vendor' => false,
+            'drives_vendor' => false,
+        );
     }
 
     // Get mounted file systems and their disk usage stats
@@ -117,11 +117,11 @@ class OpenBSD extends BSDcommon
                 'device' => $mount[1],
                 'mount' => $mount[2],
                 'type' => $mount[3],
-                'size' => $size ,
+                'size' => $size,
                 'used' => $used,
                 'free' => $free,
-                'free_percent' => ((bool) $free != false && (bool) $size != false ? round($free / $size, 2) * 100 : false),
-                'used_percent' => ((bool) $used != false && (bool) $size != false ? round($used / $size, 2) * 100 : false),
+                'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
+                'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false),
             );
         }
 
@@ -223,11 +223,11 @@ class OpenBSD extends BSDcommon
         foreach (explode("\n", $this->dmesg) as $dmesg_line) {
             if (preg_match('/^(\w+) at .+<([^>]+)>/', $dmesg_line, $hd_start_match)) {
                 $curr_hd = $hd_start_match;
-            } elseif ($curr_hd !== false && preg_match('/^'.preg_quote($curr_hd[1]).':.*\b(\d+)MB/', $dmesg_line, $hd_spec_match)) {
+            } elseif ($curr_hd !== false && preg_match('/^' . preg_quote($curr_hd[1]) . ':.*\b(\d+)MB/', $dmesg_line, $hd_spec_match)) {
                 $drives[] = array(
                     'name' => trim($curr_hd[2], ', '),
                     'vendor' => false,
-                    'device' => '/dev/'.$curr_hd[1],
+                    'device' => '/dev/' . $curr_hd[1],
                     'size' => $hd_spec_match[1] * 1048576,
 
                     // Not sure how to get the following:
@@ -303,7 +303,7 @@ class OpenBSD extends BSDcommon
         try {
             $ifconfig = $this->exec->exec('ifconfig', '-a');
             $current_nic = false;
-            foreach ((array) explode("\n", $ifconfig) as $line) {
+            foreach ((array)explode("\n", $ifconfig) as $line) {
                 if (preg_match('/^(\w+):/m', $line, $m) == 1) {
                     $current_nic = $m[1];
                 } elseif ($current_nic != false && preg_match('/^\s+status: ([^$]+)$/m', $line, $m) == 1) {
@@ -348,14 +348,14 @@ class OpenBSD extends BSDcommon
             switch (array_key_exists($net[1], $statuses) ? $statuses[$net[1]] : 'unknown') {
                 case 'active':
                     $state = 'up';
-                break;
+                    break;
                 case 'inactive':
                 case 'no carrier':
                     $state = 'down';
-                break;
+                    break;
                 default:
                     $state = 'unknown';
-                break;
+                    break;
             }
 
             // Save this interface
@@ -445,18 +445,18 @@ class OpenBSD extends BSDcommon
                     case 'S':
                     case 'I':
                         $result['totals']['sleeping']++;
-                    break;
+                        break;
                     case 'Z':
                         $result['totals']['zombie']++;
-                    break;
+                        break;
                     case 'R':
                     case 'D':
                     case 'O':
                         $result['totals']['running']++;
-                    break;
+                        break;
                     case 'T':
                         $result['totals']['stopped']++;
-                    break;
+                        break;
                 }
             }
         } catch (Exception $e) {

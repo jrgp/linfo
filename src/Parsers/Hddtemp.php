@@ -26,6 +26,7 @@ use Exception;
 /*
  * Deal with hddtemp
  */
+
 class Hddtemp
 {
     // Store these
@@ -169,17 +170,17 @@ class Hddtemp
             // Connect to daemon mode
             case 'daemon':
                 return $this->parseSockData($this->getSock());
-            break;
+                break;
 
             // Syslog every n seconds
             case 'syslog':
                 return $this->parseSysLogData();
-            break;
+                break;
 
             // Some other mode
             default:
                 throw new Exception('Not supported mode');
-            break;
+                break;
         }
     }
 }

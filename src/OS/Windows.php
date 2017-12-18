@@ -262,7 +262,7 @@ class Windows extends OS
         foreach ($this->wmi->ExecQuery('SELECT DiskIndex, Size, DeviceID, Type FROM Win32_DiskPartition') as $partition) {
             $partitions[$partition->DiskIndex][] = array(
                 'size' => $partition->Size,
-                'name' => $partition->DeviceID.' ('.$partition->Type.')',
+                'name' => $partition->DeviceID . ' (' . $partition->Type . ')',
             );
         }
 
@@ -339,7 +339,7 @@ class Windows extends OS
             }
             $capacity = ($this->windows_version > '6.1.0000') ? $volume->Capacity : $volume->Size;
             $label = ($this->windows_version > '6.1.0000') ? $volume->Label : $volume->Name;
-            $mount = ($this->windows_version > '6.1.0000') ? $volume->Caption : $label.'\\';
+            $mount = ($this->windows_version > '6.1.0000') ? $volume->Caption : $label . '\\';
             $a = array(
                 'device' => false,
                 'label' => $label,
@@ -462,7 +462,7 @@ class Windows extends OS
             $load[] = $cpu->LoadPercentage;
         }
 
-        return round(array_sum($load) / count($load), 2).'%';
+        return round(array_sum($load) / count($load), 2) . '%';
     }
 
     /**
@@ -550,7 +550,7 @@ class Windows extends OS
             // @Microsoft: An index would be nice here indeed.
             if ($this->windows_version > '6.1.0000') {
                 $canonname = preg_replace('/[^A-Za-z0-9- ]/', '_', $net->Name);
-                $isatapname = 'isatap.'.$net->GUID;
+                $isatapname = 'isatap.' . $net->GUID;
                 $result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname' OR Name = '$isatapname'");
             } else {
                 $canonname = preg_replace('/[^A-Za-z0-9- ]/', '_', $net->Name);
@@ -558,14 +558,14 @@ class Windows extends OS
             }
             foreach ($result as $netspeed) {
                 $return[$net->Name]['recieved'] = array(
-                    'bytes' => (int) $netspeed->BytesReceivedPersec,
-                    'errors' => (int) $netspeed->PacketsReceivedErrors,
-                    'packets' => (int) $netspeed->PacketsReceivedPersec,
+                    'bytes' => (int)$netspeed->BytesReceivedPersec,
+                    'errors' => (int)$netspeed->PacketsReceivedErrors,
+                    'packets' => (int)$netspeed->PacketsReceivedPersec,
                 );
                 $return[$net->Name]['sent'] = array(
-                    'bytes' => (int) $netspeed->BytesSentPersec,
+                    'bytes' => (int)$netspeed->BytesSentPersec,
                     'errors' => 0,
-                    'packets' => (int) $netspeed->PacketsSentPersec,
+                    'packets' => (int)$netspeed->PacketsSentPersec,
                 );
             }
             ++$i;
@@ -658,7 +658,7 @@ class Windows extends OS
         );
 
         foreach ($this->wmi->ExecQuery('SELECT ThreadCount FROM Win32_Process') as $proc) {
-            $result['threads'] += (int) $proc->ThreadCount;
+            $result['threads'] += (int)$proc->ThreadCount;
             ++$result['proc_total'];
         }
 
@@ -770,10 +770,10 @@ class Windows extends OS
 
         return ($a['mount'] > $b['mount']) ? 1 : -1;
     }
-    
+
     /**
      * Fix error 'Method getModel not present' in Windows (XAMPP).
-     * 
+     *
      * @access public
      * @return void
      */

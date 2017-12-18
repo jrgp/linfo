@@ -75,18 +75,18 @@ class Darwin extends BSDcommon
     public function getContains()
     {
         return array(
-                'hw_vendor' => false,
-                'drives_rw_stats' => false,
-                'drives_vendor' => false,
-                'nic_type' => false,
-                'nic_port_speed' => false,
-            );
+            'hw_vendor' => false,
+            'drives_rw_stats' => false,
+            'drives_vendor' => false,
+            'nic_type' => false,
+            'nic_port_speed' => false,
+        );
     }
 
     // Operating system
     public function getOS()
     {
-        return 'Darwin ('.(preg_match('/^\s+System Version: ([^\(]+)/m', $this->systemProfiler, $m) ? trim($m[1]) : 'Mac OS X').')';
+        return 'Darwin (' . (preg_match('/^\s+System Version: ([^\(]+)/m', $this->systemProfiler, $m) ? trim($m[1]) : 'Mac OS X') . ')';
     }
 
     // Hostname
@@ -138,11 +138,11 @@ class Darwin extends BSDcommon
                 'device' => $mount[1],
                 'mount' => $mount[2],
                 'type' => $mount[3],
-                'size' => $size ,
+                'size' => $size,
                 'used' => $used,
                 'free' => $free,
-                'free_percent' => ((bool) $free != false && (bool) $size != false ? round($free / $size, 2) * 100 : false),
-                'used_percent' => ((bool) $used != false && (bool) $size != false ? round($used / $size, 2) * 100 : false),
+                'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
+                'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false),
             );
         }
 
@@ -178,7 +178,7 @@ class Darwin extends BSDcommon
         // en0   1500  <Link#4>    58:b0:35:f9:fd:2b        0     0          0        0     0      59166     0 
         // fw0   4078  <Link#6>    d8:30:62:ff:fe:f5:c8:9c        0     0          0        0     0        346     0 
         if (preg_match_all(
-            '/^
+                '/^
 			([a-z0-9*]+)\s*  # Name
 			\w+\s+           # Mtu
 			<Link\#\w+>      # Network
@@ -205,14 +205,12 @@ class Darwin extends BSDcommon
             $current_nic = false;
 
             // Go through each line
-            foreach ((array) explode("\n", $ifconfig) as $line) {
+            foreach ((array)explode("\n", $ifconfig) as $line) {
 
                 // Approachign new nic def
                 if (preg_match('/^(\w+):/', $line, $m) == 1) {
                     $current_nic = $m[1];
-                }
-
-                // Hopefully match its status
+                } // Hopefully match its status
                 elseif ($current_nic && preg_match('/status: (\w+)$/', $line, $m) == 1) {
                     $statuses[$current_nic] = $m[1];
                     $current_nic = false;
@@ -229,15 +227,15 @@ class Darwin extends BSDcommon
 
                 case 'active':
                     $state = 'up';
-                break;
+                    break;
 
                 case 'inactive':
                     $state = 'down';
-                break;
+                    break;
 
                 default:
                     $state = 'unknown';
-                break;
+                    break;
             }
 
             // Save info
@@ -327,20 +325,20 @@ class Darwin extends BSDcommon
                     case 'S':
                     case 'I':
                         $result['totals']['sleeping']++;
-                    break;
+                        break;
                     case 'Z':
                         $result['totals']['zombie']++;
-                    break;
+                        break;
                     case 'R':
                     case 'D':
                         $result['totals']['running']++;
-                    break;
+                        break;
                     case 'T':
                         $result['totals']['stopped']++;
-                    break;
+                        break;
                     case 'W':
                         $result['totals']['idle']++;
-                    break;
+                        break;
                 }
             }
         } catch (Exception $e) {
@@ -457,9 +455,9 @@ class Darwin extends BSDcommon
             } elseif ($in_bat_field && preg_match('/^\s+Charging: ([a-zA-Z]+)/i', $line, $m)) {
                 $bat['charging'] = $m[1] == 'Yes';
             } elseif ($in_bat_field && preg_match('/^\s+Charge remaining \(mAh\): (\d+)/i', $line, $m)) {
-                $bat['charge_now'] = (int) $m[1];
+                $bat['charge_now'] = (int)$m[1];
             } elseif ($in_bat_field && preg_match('/^\s+Full charge capacity \(mAh\): (\d+)/i', $line, $m)) {
-                $bat['charge_full'] = (int) $m[1];
+                $bat['charge_full'] = (int)$m[1];
             } elseif ($in_bat_field && preg_match('/^\s+Serial Number: ([A-Z0-9]+)/i', $line, $m)) {
                 $bat['serial'] = $m[1];
             } elseif ($in_bat_field && preg_match('/^\s+Manufacturer: (\w+)/i', $line, $m)) {
@@ -474,8 +472,8 @@ class Darwin extends BSDcommon
             $batteries[] = array(
                 'charge_full' => $bat['charge_full'],
                 'charge_now' => $bat['charge_now'],
-                'percentage' => $bat['charge_full'] > 0 && $bat['charge_now'] > 0 ? round($bat['charge_now'] / $bat['charge_full'], 4) * 100 .'%' : '?',
-                'device' => $bat['vendor'].' - '.$bat['name'],
+                'percentage' => $bat['charge_full'] > 0 && $bat['charge_now'] > 0 ? round($bat['charge_now'] / $bat['charge_full'], 4) * 100 . '%' : '?',
+                'device' => $bat['vendor'] . ' - ' . $bat['name'],
                 'state' => $bat['charging'] ? 'Charging' : ($bat['charged'] ? 'Fully Charged' : 'Discharging'),
             );
         }
@@ -520,22 +518,22 @@ class Darwin extends BSDcommon
                 switch ($size_parts[1]) {
                     case 'K':
                         $size = $size_parts[0] * 1000;
-                    break;
+                        break;
                     case 'M':
                         $size = $size_parts[0] * 1000000;
-                    break;
+                        break;
                     case 'G':
                         $size = $size_parts[0] * 1000000000;
-                    break;
+                        break;
                     case 'T':
                         $size = $size_parts[0] * 1000000000000;
-                    break;
+                        break;
                     case 'P':
                         $size = $size_parts[0] * 1000000000000000;
-                    break;
+                        break;
                     default:
                         $size = false;
-                    break;
+                        break;
                 }
 
                 // A drive?
@@ -549,7 +547,7 @@ class Darwin extends BSDcommon
                     // Try getting the name
                     $drive_name = false; // I'm pessimistic
                     try {
-                        $drive_res = $this->exec->exec('diskutil', ' info /dev/'.$m[5]);
+                        $drive_res = $this->exec->exec('diskutil', ' info /dev/' . $m[5]);
                         if (preg_match('/^\s+Device \/ Media Name:\s+(.+)/m', $drive_res, $drive_m)) {
                             $drive_name = $drive_m[1];
                         }
@@ -560,21 +558,19 @@ class Darwin extends BSDcommon
                     $tmp = array(
                         'name' => $drive_name,
                         'vendor' => 'Unknown',
-                        'device' => '/dev/'.$m[5],
+                        'device' => '/dev/' . $m[5],
                         'reads' => false,
                         'writes' => false,
                         'size' => $size,
                         'partitions' => array(),
                     );
-                }
-
-                // Or a partition
+                } // Or a partition
                 elseif ($m[1] > 0) {
 
                     // Save it
                     $tmp['partitions'][] = array(
                         'size' => $size,
-                        'name' => '/dev/'.$m[5],
+                        'name' => '/dev/' . $m[5],
                     );
                 }
             }

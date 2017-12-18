@@ -69,7 +69,7 @@ class FreeBSD extends BSDcommon
 
         // Save version
         if (preg_match('/^([\d\.]+)/', php_uname('r'), $vm) != 0) {
-            $this->version = (float) $vm[1];
+            $this->version = (float)$vm[1];
         }
     }
 
@@ -128,7 +128,7 @@ class FreeBSD extends BSDcommon
             // Optionally get mount options
             if (
                 $this->settings['show']['mounts_options'] &&
-                !in_array($mount[3], (array) $this->settings['hide']['fs_mount_options']) &&
+                !in_array($mount[3], (array)$this->settings['hide']['fs_mount_options']) &&
                 isset($mount[4])
             ) {
                 $mount_options = explode(', ', $mount[4]);
@@ -141,11 +141,11 @@ class FreeBSD extends BSDcommon
                 'device' => $mount[1],
                 'mount' => $mount[2],
                 'type' => $mount[3],
-                'size' => $size ,
+                'size' => $size,
                 'used' => $used,
                 'free' => $free,
-                'free_percent' => ((bool) $free != false && (bool) $size != false ? round($free / $size, 2) * 100 : false),
-                'used_percent' => ((bool) $used != false && (bool) $size != false ? round($used / $size, 2) * 100 : false),
+                'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
+                'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false),
                 'options' => $mount_options,
             );
         }
@@ -182,7 +182,7 @@ class FreeBSD extends BSDcommon
         // Parse each entry	
         foreach ($rm as $r) {
             if ($r[1] == 'Real Memory') {
-                $return['total'] = $r[2]  * 1024;
+                $return['total'] = $r[2] * 1024;
                 $return['free'] = ($r[2] - $r[3]) * 1024;
             }
         }
@@ -284,14 +284,14 @@ class FreeBSD extends BSDcommon
 
                         switch ($m[3]) {
                             case 'COMPLETE':
-                            $m[3] = 'normal';
-                            break;
+                                $m[3] = 'normal';
+                                break;
                             case 'DEGRADED':
-                            $m[3] = 'failed';
-                            break;
+                                $m[3] = 'failed';
+                                break;
                             default:
-                            $m[3] = 'unknown';
-                            break;
+                                $m[3] = 'unknown';
+                                break;
                         }
 
                         // Save result set
@@ -303,9 +303,7 @@ class FreeBSD extends BSDcommon
                             'size' => 'unknown',
                             'count' => '?/?',
                         );
-                    }
-
-                    // Hitting a new device in a raid definition
+                    } // Hitting a new device in a raid definition
                     elseif (preg_match('/^                      (\w+)$/', $content, $m)) {
 
                         // This migh be part of a raid dev; save it if it is
@@ -361,14 +359,12 @@ class FreeBSD extends BSDcommon
             $current_nic = false;
 
             // Go through each line
-            foreach ((array) explode("\n", $ifconfig) as $line) {
+            foreach ((array)explode("\n", $ifconfig) as $line) {
 
                 // Approachign new nic def
                 if (preg_match('/^(\w+):/', $line, $m) == 1) {
                     $current_nic = $m[1];
-                }
-
-                // Hopefully match its status
+                } // Hopefully match its status
                 elseif ($current_nic && preg_match('/^\s+status: ([^\$]+)/', $line, $m) == 1) {
                     $statuses[$current_nic] = $m[1];
                     $current_nic = false;
@@ -409,16 +405,16 @@ class FreeBSD extends BSDcommon
 
                 case 'active':
                     $state = 'up';
-                break;
+                    break;
 
                 case 'inactive':
                 case 'no carrier':
                     $state = 'down';
-                break;
+                    break;
 
                 default:
                     $state = 'unknown';
-                break;
+                    break;
             }
 
             // Save info
@@ -426,12 +422,12 @@ class FreeBSD extends BSDcommon
 
                 // These came from netstat
                 'recieved' => array(
-                    'bytes' => (int) $net[$this->version >= 8 ? 5 : 4],
+                    'bytes' => (int)$net[$this->version >= 8 ? 5 : 4],
                     'errors' => $net[3],
                     'packets' => $net[2],
                 ),
                 'sent' => array(
-                    'bytes' => (int) $net[$this->version >= 8 ? 8 : 7],
+                    'bytes' => (int)$net[$this->version >= 8 ? 8 : 7],
                     'errors' => $net[6],
                     'packets' => $net[5],
                 ),
@@ -469,7 +465,7 @@ class FreeBSD extends BSDcommon
             // Save each
             $cpus[] = array(
                 'Model' => $this->sysctl['hw.model'],
-                'MHz' => (int) trim($this->sysctl['hw.clockrate']),
+                'MHz' => (int)trim($this->sysctl['hw.clockrate']),
             );
         }
 
@@ -496,16 +492,14 @@ class FreeBSD extends BSDcommon
                 $cur = false;
 
                 // Each line of dmesg boot log
-                foreach ((array) explode("\n", $this->dmesg) as $line) {
+                foreach ((array)explode("\n", $this->dmesg) as $line) {
 
                     // Start of a drive entry which spans multiple lines
                     if (preg_match('/^((?:ad|da|acd|cd)\d+) at/', $line, $m)) {
-                        $cur = array('device' => '/dev/'.$m[1]);
-                    }
-
-                    // Branding of this drive
+                        $cur = array('device' => '/dev/' . $m[1]);
+                    } // Branding of this drive
                     elseif ($cur && preg_match('/^((?:ad|da|acd|cd)\d+): \<([^>]+)\>/', $line, $m)) {
-                        if ('/dev/'.$m[1] != $cur['device']) {
+                        if ('/dev/' . $m[1] != $cur['device']) {
                             continue;
                         }
                         $halves = explode(' ', $m[2]);
@@ -516,11 +510,9 @@ class FreeBSD extends BSDcommon
                             $cur['vendor'] = false;
                             $cur['name'] = $m[1];
                         }
-                    }
-
-                    // Lastly the size; gather it and save it
+                    } // Lastly the size; gather it and save it
                     elseif ($cur && preg_match('/^((?:ad|da|acd|cd)\d+): (\d+)MB/', $line, $m)) {
-                        if ('/dev/'.$m[1] != $cur['device']) {
+                        if ('/dev/' . $m[1] != $cur['device']) {
                             $cur = false;
                             continue;
                         }
@@ -529,7 +521,7 @@ class FreeBSD extends BSDcommon
                         $cur = false;
                     }
                 }
-            break;
+                break;
 
             default:
                 if (preg_match_all('/^((?:ad|da|acd|cd)\d+)\: ((?:\w+|\d+\w+)) \<(\S+)\s+([^>]+)\>/m', $this->dmesg, $m, PREG_SET_ORDER) > 0) {
@@ -537,14 +529,14 @@ class FreeBSD extends BSDcommon
                         $drives[] = array(
                             'name' => $drive[4],
                             'vendor' => $drive[3],
-                            'device' => '/dev/'.$drive[1],
+                            'device' => '/dev/' . $drive[1],
                             'size' => preg_match('/^(\d+)MB$/', $drive[2], $m) == 1 ? $m[1] * 1048576 : false,
                             'reads' => false,
                             'writes' => false,
                         );
                     }
                 }
-            break;
+                break;
         }
 
         // Return
@@ -595,24 +587,24 @@ class FreeBSD extends BSDcommon
         switch ($bat_status) {
             case 0:
                 $status = 'High';
-            break;
+                break;
             case 1:
                 $status = 'Low';
-            break;
+                break;
             case 2:
                 $status = 'Critical';
-            break;
+                break;
             case 3:
                 $status = 'Charging';
-            break;
+                break;
             default:
                 $status = 'Unknown';
-            break;
+                break;
         }
 
         // Save battery
         $batts[] = array(
-            'percentage' => $percentage.'%',
+            'percentage' => $percentage . '%',
             'state' => $status,
             'device' => 'battery',
         );
@@ -661,20 +653,20 @@ class FreeBSD extends BSDcommon
                     case 'S':
                     case 'I':
                         $result['totals']['sleeping']++;
-                    break;
+                        break;
                     case 'Z':
                         $result['totals']['zombie']++;
-                    break;
+                        break;
                     case 'R':
                     case 'D':
                         $result['totals']['running']++;
-                    break;
+                        break;
                     case 'T':
                         $result['totals']['stopped']++;
-                    break;
+                        break;
                     case 'W':
                         $result['totals']['idle']++;
-                    break;
+                        break;
                 }
             }
         } catch (Exception $e) {
@@ -712,18 +704,18 @@ class FreeBSD extends BSDcommon
     public function getVirtualization()
     {
 
-       // Time?
-       if (!empty($this->settings['timer'])) {
-           $t = new Timer('Determining virtualization type');
-       }
+        // Time?
+        if (!empty($this->settings['timer'])) {
+            $t = new Timer('Determining virtualization type');
+        }
 
-       // KVM guest? Try to expand this with support for other hypervisors..
-       if (preg_match('/^Hypervisor:\s+Origin\s+=\s+"([^"]+)"/m', $this->dmesg, $m)) {
-           if (strpos($m[1], 'KVM') !== false) {
-               return array('type' => 'guest', 'method' => 'KVM');
-           }
-       }
+        // KVM guest? Try to expand this with support for other hypervisors..
+        if (preg_match('/^Hypervisor:\s+Origin\s+=\s+"([^"]+)"/m', $this->dmesg, $m)) {
+            if (strpos($m[1], 'KVM') !== false) {
+                return array('type' => 'guest', 'method' => 'KVM');
+            }
+        }
 
-       return false;
+        return false;
     }
 }

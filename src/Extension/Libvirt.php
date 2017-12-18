@@ -37,6 +37,7 @@ $settings['libvirt_connection'] = array(
 /**
  * Keep out hackers...
  */
+
 namespace Linfo\Extension;
 
 use Linfo\Linfo;
@@ -93,11 +94,11 @@ class Libvirt implements Extension
         }
 
         if ($hypervisor = libvirt_connect_get_hypervisor($this->connection)) {
-          if (isset($hypervisor['hypervisor_string']) && $hypervisor['hypervisor_string'] != '') {
-              $this->hypervisor = $hypervisor['hypervisor_string'];
-          } else if (isset($hypervisor['hypervisor']) && $hypervisor['hypervisor'] != '') {
-              $this->hypervisor = $hypervisor['hypervisor'];
-          }
+            if (isset($hypervisor['hypervisor_string']) && $hypervisor['hypervisor_string'] != '') {
+                $this->hypervisor = $hypervisor['hypervisor_string'];
+            } else if (isset($hypervisor['hypervisor']) && $hypervisor['hypervisor'] != '') {
+                $this->hypervisor = $hypervisor['hypervisor'];
+            }
         }
 
         if (!($doms = libvirt_list_domains($this->connection))) {
@@ -138,7 +139,7 @@ class Libvirt implements Extension
 
             $info['storage'] = array();
 
-            foreach ((array) @libvirt_domain_get_disk_devices($domain) as $blockName) {
+            foreach ((array)@libvirt_domain_get_disk_devices($domain) as $blockName) {
                 if (!is_string($blockName)) {
                     continue;
                 }
@@ -213,7 +214,7 @@ class Libvirt implements Extension
                 }
 
                 if (count($extra_info) > 0) {
-                    $line .= ' <span class="caption">('.implode(', ', $extra_info).')</span>';
+                    $line .= ' <span class="caption">(' . implode(', ', $extra_info) . ')</span>';
                 }
 
                 $disks[] = $line;
@@ -242,8 +243,8 @@ class Libvirt implements Extension
 
         // Give it off
         return array(
-            'root_title' => 'libvirt Virtual Machines <span style="font-size: 80%;">'.($this->hypervisor ? ' ('.$this->hypervisor.') ' : '').
-                            '('.$running.' running - using '.Common::byteConvert($allram * 1024, 2).' RAM)</span>',
+            'root_title' => 'libvirt Virtual Machines <span style="font-size: 80%;">' . ($this->hypervisor ? ' (' . $this->hypervisor . ') ' : '') .
+                '(' . $running . ' running - using ' . Common::byteConvert($allram * 1024, 2) . ' RAM)</span>',
             'rows' => $rows,
         );
     }

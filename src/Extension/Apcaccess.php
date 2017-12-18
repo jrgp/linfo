@@ -43,6 +43,7 @@ use Exception;
 /*
  * Get status on apcaccess volumes. 
  */
+
 class Apcaccess implements Extension
 {
     // Store these tucked away here
@@ -95,12 +96,12 @@ class Apcaccess implements Extension
 
         // Get charge percentage, and get it cool
         if (preg_match('/^BCHARGE\s+:\s+(\d+(?:\.\d+)?)/m', $result, $m)) {
-            $charge = (int) $m[1];
+            $charge = (int)$m[1];
             $this->_res['charge'] = '
 					<div class="bar_chart">
-						<div class="bar_inner" style="width: '.(int) $charge.'%;">
+						<div class="bar_inner" style="width: ' . (int)$charge . '%;">
 							<div class="bar_text">
-								'.($charge ? $charge.'%' : '?').'
+								' . ($charge ? $charge . '%' : '?') . '
 							</div>
 						</div>
 					</div>
@@ -119,12 +120,12 @@ class Apcaccess implements Extension
 
         // Load percentage looking cool
         if (preg_match('/^LOADPCT\s+:\s+(\d+\.\d+)/m', $result, $m)) {
-            $load = (int) $m[1];
+            $load = (int)$m[1];
             $this->_res['load'] = '
 					<div class="bar_chart">
-						<div class="bar_inner" style="width: '.(int) $load.'%;">
+						<div class="bar_inner" style="width: ' . (int)$load . '%;">
 							<div class="bar_text">
-								'.($load ? $load.'%' : '?').'
+								' . ($load ? $load . '%' : '?') . '
 							</div>
 						</div>
 					</div>
@@ -133,7 +134,7 @@ class Apcaccess implements Extension
 
         // Attempt getting wattage 
         if (isset($load) && preg_match('/^NOMPOWER\s+:\s+(\d+)/m', $result, $m)) {
-            $watts = (int) $m['1'];
+            $watts = (int)$m['1'];
             $this->_res['watts_used'] = $load * round($watts / 100);
         } else {
             $this->_res['watts_used'] = false;
@@ -186,7 +187,7 @@ class Apcaccess implements Extension
                 $this->_res['charge'],
                 $this->_res['time_left'],
                 $this->_res['load'],
-                $this->_res['watts_used'] ? $this->_res['watts_used'].'W' : false,
+                $this->_res['watts_used'] ? $this->_res['watts_used'] . 'W' : false,
                 $this->_res['status'],
             ),
         );

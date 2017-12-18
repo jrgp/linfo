@@ -2,20 +2,21 @@
 
 /**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with Linfo.	If not, see <http://www.gnu.org/licenses/>.
+ * along with Linfo.    If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Linfo\Parsers;
 
 use Linfo\Common;
@@ -36,21 +37,21 @@ class CallExt
 
     /**
      * Maintain a count of how many external programs we call.
-     * 
+     *
      * @var int
      */
     public static $callCount = 0;
 
     /**
      * Store results of commands here to avoid calling them more than once.
-     * 
+     *
      * @var array
      */
     protected $cliCache = array();
 
     /**
      * Store paths to look for executables here.
-     * 
+     *
      * @var array
      */
     protected $searchPaths = array();
@@ -85,7 +86,7 @@ class CallExt
      *
      * @throws Exception
      *
-     * @param string $name     name of executable to call
+     * @param string $name name of executable to call
      * @param string $switches command arguments
      */
     public function exec($name, $switches = '')
@@ -95,21 +96,21 @@ class CallExt
         $attempt_sudo = array_key_exists('sudo_apps', self::$settings) && in_array($name, self::$settings['sudo_apps']);
 
         // Have we gotten it before?
-        if (array_key_exists($name.$switches, $this->cliCache)) {
-            return $this->cliCache[$name.$switches];
+        if (array_key_exists($name . $switches, $this->cliCache)) {
+            return $this->cliCache[$name . $switches];
         }
 
         // Try finding the exec
         foreach ($this->searchPaths as $path) {
 
             // Found it; run it
-            if (is_file($path.$name) && is_executable($path.$name)) {
+            if (is_file($path . $name) && is_executable($path . $name)) {
 
                 // Complete command, path switches and all
                 $command = "$path$name $switches";
 
                 // Sudoing?
-                $command = $attempt_sudo ? Common::locateActualPath(Common::arrayAppendString($this->searchPaths, 'sudo', '%2s%1s')).' '.$command : $command;
+                $command = $attempt_sudo ? Common::locateActualPath(Common::arrayAppendString($this->searchPaths, 'sudo', '%2s%1s')) . ' ' . $command : $command;
 
                 // Result of command
                 $result = `$command`;
@@ -118,7 +119,7 @@ class CallExt
                 ++self::$callCount;
 
                 // Cache that
-                $this->cliCache[$name.$switches] = $result;
+                $this->cliCache[$name . $switches] = $result;
 
                 // Give result
                 return $result;
@@ -126,6 +127,6 @@ class CallExt
         }
 
         // Never got it
-        throw new Exception('Exec `'.$name.'\' not found');
+        throw new Exception('Exec `' . $name . '\' not found');
     }
 }
