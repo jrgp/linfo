@@ -300,13 +300,11 @@ class Linfo
         $this->runExtensions();
     }
 
+    /**
+     * @param array $settings
+     */
     protected function loadSettings(array $settings = array())
     {
-        // Don't just blindly assume we have the ob_* functions...
-        if (!function_exists('ob_start')) {
-            $settings['compress_content'] = false;
-        }
-
         if (!isset($settings['hide'])) {
             $settings['hide'] = array(
                 'filesystems' => array(),
@@ -458,8 +456,6 @@ class Linfo
         $settings['byte_notation'] = 1024; // Either 1024 or 1000; defaults to 1024
         $settings['dates'] = 'm/d/y h:i A (T)'; // Format for dates shown. See php.net/date for syntax
         $settings['language'] = 'en'; // Refer to the lang/ folder for supported lanugages
-        $settings['icons'] = true; // simple icons
-        $settings['theme'] = 'default'; // Theme file (layout/theme_$n.css). Look at the contents of the layout/ folder for other themes.
 
         /*
          * Possibly don't show stuff
@@ -596,13 +592,6 @@ class Linfo
 
         // Show errors? Disabled by default to hide vulnerabilities / attributes on the server
         $settings['show_errors'] = false;
-
-        // Show results from timing ourselves? Similar to above.
-        // Lets you see how much time getting each bit of info takes.
-        $settings['timer'] = false;
-
-        // Compress content, can be turned off to view error messages in browser
-        $settings['compress_content'] = true;
 
         /*
          * Occasional sudo

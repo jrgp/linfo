@@ -34,7 +34,6 @@ use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
 use Linfo\Parsers\CallExt;
-use Linfo\Meta\Timer;
 use Exception;
 
 /*
@@ -57,10 +56,6 @@ class Cups implements Extension
     // call lpq and parse it
     private function _call()
     {
-
-        // Time this
-        $t = new Timer('CUPS extension');
-
         // Deal with calling it
         try {
             $result = $this->_CallExt->exec('lpstat', '-p -o -l');

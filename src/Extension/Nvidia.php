@@ -32,7 +32,6 @@ namespace Linfo\Extension;
 
 use Linfo\Linfo;
 use Linfo\Meta\Errors;
-use Linfo\Meta\Timer;
 use Linfo\Parsers\CallExt;
 use Exception;
 
@@ -67,9 +66,6 @@ class Nvidia implements Extension
 
         // Make sure this is an array
         $info['Temps'] = (array)$info['Temps'];
-
-        // Time this
-        $t = new Timer(self::EXTENSION_NAME . ' Extension');
 
         // Get card names and their IDs
         try {

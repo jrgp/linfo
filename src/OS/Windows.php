@@ -20,7 +20,6 @@
 
 namespace Linfo\OS;
 
-use Linfo\Meta\Timer;
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
 use COM;
@@ -94,12 +93,6 @@ class Windows extends OS
      */
     public function getKernel()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Kernel');
-        }
-
         foreach ($this->wmi->ExecQuery('SELECT WindowsVersion FROM Win32_Process WHERE Handle = 0') as $process) {
             $this->windows_version = $process->WindowsVersion;
 
@@ -116,12 +109,6 @@ class Windows extends OS
      */
     public function getHostName()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Hostname');
-        }
-
         foreach ($this->wmi->ExecQuery('SELECT Name FROM Win32_ComputerSystem') as $cs) {
             return $cs->Name;
         }
@@ -136,12 +123,6 @@ class Windows extends OS
      */
     public function getRam()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Memory');
-        }
-
         $total_memory = 0;
         $free_memory = 0;
 
@@ -169,12 +150,6 @@ class Windows extends OS
      */
     public function getCPU()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('CPUs');
-        }
-
         $cpus = array();
         $alt = false;
         $object = $this->wmi->ExecQuery('SELECT Name, Manufacturer, CurrentClockSpeed, NumberOfLogicalProcessors,LoadPercentage FROM Win32_Processor');
@@ -214,12 +189,6 @@ class Windows extends OS
      */
     public function getUpTime()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Uptime');
-        }
-
         $booted_str = '';
 
         foreach ($this->wmi->ExecQuery('SELECT LastBootUpTime FROM Win32_OperatingSystem') as $os) {
@@ -250,12 +219,6 @@ class Windows extends OS
      */
     public function getHD()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Drives');
-        }
-
         $drives = array();
         $partitions = array();
 
@@ -291,12 +254,6 @@ class Windows extends OS
      */
     public function getTemps()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Temperature');
-        }
-
         return array(); // TODO
     }
 
@@ -307,12 +264,6 @@ class Windows extends OS
      */
     public function getMounts()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Mounted file systems');
-        }
-
         $volumes = array();
 
         if ($this->windows_version > '6.1.0000') {
@@ -395,12 +346,6 @@ class Windows extends OS
      */
     public function getDevs()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Hardware Devices');
-        }
-
         $devs = array();
 
         foreach ($this->wmi->ExecQuery('SELECT DeviceID, Caption, Manufacturer FROM Win32_PnPEntity') as $pnpdev) {
@@ -435,12 +380,6 @@ class Windows extends OS
      */
     public function getRAID()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('RAID');
-        }
-
         return array();
     }
 
@@ -451,12 +390,6 @@ class Windows extends OS
      */
     public function getLoad()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Load Averages');
-        }
-
         $load = array();
         foreach ($this->wmi->ExecQuery('SELECT LoadPercentage FROM Win32_Processor') as $cpu) {
             $load[] = $cpu->LoadPercentage;
@@ -472,12 +405,6 @@ class Windows extends OS
      */
     public function getNet()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Network Devices');
-        }
-
         $return = array();
         $i = 0;
 
@@ -581,12 +508,6 @@ class Windows extends OS
      */
     public function getBattery()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Batteries');
-        }
-
         return array(); // TODO
     }
 
@@ -597,11 +518,7 @@ class Windows extends OS
      */
     public function getWifi()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Wifi');
-        }
+        return array();
     }
 
     /**
@@ -611,12 +528,6 @@ class Windows extends OS
      */
     public function getSoundCards()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Sound cards');
-        }
-
         $cards = array();
         $i = 1;
 
@@ -645,12 +556,6 @@ class Windows extends OS
      */
     public function getProcessStats()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Process Stats');
-        }
-
         $result = array(
             'exists' => true,
             'proc_total' => 0,
@@ -692,12 +597,6 @@ class Windows extends OS
      */
     public function getCPUArchitecture()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('CPU architecture');
-        }
-
         foreach ($this->wmi->ExecQuery('SELECT Architecture FROM Win32_Processor') as $cpu) {
             switch ($cpu->Architecture) {
                 case 0:

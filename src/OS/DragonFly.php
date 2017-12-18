@@ -21,7 +21,6 @@
 namespace Linfo\OS;
 
 use Exception;
-use Linfo\Meta\Timer;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Parsers\Hwpci;
@@ -73,12 +72,6 @@ class DragonFly extends BSDcommon
     // Get mounted file systems
     public function getMounts()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Mounted file systems');
-        }
-
         // Get result of mount command
         try {
             $res = $this->exec->exec('mount');
@@ -141,12 +134,6 @@ class DragonFly extends BSDcommon
     // Get ram usage
     public function getRam()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Memory');
-        }
-
         // We'll return the contents of this
         $return = array();
 
@@ -167,12 +154,6 @@ class DragonFly extends BSDcommon
     // Get uptime
     public function getUpTime()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Uptime');
-        }
-
         // Use sysctl to get unix timestamp of boot. Very elegant!
         if (preg_match('/^\{ sec \= (\d+).+$/', $this->sysctl['kern.boottime'], $m) == 0) {
             return '';
@@ -196,12 +177,6 @@ class DragonFly extends BSDcommon
     // Done
     public function getNet()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Network Devices');
-        }
-
         // Use netstat to get nic names and stats
         try {
             $netstat = $this->exec->exec('netstat', '-nibd');
@@ -288,12 +263,6 @@ class DragonFly extends BSDcommon
     // I still don't really like how this is done
     public function getCPU()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('CPUs');
-        }
-
         // Store them here
         $cpus = array();
 
@@ -314,12 +283,6 @@ class DragonFly extends BSDcommon
     // Parse dmesg boot log
     public function getDevs()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Hardware Devices');
-        }
-
         $hw = new Hwpci(null, '/usr/share/misc/pci_vendors');
         $hw->work('dragonfly');
 
@@ -329,24 +292,12 @@ class DragonFly extends BSDcommon
     // APM? Seems to only support either one battery of them all collectively
     public function getBattery()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Batteries');
-        }
-
         return array();
     }
 
     // Get stats on processes
     public function getProcessStats()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Process Stats');
-        }
-
         // We'll return this after stuffing it with useful info
         $result = array(
             'exists' => true,
@@ -405,9 +356,6 @@ class DragonFly extends BSDcommon
     // idk
     public function getTemps()
     {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Temperature');
-        }
+        return array();
     }
 }

@@ -38,8 +38,6 @@ namespace Linfo\Extension;
 
 use Linfo\Linfo;
 use Linfo\Common;
-use Linfo\Meta\Errors;
-use Linfo\Meta\Timer;
 
 /**
  * Get status on dhcp3 leases.
@@ -78,11 +76,10 @@ class Dnsmasq_dhcpd implements Extension
      */
     public function work()
     {
-        $t = new Timer('dnsmasq leases extension');
-
         foreach (Common::getLines($this->_leases_file) as $line) {
-            if (!preg_match('/^(\d+) ([a-z0-9:]+) (\S+) (\S+)/', $line, $m))
+            if (!preg_match('/^(\d+) ([a-z0-9:]+) (\S+) (\S+)/', $line, $m)) {
                 continue;
+            }
             $this->_leases[] = array_combine(array('lease_end', 'mac', 'ip', 'hostname'), array_slice($m, 1));
         }
     }

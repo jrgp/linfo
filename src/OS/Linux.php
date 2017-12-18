@@ -19,7 +19,6 @@
 
 namespace Linfo\OS;
 
-use Linfo\Meta\Timer;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
@@ -79,12 +78,6 @@ class Linux extends Unixcommon
      */
     public function getKernel()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Kernel');
-        }
-
         // File containing info
         $file = '/proc/version';
 
@@ -116,12 +109,6 @@ class Linux extends Unixcommon
      */
     public function getHostName()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Hostname');
-        }
-
         // File containing info
         $file = '/proc/sys/kernel/hostname';
 
@@ -146,12 +133,6 @@ class Linux extends Unixcommon
      */
     public function getRam()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Memory');
-        }
-
         // We'll return the contents of this
         $return = array();
 
@@ -211,12 +192,6 @@ class Linux extends Unixcommon
      */
     public function getCPU()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('CPUs');
-        }
-
         // File that has it
         $file = '/proc/cpuinfo';
 
@@ -315,12 +290,6 @@ class Linux extends Unixcommon
     // Famously interesting uptime
     public function getUpTime()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Uptime');
-        }
-
         // Get contents
         $contents = Common::getContents('/proc/uptime', false);
 
@@ -366,12 +335,6 @@ class Linux extends Unixcommon
      */
     public function getHD()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Drives');
-        }
-
         // Get partitions
         $partitions = array();
         $partitions_contents = Common::getContents('/proc/partitions');
@@ -427,12 +390,6 @@ class Linux extends Unixcommon
      */
     public function getTemps()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Temperature');
-        }
-
         // Hold them here
         $return = array();
 
@@ -628,12 +585,6 @@ class Linux extends Unixcommon
      */
     public function getMounts()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Mounted file systems');
-        }
-
         // File
         $contents = Common::getContents('/proc/mounts', false);
 
@@ -715,12 +666,6 @@ class Linux extends Unixcommon
      */
     public function getDevs()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Hardware Devices');
-        }
-
         // Location of useful paths
         $pci_ids = Common::locateActualPath(array(
             '/usr/share/misc/pci.ids',    // debian/ubuntu
@@ -751,12 +696,6 @@ class Linux extends Unixcommon
      */
     public function getRAID()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('RAID');
-        }
-
         // Store it here
         $raidinfo = array();
 
@@ -848,12 +787,6 @@ class Linux extends Unixcommon
      */
     public function getLoad()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Load Averages');
-        }
-
         // File that has it
         $file = '/proc/loadavg';
 
@@ -883,12 +816,6 @@ class Linux extends Unixcommon
      */
     public function getNet()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Network Devices');
-        }
-
         // Hold our return values
         $return = array();
 
@@ -992,12 +919,6 @@ class Linux extends Unixcommon
      */
     public function getBattery()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Batteries');
-        }
-
         // Return values
         $return = array();
 
@@ -1051,12 +972,6 @@ class Linux extends Unixcommon
      */
     public function getWifi()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Wifi');
-        }
-
         // Return these
         $return = array();
 
@@ -1101,12 +1016,6 @@ class Linux extends Unixcommon
      */
     public function getSoundCards()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Sound cards');
-        }
-
         // This should be it
         $file = '/proc/asound/cards';
 
@@ -1145,12 +1054,6 @@ class Linux extends Unixcommon
      */
     public function getProcessStats()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Process Stats');
-        }
-
         // We'll return this after stuffing it with useful info
         $result = array(
             'exists' => true,
@@ -1226,12 +1129,6 @@ class Linux extends Unixcommon
      */
     public function getServices()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Services');
-        }
-
         // We allowed?
         if (empty($this->settings['show']['services']) || !is_array($this->settings['services']) || count($this->settings['services']) == 0) {
             return array();
@@ -1396,12 +1293,6 @@ class Linux extends Unixcommon
      */
     public function getDistro()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Determining Distrobution');
-        }
-
         // Seems the best way of doing it, as opposed to calling 'lsb_release -a', parsing /etc/issue, or 
         // just checking if distro specific version files exist without actually parsing them: 
         // - Allows multiple files of the same name for different distros/versions of distros, provided each
@@ -1576,12 +1467,6 @@ class Linux extends Unixcommon
      */
     public function getVirtualization()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Determining virtualization type');
-        }
-
         // OpenVZ host?
         if (is_file('/proc/vz/version')) {
             return array('type' => 'host', 'method' => 'OpenVZ');
@@ -1732,11 +1617,6 @@ class Linux extends Unixcommon
      */
     public function determineCPUPercentage()
     {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Determining CPU usage');
-        }
-
         $iterations = 2;
 
         // Probably only inline function here. Only used once so it makes sense.

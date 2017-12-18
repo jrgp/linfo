@@ -137,10 +137,6 @@ abstract class BSDcommon extends Unixcommon
     // System load averages
     public function getLoad()
     {
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Load Averages');
-        }
-
         $parts = explode(' ', trim($this->sysctl['vm.loadavg']));
 
         if (!$parts) {

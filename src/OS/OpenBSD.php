@@ -21,7 +21,6 @@
 namespace Linfo\OS;
 
 use Exception;
-use Linfo\Meta\Timer;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 
@@ -78,11 +77,6 @@ class OpenBSD extends BSDcommon
     // Get mounted file systems and their disk usage stats
     public function getMounts()
     {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Mounted file systems');
-        }
-
         // Get result of mount command
         try {
             $mount_res = $this->exec->exec('mount');
@@ -178,11 +172,6 @@ class OpenBSD extends BSDcommon
     // Get hardware devices
     public function getDevs()
     {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Hardware Devices');
-        }
-
         // Match them
         if (preg_match_all('/([a-z]+\d+) at ([a-z]+)\d*.+ "(.+)"/m', $this->dmesg, $devices_match, PREG_SET_ORDER) == 0) {
             return array();
@@ -210,12 +199,6 @@ class OpenBSD extends BSDcommon
     // Get hard disk drives and the like
     public function getHD()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('CPU');
-        }
-
         $drives = array();
         $curr_hd = false;
 
@@ -248,12 +231,6 @@ class OpenBSD extends BSDcommon
     // Get uptime
     public function getUpTime()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Uptime');
-        }
-
         // Short and sweet
         $booted = $this->sysctl['kern.boottime'];
 
@@ -276,12 +253,6 @@ class OpenBSD extends BSDcommon
     // Get network devices, their stats, status, and type
     public function getNet()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Network Devices');
-        }
-
         // Get result of netstat command
         try {
             $res = $this->exec->exec('netstat', '-nbi');
@@ -384,12 +355,6 @@ class OpenBSD extends BSDcommon
     // processors...
     public function getCPU()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('CPUs');
-        }
-
         // Store them here
         $cpus = array();
 
@@ -410,11 +375,6 @@ class OpenBSD extends BSDcommon
     // Get process stats
     public function getProcessStats()
     {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Process Stats');
-        }
-
         // We'll return this after stuffing it with useful info
         $result = array(
             'exists' => true,

@@ -33,7 +33,6 @@ namespace Linfo\Extension;
 
 use Linfo\Linfo;
 use Linfo\Meta\Errors;
-use Linfo\Meta\Timer;
 use Linfo\Parsers\CallExt;
 use Exception;
 
@@ -58,10 +57,6 @@ class Smb implements Extension
     // call samba and parse it
     private function _call()
     {
-
-        // Time this
-        $t = new Timer('Samba Status extension');
-
         // Deal with calling it
         try {
             $result = $this->_CallExt->exec('smbstatus');

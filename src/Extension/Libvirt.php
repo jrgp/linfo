@@ -43,7 +43,6 @@ namespace Linfo\Extension;
 use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
-use Linfo\Meta\Timer;
 
 /**
  * Get status on libvirt VMs.
@@ -79,8 +78,6 @@ class Libvirt implements Extension
 
     public function work()
     {
-        $t = new Timer('libvirt extension');
-
         if (!extension_loaded('libvirt')) {
             Errors::add('libvirt extension', 'Libvirt PHP extension not installed');
             $this->res = false;

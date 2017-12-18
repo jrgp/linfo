@@ -37,7 +37,6 @@ namespace Linfo\Extension;
 use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
-use Linfo\Meta\Timer;
 
 /**
  * Get status on dhcp3 leases.
@@ -81,9 +80,6 @@ class Dhcpd3_leases implements Extension
      */
     private function _call()
     {
-        // Time this
-        $t = new Timer('dhcpd3 leases extension');
-
         // We couldn't find leases file?
         if ($this->_leases_file === false) {
             Errors::add('dhcpd3 leases extension', 'couldn\'t find leases file');

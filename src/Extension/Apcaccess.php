@@ -37,7 +37,6 @@ use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
 use Linfo\Parsers\CallExt;
-use Linfo\Meta\Timer;
 use Exception;
 
 /*
@@ -60,10 +59,6 @@ class Apcaccess implements Extension
     // call apcaccess and parse it
     private function _call()
     {
-
-        // Time this
-        $t = new Timer('apcaccess Extension');
-
         // Deal with calling it
         try {
             $result = $this->_CallExt->exec('apcaccess');

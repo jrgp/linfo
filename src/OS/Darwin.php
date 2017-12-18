@@ -21,7 +21,6 @@
 namespace Linfo\OS;
 
 use Exception;
-use Linfo\Meta\Timer;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 
@@ -98,11 +97,6 @@ class Darwin extends BSDcommon
     // Get mounted file systems
     public function getMounts()
     {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Mounted file systems');
-        }
-
         // Get result of mount command
         try {
             $res = $this->exec->exec('mount');
@@ -153,11 +147,6 @@ class Darwin extends BSDcommon
     // Get network interfaces
     public function getNet()
     {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Network Devices');
-        }
-
         // Store return vals here
         $return = array();
 
@@ -268,12 +257,6 @@ class Darwin extends BSDcommon
     // Get uptime 
     public function getUpTime()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Uptime');
-        }
-
         // Extract boot part of it
         if (preg_match('/^\{ sec \= (\d+).+$/', $this->sysctl['kern.boottime'], $m) == 0) {
             return '';
@@ -288,12 +271,6 @@ class Darwin extends BSDcommon
     // Get stats on processes
     public function getProcessStats()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Process Stats');
-        }
-
         // We'll return this after stuffing it with useful info
         $result = array(
             'exists' => true,
@@ -352,11 +329,6 @@ class Darwin extends BSDcommon
     // Get cpus
     public function getCPU()
     {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('CPUs');
-        }
-
         // Was machdep mean to us? Likely on ppc macs
         if (empty($this->sysctl['machdep.cpu.brand_string']) && preg_match('/^\s+Processor Name:\s+(.+)(?= \([\d\.]+\))/m', $this->systemProfiler, $m)) {
             $this->sysctl['machdep.cpu.brand_string'] = $m[1];
@@ -385,12 +357,6 @@ class Darwin extends BSDcommon
     // Get ram usage
     public function getRam()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Memory');
-        }
-
         // Start us off
         $return = array();
         $return['type'] = 'Physical';
@@ -428,11 +394,6 @@ class Darwin extends BSDcommon
     // Battery
     public function getBattery()
     {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Battery');
-        }
-
         // Store any we find here
         $batteries = array();
 
@@ -485,11 +446,6 @@ class Darwin extends BSDcommon
     // drives
     public function getHD()
     {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Drives');
-        }
-
         // Use system profiler to get info
         try {
             $res = $this->exec->exec('diskutil', ' list');
@@ -587,12 +543,6 @@ class Darwin extends BSDcommon
 
     public function getVirtualization()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Determining virtualization type');
-        }
-
         // All results on google show this file only being present and related to VMware Fusion
         if (file_exists('/dev/vmmon')) {
             return array('type' => 'host', 'method' => 'VMWare');
@@ -603,10 +553,6 @@ class Darwin extends BSDcommon
 
     public function getLoad()
     {
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Load Averages');
-        }
-
         $loads = $this->sysctl['vm.loadavg'];
 
         if (preg_match('/([\d\.\,]+) ([\d\.\,]+) ([\d\.\,]+)/', $loads, $m)) {

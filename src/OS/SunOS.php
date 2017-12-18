@@ -21,7 +21,6 @@
 namespace Linfo\OS;
 
 use Exception;
-use Linfo\Meta\Timer;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Parsers\CallExt;
@@ -80,12 +79,6 @@ class SunOS extends OS
     // will only be called once instead of multiple times (assuming it doesn't break)
     protected function loadkstat($keys)
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Solaris Kstat Parsing');
-        }
-
         $results = array();
 
         foreach ($keys as $k => $v) {
@@ -157,12 +150,6 @@ class SunOS extends OS
     // Mounted file systems
     public function getMounts()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Mounted file systems');
-        }
-
         // Run mount command
         try {
             $res = $this->exec->exec('mount', '-p');
@@ -213,12 +200,6 @@ class SunOS extends OS
     // Get ram stats
     public function getRAM()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Memory');
-        }
-
         // Give
         return array(
             'type' => 'Physical',
@@ -230,12 +211,6 @@ class SunOS extends OS
 
     public function getProcessStats()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Process Stats');
-        }
-
         // We'll return this after stuffing it with useful info
         $result = array(
             'exists' => true,

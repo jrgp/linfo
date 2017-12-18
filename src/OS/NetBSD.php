@@ -21,7 +21,6 @@
 namespace Linfo\OS;
 
 use Exception;
-use Linfo\Meta\Timer;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 
@@ -56,12 +55,6 @@ class NetBSD extends BSDcommon
     // Mounted file systems
     public function getMounts()
     {
-
-        // Time it
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Mounted file systems');
-        }
-
         // Try getting mount command
         try {
             $res = $this->exec->exec('mount');
@@ -111,11 +104,6 @@ class NetBSD extends BSDcommon
     // Get the always gloatable uptime
     public function getUpTime()
     {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Uptime');
-        }
-
         // Use sysctl
         $booted = strtotime($this->sysctl['kern.boottime']);
 
@@ -129,11 +117,6 @@ class NetBSD extends BSDcommon
     // Get network devices
     public function getNet()
     {
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Network Devices');
-        }
-
         // Try using netstat
         try {
             $res = $this->exec->exec('netstat', '-nbdi');
@@ -205,12 +188,6 @@ class NetBSD extends BSDcommon
     // Get drives
     public function getHD()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('CPU');
-        }
-
         $drives = array();
         $curr_hd = false;
 
@@ -274,12 +251,6 @@ class NetBSD extends BSDcommon
     // Get cpu's
     public function getCPU()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('CPU');
-        }
-
         // Parse dmesg
         if (preg_match_all('/^cpu\d+ at [^:]+: (\S+) ([^,]+), (\d+)MHz/m', $this->dmesg, $cpu_matches, PREG_SET_ORDER) == 0) {
             return array();
@@ -304,12 +275,6 @@ class NetBSD extends BSDcommon
     // Get ram usage
     public function getRam()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Memory');
-        }
-
         // Start us off at zilch
         $return = array();
         $return['type'] = 'Virtual';
@@ -387,12 +352,6 @@ class NetBSD extends BSDcommon
     // Get devices
     public function getDevs()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Hardware Devices');
-        }
-
         // Get them
         if (preg_match_all('/^([a-z]+\d+) at ([a-z]+)\d+[^:]+:(.+)/m', $this->dmesg, $devices_match, PREG_SET_ORDER) == 0) {
             return array();
@@ -434,12 +393,6 @@ class NetBSD extends BSDcommon
     // Get stats on processes
     public function getProcessStats()
     {
-
-        // Time?
-        if (!empty($this->settings['timer'])) {
-            $t = new Timer('Process Stats');
-        }
-
         // We'll return this after stuffing it with useful info
         $result = array(
             'exists' => true,
