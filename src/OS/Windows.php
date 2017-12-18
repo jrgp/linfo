@@ -79,7 +79,7 @@ class Windows extends OS
     public function getOS()
     {
         foreach ($this->wmi->ExecQuery('SELECT Caption FROM Win32_OperatingSystem') as $os) {
-            return mb_convert_encoding($os->Caption, 'UTF-8', 'Windows-1252');
+            return mb_convert_encoding($os->Caption, 'UTF-8', 'Windows-1251');
         }
 
         return 'Windows';
@@ -354,8 +354,8 @@ class Windows extends OS
                 continue;
             }
 
-            $manufacturer = mb_convert_encoding($pnpdev->Manufacturer, 'UTF-8', 'Windows-1252');
-            $caption = mb_convert_encoding($pnpdev->Caption, 'UTF-8', 'Windows-1252');
+            $manufacturer = mb_convert_encoding($pnpdev->Manufacturer, 'UTF-8', 'Windows-1251');
+            $caption = mb_convert_encoding($pnpdev->Caption, 'UTF-8', 'Windows-1251');
 
             $devs[] = array(
                 'vendor' => $manufacturer,
@@ -529,8 +529,8 @@ class Windows extends OS
         $i = 1;
 
         foreach ($this->wmi->ExecQuery('SELECT Caption, Manufacturer FROM Win32_SoundDevice') as $card) {
-            $manufacturer = mb_convert_encoding($card->Manufacturer, 'UTF-8', 'Windows-1252');
-            $caption = mb_convert_encoding($card->Caption, 'UTF-8', 'Windows-1252');
+            $manufacturer = mb_convert_encoding($card->Manufacturer, 'UTF-8', 'Windows-1251');
+            $caption = mb_convert_encoding($card->Caption, 'UTF-8', 'Windows-1251');
 
             $cards[] = array(
                 'number' => $i,
