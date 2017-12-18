@@ -1,3 +1,0 @@
-#!/bin/bash
-
-exec php -S 0:8081 index.php

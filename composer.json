@@ -1,33 +1,46 @@
 {
-  "name":"linfo/linfo",
-  "description":"App and library for easily parsing and displaying system information of the host, like network/torrents/cpu/memory/usb/pci/sound cards/filesystems/raid array/ipmi/etc.",
-  "keywords":[
-    "health",
-    "system",
-    "linux",
-    "specs",
-    "cpu"
-  ],
-  "homepage":"http://github.com/jrgp/linfo",
-  "license":"GPL",
-  "authors":[
-    {
-      "name":"Joe Gillotti",
-      "email":"joe@joegillotti.com",
-      "homepage":"http://joegillotti.com",
-      "role":"Author"
+    "name": "gemorroj/linfo",
+    "description": "App and library for easily parsing system information, like network/torrents/cpu/memory/usb/pci/sound cards/filesystems/raid array/ipmi/etc.",
+    "keywords": [
+        "health",
+        "system",
+        "linux",
+        "specs",
+        "cpu"
+    ],
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Joe Gillotti",
+            "email": "joe@joegillotti.com",
+            "homepage": "http://joegillotti.com",
+            "role": "Author"
+        },
+        {
+            "name": "Gemorroj",
+            "role": "Author"
+        }
+    ],
+    "require": {
+        "php": ">=5.6",
+        "ext-pcre": "*",
+        "ext-mbstring": "*"
+    },
+    "suggest": {
+        "ext-com": "On Windows"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7.26",
+        "phpstan/phpstan": "^0.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Linfo\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Linfo\\Tests\\": "tests/"
+        }
     }
-  ],
-  "require":{
-    "php":">=5.3.0",
-    "ext-pcre":"*"
-  },
-  "suggest":{
-    "ext-com":"On Windows"
-  },
-  "autoload": {
-    "psr-4": {
-      "Linfo\\": "src/Linfo"
-    }
-  }
 }
