@@ -47,7 +47,7 @@ class OpenBSD extends BSDcommon
         $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
 
         // sysctl values we'll access below
-        $this->GetSysCTL(array(
+        $this->getSysCTL(array(
 
             // Has unix timestamp of boot time
             'kern.boottime',

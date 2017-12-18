@@ -150,7 +150,7 @@ class Dhcpd3_leases implements Extension
                 if ($do_date_conversion) {
 
                     // This handy class helps out with timezone offsets. Pass it original date, not unix timestamp
-                    $d = new DateTime($m[1], new DateTimeZone($local_timezone));
+                    $d = new \DateTime($m[1], new \DateTimeZone($local_timezone));
                     $offset = $d->getOffset();
 
                     // If ofset looks good, deal with it
@@ -168,7 +168,7 @@ class Dhcpd3_leases implements Extension
                 if ($do_date_conversion) {
 
                     // This handy class helps out with timezone offsets. Pass it original date, not unix timestamp
-                    $d = new DateTime($m[1], new DateTimeZone($local_timezone));
+                    $d = new \DateTime($m[1], new \DateTimeZone($local_timezone));
                     $offset = $d->getOffset();
 
                     // If ofset looks good, deal with it

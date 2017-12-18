@@ -61,11 +61,9 @@ return array(
     'name' => 'Nazwa',
     'reads' => 'Odczytanych',
     'writes' => 'Zapisanych',
-    'size' => 'Łącznie', //duplicate
     'filesystem_mounts' => 'Zamonotwany system plików',
     'mount_point' => 'Punkt montowania',
     'filesystem' => 'System plików',
-    'used' => 'Użytych',//duplicate
     'percent_used' => 'Procent zużycia',
     'raid_arrays' => 'RAID Arrays',
     'level' => 'Poziom',

@@ -35,7 +35,8 @@ class Darwin extends BSDcommon
     // Encapsulate these
     protected $settings,
         $exec,
-        $dmesg;
+        $dmesg,
+        $systemProfiler;
 
     // Start us off
     public function __construct($settings)
@@ -48,7 +49,7 @@ class Darwin extends BSDcommon
         $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/sbin'));
 
         // We need these sysctl values
-        $this->GetSysCTL(array(
+        $this->getSysCTL(array(
             'machdep.cpu.vendor',
             'machdep.cpu.brand_string',
             'hw.cpufrequency',

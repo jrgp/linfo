@@ -43,7 +43,7 @@ class DragonFly extends BSDcommon
         $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
 
         // sysctl values we'll access below
-        $this->GetSysCTL(array(
+        $this->getSysCTL(array(
             'kern.boottime',
             'vm.loadavg',
             'hw.model',

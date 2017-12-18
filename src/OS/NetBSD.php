@@ -49,7 +49,7 @@ class NetBSD extends BSDcommon
         $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/pkg/bin', '/usr/sbin'));
 
         // sysctl values we'll access below
-        $this->GetSysCTL(array('kern.boottime', 'vm.loadavg'), false);
+        $this->getSysCTL(array('kern.boottime', 'vm.loadavg'), false);
     }
 
     // Mounted file systems

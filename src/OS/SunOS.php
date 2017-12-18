@@ -30,7 +30,8 @@ class SunOS extends OS
     // Encapsulate these
     protected $settings,
         $exec,
-        $kstat = array();
+        $kstat = array(),
+        $release;
 
     // Start us off
     public function __construct($settings)
@@ -358,7 +359,7 @@ class SunOS extends OS
                 ),
                 'sent' => array(
                     'bytes' => null,
-                    'bytes' => null,
+                    'packets' => null,
                     'errors' => null,
                 ),
 
