@@ -64,7 +64,7 @@ class CallExt
      *
      * @param array $paths list of paths
      */
-    public function setSearchPaths($paths)
+    public function setSearchPaths(array $paths)
     {
         // Merge in possible custom paths
         if (array_key_exists('additional_paths', self::$settings) &&
