@@ -1199,7 +1199,7 @@ class Linux extends Unixcommon
 
         // systemd services
         foreach ($this->settings['services']['systemdServices'] as $service => $systemdService) {
-            $command = $this->exec->exec('systemctl show -p MainPID', $systemdService);
+            $command = $this->exec->exec('systemctl', 'show -p MainPID ' . $systemdService);
             $pid = str_replace('MainPID=', '', $command);
             if ($pid != '' && is_numeric($pid)) {
                 $pids[$service] = $pid;
