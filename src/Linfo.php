@@ -51,7 +51,7 @@ class Linfo
     public function __construct(array $userSettings = array())
     {
         // Some paths..
-        $this->linfo_localdir = dirname(dirname(__DIR__)) . '/';
+        $this->linfo_localdir = dirname(__DIR__);
 
         // Load our settings/language
         $this->loadSettings(array_merge($this->getDefaultSettings(), $userSettings));
@@ -322,7 +322,7 @@ class Linfo
         }
 
         // If it can't be found default to english
-        if (!is_file($this->linfo_localdir . 'src/Linfo/Lang/' . $settings['language'] . '.php')) {
+        if (!is_file($this->linfo_localdir . '/src/Lang/' . $settings['language'] . '.php')) {
             $settings['language'] = 'en';
         }
 
@@ -336,12 +336,12 @@ class Linfo
     {
         // Load translation, defaulting to english of keys are missing (assuming
         // we're not using english anyway and the english translation indeed exists)
-        if (is_file($this->linfo_localdir . 'src/Linfo/Lang/en.php') && $this->settings['language'] != 'en') {
-            $this->lang = array_merge(require($this->linfo_localdir . 'src/Linfo/Lang/en.php'),
-                require($this->linfo_localdir . 'src/Linfo/Lang/' . $this->settings['language'] . '.php'));
+        if (is_file($this->linfo_localdir . '/src/Lang/en.php') && $this->settings['language'] != 'en') {
+            $this->lang = array_merge(require($this->linfo_localdir . '/src/Lang/en.php'),
+                require($this->linfo_localdir . '/src/Lang/' . $this->settings['language'] . '.php'));
         } // Otherwise snag desired translation, be it english or a non-english without english to fall back on
         else {
-            $this->lang = require $this->linfo_localdir . 'src/Linfo/Lang/' . $this->settings['language'] . '.php';
+            $this->lang = require $this->linfo_localdir . '/src/Lang/' . $this->settings['language'] . '.php';
         }
     }
 
