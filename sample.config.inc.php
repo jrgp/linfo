@@ -136,6 +136,12 @@ $settings['services']['executables'] = array(
 	//						1 => '/usr/local/bin/buildslave') // argv[1]
 );
 
+// Format: Label => systemd service name
+$settings['services']['systemdServices'] = array(
+    // 'Apache' => 'httpd', // uncomment to enable
+    // 'SSHd' => 'sshd'
+);
+
 /*
  * Debugging settings
  */

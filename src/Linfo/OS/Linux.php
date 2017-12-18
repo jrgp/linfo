@@ -26,18 +26,19 @@ use Linfo\Parsers\Hwpci;
 use Linfo\Parsers\Sensord;
 use Linfo\Parsers\Hddtemp;
 use Linfo\Parsers\Mbmon;
+use Linfo\Parsers\CallExt;
 use Exception;
 
 /**
  * Get info on a usual linux system
  * Works by exclusively looking around /proc and /sys
- * Totally ignores CallExt class, very deliberately
- * Also deliberately ignores trying to find out the distro. 
+ * Also deliberately ignores trying to find out the distro.
  */
 class Linux extends Unixcommon
 {
     // Keep these tucked away
-    protected $settings;
+    protected $settings,
+        $exec;
 
     // Generally disabled as it's slowww
     protected $cpu_percent = array('overall' => false, 'cpus' => array());
@@ -58,6 +59,9 @@ class Linux extends Unixcommon
         if (!is_dir('/sys') || !is_dir('/proc')) {
             throw new FatalException('This needs access to /proc and /sys to work.');
         }
+
+        // Exec running
+        $this->exec = new CallExt();
     }
 
     public function init()
@@ -1243,6 +1247,7 @@ class Linux extends Unixcommon
 
         $this->settings['services']['executables'] = (array) $this->settings['services']['executables'];
         $this->settings['services']['pidFiles'] = (array) $this->settings['services']['pidFiles'];
+        $this->settings['services']['systemdServices'] = (array) $this->settings['services']['systemdServices'];
 
         // Convert paths of executables to PID files
         $pids = array();
@@ -1296,6 +1301,16 @@ class Linux extends Unixcommon
                 $pids[$service] = $pid;
             }
         }
+
+        // systemd services
+        foreach ($this->settings['services']['systemdServices'] as $service => $systemdService) {
+            $command = $this->exec->exec('systemctl show -p MainPID', $systemdService);
+            $pid = str_replace('MainPID=', '', $command);
+            if ($pid != '' && is_numeric($pid)) {
+                $pids[$service] = $pid;
+            }
+        }
+
 
         // Deal with PIDs
         foreach ($pids as $service => $pid) {
