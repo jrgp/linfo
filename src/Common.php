@@ -21,43 +21,50 @@ namespace Linfo;
 
 class Common
 {
-    protected static $settings = array(),
-        $lang = array();
-
+    protected static $settings = array();
+    protected static $lang = array();
     // Used for unit tests
     public static $path_prefix = false;
 
+    /**
+     * @param Linfo $linfo
+     */
     public static function config(Linfo $linfo)
     {
         self::$settings = $linfo->getSettings();
         self::$lang = $linfo->getLang();
     }
 
-    public static function unconfig()
-    {
-        self::$settings = array();
-        self::$lang = array();
-    }
 
-    // Certain files, specifcally the pci/usb ids files, vary in location from
-    // linux distro to linux distro. This function, when passed an array of
-    // possible file location, picks the first it finds and returns it. When
-    // none are found, it returns false
-    public static function locateActualPath($paths)
+    /**
+     * Certain files, specifcally the pci/usb ids files, vary in location from
+     * linux distro to linux distro. This function, when passed an array of
+     * possible file location, picks the first it finds and returns it. When
+     * none are found, it returns false
+     * @param array $paths
+     * @return null|array
+     */
+    public static function locateActualPath(array $paths)
     {
-        foreach ((array)$paths as $path) {
+        foreach ($paths as $path) {
             if (is_file($path)) {
                 return $path;
             }
         }
 
-        return false;
+        return null;
     }
 
-    // Append a string to the end of each element in a 2d array
-    public static function arrayAppendString($array, $string = '', $format = '%1s%2s')
+    /**
+     * Append a string to the end of each element in a 2d array
+     *
+     * @param array $array
+     * @param string $string
+     * @param string $format
+     * @return array
+     */
+    public static function arrayAppendString(array $array, $string = '', $format = '%1s%2s')
     {
-
         // Get to it
         foreach ($array as $k => $v) {
             $array[$k] = is_string($v) ? sprintf($format, $v, $string) : $v;
@@ -67,16 +74,24 @@ class Common
         return $array;
     }
 
-    // Get a file who's contents should just be an int. Returns zero on failure.
+    /**
+     * Get a file who's contents should just be an int. Returns zero on failure.
+     * @param string $file
+     * @return string
+     */
     public static function getIntFromFile($file)
     {
         return self::getContents($file, 0);
     }
 
-    // Convert bytes to stuff like KB MB GB TB etc
+    /**
+     * Convert bytes to stuff like KB MB GB TB etc
+     * @param int $size
+     * @param int $precision
+     * @return string
+     */
     public static function byteConvert($size, $precision = 2)
     {
-
         // Sanity check
         if (!is_numeric($size)) {
             return '?';
@@ -89,15 +104,18 @@ class Common
         // Found at http://www.php.net/manual/en/function.disk-free-space.php#81207
         $types = array('B', 'KB', 'MB', 'GB', 'TB');
         $types_i = array('B', 'KiB', 'MiB', 'GiB', 'TiB');
-        for ($i = 0; $size >= $notation && $i < (count($types) - 1); $size /= $notation, $i++) ;
+        for ($i = 0; $size >= $notation && $i < (count($types) - 1); $size /= $notation, $i++);
 
         return (round($size, $precision) . ' ' . ($notation == 1000 ? $types[$i] : $types_i[$i]));
     }
 
-    // Like above, but for seconds
+    /**
+     * Like above, but for seconds
+     * @param int $uptime
+     * @return string
+     */
     public static function secondsConvert($uptime)
     {
-
         // Method here heavily based on freebsd's uptime source
         $uptime += $uptime > 60 ? 30 : 0;
         $years = floor($uptime / 31556926);
@@ -135,7 +153,13 @@ class Common
         return implode(', ', $return);
     }
 
-    // Get a file's contents, or default to second param
+    /**
+     * Get a file's contents, or default to second param
+     *
+     * @param string $file
+     * @param string $default
+     * @return string
+     */
     public static function getContents($file, $default = '')
     {
         if (is_string(self::$path_prefix)) {
@@ -145,41 +169,24 @@ class Common
         return !is_file($file) || !is_readable($file) || !($contents = @file_get_contents($file)) ? $default : trim($contents);
     }
 
-    // Like above, but in lines instead of a big string
+    /**
+     * Like above, but in lines instead of a big string
+     * @param string $file
+     * @return array|bool
+     */
     public static function getLines($file)
     {
         return !is_file($file) || !is_readable($file) || !($lines = @file($file, FILE_SKIP_EMPTY_LINES)) ? array() : $lines;
     }
 
-    // Make a string safe for being in an xml tag name
-    public static function xmlStringSanitize($string)
-    {
-        return strtolower(preg_replace('/([^a-zA-Z]+)/', '_', $string));
-    }
 
-    // Get a variable from a file. Include it in this function to avoid
-    // clobbering the main namespace
-    public static function getVarFromFile($file, $variable)
-    {
-
-        // Let's not waste our time, now
-        if (!is_file($file)) {
-            return false;
-        }
-
-        require $file;
-
-        // Double dollar sign means treat variable contents 
-        // as the name of a variable. 
-        if (isset($$variable)) {
-            return $$variable;
-        }
-
-        return false;
-    }
-
-    // Prevent silly conditionals like if (in_array() || in_array() || in_array())
-    // Poor man's python's any() on a list comprehension kinda
+    /**
+     * Prevent silly conditionals like if (in_array() || in_array() || in_array())
+     * Poor man's python's any() on a list comprehension kinda
+     * @param array $needles
+     * @param array $haystack
+     * @return bool
+     */
     public static function anyInArray($needles, $haystack)
     {
         if (!is_array($needles) || !is_array($haystack)) {

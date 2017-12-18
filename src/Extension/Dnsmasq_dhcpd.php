@@ -49,7 +49,7 @@ class Dnsmasq_dhcpd implements Extension
         DATE_FORMAT = 'm/d/y h:i A';
 
     // Store these tucked away here
-    private
+    private $_leases_file,
         $_hide_mac,
         $_leases = array();
 

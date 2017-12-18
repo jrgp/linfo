@@ -19,6 +19,7 @@
 
 namespace Linfo;
 
+use Linfo\OS\OS;
 use Linfo\Parsers\CallExt;
 use Linfo\Exceptions\FatalException;
 use Linfo\Meta\Errors;
@@ -35,31 +36,26 @@ use ReflectionException;
  */
 class Linfo
 {
-    protected $settings = array(),
-        $lang = array(),
-        $info = array(),
-        $parser,
+    protected $settings = array();
+    protected $lang = array();
+    protected $info = array();
+    /** @var OS */
+    protected $parser;
+    protected $linfo_localdir;
 
-        $app_name = 'Linfo',
-        $version = '',
-        $time_start = 0,
-        $linfo_localdir;
-
+    /**
+     * Linfo constructor.
+     * @param array $userSettings
+     * @throws FatalException
+     */
     public function __construct(array $userSettings = array())
     {
-        // Time us
-        $this->time_start = microtime(true);
-
         // Some paths..
         $this->linfo_localdir = dirname(dirname(__DIR__)) . '/';
 
-        // Get our version from git setattribs
-        $scm = '$Format:%ci$';
-        list($this->version) = strpos($scm, '$') !== false ? array('git') : explode(' ', $scm);
-
         // Run through dependencies / sanity checking
         if (!extension_loaded('pcre') && !function_exists('preg_match') && !function_exists('preg_match_all')) {
-            throw new FatalException($this->app_name . ' needs the `pcre\' extension to be loaded. http://us2.php.net/manual/en/book.pcre.php');
+            throw new FatalException('Linfo needs the `pcre` extension to be loaded. https://php.net/pcre');
         }
 
         // Warnings usually displayed to browser happen if date.timezone isn't set in php 5.3+
@@ -86,17 +82,23 @@ class Linfo
         $this->parser = new $distro_class($this->settings);
     }
 
-    // Forward missing method request to the parser
+    /**
+     * Forward missing method request to the parser
+     *
+     * @param string $name
+     * @param string $args
+     * @return mixed
+     */
     public function __call($name, $args)
     {
         if (method_exists($this->parser, $name) && is_callable(array($this->parser, $name))) {
-
             return call_user_func(array($this->parser, $name), $args);
-
         }
     }
 
-    // Load everything, while obeying permissions...
+    /**
+     * Load everything, while obeying permissions...
+     */
     public function scan()
     {
         $reflector = new ReflectionClass($this->parser);
@@ -301,6 +303,7 @@ class Linfo
     }
 
     /**
+     * load settings
      * @param array $settings
      */
     protected function loadSettings(array $settings = array())
@@ -336,6 +339,9 @@ class Linfo
         $this->settings = $settings;
     }
 
+    /**
+     * load language
+     */
     protected function loadLanguage()
     {
         // Load translation, defaulting to english of keys are missing (assuming
@@ -349,6 +355,9 @@ class Linfo
         }
     }
 
+    /**
+     * @return null|string
+     */
     protected function getOS()
     {
         list($os) = explode('_', PHP_OS, 2);
@@ -373,10 +382,10 @@ class Linfo
         }
 
         // So anything else isn't
-        return false;
+        return null;
     }
 
-    /*
+    /**
      * getInfo()
      *
      * Returning reference so extensions can modify result
@@ -386,6 +395,9 @@ class Linfo
         return $this->info;
     }
 
+    /**
+     * run extensions
+     */
     protected function runExtensions()
     {
         $this->info['extensions'] = array();
@@ -439,12 +451,18 @@ class Linfo
         }
     }
 
+    /**
+     * @return array
+     */
     public function getLang()
     {
         return $this->lang;
     }
 
-    public function getDefaultSettings()
+    /**
+     * @return array
+     */
+    protected function getDefaultSettings()
     {
         $settings = array();
         // If you experience timezone errors, uncomment (remove //) the following line and change the timezone to your liking
@@ -587,13 +605,6 @@ class Linfo
         );
 
         /*
-         * Debugging settings
-         */
-
-        // Show errors? Disabled by default to hide vulnerabilities / attributes on the server
-        $settings['show_errors'] = false;
-
-        /*
          * Occasional sudo
          * Sometimes you may want to have one of the external commands here be ran as root with
          * sudo. This requires the web server user be set to "NOPASS" in your sudoers so the sudo
@@ -610,33 +621,19 @@ class Linfo
         return $settings;
     }
 
+    /**
+     * @return array
+     */
     public function getSettings()
     {
         return $this->settings;
     }
 
-    public function getAppName()
-    {
-        return $this->app_name;
-    }
-
-    public function getVersion()
-    {
-        return $this->version;
-    }
-
-    public function getTimeStart()
-    {
-        return $this->time_start;
-    }
-
+    /**
+     * @return OS
+     */
     public function getParser()
     {
         return $this->parser;
-    }
-
-    public function getLocalDir()
-    {
-        return $this->linfo_localdir;
     }
 }
