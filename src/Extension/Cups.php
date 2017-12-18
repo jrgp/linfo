@@ -5,7 +5,7 @@
 This impliments a CUPS printer queue status parser.
 
 Installation: 
- - The following lines must be added to your config.inc.php:
+ - The following lines must be added to your settings:
    $settings['extensions']['cups'] = true; 
 
 */

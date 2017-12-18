@@ -79,29 +79,9 @@ print_r($info); // and a whole lot more
  - Tested on OpenBSD 4.7, 5.7
  - Turn chroot of httpd/nginx/php-fpm off
 
-## Web UI Installation
- 1. Extract tarball contents to somewhere under your web root
- 2. Rename ``sample.config.inc.php`` to ``config.inc.php``, after optionally changing values in it
- 3. Visit page in web browser
- 4. Pass URL to your friends to show off
-
-
-### URL arguments
-
-- ``?out=xml`` - XML output (requires SimpleXML extension)
-- ``?out=json`` - JSON output
-- ``?out=jsonp&callback=functionName`` - JSON output with a function callback. (Look here: http://www.json-p.org/ )
-- ``?out=php_array`` - PHP serialized associative array
-- ``?out=html`` - Usual lightweight HTML (default)
-
 ### Extensions
  - See a list of php files in src/Linfo/Extensions/
  - Open them and look at the comment at the top of the file for usage
-
-
-## Troubleshooting:
-
-Set ``$settings['show_errors'] = true;`` in ``config.inc.php`` to yield useful error messages.
 
 
 ## TODO:

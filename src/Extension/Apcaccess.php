@@ -8,7 +8,7 @@ Make sure that you have your UPS connected correctly, the apc package installed,
 running apcaccess produces output you find interesting enough for Linfo to display.
 
 Installation: 
- - The following lines must be added to your config.inc.php:
+ - The following lines must be added to your settings:
    $settings['extensions']['apcaccess'] = true; 
 
 */

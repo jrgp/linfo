@@ -6,7 +6,7 @@ This shows a cursory list of running VMs managed by libvirt and their stats.
 Requires libvirt php extension (http://libvirt.org/php/):
   sudo apt-get install php5-libvirt-php
 
-To enable this extension, add/tweak the following to your config.inc.php
+To enable this extension, add/tweak the following to your settings
 
 $settings['extensions']['libvirt'] = true;
 $settings['libvirt_connection'] = array(

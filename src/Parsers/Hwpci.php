@@ -29,11 +29,8 @@ use Linfo\Common;
  */
 class Hwpci
 {
-    private $_use_json = false,
-        $_usb_file = '',
+    private $_usb_file = '',
         $_pci_file = '',
-        $_cache_file = '',
-        $_existing_cache_vals = array(),
         $_usb_entries = array(),
         $_pci_entries = array(),
         $_usb_devices = array(),
@@ -48,46 +45,13 @@ class Hwpci
      */
     public function __construct($usb_file, $pci_file)
     {
-
         // Localize paths to the ids files
         $this->_pci_file = $pci_file;
         $this->_usb_file = $usb_file;
 
-        // Prefer json, but check for it
-        $this->_use_json = function_exists('json_encode') && function_exists('json_decode');
-
-        // Allow the same web root to be used for multiple insances of linfo, across multiple machines using 
-        // nfs or whatever, and to have a different cache file for each
-        $sys_id = is_readable('/proc/sys/kernel/hostname') ?
-            '_'.substr(md5(Common::getContents('/proc/sys/kernel/hostname')), 0, 10) : '_x';
-
-        // Path to the cache file
-        $this->_cache_file = dirname(dirname(dirname(__DIR__))).'/cache/ids_cache'.$sys_id.($this->_use_json ? '.json' : '');
-
-        // Load contents of cache
-        $this->_populate_cache();
-
         // Might need these
         $this->exec = new CallExt();
         $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
-    }
-
-    /**
-     * Run the cache file.
-     */
-    private function _populate_cache()
-    {
-        if ($this->_use_json) {
-            if (is_readable($this->_cache_file) &&
-            ($loaded = @json_decode(Common::getContents($this->_cache_file, ''), true)) && is_array($loaded)) {
-                $this->_existing_cache_vals = $loaded;
-            }
-        } else {
-            if (is_readable($this->_cache_file) &&
-            ($loaded = @unserialize(Common::getContents($this->_cache_file, false))) && is_array($loaded)) {
-                $this->_existing_cache_vals = $loaded;
-            }
-        }
     }
 
     /**
@@ -174,56 +138,6 @@ class Hwpci
         $file && @fclose($file);
     }
 
-    /**
-     * Decide if the cache file is sufficient enough to not parse the ids files.
-     */
-    private function _is_cache_worthy()
-    {
-        $pci_good = true;
-        foreach (array_keys($this->_pci_entries) as $vendor) {
-            foreach (array_keys($this->_pci_entries[$vendor]) as $dever) {
-                if (!isset($this->_existing_cache_vals['hw']['pci'][$vendor][$dever])) {
-                    $pci_good = false;
-                    break 2;
-                }
-            }
-        }
-        $usb_good = true;
-        foreach (array_keys($this->_usb_entries) as $vendor) {
-            foreach (array_keys($this->_usb_entries[$vendor]) as $dever) {
-                if (!isset($this->_existing_cache_vals['hw']['usb'][$vendor][$dever])) {
-                    $usb_good = false;
-                    break 2;
-                }
-            }
-        }
-
-        return array('pci' => $pci_good, 'usb' => $usb_good);
-    }
-
-    /*
-     * Write cache file with latest info
-     *
-     * @access private
-     */
-    private function _write_cache()
-    {
-        if (is_writable(dirname(dirname(dirname(__DIR__))).'/cache')) {
-            @file_put_contents($this->_cache_file, $this->_use_json ?
-                json_encode(array(
-                    'hw' => array(
-                        'pci' => $this->_pci_devices,
-                        'usb' => $this->_usb_devices,
-                    ),
-                ))
-                : serialize(array(
-                    'hw' => array(
-                        'pci' => $this->_pci_devices,
-                        'usb' => $this->_usb_devices,
-                    ),
-            )));
-        }
-    }
 
     /*
      * Parse pciconf to get pci ids
@@ -268,23 +182,9 @@ class Hwpci
                 return;
             break;
         }
-        $worthiness = $this->_is_cache_worthy();
-        $save_cache = false;
-        if (!$worthiness['pci']) {
-            $save_cache = true;
-            $this->_fetchPciNames();
-        } else {
-            $this->_pci_devices = isset($this->_existing_cache_vals['hw']['pci']) ? $this->_existing_cache_vals['hw']['pci'] : array();
-        }
-        if (!$worthiness['usb']) {
-            $save_cache = true;
-            $this->_fetchUsbNames();
-        } else {
-            $this->_usb_devices = isset($this->_existing_cache_vals['hw']['usb']) ? $this->_existing_cache_vals['hw']['usb'] : array();
-        }
-        if ($save_cache) {
-            $this->_write_cache();
-        }
+
+        $this->_fetchPciNames();
+        $this->_fetchUsbNames();
     }
 
      /**

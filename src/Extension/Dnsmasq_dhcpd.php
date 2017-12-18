@@ -6,7 +6,7 @@ This parses dnsmasq's dhcpd leases file. Commonly used to show dynamic IP's give
 libvirt's virtual machines. This does not require libvirt-php to be installed.
 
 Installation: 
- - The following lines must be added to your config.inc.php:
+ - The following lines must be added to your settings:
    $settings['extensions']['Dnsmasq_dhcpd'] = true; 
    $settings['dnsmasq_hide_mac'] = true;  // set to false to show mac addresses
    $settings['dnsmasq_leases'] = 'path';  // change path to the leases file. defaults to /var/lib/libvirt/dnsmasq/default.leases

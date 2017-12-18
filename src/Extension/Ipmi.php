@@ -5,13 +5,13 @@
 This implements a ipmi status checker for temps/voltages
 
 Installation: 
- - The following lines must be added to your config.inc.php:
+ - The following lines must be added to your settings:
    $settings['extensions']['ipmi'] = true; 
 
  - The ipmitool command most likely needs to be run as root, so, 
    if you don't have php running as root, configure sudo appropriately
    for the user the php scripts are running as, comment out 'Defaults    requiretty' in your sudoers
-   file, and add 'ipmitool' to the $settings['sudo_apps'] array in config.inc.php
+   file, and add 'ipmitool' to the $settings['sudo_apps'] array in settings
 
 */
 

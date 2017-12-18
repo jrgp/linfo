@@ -5,7 +5,7 @@
 This impliments a current samba usage status 
 
 Installation: 
- - The following lines must be added to your config.inc.php:
+ - The following lines must be added to your settings:
    $settings['extensions']['smb'] = true; 
 
 

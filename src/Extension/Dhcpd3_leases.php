@@ -5,7 +5,7 @@
 This implements a ddhcpd.leases parser for dhcp3 servers. 
 
 Installation: 
- - The following lines must be added to your config.inc.php:
+ - The following lines must be added to your settings:
    $settings['extensions']['dhcpd3_leases'] = true; 
    $settings['dhcpd3_hide_mac'] = true;  // set to false to show mac addresses
 
