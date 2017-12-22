@@ -60,6 +60,7 @@ var_dump($parser->getCPU()); // and a whole lot more
  - Temperatures/voltages/fan speeds
  - RAID arrays
  - Via included extensions:
+   - Nvidia GPU temps
    - Truecrypt mounts
    - DHCPD leases
    - Samba status
