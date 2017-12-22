@@ -1,5 +1,5 @@
 /**
- * This file is part of Linfo (c) 2010 Joseph Gillotti.
+ * This file is part of Linfo (c) 2010, 2017 Joseph Gillotti.
  *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -325,9 +325,31 @@ window['Linfo'] = function () {
   }
 
   /**
+   * Initialize theming
+   */
+
+  function initThemes() {
+    var theme_css_tag = document.getElementById('themeCssLink'),
+        theme_css_changer = document.getElementById('themeChangerSelect'),
+        theme_path = theme_css_tag.getAttribute('href').split('/').slice(0, -1).join('/');
+
+    // Will not be present if linfo has this turned off
+    if (!theme_css_changer) {
+      return;
+    }
+
+    theme_css_changer.onchange = function() {
+      var theme = theme_css_changer.value;
+      theme_css_tag.setAttribute('href', theme_path + '/theme_' + theme + '.css');
+      setCookie('linfo-theme', theme);
+    }
+  }
+
+  /**
    * Initialize Linfo. Called on dom ready
    */
   function init() {
+    initThemes();
     initializeSections();
   }
 

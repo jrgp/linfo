@@ -150,20 +150,32 @@ class Html implements Output
             ob_start(function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
         }
 
+        // If we're allowed to change themes client-side, generate a list of custom ones to use as a white list
+        $allowed_themes = ['default'];
+        if ($settings['allow_changing_themes']) {
+            foreach (glob('layout/theme_*.css') as $theme_path) {
+                $theme_name = substr(basename($theme_path), 6, -4);
+                if ($theme_name != 'default') {
+                    $allowed_themes[] = $theme_name;
+                }
+            }
+        }
+
+        // See if we allow changing themes in the frontend and the theme specified exists and it doesn't have nasty chars in it
+        if ($settings['allow_changing_themes'] && isset($_COOKIE['linfo-theme']) && in_array($_COOKIE['linfo-theme'], $allowed_themes) && preg_match('/^[a-z0-9-_]+$/i', $_COOKIE['linfo-theme']) ) {
+            $chosen_theme = $_COOKIE['linfo-theme'];
+        }
+
         // See if we have a specific theme file installed
-        if (isset($settings['theme']) && strpos($settings['theme'], '..') === false && file_exists('layout/theme_'.$settings['theme'].'.css')) {
-            $theme_css = 'theme_'.$settings['theme'].'.css';
+        elseif (isset($settings['theme']) && strpos($settings['theme'], '..') === false && file_exists('layout/theme_'.$settings['theme'].'.css')) {
+            $chosen_theme = $settings['theme'];
         }
 
-        // Does default exist?? Don't bitch at me for assigning an array key in an if-then
-        elseif (($settings['theme'] = 'default') && file_exists('layout/theme_'.$settings['theme'].'.css')) {
-            $theme_css = 'theme_'.$settings['theme'].'.css';
-        }
-
-        // if not, do the old way
+        // Else default to default theme
         else {
-            $theme_css = 'styles.css';
+            $chosen_theme = 'default';
         }
+
 
     // Proceed to letting it all out
     echo '<!DOCTYPE html>
@@ -173,7 +185,7 @@ class Html implements Output
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>'.$appName.' - '.$info['HostName'].'</title>
 	<link href="./layout/favicon.ico" type="image/x-icon" rel="shortcut icon">
-	<link href="./layout/'.$theme_css.'" rel="stylesheet">'.($show_icons ? '
+	<link id="themeCssLink" href="./layout/theme_'.$chosen_theme.'.css" rel="stylesheet">'.($show_icons ? '
 	<link href="./layout/icons.css" rel="stylesheet">' : ''
     ).'
 	<script src="./layout/scripts.min.js"></script>
@@ -185,7 +197,21 @@ class Html implements Output
 	<link rel="stylesheet" type="text/css" href="./layout/mobile.css" media="screen and (max-width: 640px)">
 </head>
 <body id="info">
-<div id="header">
+<div id="header">';
+
+  if ($settings['allow_changing_themes']) {
+  echo '
+  <div id="themeChanger">Theme: <select id="themeChangerSelect">';
+
+    foreach ($allowed_themes as $theme_option)
+      echo '<option'.($theme_option == $chosen_theme ? ' selected' : '').'>'.$theme_option.'</option>';
+
+  echo '</select>
+  </div>
+  ';
+  }
+
+echo '
 	<h1>'.$info['HostName'].'</h1>
 	<div class="subtitle">'.$lang['header'].'</div>
 </div>
