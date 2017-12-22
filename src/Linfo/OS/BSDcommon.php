@@ -2,20 +2,20 @@
 
 /*
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
 */
 
 namespace Linfo\OS;
@@ -57,7 +57,7 @@ abstract class BSDcommon extends Unixcommon
     }
 
     // Use sysctl to get something, and cache result.
-    // Also allow getting multiple keys at once, in which case sysctl 
+    // Also allow getting multiple keys at once, in which case sysctl
     // will only be called once instead of multiple times (assuming it doesn't break)
     protected function getSysCTL($keys, $do_return = true)
     {
@@ -72,7 +72,7 @@ abstract class BSDcommon extends Unixcommon
         foreach ($keys as $k => $v) {
             $keys[$k] = escapeshellarg($v);
 
-            // Check and see if we have any of these already. If so, use previous 
+            // Check and see if we have any of these already. If so, use previous
             // values and don't retrive them again
             if (array_key_exists($v, $this->sysctl)) {
                 unset($keys[$k]);
@@ -128,7 +128,7 @@ abstract class BSDcommon extends Unixcommon
         // Cache these incase they're called upon again
         $this->sysctl = array_merge($results, $this->sysctl);
 
-        // Return an array of all values retrieved, or if just one was 
+        // Return an array of all values retrieved, or if just one was
         // requested, then that one as a string
         if ($do_return) {
             return count($results) == 1 ? reset($results) : $results;

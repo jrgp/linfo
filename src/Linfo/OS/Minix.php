@@ -2,20 +2,20 @@
 
 /*
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
 */
 
 namespace Linfo\OS;
@@ -25,7 +25,7 @@ use Linfo\Parsers\CallExt;
 
 /*
  * Get info on a Minix system
- * --- 
+ * ---
  * Note: the cli tools on minix are so meager that getting real detail
  * out of it (like nic stats / fs types / etc) is either difficult or
  * impossible. Nevertheless, this is my attempt at doing so.
@@ -53,7 +53,7 @@ class Minix extends OS
     }
 
     // Mounted file systems
-    // --- 
+    // ---
     // Note: the `mount` command does not have file system type
     // and php's disk_free_space/disk_total_space functions don't seem
     // to work here
@@ -101,14 +101,14 @@ class Minix extends OS
     }
 
     // Get network interfaces
-    // --- 
+    // ---
     // netstat isn't installed by default and ifconfig doesn't have
     // much functionality for viewing status, so I can't seem to get
     // more than just name of interface
     public function getNet()
     {
 
-        // Try getting it. 
+        // Try getting it.
         try {
             $res = $this->exec->exec('ifconfig', '-a');
         } catch (Exception $e) {

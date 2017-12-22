@@ -4,10 +4,10 @@
 
 This impliments a soldat (soldat.pl) dedicated server gamestat.txt parser
 
-Installation: 
+Installation:
  - Copy/move the class.ext.soldat.php into the lib/ folder
  - The following lines must be added to your config.inc.php:
-   $settings['extensions']['soldat'] = true;  
+   $settings['extensions']['soldat'] = true;
 
    // paths to the gamestat.txt files
    $settings['soldat_servers'] = array(
@@ -18,20 +18,20 @@ Installation:
 
 /*
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
 */
 
 namespace Linfo\Extension;
@@ -183,7 +183,7 @@ class Soldat implements Extension
         );
     }
 
-    // Deal with team color 
+    // Deal with team color
     public static $team2color = array(
         0 => '#333',
         1 => 'red',
@@ -232,7 +232,7 @@ class Soldat implements Extension
         }
         //explode then chunk that string
         $players_info = array_chunk(explode("\n", $pla), 5);
-        //kill the last element since its empty    
+        //kill the last element since its empty
         array_pop($players_info);
         //add each player to the new array
         foreach ($players_info as $p) {

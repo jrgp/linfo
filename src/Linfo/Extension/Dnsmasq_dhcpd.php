@@ -5,9 +5,9 @@
 This parses dnsmasq's dhcpd leases file. Commonly used to show dynamic IP's given to
 libvirt's virtual machines. This does not require libvirt-php to be installed.
 
-Installation: 
+Installation:
  - The following lines must be added to your config.inc.php:
-   $settings['extensions']['Dnsmasq_dhcpd'] = true; 
+   $settings['extensions']['Dnsmasq_dhcpd'] = true;
    $settings['dnsmasq_hide_mac'] = true;  // set to false to show mac addresses
    $settings['dnsmasq_leases'] = 'path';  // change path to the leases file. defaults to /var/lib/libvirt/dnsmasq/default.leases
 
@@ -15,17 +15,17 @@ Installation:
 
 /**
  * This file is part of Linfo (c) 2015 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -68,7 +68,7 @@ class Dnsmasq_dhcpd implements Extension
         // Find leases file
         $this->_leases_file = isset($settings['dnsmasq_leases']) && is_file($settings['dnsmasq_leases']) ?
           $settings['dnsmasq_leases'] : Common::locateActualPath(array(
-              '/var/lib/libvirt/dnsmasq/default.leases', 
+              '/var/lib/libvirt/dnsmasq/default.leases',
           ));
     }
 
@@ -88,7 +88,7 @@ class Dnsmasq_dhcpd implements Extension
 
     /**
      * Return result.
-     * 
+     *
      * @return array of the leases
      */
     public function result()

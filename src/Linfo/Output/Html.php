@@ -89,7 +89,7 @@ class Html implements Output
             $html .= '
 			<tr>';
 
-            // Is this row a header? 
+            // Is this row a header?
             if ($row['type'] == 'header') {
                 foreach ($row['columns'] as $v) {
                     $html .= is_array($v) ? '
@@ -768,7 +768,7 @@ class Html implements Output
                     continue;
                 }
 
-                // If it's an NFS mount it's likely in the form of server:path (without a trailing slash), 
+                // If it's an NFS mount it's likely in the form of server:path (without a trailing slash),
                 // but if the path is just / it likely just shows up as server:,
                 // which is vague. If there isn't a /, add one
                 if (preg_match('/^.+:$/', $mount['device']) == 1) {
