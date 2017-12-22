@@ -78,7 +78,9 @@ class Html implements Output
         foreach ($structure['rows'] as $row) {
 
             // Let stuff be killed
-            $row['columns'] = array_filter($row['columns']);
+            $row['columns'] = array_filter($row['columns'], function($value) {
+                return $value !== false;
+             });
 
             // Ignore this if it's empty
             if (empty($row['columns'])) {
