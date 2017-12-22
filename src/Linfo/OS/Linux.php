@@ -1789,7 +1789,7 @@ class Linux extends Unixcommon
 
         // product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
         // dell latitude e6500 or hp z260
-        if ($product && strpos($name, $product) === false && strpos($product, 'Filled') === false) {
+        if ($product && strpos($name, $product) === false && strpos($product, 'Filled') === false && $product != 'System Product Name') {
             return $product.' ('.$infostr.')';
         } else {
             return $infostr;
