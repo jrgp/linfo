@@ -12,6 +12,9 @@ $settings['language'] = 'en'; // Refer to the lang/ folder for supported lanugag
 $settings['icons'] = true; // simple icons
 $settings['theme'] = 'default'; // Theme file (layout/theme_$n.css). Look at the contents of the layout/ folder for other themes.
 
+
+$settings['allow_changing_themes'] = false; // Allow changing the theme per user in the UI?
+
 /*
  * Possibly don't show stuff
  */
