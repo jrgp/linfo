@@ -571,8 +571,8 @@ class Linux extends Unixcommon
 
             // Wacky location
             foreach ((array) @glob('/sys/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE) as $path) {
-                $labelpath = $path.DIRECTORY_SEPARATOR.'type';
-                $valuepath = $path.DIRECTORY_SEPARATOR.'temp';
+                $labelpath = $path.'/type';
+                $valuepath = $path.'/temp';
 
                 if (!is_file($labelpath) || !is_file($valuepath)) {
                     continue;
@@ -585,8 +585,8 @@ class Linux extends Unixcommon
 
                 // Append values
                 $thermal_zone_vals[] = array(
-                    'path' => $path,
-                    'name' => $label,
+                    'path' => '',
+                    'name' => $label . ' ('.basename($path).')',
                     'temp' => $value,
                     'unit' => 'C', // I don't think this is ever going to be in F
                 );
