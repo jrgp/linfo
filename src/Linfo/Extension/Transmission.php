@@ -6,15 +6,11 @@ This implements a transmission-remote parsing extension which displays status of
 
 Installation:
  - The following lines must be added to your config.inc.php:
-   $settings['extensions']['transmission'] = true;
-   $settings['transmission_auth'] = array(
-    //'user' => 'jim', # Both of these must exist if you wish to use auth
-    //'pass' => 'pwnz!'
-   );
-   $settings['transmission_host'] = array(
-    // 'server' => 'localhost',	# uncomment to set a specific host
-    // 'port' => 9091		# uncomment to set a specific port
-   );
+
+    $settings['extensions']['transmission'] = true;
+
+    // Set this to the URL you access transmission's web UI at, up until the port
+    $settings['transmission_api_url'] = 'http://192.168.1.120:9091';
 
 
    // If you want download/upload/ratio/duration stats, make sure the web server user can
@@ -22,14 +18,10 @@ Installation:
    // running as
    $settings['transmission_folder'] = '/home/user/.config/transmission/';
 
-   // If you have transmission-remote present somewhere else from /usr/bin or /usr/local/bin, you can specify
-   // the bin path like this:
-   $settings['transmission_bin_path'] = '/opt/transmission/bin';
-
 */
 
 /**
- * This file is part of Linfo (c) 2010 Joseph Gillotti.
+ * This file is part of Linfo (c) 2010, 2017 Joseph Gillotti.
  *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,9 +37,6 @@ Installation:
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Keep out hackers...
- */
 namespace Linfo\Extension;
 
 use Linfo\Linfo;
@@ -62,13 +51,11 @@ use Exception;
  */
 class Transmission implements Extension
 {
-    // Store these tucked away here
-    private $_CallExt,
+    private
         $_res,
-        $_torrents = array(),
+        $_torrents = [],
         $_stats = false,
-        $_auth,
-        $_host;
+        $_url;
 
     /**
      * localize important stuff.
@@ -78,22 +65,107 @@ class Transmission implements Extension
     {
         $settings = $linfo->getSettings();
 
-        // Classes we need
-        $this->_CallExt = new CallExt();
+        $this->_url = array_key_exists('transmission_api_url', $settings) ? $settings['transmission_api_url'] : false;
+        $this->_folder = array_key_exists('transmission_folder', $settings) && is_dir($settings['transmission_folder']) && is_readable($settings['transmission_folder']) ? $settings['transmission_folder'] : false;
+    }
 
-        if (isset($settings['transmission_bin_path'])) {
-            $this->_CallExt->setSearchPaths(array($settings['transmission_bin_path']));
-
-        } else {
-            $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin'));
+    /**
+     * Use libcurl to interact with the transmission server API
+     */
+    private function hit_api()
+    {
+        if (!$this->_url) {
+            Errors::add('transmission extension', 'Config option transmission_api_url not specified');
+            return;
         }
 
-        // Transmission specific settings
-        $this->_auth = array_key_exists('transmission_auth', $settings) ? (array) $settings['transmission_auth'] : array();
-        $this->_host = array_key_exists('transmission_host', $settings) ? (array) $settings['transmission_host'] : array();
+        if (!extension_loaded('curl')) {
+            Errors::add('transmission extension', 'Curl PHP extension not installed');
+            return;
+        }
 
-        // Path to home dir folder
-        $this->_folder = array_key_exists('transmission_folder', $settings) && is_dir($settings['transmission_folder']) && is_readable($settings['transmission_folder']) ? $settings['transmission_folder'] : false;
+        // See https://trac.transmissionbt.com/browser/trunk/extras/rpc-spec.txt for docs here
+        // 1) Hit the API and get back a 409 with a token in the X-Transmission-Session-Id header
+        // 2) Pass that token in as a header in the next request which will get our list of torrents
+
+        $curl = curl_init();
+
+        if (!$curl) {
+            Errors::add('transmission extension', 'failed initializing curl');
+            return;
+        }
+
+        $url = $this->_url . '/transmission/rpc';
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_HEADER  => true,
+            CURLOPT_RETURNTRANSFER  => true,
+        ]);
+
+        $result = curl_exec($curl);
+
+        if (!$result) {
+            Errors::add('transmission extension', 'failed running curl to get token');
+            return;
+        }
+
+        if(!preg_match('/X-Transmission-Session-Id: (\S+)/', $result, $m)) {
+            Errors::add('transmission extension', 'Failed parsing token');
+            return;
+        }
+
+        $token = $m[1];
+
+        $postdata = json_encode([
+            'method' => 'torrent-get',
+            'arguments' => [
+                'fields'=> [
+                    'name',
+                    'percentDone',
+                    'rateDownload',
+                    'rateUpload',
+                    'leftUntilDone',
+                    'eta',
+                    'status',
+                    'uploadRatio',
+                    'downloadedEver',
+                    'uploadedEver',
+                ]
+            ]
+        ]);
+
+
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => ['X-Transmission-Session-Id: '.$token],
+            CURLOPT_URL => $url,
+            CURLOPT_POSTFIELDS => $postdata,
+            CURLOPT_HEADER  => false,
+        ]);
+
+        $result = curl_exec($curl);
+
+        curl_close($curl);
+
+        if (!$result) {
+            Errors::add('transmission extension', 'failed running curl to get data');
+            return;
+        }
+
+        $response = json_decode($result, true);
+
+        if (!$response) {
+            Errors::add('transmission extension', 'failed decoding transmission response as json');
+            return;
+        }
+
+        if ($response['result'] != 'success') {
+            Errors::add('transmission extension', 'transmission API call was not successful: '.$response['result']);
+            return;
+        }
+
+        return $response['arguments']['torrents'];
+
     }
 
     /**
@@ -101,10 +173,8 @@ class Transmission implements Extension
      */
     private function _call()
     {
-        // Time this
         $t = new Timer('Transmission extension');
 
-        // Deal with stats, if possible
         if ($this->_folder && ($stats_contents = Common::getContents($this->_folder.'stats.json', false)) && $stats_contents != false) {
             $stats_vals = @json_decode($stats_contents, true);
             if (is_array($stats_vals)) {
@@ -112,86 +182,50 @@ class Transmission implements Extension
             }
         }
 
-        // Deal with calling it
-        try {
-            // Start up args
-            $args = '';
-
-            // Specifc host/port?
-            if (array_key_exists('server', $this->_host) && array_key_exists('port', $this->_host) && is_numeric($this->_host['port'])) {
-                $args .= ' \''.$this->_host['server'].'\':'.$this->_host['port'];
-            }
-
-            // We need some auth?
-            if (array_key_exists('user', $this->_auth) && array_key_exists('pass', $this->_auth)) {
-                $args .= ' --auth=\''.$this->_auth['user'].'\':\''.$this->_auth['pass'].'\'';
-            }
-
-            // Rest of it, including result
-            $result = $this->_CallExt->exec('transmission-remote', $args.' -l');
-        } catch (Exception $e) {
-            // messed up somehow
-            Errors::add('Transmission extension: ', $e->getMessage());
-            $this->_res = false;
-
-            // Don't bother going any further
-            return;
-        }
-
         $this->_res = true;
 
-        // Get first line
-        $first_line = reset(explode("\n", $result, 1));
+        $torrents = $this->hit_api();
 
-        // Invalid host?
-        if (strpos($first_line, 'Couldn\'t resolve host name') !== false) {
-            Errors::add('Transmission extension: Invalid Host');
+        if (!$torrents) {
             $this->_res = false;
-
             return;
         }
 
-        // Invalid auth?
-        if (strpos($first_line, '401: Unauthorized') !== false) {
-            Errors::add('Transmission extension: Invalid Authentication');
-            $this->_res = false;
+        // See $transmission_url/transmission/web/javascript/torrent.js
+        $status_map = [
+            'Stopped',
+            'CheckWait',
+            'Check',
+            'DownloadWait',
+            'Downloading',
+            'SeedWait',
+            'Seeding',
+        ];
 
-            return;
+        $sort_done = [];
+        $sort_ratio = [];
+        $sort_name = [];
+
+        foreach($torrents as $torrent) {
+
+            $this->_torrents[] = array(
+                'done' => $torrent['percentDone'] * 100,
+                'have' => $torrent['downloadedEver'],
+                'uploaded' => $torrent['uploadedEver'],
+                'eta' => $torrent['eta'],
+                'up' => $torrent['rateUpload'] * 1024, // always in KIB
+                'down' => $torrent['rateDownload'] * 1024, // ^
+                'ratio' => $torrent['uploadRatio'],
+                'state' => $status_map[$torrent['status']],
+                'torrent' => $torrent['name'],
+            );
+
+            $sort_done[] = $torrent['percentDone'];
+            $sort_ratio[] = (float) $torrent['uploadRatio'];
+            $sort_name[] = $torrent['name'];
         }
 
-        // Match teh torrents!
-        if (preg_match_all('/^\s+(\d+)\*?\s+(\d+)\%\s+(\d+\.\d+ \w+|None)\s+((?:\d+ )?\w+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+|None)\s+(Up & Down|Seeding|Idle|Stopped)\s+(.+)$/m', $result, $matches, PREG_SET_ORDER) > 0) {
-
-            // Use this to sort them
-            $sort_done = array();
-            $sort_ratio = array();
-            $sort_name = array();
-
-            // Save the matches
-            for ($i = 0, $num = count($matches); $i < $num; ++$i) {
-
-                // Save this one
-                $this->_torrents[$i] = array(
-                    'id' => $matches[$i][1],
-                    'done' => $matches[$i][2],
-                    'have' => $matches[$i][3],
-                    'eta' => $matches[$i][4],
-                    'up' => $matches[$i][5] * 1024, // always in KIB
-                    'down' => $matches[$i][6] * 1024, // ^
-                    'ratio' => $matches[$i][7],
-                    'state' => $matches[$i][8],
-                    'torrent' => $matches[$i][9],
-                );
-
-                // Use this for sorting
-                $sort_done[$i] = (int) $matches[$i][2];
-                $sort_ratio[$i] = (float) $matches[$i][7];
-                $sort_name[$i] = $matches[$i][9];
-            }
-
-            // Sort
-            array_multisort($sort_done, SORT_DESC, $sort_ratio, SORT_DESC, $sort_name, SORT_ASC, $this->_torrents);
-        }
+        array_multisort($sort_done, SORT_DESC, $sort_ratio, SORT_DESC, $sort_name, SORT_ASC, $this->_torrents);
     }
 
     /**
@@ -209,16 +243,12 @@ class Transmission implements Extension
      */
     public function result()
     {
-        // Don't bother if it didn't go well
         if ($this->_res === false) {
             return false;
         }
-        // it did; continue
 
-        // Store rows here
-        $rows = array();
+        $rows = [];
 
-        // Start showing connections
         $rows[] = array(
             'type' => 'header',
             'columns' => array(
@@ -234,7 +264,6 @@ class Transmission implements Extension
             ),
         );
 
-        // No torrents?
         if (count($this->_torrents) == 0) {
             $rows[] = array(
                 'type' => 'none',
@@ -244,95 +273,58 @@ class Transmission implements Extension
             );
         } else {
 
-            // Store a total amount of certain torrents here:
-            $status_tally = array();
+            $status_tally = [];
 
-            // As well as uploaded/downloaded
             $status_tally['Downloaded'] = 0;
             $status_tally['Uploaded'] = 0;
-            $status_tally['Ratio'] = '';
 
-            // Go through each torrent
             foreach ($this->_torrents as $torrent) {
 
-                // Status count tally
                 $status_tally[$torrent['state']] = !array_key_exists($torrent['state'], $status_tally) ? 1 : $status_tally[$torrent['state']] + 1;
+                $have_bytes = $torrent['have'];
+                $uploaded_bytes = $torrent['uploaded'];
 
-                // Make some sense of the have so we can get it into bytes, which we can then have fun with
-                $have_bytes = false;
-                if ($torrent['have'] != 'None') {
-                    $have_parts = explode(' ', $torrent['have'], 2);
-                    if (is_numeric($have_parts[0]) && $have_parts[0] > 0) {
-                        switch ($have_parts[1]) {
-                            case 'TiB':
-                                $have_bytes = (float) $have_parts[0] * 1099511627776;
-                            break;
-                            case 'GiB':
-                                $have_bytes = (float) $have_parts[0] * 1073741824;
-                            break;
-                            case 'MiB':
-                                $have_bytes = (float) $have_parts[0] * 1048576;
-                            break;
-                            case 'KiB':
-                                $have_bytes = (float) $have_parts[0] * 1024;
-                            break;
-                        }
-                    }
-                }
-
-                // Try getting amount uploaded, based upon ratio and exact amount downloaded above
-                $uploaded_bytes = false;
-                if (is_numeric($have_bytes) && $have_bytes > 0 && is_numeric($torrent['ratio']) && $torrent['ratio'] > 0) {
-                    $uploaded_bytes = $torrent['ratio'] * $have_bytes;
-                }
-
-                // Save amount uploaded/downloaded tally
                 if (is_numeric($have_bytes) && $have_bytes > 0 && is_numeric($uploaded_bytes) && $uploaded_bytes > 0) {
                     $status_tally['Downloaded'] += $have_bytes;
                     $status_tally['Uploaded'] += $uploaded_bytes;
                 }
 
-                // Save result
                 $rows[] = array(
                     'type' => 'values',
                     'columns' => array(
                         wordwrap(htmlspecialchars($torrent['torrent']), 50, ' ', true),
+
                         '<div class="bar_chart">
-							<div class="bar_inner" style="width: '.(int) $torrent['done'].'%;">
-								<div class="bar_text">
-									'.($torrent['done'] ? $torrent['done'].'%' : '0%').'
-								</div>
-							</div>
-						</div>
-						',
+                          <div class="bar_inner" style="width: '.(int) $torrent['done'].'%;">
+                            <div class="bar_text">
+                              '.($torrent['done'] ? $torrent['done'].'%' : '0%').'
+                            </div>
+                          </div>
+                        </div>',
+
                         $torrent['state'],
                         $have_bytes !== false ? Common::byteConvert($have_bytes) : $torrent['have'],
                         $uploaded_bytes !== false ? Common::byteConvert($uploaded_bytes) : 'None',
-                        $torrent['eta'],
-                        $torrent['ratio'],
+                        $torrent['eta'] == -1 ? 'N/A' : Common::secondsConvert($torrent['eta']),
+                        max(0, $torrent['ratio']),
                         Common::byteConvert($torrent['up']).'/s',
                         Common::byteConvert($torrent['down']).'/s',
                     ),
                 );
             }
 
-            // Finish the size totals
             $status_tally['Ratio'] = $status_tally['Downloaded'] > 0 && $status_tally['Uploaded'] > 0 ? round($status_tally['Uploaded'] / $status_tally['Downloaded'], 2) : 'N/A';
             $status_tally['Downloaded'] = $status_tally['Downloaded'] > 0 ? Common::byteConvert($status_tally['Downloaded']) : 'None';
             $status_tally['Uploaded'] = $status_tally['Uploaded'] > 0 ? Common::byteConvert($status_tally['Uploaded']) : 'None';
 
-            // Create a row for the tally of statuses
             if (count($status_tally) > 0) {
 
-                // Store list of k: v'ish values here
-                $tally_contents = array();
+                $tally_contents = [];
 
-                // Populate that
                 foreach ($status_tally as $state => $tally) {
-                    $tally_contents[] = "$state: $tally";
+                    $tally_contents[] = $state.': '.$tally;
                 }
 
-                // Save this final row
                 $rows[] = array(
                     'type' => 'values',
                     'columns' => array(
@@ -342,7 +334,6 @@ class Transmission implements Extension
             }
         }
 
-        // Handle stats which might not exist
         if (
             is_array($this->_stats) &&
             array_key_exists('downloaded-bytes', $this->_stats) &&
@@ -362,7 +353,6 @@ class Transmission implements Extension
             $extra_vals = false;
         }
 
-        // Give it off
         return array(
             'root_title' => 'Transmission Torrents',
             'rows' => $rows,
