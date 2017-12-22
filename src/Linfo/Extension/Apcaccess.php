@@ -7,28 +7,28 @@ This lets you view the command output of the APC program apcaccess.
 Make sure that you have your UPS connected correctly, the apc package installed, and that
 running apcaccess produces output you find interesting enough for Linfo to display.
 
-Installation: 
+Installation:
  - The following lines must be added to your config.inc.php:
-   $settings['extensions']['apcaccess'] = true; 
+   $settings['extensions']['apcaccess'] = true;
 
 */
 
 /*
  * This file is part of Linfo (c) 2011 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
 */
 
 namespace Linfo\Extension;
@@ -41,7 +41,7 @@ use Linfo\Meta\Timer;
 use Exception;
 
 /*
- * Get status on apcaccess volumes. 
+ * Get status on apcaccess volumes.
  */
 class Apcaccess implements Extension
 {
@@ -131,7 +131,7 @@ class Apcaccess implements Extension
 			';
         }
 
-        // Attempt getting wattage 
+        // Attempt getting wattage
         if (isset($load) && preg_match('/^NOMPOWER\s+:\s+(\d+)/m', $result, $m)) {
             $watts = (int) $m['1'];
             $this->_res['watts_used'] = $load * round($watts / 100);

@@ -42,17 +42,17 @@ Known to work with this verson of uTorrent:
 
 /**
  * This file is part of Linfo (c) 2014 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo.	If not, see <http://www.gnu.org/licenses/>.
  */
@@ -147,11 +147,11 @@ class Utorrent implements Extension
 
         $token_url = sprintf(self::TOKEN_URL, $this->connectionSettings['host'], $this->connectionSettings['port']);
 
-        // Start up our curl session to be used for both requests. It is going to store the cookies utorrent 
+        // Start up our curl session to be used for both requests. It is going to store the cookies utorrent
         // uses
         $curl = curl_init();
 
-        // For curl to actually process cokies we need to give it a filename. This should be filed as a 
+        // For curl to actually process cokies we need to give it a filename. This should be filed as a
         // bug to curl, especially since something like /dev/null works
         $this->cookiefile = tempnam('/tmp', 'linfo_utorrent');
 
@@ -174,7 +174,7 @@ class Utorrent implements Extension
             return;
         }
 
-        // Get list of torrents? Do our best to forge this (ajax) request 
+        // Get list of torrents? Do our best to forge this (ajax) request
         curl_setopt_array($curl, array(
             CURLOPT_HTTPHEADER => array(
              'X-Requested-With: XMLHttpRequest',

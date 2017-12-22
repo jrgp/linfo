@@ -2,17 +2,17 @@
 
 /**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -56,7 +56,7 @@ class Hwpci
         // Prefer json, but check for it
         $this->_use_json = function_exists('json_encode') && function_exists('json_decode');
 
-        // Allow the same web root to be used for multiple insances of linfo, across multiple machines using 
+        // Allow the same web root to be used for multiple insances of linfo, across multiple machines using
         // nfs or whatever, and to have a different cache file for each
         $sys_id = is_readable('/proc/sys/kernel/hostname') ?
             '_'.substr(md5(Common::getContents('/proc/sys/kernel/hostname')), 0, 10) : '_x';
@@ -103,7 +103,7 @@ class Hwpci
                 $this->_usb_entries[str_pad($match[1], 4, '0', STR_PAD_LEFT)][str_pad($match[2], 4, '0', STR_PAD_LEFT)] = 1;
             }
 
-            // And next modalias 
+            // And next modalias
             elseif (is_readable($path.'/modalias') &&
                 preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', Common::getContents($path.'/modalias'), $match)) {
                 $this->_usb_entries[strtolower($match[1])][strtolower($match[2])] = 1;

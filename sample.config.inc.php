@@ -9,7 +9,7 @@
 $settings['byte_notation'] = 1024; // Either 1024 or 1000; defaults to 1024
 $settings['dates'] = 'm/d/y h:i A (T)'; // Format for dates shown. See php.net/date for syntax
 $settings['language'] = 'en'; // Refer to the lang/ folder for supported lanugages
-$settings['icons'] = true; // simple icons 
+$settings['icons'] = true; // simple icons
 $settings['theme'] = 'default'; // Theme file (layout/theme_$n.css). Look at the contents of the layout/ folder for other themes.
 
 /*
@@ -31,7 +31,7 @@ $settings['show']['phpversion'] = false; // Might be dangerous/confidential info
 $settings['show']['network'] = true;
 $settings['show']['uptime'] = true;
 $settings['show']['cpu'] = true;
-$settings['show']['process_stats'] = true; 
+$settings['show']['process_stats'] = true;
 $settings['show']['hostname'] = true;
 $settings['show']['distro'] = true; # Attempt finding name and version of distribution on Linux systems
 $settings['show']['devices'] = true; # Slow on old systems
@@ -42,15 +42,15 @@ $settings['show']['virtualization'] = true; # whether this is a VPS/VM and what 
 // CPU Usage on Linux (per core and overall). This requires running sleep(1) once so it slows
 // the entire page load down. Enable at your own inconvenience, especially since the load averages
 // are more useful.
-$settings['cpu_usage'] = false; 
+$settings['cpu_usage'] = false;
 
-// Sometimes a filesystem mount is mounted more than once. Only list the first one I see? 
+// Sometimes a filesystem mount is mounted more than once. Only list the first one I see?
 // (note, duplicates are not shown twice in the file system totals)
 $settings['show']['duplicate_mounts'] = true;
 
 // Disabled by default as they require extra config below
 $settings['show']['temps'] = false;
-$settings['show']['raid'] = false; 
+$settings['show']['raid'] = false;
 
 // Following are probably only useful on laptop/desktop/workstation systems, not servers, although they work just as well
 $settings['show']['battery'] = false;
@@ -153,7 +153,7 @@ $settings['compress_content'] = true;
 /*
  * Occasional sudo
  * Sometimes you may want to have one of the external commands here be ran as root with
- * sudo. This requires the web server user be set to "NOPASS" in your sudoers so the sudo 
+ * sudo. This requires the web server user be set to "NOPASS" in your sudoers so the sudo
  * command just works without a prompt.
  *
  * Add names of commands to the array if this is what you want. Just the name of the command;

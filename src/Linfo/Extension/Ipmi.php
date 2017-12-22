@@ -4,11 +4,11 @@
 
 This implements a ipmi status checker for temps/voltages
 
-Installation: 
+Installation:
  - The following lines must be added to your config.inc.php:
-   $settings['extensions']['ipmi'] = true; 
+   $settings['extensions']['ipmi'] = true;
 
- - The ipmitool command most likely needs to be run as root, so, 
+ - The ipmitool command most likely needs to be run as root, so,
    if you don't have php running as root, configure sudo appropriately
    for the user the php scripts are running as, comment out 'Defaults    requiretty' in your sudoers
    file, and add 'ipmitool' to the $settings['sudo_apps'] array in config.inc.php
@@ -17,20 +17,20 @@ Installation:
 
 /*
  * This file is part of Linfo (c) 2011 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
 */
 
 namespace Linfo\Extension;

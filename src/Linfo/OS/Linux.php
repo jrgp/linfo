@@ -2,17 +2,17 @@
 
 /**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -32,7 +32,7 @@ use Exception;
  * Get info on a usual linux system
  * Works by exclusively looking around /proc and /sys
  * Totally ignores CallExt class, very deliberately
- * Also deliberately ignores trying to find out the distro. 
+ * Also deliberately ignores trying to find out the distro.
  */
 class Linux extends Unixcommon
 {
@@ -69,7 +69,7 @@ class Linux extends Unixcommon
 
     /**
      * getKernel.
-     * 
+     *
      * @return string kernel version
      */
     public function getKernel()
@@ -106,7 +106,7 @@ class Linux extends Unixcommon
 
     /**
      * getHostName.
-     * 
+     *
      * @return string the host name
      */
     public function getHostName()
@@ -136,7 +136,7 @@ class Linux extends Unixcommon
 
     /**
      * getRam.
-     * 
+     *
      * @return array the memory information
      */
     public function getRam()
@@ -201,7 +201,7 @@ class Linux extends Unixcommon
 
     /**
      * getCPU.
-     * 
+     *
      * @return array of cpu info
      */
     public function getCPU()
@@ -356,7 +356,7 @@ class Linux extends Unixcommon
 
     /**
      * getHD.
-     * 
+     *
      * @return array the hard drive info
      */
     public function getHD()
@@ -417,7 +417,7 @@ class Linux extends Unixcommon
 
     /**
      * getTemps.
-     * 
+     *
      * @return array the temps
      */
     public function getTemps()
@@ -562,8 +562,8 @@ class Linux extends Unixcommon
                 $return = array_merge($return, $hwmon_vals);
             }
         }
-        
-        // thermal_zone? 
+
+        // thermal_zone?
         if (array_key_exists('thermal_zone', (array) $this->settings['temps']) && !empty($this->settings['temps']['thermal_zone'])) {
 
             // Store them here
@@ -573,7 +573,7 @@ class Linux extends Unixcommon
             foreach ((array) @glob('/sys/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE) as $path) {
                 $labelpath = $path.DIRECTORY_SEPARATOR.'type';
                 $valuepath = $path.DIRECTORY_SEPARATOR.'temp';
-                
+
                 if (!is_file($labelpath) || !is_file($valuepath)) {
                     continue;
                 }
@@ -624,7 +624,7 @@ class Linux extends Unixcommon
 
     /**
      * getMounts.
-     * 
+     *
      * @return array the mounted the file systems
      */
     public function getMounts()
@@ -711,7 +711,7 @@ class Linux extends Unixcommon
 
     /**
      * getDevs.
-     * 
+     *
      * @return array of devices
      */
     public function getDevs()
@@ -747,7 +747,7 @@ class Linux extends Unixcommon
 
     /**
      * getRAID.
-     * 
+     *
      * @return array of raid arrays
      */
     public function getRAID()
@@ -844,7 +844,7 @@ class Linux extends Unixcommon
 
     /**
      * getLoad.
-     * 
+     *
      * @return array of current system load values
      */
     public function getLoad()
@@ -879,7 +879,7 @@ class Linux extends Unixcommon
 
     /**
      * getNet.
-     * 
+     *
      * @return array of network devices
      */
     public function getNet()
@@ -988,7 +988,7 @@ class Linux extends Unixcommon
 
     /**
      * getBattery.
-     * 
+     *
      * @return array of battery status
      */
     public function getBattery()
@@ -1047,7 +1047,7 @@ class Linux extends Unixcommon
 
     /**
      * getWifi.
-     * 
+     *
      * @return array of wifi devices
      */
     public function getWifi()
@@ -1097,7 +1097,7 @@ class Linux extends Unixcommon
 
     /**
      * getSoundCards.
-     * 
+     *
      * @return array of soundcards
      */
     public function getSoundCards()
@@ -1141,7 +1141,7 @@ class Linux extends Unixcommon
 
     /**
      * getProcessStats.
-     * 
+     *
      * @return array of process stats
      */
     public function getProcessStats()
@@ -1222,7 +1222,7 @@ class Linux extends Unixcommon
 
     /**
      * getServices.
-     * 
+     *
      * @return array the services
      */
     public function getServices()
@@ -1381,7 +1381,7 @@ class Linux extends Unixcommon
 
     /**
      * getDistro.
-     * 
+     *
      * @return array the distro,version or false
      */
     public function getDistro()
@@ -1392,8 +1392,8 @@ class Linux extends Unixcommon
             $t = new Timer('Determining Distrobution');
         }
 
-        // Seems the best way of doing it, as opposed to calling 'lsb_release -a', parsing /etc/issue, or 
-        // just checking if distro specific version files exist without actually parsing them: 
+        // Seems the best way of doing it, as opposed to calling 'lsb_release -a', parsing /etc/issue, or
+        // just checking if distro specific version files exist without actually parsing them:
         // - Allows multiple files of the same name for different distros/versions of distros, provided each
         // - uses different regular expression syntax.
         // - Also permits files that contain only the distro release version and nothing else,
@@ -1521,7 +1521,7 @@ class Linux extends Unixcommon
 
      /**
       * getNumLoggedIn.
-      * 
+      *
       * @return number of logged in users with shells
       */
      public function getNumLoggedIn()
@@ -1539,7 +1539,7 @@ class Linux extends Unixcommon
             // Does the process match a popular shell, such as bash, csh, etc?
             if (preg_match('/(?:bash|csh|zsh|ksh)$/', Common::getContents($proc, ''))) {
 
-                // Who owns it, anyway? 
+                // Who owns it, anyway?
                 $owner = fileowner(dirname($proc));
 
                 // Careful..
@@ -1591,7 +1591,7 @@ class Linux extends Unixcommon
         if (strpos(Common::getContents('/proc/mounts'), 'lxcfs /proc/') !== false) {
             return array('type' => 'guest', 'method' => 'LXC');
         }
-        
+
         // Docker guest?
         if (is_file('/.dockerenv') || is_file('/.dockerinit') || strpos(Common::getContents('/proc/1/cgroup'), 'docker') !== false) {
             return array('type' => 'guest', 'method' => 'Docker');

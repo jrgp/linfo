@@ -2,20 +2,20 @@
 
 /*
  * This file is part of Linfo (c) 2010, 2012 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
 */
 
 namespace Linfo\OS;
@@ -62,7 +62,7 @@ class Darwin extends BSDcommon
             'hw.model',
         ), false);
 
-        // And get this info for when the above fails 
+        // And get this info for when the above fails
         try {
             $this->systemProfiler = $this->exec->exec('system_profiler', 'SPHardwareDataType SPSoftwareDataType SPPowerDataType');
         } catch (Exception $e) {
@@ -174,9 +174,9 @@ class Darwin extends BSDcommon
         //
         // Example output:
         // Name  Mtu   Network       Address            Ipkts Ierrs     Ibytes    Opkts Oerrs     Obytes  Coll Drop
-        // lo0   16384 <Link#1>                          1945     0     429565     1945     0     429565     0 
-        // en0   1500  <Link#4>    58:b0:35:f9:fd:2b        0     0          0        0     0      59166     0 
-        // fw0   4078  <Link#6>    d8:30:62:ff:fe:f5:c8:9c        0     0          0        0     0        346     0 
+        // lo0   16384 <Link#1>                          1945     0     429565     1945     0     429565     0
+        // en0   1500  <Link#4>    58:b0:35:f9:fd:2b        0     0          0        0     0      59166     0
+        // fw0   4078  <Link#6>    d8:30:62:ff:fe:f5:c8:9c        0     0          0        0     0        346     0
         if (preg_match_all(
             '/^
 			([a-z0-9*]+)\s*  # Name
@@ -267,7 +267,7 @@ class Darwin extends BSDcommon
         return $return;
     }
 
-    // Get uptime 
+    // Get uptime
     public function getUpTime()
     {
 

@@ -2,28 +2,28 @@
 
 /*
 
-This implements a ddhcpd.leases parser for dhcp3 servers. 
+This implements a ddhcpd.leases parser for dhcp3 servers.
 
-Installation: 
+Installation:
  - The following lines must be added to your config.inc.php:
-   $settings['extensions']['dhcpd3_leases'] = true; 
+   $settings['extensions']['dhcpd3_leases'] = true;
    $settings['dhcpd3_hide_mac'] = true;  // set to false to show mac addresses
 
 */
 
 /**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -70,7 +70,7 @@ class Dhcpd3_leases implements Extension
             '/var/lib/dhcp3/dhcpd.leases',    // debian/ubuntu/others probably
             '/var/lib/dhcpd/dhcpd.leases',    // Possibly redhatish distros and others
             '/var/state/dhcp/dhcpd.leases',    // Arch linux, maybe others
-            '/var/db/dhcpd/dhcpd.leases',    // FreeBSD 
+            '/var/db/dhcpd/dhcpd.leases',    // FreeBSD
             '/var/db/dhcpd.leases',        // OpenBSD/NetBSD/Darwin(lol)/DragonFLY afaik
         ));
     }
@@ -190,7 +190,7 @@ class Dhcpd3_leases implements Extension
                 // The file seems to contain all leases since the dhcpd server was started for the first time
                 if (time() > $curr['lease_end']) {
 
-                    // Kill current entry and ignore any following parts of this lease 
+                    // Kill current entry and ignore any following parts of this lease
                     $curr = false;
 
                     // Jump out right now
@@ -220,7 +220,7 @@ class Dhcpd3_leases implements Extension
 
     /**
      * Return result.
-     * 
+     *
      * @return false on failure|array of the leases
      */
     public function result()
