@@ -17,9 +17,6 @@
  * along with Linfo.	If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Keep out hackers...
- */
 namespace Linfo\OS;
 
 use Linfo\Exceptions\FatalException;
