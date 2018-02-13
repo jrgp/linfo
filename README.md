@@ -71,6 +71,7 @@ var_dump($parser->getCPU()); // and a whole lot more
    - CUPS printer status
    - IPMI
    - libvirt VMs
+   - lxd Containers
    - more
 
 ## System requirements:
