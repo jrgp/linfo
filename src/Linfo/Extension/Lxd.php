@@ -113,7 +113,7 @@ class Lxd implements Extension
       $sock = fsockopen($this->sock_path);
 
       if (!$sock) {
-          Errors::add('lxd extension', 'Error connecting to socket ' + $this->sock_path);
+          Errors::add('lxd extension', 'Error connecting to socket ' . $this->sock_path);
           return false;
       }
 
