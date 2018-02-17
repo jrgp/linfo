@@ -9,7 +9,7 @@
     "cpu"
   ],
   "homepage":"http://github.com/jrgp/linfo",
-  "license":"GPL",
+  "license":"GPL-2.0-or-later",
   "authors":[
     {
       "name":"Joe Gillotti",
