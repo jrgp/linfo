@@ -6,7 +6,7 @@ This grabs wattages and temps for nvidia cards by using nvidia-smi
 
 Installation:
  - The following lines must be added to your config.inc.php:
-   $settings['extensions']['ipmi'] = true;
+   $settings['extensions']['nvidia'] = true;
 
 */
 
