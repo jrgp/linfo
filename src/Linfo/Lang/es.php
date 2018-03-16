@@ -25,7 +25,7 @@ namespace Linfo\Lang;
  */
 
 return array(
-    'header' => 'Salud del Sistema e Información',
+    'header' => 'Salud e Información del Sistema',
     'core' => 'Core',
     'os' => 'SO',
     'kernel' => 'Kernel',
