@@ -29,7 +29,7 @@ return array(
     'core' => 'Core',
     'os' => 'SO',
     'kernel' => 'Kernel',
-    'accessed_ip' => 'Accessed IP',
+    'accessed_ip' => 'IP Acceso',
     'uptime' => 'Tiempo Activo',
     'hostname' => 'Hostname',
     'cpus' => 'CPUs',
