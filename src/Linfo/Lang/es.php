@@ -25,11 +25,11 @@ namespace Linfo\Lang;
  */
 
 return array(
-    'header' => 'Salud del Sistema e Información',
+    'header' => 'Salud e Información del Sistema',
     'core' => 'Core',
     'os' => 'SO',
     'kernel' => 'Kernel',
-    'accessed_ip' => 'Accessed IP',
+    'accessed_ip' => 'IP Acceso',
     'uptime' => 'Tiempo Activo',
     'hostname' => 'Hostname',
     'cpus' => 'CPUs',
