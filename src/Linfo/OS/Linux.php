@@ -1389,7 +1389,7 @@ class Linux extends Unixcommon
 
         // Time?
         if (!empty($this->settings['timer'])) {
-            $t = new Timer('Determining Distrobution');
+            $t = new Timer('Determining Distribution');
         }
 
         // Seems the best way of doing it, as opposed to calling 'lsb_release -a', parsing /etc/issue, or
