@@ -25,7 +25,7 @@ namespace Linfo\Lang;
  */
 
 return array(
-    'header'            => 'اطلعات سرور',
+    'header'            => 'اطلاعات سرور',
     'core'              => 'هسته',
     'os'                => 'سیستم‌عامل',
     'kernel'            => 'کرنل',
@@ -99,7 +99,7 @@ return array(
     'cpu_arch'          => 'معماری',
     'model'             => 'مدل',
     'numLoggedIn'       => 'کاربارن فعال',
-    'virtualization'    => 'مچازی‌سازی',
+    'virtualization'    => 'مجازی‌سازی',
     'guest'             => 'مهمان',
     'host'              => 'هاست',
     'cpu_usage'         => 'استفاده کلی از سی‌پی‌یو',
