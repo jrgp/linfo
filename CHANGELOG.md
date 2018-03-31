@@ -1,4 +1,13 @@
-# v.3.0.1 8/24/2016
+# v3.0.2 3/30/2018
+
+- New extensions for Nvidia temps/stats, LXD containers,
+- Modernized transmission extension
+- Ability to change theme on demand in the UI
+- Persian and Spanish translations
+- More themes
+- Lots of bugfixes
+
+# v3.0.1 8/24/2016
 
 # v3.0.0 10/21/2015
  - Full code reorganization. Uses namespaces now. Easily used as a library from within composer
