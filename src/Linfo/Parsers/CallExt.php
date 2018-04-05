@@ -34,7 +34,7 @@ use Exception;
  */
 class CallExt
 {
-    protected static $settings = array();
+    protected static $settings = [];
 
     public static function config(Linfo $linfo)
     {
@@ -53,14 +53,14 @@ class CallExt
      *
      * @var array
      */
-    protected $cliCache = array();
+    protected $cliCache = [];
 
     /**
      * Store paths to look for executables here.
      *
      * @var array
      */
-    protected $searchPaths = array();
+    protected $searchPaths = [];
 
     /**
      * Say where we'll search for execs.

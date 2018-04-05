@@ -51,16 +51,16 @@ class Sensord
          */
         $file = '/var/log/syslog';
         if (!is_file($file) || !is_readable($file)) {
-            return array();
+            return [];
         }
-        $devices = array();
+        $devices = [];
         foreach (Common::getLines($file) as $line) {
             if (preg_match('/\w+\s*\d+ \d{2}:\d{2}:\d{2} \w+ sensord:\s*(.+):\s*(.+)/i', trim($line), $match) == 1) {
                 // Replace current record of dev with updated temp
                 $devices[$match[1]] = $match[2];
             }
         }
-        $return = array();
+        $return = [];
         foreach ($devices as $dev => $stat) {
             $return[] = array(
                 'path' => 'N/A', // These likely won't have paths

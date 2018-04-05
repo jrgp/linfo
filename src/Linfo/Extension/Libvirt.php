@@ -53,9 +53,9 @@ use Linfo\Meta\Timer;
 class Libvirt implements Extension
 {
     private
-        $VMs = array(),
+        $VMs = [],
         $connection = false,
-        $connectionSettings = array(),
+        $connectionSettings = [],
         $hypervisor = false,
         $res = false;
 
@@ -128,7 +128,7 @@ class Libvirt implements Extension
                 $info['autostart'] = 'N/A';
             }
 
-            $info['nets'] = array();
+            $info['nets'] = [];
 
             $nets = @libvirt_domain_get_interface_devices($domain);
 
@@ -139,7 +139,7 @@ class Libvirt implements Extension
                 $info['nets'][] = $net;
             }
 
-            $info['storage'] = array();
+            $info['storage'] = [];
 
             foreach ((array) @libvirt_domain_get_disk_devices($domain) as $blockName) {
                 if (!is_string($blockName)) {
@@ -195,10 +195,10 @@ class Libvirt implements Extension
         $allram = 0;
 
         foreach ($this->VMs as $name => $info) {
-            $disks = array();
+            $disks = [];
 
             foreach ($info['storage'] as $disk) {
-                $extra_info = array();
+                $extra_info = [];
 
                 if (isset($disk['capacity'])) {
                     $extra_info[] = Common::byteConvert($disk['capacity'], 2) . ' size';

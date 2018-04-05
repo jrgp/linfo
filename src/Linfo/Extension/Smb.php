@@ -82,9 +82,9 @@ class Smb implements Extension
         $lines = explode("\n", $result);
 
         // Store temp stuff here
-        $connections = array();
-        $services = array();
-        $files = array();
+        $connections = [];
+        $services = [];
+        $files = [];
         $current_location = false;
 
         // Parse
@@ -175,7 +175,7 @@ class Smb implements Extension
         else {
 
             // Store rows here
-            $rows = array();
+            $rows = [];
 
             // Start showing connections
             $rows[] = array(

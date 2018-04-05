@@ -40,12 +40,12 @@ class Hwpci
         $_usb_file = '',
         $_pci_file = '',
         $_cache_file = '',
-        $_existing_cache_vals = array(),
-        $_usb_entries = array(),
-        $_pci_entries = array(),
-        $_usb_devices = array(),
-        $_pci_devices = array(),
-        $_result = array(),
+        $_existing_cache_vals = [],
+        $_usb_entries = [],
+        $_pci_entries = [],
+        $_usb_devices = [],
+        $_pci_devices = [],
+        $_result = [],
         $exec;
 
     /**
@@ -281,13 +281,13 @@ class Hwpci
             $save_cache = true;
             $this->_fetchPciNames();
         } else {
-            $this->_pci_devices = isset($this->_existing_cache_vals['hw']['pci']) ? $this->_existing_cache_vals['hw']['pci'] : array();
+            $this->_pci_devices = isset($this->_existing_cache_vals['hw']['pci']) ? $this->_existing_cache_vals['hw']['pci'] : [];
         }
         if (!$worthiness['usb']) {
             $save_cache = true;
             $this->_fetchUsbNames();
         } else {
-            $this->_usb_devices = isset($this->_existing_cache_vals['hw']['usb']) ? $this->_existing_cache_vals['hw']['usb'] : array();
+            $this->_usb_devices = isset($this->_existing_cache_vals['hw']['usb']) ? $this->_existing_cache_vals['hw']['usb'] : [];
         }
         if ($save_cache) {
             $this->_write_cache();

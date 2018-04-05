@@ -94,16 +94,16 @@ class OpenBSD extends BSDcommon
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
-            return array();
+            return [];
         }
 
         // Match that up
         if (preg_match_all('/^(\S+) on (\S+) type (\S+) \(.+\)$/m', $mount_res, $mount_matches, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // Store them here
-        $mounts = array();
+        $mounts = [];
 
         // Go through
         foreach ($mount_matches as $mount) {
@@ -137,10 +137,10 @@ class OpenBSD extends BSDcommon
     // Get memory usage statistics
     public function getRam()
     {
-        $return = array();
+        $return = [];
         $return['swapTotal'] = 0;
         $return['swapFree'] = 0;
-        $return['swapInfo'] = array();
+        $return['swapInfo'] = [];
 
         // Get amount of real hard ram, in bytes
         $return['total'] = $this->sysctl['hw.physmem'];
@@ -190,11 +190,11 @@ class OpenBSD extends BSDcommon
 
         // Match them
         if (preg_match_all('/([a-z]+\d+) at ([a-z]+)\d*.+ "(.+)"/m', $this->dmesg, $devices_match, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // Store them here
-        $devices = array();
+        $devices = [];
 
         // Stuff them
         foreach ($devices_match as $match) {
@@ -221,7 +221,7 @@ class OpenBSD extends BSDcommon
             $t = new Timer('CPU');
         }
 
-        $drives = array();
+        $drives = [];
         $curr_hd = false;
 
         // Parse dmesg
@@ -293,16 +293,16 @@ class OpenBSD extends BSDcommon
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error using `netstat` to get network info');
 
-            return array();
+            return [];
         }
 
         // Get initial matches
         if (preg_match_all('/^([a-z0-9]+)\*?\s+\d+\s+<Link>(?:\s+[a-z0-9\:]+)?\s+(\d+)\s+(\d+)$/m', $res, $net_matches, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // Store statuses for each here
-        $statuses = array();
+        $statuses = [];
 
         // Try using ifconfig to get statuses for each interface
         try {
@@ -320,8 +320,8 @@ class OpenBSD extends BSDcommon
         }
 
         // Get type from dmesg boot
-        $type = array();
-        $type_nics = array();
+        $type = [];
+        $type_nics = [];
 
         // Store the to-be detected nics here
         foreach ($net_matches as $net) {
@@ -344,7 +344,7 @@ class OpenBSD extends BSDcommon
         }
 
         // Save them here
-        $nets = array();
+        $nets = [];
 
         // Go through each
         foreach ($net_matches as $net) {
@@ -396,7 +396,7 @@ class OpenBSD extends BSDcommon
         }
 
         // Store them here
-        $cpus = array();
+        $cpus = [];
 
         // Stuff it with identical cpus
         for ($i = 0; $i < $this->sysctl['hw.ncpu']; ++$i) {

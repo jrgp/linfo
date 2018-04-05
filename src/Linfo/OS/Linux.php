@@ -47,7 +47,7 @@ class Linux extends Unixcommon
     protected $settings;
 
     // Generally disabled as it's slowww
-    protected $cpu_percent = array('overall' => false, 'cpus' => array());
+    protected $cpu_percent = array('overall' => false, 'cpus' => []);
 
     /**
      * Constructor. Localizes settings.
@@ -155,7 +155,7 @@ class Linux extends Unixcommon
         }
 
         // We'll return the contents of this
-        $return = array();
+        $return = [];
 
         // Files containing juicy info
         $procFileSwap = '/proc/swaps';
@@ -165,12 +165,12 @@ class Linux extends Unixcommon
         if (!is_readable($procFileSwap) || !is_readable($procFileMem)) {
             Errors::add('Linfo Core', '/proc/swaps and/or /proc/meminfo are not readable');
 
-            return array();
+            return [];
         }
 
         // To hold their values
-        $memVals = array();
-        $swapVals = array();
+        $memVals = [];
+        $swapVals = [];
 
         // Get memContents
         @preg_match_all('/^([^:]+)\:\s+(\d+)\s*(?:k[bB])?\s*/m', Common::getContents($procFileMem), $matches, PREG_SET_ORDER);
@@ -226,7 +226,7 @@ class Linux extends Unixcommon
         if (!is_file($file) || !is_readable($file)) {
             Errors::add('Linfo Core', '/proc/cpuinfo not readable');
 
-            return array();
+            return [];
         }
 
         /*
@@ -240,10 +240,10 @@ class Linux extends Unixcommon
         $lines = explode("\n", $contents);
 
         // Store CPUs here
-        $cpus = array();
+        $cpus = [];
 
         // Holder for current CPU info
-        $cur_cpu = array();
+        $cur_cpu = [];
 
         // Go through lines in file
         $num_lines = count($lines);
@@ -256,7 +256,7 @@ class Linux extends Unixcommon
             // Approaching new CPU? Save current and start new info for this
             if (strpos($lines[$i], $first_line) === 0 && count($cur_cpu) > 0) {
                 $cpus[] = $cur_cpu;
-                $cur_cpu = array();
+                $cur_cpu = [];
 
                 // Default to unknown
                 $cur_cpu['Model'] = 'Unknown';
@@ -375,7 +375,7 @@ class Linux extends Unixcommon
         }
 
         // Get partitions
-        $partitions = array();
+        $partitions = [];
         $partitions_contents = Common::getContents('/proc/partitions');
         if (@preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, PREG_SET_ORDER) > 0) {
             // Go through each match
@@ -388,7 +388,7 @@ class Linux extends Unixcommon
         }
 
         // Store drives here
-        $drives = array();
+        $drives = [];
 
         // Get actual drives
         foreach ((array) @glob('/sys/block/*/device/model', GLOB_NOSORT) as $path) {
@@ -436,7 +436,7 @@ class Linux extends Unixcommon
         }
 
         // Hold them here
-        $return = array();
+        $return = [];
 
         // hddtemp?
         if (array_key_exists('hddtemp', (array) $this->settings['temps']) && !empty($this->settings['temps']['hddtemp']) && isset($this->settings['hddtemp'])) {
@@ -518,7 +518,7 @@ class Linux extends Unixcommon
         if (array_key_exists('hwmon', (array) $this->settings['temps']) && !empty($this->settings['temps']['hwmon'])) {
 
             // Store them here
-            $hwmon_vals = array();
+            $hwmon_vals = [];
 
             // Wacky location
             foreach ((array) @glob('/sys/class/hwmon/hwmon*/{,device/}*_input', GLOB_NOSORT | GLOB_BRACE) as $path) {
@@ -574,7 +574,7 @@ class Linux extends Unixcommon
         if (array_key_exists('thermal_zone', (array) $this->settings['temps']) && !empty($this->settings['temps']['thermal_zone'])) {
 
             // Store them here
-            $thermal_zone_vals = array();
+            $thermal_zone_vals = [];
 
             // Wacky location
             foreach ((array) @glob('/sys/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE) as $path) {
@@ -656,7 +656,7 @@ class Linux extends Unixcommon
         }
 
         // Return these
-        $mounts = array();
+        $mounts = [];
 
         // Populate
         foreach ($match as $mount) {
@@ -695,7 +695,7 @@ class Linux extends Unixcommon
             if ($this->settings['show']['mounts_options'] && !in_array($mount[3], (array) $this->settings['hide']['fs_mount_options'])) {
                 $mount_options = explode(',', $mount[4]);
             } else {
-                $mount_options = array();
+                $mount_options = [];
             }
 
             // Might be good, go for it
@@ -766,7 +766,7 @@ class Linux extends Unixcommon
         }
 
         // Store it here
-        $raidinfo = array();
+        $raidinfo = [];
 
         // mdadm?
         if (array_key_exists('mdadm', (array) $this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
@@ -783,13 +783,13 @@ class Linux extends Unixcommon
             @preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks[^[]+\[(\d\/\d)\] \[([U\_]+)\]/mi', (string) $mdadm_contents, $match, PREG_SET_ORDER);
 
             // Store them here
-            $mdadm_arrays = array();
+            $mdadm_arrays = [];
 
             // Deal with entries
             foreach ((array) $match as $array) {
 
                 // Temporarily store drives here
-                $drives = array();
+                $drives = [];
 
                 // Parse drives
                 foreach (explode(' ', $array[4]) as $drive) {
@@ -871,14 +871,14 @@ class Linux extends Unixcommon
         // ugh
         if ($contents === false) {
             Errors::add('Linfo Core', '/proc/loadavg unreadable');
-            return array();
+            return [];
         }
 
         // Parts
         $parts = array_slice(explode(' ', $contents), 0, 3);
 
         if (!$parts) {
-            return array();
+            return [];
         }
 
         return array_combine(array('now', '5min', '15min'), $parts);
@@ -898,7 +898,7 @@ class Linux extends Unixcommon
         }
 
         // Hold our return values
-        $return = array();
+        $return = [];
 
         // Get values for each device
         foreach ((array) @glob('/sys/class/net/*', GLOB_NOSORT) as $path) {
@@ -1007,7 +1007,7 @@ class Linux extends Unixcommon
         }
 
         // Return values
-        $return = array();
+        $return = [];
 
         // Here they should be
         $bats = (array) @glob('/sys/class/power_supply/BAT*', GLOB_NOSORT);
@@ -1066,7 +1066,7 @@ class Linux extends Unixcommon
         }
 
         // Return these
-        $return = array();
+        $return = [];
 
         // In here
         $contents = Common::getContents('/proc/net/wireless');
@@ -1128,11 +1128,11 @@ class Linux extends Unixcommon
 
         // Parse
         if (preg_match_all('/^\s*(\d+)\s\[[\s\w]+\]:\s(.+)$/m', $contents, $matches, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // eh?
-        $cards = array();
+        $cards = [];
 
         // Deal with results
         foreach ($matches as $card) {
@@ -1242,17 +1242,17 @@ class Linux extends Unixcommon
 
         // We allowed?
         if (empty($this->settings['show']['services']) || !is_array($this->settings['services']) || count($this->settings['services']) == 0) {
-            return array();
+            return [];
         }
 
         // Temporarily keep statuses here
-        $statuses = array();
+        $statuses = [];
 
         $this->settings['services']['executables'] = (array) $this->settings['services']['executables'];
         $this->settings['services']['pidFiles'] = (array) $this->settings['services']['pidFiles'];
 
         // Convert paths of executables to PID files
-        $pids = array();
+        $pids = [];
         $do_process_search = false;
         if (count($this->settings['services']['executables']) > 0) {
             $potential_paths = @glob('/proc/*/cmdline');
@@ -1538,7 +1538,7 @@ class Linux extends Unixcommon
         $procs = glob('/proc/*/cmdline', GLOB_NOSORT);
 
         // Store unqiue users here
-        $users = array();
+        $users = [];
 
         // Each process
         foreach ($procs as $proc) {
@@ -1605,7 +1605,7 @@ class Linux extends Unixcommon
         }
 
         // Try getting kernel modules
-        $modules = array();
+        $modules = [];
          if (preg_match_all('/^(\S+)/m', Common::getContents('/proc/modules', ''), $matches, PREG_SET_ORDER)) {
              foreach ($matches as $match) {
                  $modules[] = $match[1];
@@ -1686,7 +1686,7 @@ class Linux extends Unixcommon
 
          // With each iteration we compare what we got to last time's version
          // as the file changes every milisecond or something
-         static $prev = array();
+         static $prev = [];
 
          // Using regex/explode is excessive here, not unlike rest of linfo :/
          $ret = sscanf($line, '%Lu %Lu %Lu %Lu %Lu %Lu %Lu %Lu');
@@ -1776,7 +1776,7 @@ class Linux extends Unixcommon
       */
      public function getModel()
      {
-         $info = array();
+         $info = [];
          $vendor = Common::getContents('/sys/devices/virtual/dmi/id/board_vendor', false);
          $name = Common::getContents('/sys/devices/virtual/dmi/id/board_name', false);
          $product = Common::getContents('/sys/devices/virtual/dmi/id/product_name', false);

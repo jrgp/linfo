@@ -54,7 +54,7 @@ class Dhcpd3_leases implements Extension
     private
         $_hide_mac,
         $_res,
-        $_leases = array();
+        $_leases = [];
 
     /**
      * localize important stuff.
@@ -234,7 +234,7 @@ class Dhcpd3_leases implements Extension
         }
 
         // Store rows here
-        $rows = array();
+        $rows = [];
 
         // Start showing connections
         $rows[] = array(

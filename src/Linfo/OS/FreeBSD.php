@@ -106,16 +106,16 @@ class FreeBSD extends BSDcommon
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
-            return array();
+            return [];
         }
 
         // Parse it
         if (preg_match_all('/^(\S+) on (\S+) \((\w+)(?:, (.+))?\)/m', $res, $m, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // Store them here
-        $mounts = array();
+        $mounts = [];
 
         // Deal with each entry
         foreach ($m as $mount) {
@@ -138,7 +138,7 @@ class FreeBSD extends BSDcommon
             ) {
                 $mount_options = explode(', ', $mount[4]);
             } else {
-                $mount_options = array();
+                $mount_options = [];
             }
 
             // Might be good, go for it
@@ -169,7 +169,7 @@ class FreeBSD extends BSDcommon
         }
 
         // We'll return the contents of this
-        $return = array();
+        $return = [];
 
         // Start us off at zilch
         $return['type'] = 'Virtual';
@@ -177,7 +177,7 @@ class FreeBSD extends BSDcommon
         $return['free'] = 0;
         $return['swapTotal'] = 0;
         $return['swapFree'] = 0;
-        $return['swapInfo'] = array();
+        $return['swapInfo'] = [];
 
         // Parse the vm.vmtotal sysctl entry
         if (!preg_match_all('/([a-z\ ]+):\s*\(Total: (\d+)\w,? Active:? (\d+)\w\)\n/i', $this->sysctl['vm.vmtotal'], $rm, PREG_SET_ORDER)) {
@@ -251,7 +251,7 @@ class FreeBSD extends BSDcommon
         }
 
         // Store raid arrays here
-        $return = array();
+        $return = [];
 
         // Counter for each raid array
         $i = 0;
@@ -340,7 +340,7 @@ class FreeBSD extends BSDcommon
         }
 
         // Store return vals here
-        $return = array();
+        $return = [];
 
         // Use netstat to get info
         try {
@@ -357,7 +357,7 @@ class FreeBSD extends BSDcommon
         }
 
         // Try using ifconfig to get states of the network interfaces
-        $statuses = array();
+        $statuses = [];
         try {
             // Output of ifconfig command
             $ifconfig = $this->exec->exec('ifconfig', '-a');
@@ -383,8 +383,8 @@ class FreeBSD extends BSDcommon
         }
 
         // Get type from dmesg boot
-        $type = array();
-        $type_nics = array();
+        $type = [];
+        $type_nics = [];
 
         // Store the to-be detected nics here
         foreach ($netstat_match as $net) {
@@ -466,7 +466,7 @@ class FreeBSD extends BSDcommon
         }
 
         // Store them here
-        $cpus = array();
+        $cpus = [];
 
         // Stuff it with identical cpus
         for ($i = 0; $i < $this->sysctl['hw.ncpu']; ++$i) {
@@ -492,7 +492,7 @@ class FreeBSD extends BSDcommon
         }
 
         // Keep them here
-        $drives = array();
+        $drives = [];
 
         // Must they change the format of everything with each release?!?!?!?!
         switch ($this->version) {
@@ -582,7 +582,7 @@ class FreeBSD extends BSDcommon
         }
 
         // Store them here
-        $batts = array();
+        $batts = [];
 
         // Get result of program
         try {
@@ -710,7 +710,7 @@ class FreeBSD extends BSDcommon
         if (preg_match('/([\d\.]+) ([\d\.]+) ([\d\.]+)/', $loads, $m)) {
             return array_combine(array('now', '5min', '15min'), array_slice($m, 1, 3));
         } else {
-            return array();
+            return [];
         }
     }
 

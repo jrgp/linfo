@@ -39,7 +39,7 @@ abstract class BSDcommon extends Unixcommon
     protected $settings,
         $exec,
         $dmesg,
-        $sysctl = array();
+        $sysctl = [];
 
     // Start us off
     protected function __construct($settings)
@@ -71,7 +71,7 @@ abstract class BSDcommon extends Unixcommon
         $keys = (array) $keys;
 
         // Store the results of which here
-        $results = array();
+        $results = [];
 
         // Go through each
         foreach ($keys as $k => $v) {
@@ -154,7 +154,7 @@ abstract class BSDcommon extends Unixcommon
         $parts = explode(' ', trim($this->sysctl['vm.loadavg']));
 
         if (!$parts) {
-            return array();
+            return [];
         }
 
         return array_combine(array('now', '5min', '15min'), $parts);
