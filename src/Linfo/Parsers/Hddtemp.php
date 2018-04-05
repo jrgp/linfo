@@ -91,7 +91,7 @@ class Hddtemp
         $drives = explode('||', trim($data, '|'));
 
         // Return our stuff here
-        $return = array();
+        $return = [];
 
         // Go through each
         foreach ($drives as $drive) {
@@ -137,16 +137,16 @@ class Hddtemp
     {
         $file = '/var/log/syslog';
         if (!is_file($file) || !is_readable($file)) {
-            return array();
+            return [];
         }
-        $devices = array();
+        $devices = [];
         foreach (Common::getLines($file) as $line) {
             if (preg_match('/\w+\s*\d+ \d{2}:\d{2}:\d{2} \w+ hddtemp\[\d+\]: (.+): (.+): (\d+) ([CF])/i', trim($line), $match) == 1) {
                 // Replace current record of dev with updated temp
                 $devices[$match[1]] = array($match[2], $match[3], $match[4]);
             }
         }
-        $return = array();
+        $return = [];
         foreach ($devices as $dev => $stat) {
             $return[] = array(
                 'path' => $dev,

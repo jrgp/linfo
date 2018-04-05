@@ -27,8 +27,8 @@ namespace Linfo;
 
 class Common
 {
-    protected static $settings = array(),
-        $lang = array();
+    protected static $settings = [],
+        $lang = [];
 
     // Used for unit tests
     public static $path_prefix = false;
@@ -41,8 +41,8 @@ class Common
 
     public static function unconfig()
     {
-        self::$settings = array();
-        self::$lang = array();
+        self::$settings = [];
+        self::$lang = [];
     }
 
     // Certain files, specifcally the pci/usb ids files, vary in location from
@@ -116,7 +116,7 @@ class Common
         $seconds = floor($uptime % 60);
 
         // Send out formatted string
-        $return = array();
+        $return = [];
 
         if ($years > 0) {
             $return[] = $years.' '.($years > 1 ? self::$lang['years'] : substr(self::$lang['years'], 0, strlen(self::$lang['years']) - 1));
@@ -154,7 +154,7 @@ class Common
     // Like above, but in lines instead of a big string
     public static function getLines($file)
     {
-        return !is_file($file) || !is_readable($file) || !($lines = @file($file, FILE_SKIP_EMPTY_LINES)) ? array() : $lines;
+        return !is_file($file) || !is_readable($file) || !($lines = @file($file, FILE_SKIP_EMPTY_LINES)) ? [] : $lines;
     }
 
     // Make a string safe for being in an xml tag name
@@ -184,7 +184,7 @@ class Common
         return false;
     }
 
-    // Prevent silly conditionals like if (in_array() || in_array() || in_array())
+    // Prevent silly conditionals like if (in_[] || in_[] || in_[])
     // Poor man's python's any() on a list comprehension kinda
     public static function anyInArray($needles, $haystack)
     {

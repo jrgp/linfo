@@ -81,8 +81,8 @@ class Cups implements Extension
         $lines = explode("\n", $result);
 
         // Hold temporarily values here
-        $printers = array();
-        $queue = array();
+        $printers = [];
+        $queue = [];
         $begin_queue_list = false;
 
         // Go through it line by line
@@ -155,7 +155,7 @@ class Cups implements Extension
         else {
 
             // Store rows here
-            $rows = array();
+            $rows = [];
 
             // start off printers list
             $rows[] = array(

@@ -69,16 +69,16 @@ class Minix extends OS
         try {
             $res = $this->exec->exec('mount');
         } catch (Exception $e) {
-            return array();
+            return [];
         }
 
         // Try matching up the output
         if (preg_match_all('/^(\S+) is .+ mounted on (\S+) \(.+\)$/m', $res, $mount_matches, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // Store them here
-        $mounts = array();
+        $mounts = [];
 
         // Go through each match
         foreach ($mount_matches as $mount) {
@@ -117,16 +117,16 @@ class Minix extends OS
         try {
             $res = $this->exec->exec('ifconfig', '-a');
         } catch (Exception $e) {
-            return array();
+            return [];
         }
 
         // Match up the entries
         if (preg_match_all('/^([^:]+)/m', $res, $net_matches, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // Store them here
-        $nets = array();
+        $nets = [];
 
         // Go through each
         foreach ($net_matches as $net) {

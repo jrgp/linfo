@@ -77,8 +77,8 @@ use Linfo\Output\Html;
 class Utorrent implements Extension
 {
     private
-        $torrents = array(),
-        $connectionSettings = array(),
+        $torrents = [],
+        $connectionSettings = [],
         $stats = array('uploaded' => 0, 'downloaded' => 0),
         $cookiefile = false,
         $res = false;
@@ -126,7 +126,7 @@ class Utorrent implements Extension
     {
         $settings = $linfo->getSettings();
         $this->connectionSettings = $settings['utorrent_connection'];
-        $this->regexFilters = isset($settings['utorrent_filter']) && is_array($settings['utorrent_filter']) ? $settings['utorrent_filter'] : array();
+        $this->regexFilters = isset($settings['utorrent_filter']) && is_array($settings['utorrent_filter']) ? $settings['utorrent_filter'] : [];
         $this->hideName = isset($settings['utorrent_hide_name']) ? !empty($settings['utorrent_hide_name'])  : false;
     }
 
@@ -209,11 +209,11 @@ class Utorrent implements Extension
             return;
         }
 
-        $torrent_names = array();
-        $torrent_states = array();
+        $torrent_names = [];
+        $torrent_states = [];
 
         foreach ($response['torrents'] as $torrent_src) {
-            $torrent = array();
+            $torrent = [];
             foreach (self::$torrent_keys as $key => $index) {
                 $torrent[$key] = $torrent_src[$index];
             }

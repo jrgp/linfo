@@ -77,7 +77,7 @@ class Truecrypt implements Extension
         }
 
         // Store them here
-        $this->_res = array();
+        $this->_res = [];
 
         // Current one
         $curr = false;
@@ -176,7 +176,7 @@ class Truecrypt implements Extension
         else {
 
             // Store rows here
-            $rows = array();
+            $rows = [];
 
             // start off volume list
             $rows[] = array(

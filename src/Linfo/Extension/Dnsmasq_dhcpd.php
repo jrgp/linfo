@@ -54,7 +54,7 @@ class Dnsmasq_dhcpd implements Extension
     // Store these tucked away here
     private
         $_hide_mac,
-        $_leases = array();
+        $_leases = [];
 
     /**
      * localize important stuff.
@@ -96,7 +96,7 @@ class Dnsmasq_dhcpd implements Extension
     public function result()
     {
         // Store rows here
-        $rows = array();
+        $rows = [];
 
         // Start showing connections
         $rows[] = array(

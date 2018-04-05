@@ -33,7 +33,7 @@ class Xml implements Output
 
             // Deal with core stuff
             $core_elem = $xml->addChild('core');
-                  $core = array();
+                  $core = [];
                   if (!empty($settings['show']['os'])) {
                       $core[] = array('os', $info['OS']);
                   }
@@ -74,7 +74,7 @@ class Xml implements Output
                       $core[] = array('model', $info['Model']);
                   }
                   if (!empty($settings['show']['process_stats']) && $info['processStats']['exists']) {
-                      $proc_stats = array();
+                      $proc_stats = [];
                       if (array_key_exists('totals', $info['processStats']) && is_array($info['processStats']['totals'])) {
                           foreach ($info['processStats']['totals'] as $k => $v) {
                               $proc_stats[] = $k.': '.number_format($v);

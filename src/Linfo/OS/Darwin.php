@@ -114,16 +114,16 @@ class Darwin extends BSDcommon
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
-            return array();
+            return [];
         }
 
         // Parse it
         if (preg_match_all('/(.+)\s+on\s+(.+)\s+\((\w+).*\)\n/i', $res, $m, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // Store them here
-        $mounts = array();
+        $mounts = [];
 
         // Deal with each entry
         foreach ($m as $mount) {
@@ -164,7 +164,7 @@ class Darwin extends BSDcommon
         }
 
         // Store return vals here
-        $return = array();
+        $return = [];
 
         // Use netstat to get info
         try {
@@ -201,7 +201,7 @@ class Darwin extends BSDcommon
         }
 
         // Try using ifconfig to get states of the network interfaces
-        $statuses = array();
+        $statuses = [];
         try {
             // Output of ifconfig command
             $ifconfig = $this->exec->exec('ifconfig', '-a');
@@ -374,7 +374,7 @@ class Darwin extends BSDcommon
         }
 
         // Store them here
-        $cpus = array();
+        $cpus = [];
 
         // The same one multiple times
         for ($i = 0; $i < $this->sysctl['hw.ncpu']; ++$i) {
@@ -399,13 +399,13 @@ class Darwin extends BSDcommon
         }
 
         // Start us off
-        $return = array();
+        $return = [];
         $return['type'] = 'Physical';
         $return['total'] = $this->sysctl['hw.memsize'];
         $return['free'] = $this->sysctl['hw.memsize'] - $this->sysctl['hw.usermem'];
         $return['swapTotal'] = 0;
         $return['swapFree'] = 0;
-        $return['swapInfo'] = array();
+        $return['swapInfo'] = [];
 
         // Sort out swap
         if (preg_match('/total = ([\d\.]+)M\s+used = ([\d\.]+)M\s+free = ([\d\.]+)M/', $this->sysctl['vm.swapusage'], $swap_match)) {
@@ -441,13 +441,13 @@ class Darwin extends BSDcommon
         }
 
         // Store any we find here
-        $batteries = array();
+        $batteries = [];
 
         // Lines
         $lines = explode("\n", $this->systemProfiler);
 
         // Hunt
-        $bat = array();
+        $bat = [];
         $in_bat_field = false;
 
         foreach ($lines as $line) {
@@ -503,14 +503,14 @@ class Darwin extends BSDcommon
         } catch (Exception $e) {
             Errors::add('Linfo drives', 'Error using `diskutil list` to get drives');
 
-            return array();
+            return [];
         }
 
         // Get it into lines
         $lines = explode("\n", $res);
 
         // Keep drives here
-        $drives = array();
+        $drives = [];
 
         // Work on tmp drive here
         $tmp = false;
@@ -569,7 +569,7 @@ class Darwin extends BSDcommon
                         'reads' => false,
                         'writes' => false,
                         'size' => $size,
-                        'partitions' => array(),
+                        'partitions' => [],
                     );
                 }
 
@@ -621,7 +621,7 @@ class Darwin extends BSDcommon
         if (preg_match('/([\d\.\,]+) ([\d\.\,]+) ([\d\.\,]+)/', $loads, $m)) {
             return array_combine(array('now', '5min', '15min'), array_slice($m, 1, 3));
         } else {
-            return array();
+            return [];
         }
     }
 }

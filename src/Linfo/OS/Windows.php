@@ -180,7 +180,7 @@ class Windows extends OS
             $t = new Timer('CPUs');
         }
 
-        $cpus = array();
+        $cpus = [];
         $alt = false;
         $object = $this->wmi->ExecQuery('SELECT Name, Manufacturer, CurrentClockSpeed, NumberOfLogicalProcessors,LoadPercentage FROM Win32_Processor');
 
@@ -261,8 +261,8 @@ class Windows extends OS
             $t = new Timer('Drives');
         }
 
-        $drives = array();
-        $partitions = array();
+        $drives = [];
+        $partitions = [];
 
         foreach ($this->wmi->ExecQuery('SELECT DiskIndex, Size, DeviceID, Type FROM Win32_DiskPartition') as $partition) {
             $partitions[$partition->DiskIndex][] = array(
@@ -302,7 +302,7 @@ class Windows extends OS
             $t = new Timer('Temperature');
         }
 
-        return array(); // TODO
+        return []; // TODO
     }
 
     /**
@@ -318,7 +318,7 @@ class Windows extends OS
             $t = new Timer('Mounted file systems');
         }
 
-        $volumes = array();
+        $volumes = [];
 
         if ($this->windows_version > '6.1.0000') {
             $object = $this->wmi->ExecQuery('SELECT Automount, BootVolume, Compressed, IndexingEnabled, Label, Caption, FileSystem, Capacity, FreeSpace, DriveType FROM Win32_Volume');
@@ -327,7 +327,7 @@ class Windows extends OS
         }
 
         foreach ($object as $volume) {
-            $options = array();
+            $options = [];
             if ($this->windows_version > '6.1.0000') {
                 if ($volume->Automount) {
                     $options[] = 'automount';
@@ -406,7 +406,7 @@ class Windows extends OS
             $t = new Timer('Hardware Devices');
         }
 
-        $devs = array();
+        $devs = [];
 
         foreach ($this->wmi->ExecQuery('SELECT DeviceID, Caption, Manufacturer FROM Win32_PnPEntity') as $pnpdev) {
             $devId = explode('\\', $pnpdev->DeviceID);
@@ -446,7 +446,7 @@ class Windows extends OS
             $t = new Timer('RAID');
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -462,7 +462,7 @@ class Windows extends OS
             $t = new Timer('Load Averages');
         }
 
-        $load = array();
+        $load = [];
         foreach ($this->wmi->ExecQuery('SELECT LoadPercentage FROM Win32_Processor') as $cpu) {
             $load[] = $cpu->LoadPercentage;
         }
@@ -483,7 +483,7 @@ class Windows extends OS
             $t = new Timer('Network Devices');
         }
 
-        $return = array();
+        $return = [];
         $i = 0;
 
         if ($this->windows_version > '6.1.0000') {
@@ -592,7 +592,7 @@ class Windows extends OS
             $t = new Timer('Batteries');
         }
 
-        return array(); // TODO
+        return []; // TODO
     }
 
     /**
@@ -622,7 +622,7 @@ class Windows extends OS
             $t = new Timer('Sound cards');
         }
 
-        $cards = array();
+        $cards = [];
         $i = 1;
 
         foreach ($this->wmi->ExecQuery('SELECT Caption, Manufacturer FROM Win32_SoundDevice') as $card) {
@@ -677,7 +677,7 @@ class Windows extends OS
      */
     public function getServices()
     {
-        return array(); // TODO
+        return []; // TODO
     }
 
     /**

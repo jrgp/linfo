@@ -90,16 +90,16 @@ class DragonFly extends BSDcommon
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
-            return array();
+            return [];
         }
 
         // Parse it
         if (preg_match_all('/^(\S+) on (\S+) \((\w+)(?:, (.+))?\)/m', $res, $m, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // Store them here
-        $mounts = array();
+        $mounts = [];
 
         // Deal with each entry
         foreach ($m as $mount) {
@@ -122,7 +122,7 @@ class DragonFly extends BSDcommon
             ) {
                 $mount_options = explode(', ', $mount[4]);
             } else {
-                $mount_options = array();
+                $mount_options = [];
             }
 
             // Might be good, go for it
@@ -153,7 +153,7 @@ class DragonFly extends BSDcommon
         }
 
         // We'll return the contents of this
-        $return = array();
+        $return = [];
 
         // Start us off at zilch
         $return['type'] = 'Virtual';
@@ -161,7 +161,7 @@ class DragonFly extends BSDcommon
         $return['free'] = 0;
         $return['swapTotal'] = 0;
         $return['swapFree'] = 0;
-        $return['swapInfo'] = array();
+        $return['swapInfo'] = [];
 
         // Get swap
 
@@ -213,15 +213,15 @@ class DragonFly extends BSDcommon
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'error using netstat');
 
-            return array();
+            return [];
         }
 
         // Store nics here
-        $nets = array();
+        $nets = [];
 
         // Match that up
         if (!preg_match_all('/^([\da-z]+\*?)\s+\d+\s+<Link#\d+>(?:\s+[a-z0-9:]+)?\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/m', $netstat, $netstat_m, PREG_SET_ORDER)) {
-            return array();
+            return [];
         }
 
         // Go through each match
@@ -302,7 +302,7 @@ class DragonFly extends BSDcommon
         }
 
         // Store them here
-        $cpus = array();
+        $cpus = [];
 
         // Stuff it with identical cpus
         for ($i = 0; $i < $this->sysctl['hw.ncpu']; ++$i) {
@@ -342,7 +342,7 @@ class DragonFly extends BSDcommon
             $t = new Timer('Batteries');
         }
 
-        return array();
+        return [];
     }
 
     // Get stats on processes

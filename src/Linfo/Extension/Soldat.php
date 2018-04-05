@@ -65,7 +65,7 @@ class Soldat implements Extension
     // work it
     private function _call()
     {
-        $this->_res = array();
+        $this->_res = [];
         foreach ($this->_servers as $name => $path) {
             $lines = Common::getLines($path);
             if (count($lines) == 0) {
@@ -92,7 +92,7 @@ class Soldat implements Extension
         }
 
         // Store rows here
-        $rows = array();
+        $rows = [];
 
         // Table header
         $rows[] = array(

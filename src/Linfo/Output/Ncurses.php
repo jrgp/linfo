@@ -39,8 +39,8 @@ class Ncurses implements Output
     private $linfo,
 
         // Store our windows here
-        $_windows = array(),
-        $_max_dims = array(),
+        $_windows = [],
+        $_max_dims = [],
 
         // ncurses loaded?
         $loaded = true;

@@ -36,7 +36,7 @@ class Errors
      *
      * @var array
      */
-    private static $errors = array();
+    private static $errors = [];
 
     /**
      * Add an error message.
@@ -79,6 +79,6 @@ class Errors
      */
     public static function clear()
     {
-        self::$errors = array();
+        self::$errors = [];
     }
 }

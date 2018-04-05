@@ -81,7 +81,7 @@ class Apcaccess implements Extension
         }
 
         // Store them here
-        $this->_res = array();
+        $this->_res = [];
 
         // Get name
         if (preg_match('/^UPSNAME\s+:\s+(.+)$/m', $result, $m)) {
@@ -164,7 +164,7 @@ class Apcaccess implements Extension
         }
 
         // Store rows here
-        $rows = array();
+        $rows = [];
 
         // Start showing connections
         $rows[] = array(

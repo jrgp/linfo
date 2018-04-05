@@ -42,11 +42,11 @@ $settings['show']['wifi'] = false;
 
 $settings['show']['services'] = false;
 
-$settings['hide']['storage_devices'] = array();
-$settings['hide']['filesystems'] = array();
+$settings['hide']['storage_devices'] = [];
+$settings['hide']['filesystems'] = [];
 
-$settings['hide']['mountpoints_regex'] = array();
-$settings['hide']['fs_mount_options'] = array();
+$settings['hide']['mountpoints_regex'] = [];
+$settings['hide']['fs_mount_options'] = [];
 
 $settings['hide']['sg'] = true;
 
@@ -55,8 +55,8 @@ $settings['temps']['hddtemp'] = true;
 $settings['temps']['mbmon'] = true;
 $settings['temps']['sensord'] = true;
 
-$settings['raid'] = array();
+$settings['raid'] = [];
 $settings['raid']['mdadm'] = true;
 
-$settings['additional_paths'] = array();
-$settings['services'] = array();
+$settings['additional_paths'] = [];
+$settings['services'] = [];

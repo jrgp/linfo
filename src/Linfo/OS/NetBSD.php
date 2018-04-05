@@ -73,16 +73,16 @@ class NetBSD extends BSDcommon
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
-            return array();
+            return [];
         }
 
         // Match the file systems
         if (@preg_match_all('/^(\S+) on (\S+) type (\S+)/m', $res, $mount_match, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // Store them here
-        $mounts = array();
+        $mounts = [];
 
         // Go through each
         foreach ($mount_match as $mount) {
@@ -145,16 +145,16 @@ class NetBSD extends BSDcommon
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error using `netstat` to get network info');
 
-            return array();
+            return [];
         }
 
         // Match the interfaces themselves
         if (preg_match_all('/^(\S+)\s+\d+\s+<Link>\s+[a-z0-9\:]+\s+(\d+)\s+(\d+)\s+\d+$/m', $res, $net_matches, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // Store statuses for each here
-        $statuses = array();
+        $statuses = [];
 
         // Try using ifconfig to get statuses for each interface
         try {
@@ -172,7 +172,7 @@ class NetBSD extends BSDcommon
         }
 
         // Store interfaces here
-        $nets = array();
+        $nets = [];
 
         // Go through each
         foreach ($net_matches as $net) {
@@ -216,7 +216,7 @@ class NetBSD extends BSDcommon
             $t = new Timer('CPU');
         }
 
-        $drives = array();
+        $drives = [];
         $curr_hd = false;
 
         // Parse dmesg
@@ -291,11 +291,11 @@ class NetBSD extends BSDcommon
 
         // Parse dmesg
         if (preg_match_all('/^cpu\d+ at [^:]+: (\S+) ([^,]+), (\d+)MHz/m', $this->dmesg, $cpu_matches, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // Store them here
-        $cpus = array();
+        $cpus = [];
 
         // Store as many as possible
         foreach ($cpu_matches as $cpu_m) {
@@ -320,13 +320,13 @@ class NetBSD extends BSDcommon
         }
 
         // Start us off at zilch
-        $return = array();
+        $return = [];
         $return['type'] = 'Virtual';
         $return['total'] = 0;
         $return['free'] = 0;
         $return['swapTotal'] = 0;
         $return['swapFree'] = 0;
-        $return['swapInfo'] = array();
+        $return['swapInfo'] = [];
 
         // Get virtual memory usage with vmstat
         try {
@@ -404,14 +404,14 @@ class NetBSD extends BSDcommon
 
         // Get them
         if (preg_match_all('/^([a-z]+\d+) at ([a-z]+)\d+[^:]+:(.+)/m', $this->dmesg, $devices_match, PREG_SET_ORDER) == 0) {
-            return array();
+            return [];
         }
 
         // Keep them here
-        $devices = array();
+        $devices = [];
 
         // Store the type column for each key
-        $sort_type = array();
+        $sort_type = [];
 
         // Stuff it
         foreach ($devices_match as $device) {

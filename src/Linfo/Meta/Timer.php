@@ -4,7 +4,7 @@ namespace Linfo\Meta;
 
 class Timer
 {
-    protected static $timers = array();
+    protected static $timers = [];
     protected $id = null;
     protected $start = null;
 
@@ -15,7 +15,7 @@ class Timer
 
     public static function clear()
     {
-        self::$timers = array();
+        self::$timers = [];
     }
 
     public function __construct($id)
