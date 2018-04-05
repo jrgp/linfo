@@ -1,3 +1,7 @@
+# v4.0.0 4/4/2018
+
+- Relicense under MIT
+
 # v3.0.2 3/30/2018
 
 - New extensions for Nvidia temps/stats, LXD containers,
