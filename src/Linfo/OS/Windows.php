@@ -180,7 +180,7 @@ class Windows extends OS
             $t = new Timer('CPUs');
         }
 
-        $cpus = [];
+        $cpus = array();
         $alt = false;
         $object = $this->wmi->ExecQuery('SELECT Name, Manufacturer, CurrentClockSpeed, NumberOfLogicalProcessors,LoadPercentage FROM Win32_Processor');
 
@@ -261,8 +261,8 @@ class Windows extends OS
             $t = new Timer('Drives');
         }
 
-        $drives = [];
-        $partitions = [];
+        $drives = array();
+        $partitions = array();
 
         foreach ($this->wmi->ExecQuery('SELECT DiskIndex, Size, DeviceID, Type FROM Win32_DiskPartition') as $partition) {
             $partitions[$partition->DiskIndex][] = array(
@@ -302,7 +302,7 @@ class Windows extends OS
             $t = new Timer('Temperature');
         }
 
-        return []; // TODO
+        return array(); // TODO
     }
 
     /**
@@ -318,7 +318,7 @@ class Windows extends OS
             $t = new Timer('Mounted file systems');
         }
 
-        $volumes = [];
+        $volumes = array();
 
         if ($this->windows_version > '6.1.0000') {
             $object = $this->wmi->ExecQuery('SELECT Automount, BootVolume, Compressed, IndexingEnabled, Label, Caption, FileSystem, Capacity, FreeSpace, DriveType FROM Win32_Volume');
@@ -327,7 +327,7 @@ class Windows extends OS
         }
 
         foreach ($object as $volume) {
-            $options = [];
+            $options = array();
             if ($this->windows_version > '6.1.0000') {
                 if ($volume->Automount) {
                     $options[] = 'automount';
@@ -406,7 +406,7 @@ class Windows extends OS
             $t = new Timer('Hardware Devices');
         }
 
-        $devs = [];
+        $devs = array();
 
         foreach ($this->wmi->ExecQuery('SELECT DeviceID, Caption, Manufacturer FROM Win32_PnPEntity') as $pnpdev) {
             $devId = explode('\\', $pnpdev->DeviceID);
@@ -446,7 +446,7 @@ class Windows extends OS
             $t = new Timer('RAID');
         }
 
-        return [];
+        return array();
     }
 
     /**
@@ -462,7 +462,7 @@ class Windows extends OS
             $t = new Timer('Load Averages');
         }
 
-        $load = [];
+        $load = array();
         foreach ($this->wmi->ExecQuery('SELECT LoadPercentage FROM Win32_Processor') as $cpu) {
             $load[] = $cpu->LoadPercentage;
         }
@@ -483,10 +483,10 @@ class Windows extends OS
             $t = new Timer('Network Devices');
         }
 
-        $return = [];
+        $return = array();
         $i = 0;
 
-        if ($this->windows_version > '6.1.0000') {
+        if (version_compare($this->windows_version,'6.1.0000')>0) {
             $object = $this->wmi->ExecQuery('SELECT AdapterType, Name, NetConnectionStatus, GUID FROM Win32_NetworkAdapter WHERE PhysicalAdapter = TRUE');
         } else {
             $object = $this->wmi->ExecQuery('SELECT AdapterType, Name, NetConnectionStatus FROM Win32_NetworkAdapter WHERE NetConnectionStatus != NULL');
@@ -553,10 +553,13 @@ class Windows extends OS
                     break;
             }
             // @Microsoft: An index would be nice here indeed.
-            if ($this->windows_version > '6.1.0000') {
+            if (version_compare($this->windows_version,'6.1.0000')>0) {
                 $canonname = preg_replace('/[^A-Za-z0-9- ]/', '_', $net->Name);
+                $canonname2 = str_replace('(','[',$net->Name);
+                $canonname2 = str_replace(')',']',$canonname2);
                 $isatapname = 'isatap.'.$net->GUID;
-                $result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname' OR Name = '$isatapname'");
+
+                $result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname' OR Name = '$isatapname' OR Name = '$canonname2'");
             } else {
                 $canonname = preg_replace('/[^A-Za-z0-9- ]/', '_', $net->Name);
                 $result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname'");
@@ -592,7 +595,7 @@ class Windows extends OS
             $t = new Timer('Batteries');
         }
 
-        return []; // TODO
+        return array(); // TODO
     }
 
     /**
@@ -622,7 +625,7 @@ class Windows extends OS
             $t = new Timer('Sound cards');
         }
 
-        $cards = [];
+        $cards = array();
         $i = 1;
 
         foreach ($this->wmi->ExecQuery('SELECT Caption, Manufacturer FROM Win32_SoundDevice') as $card) {
@@ -677,7 +680,7 @@ class Windows extends OS
      */
     public function getServices()
     {
-        return []; // TODO
+        return array(); // TODO
     }
 
     /**
