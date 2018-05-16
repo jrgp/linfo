@@ -683,15 +683,12 @@ class Windows extends OS
     {
         # Get all services
         $services = [];
-        $count=0;
         foreach ($this->wmi->ExecQuery('SELECT Name, DisplayName, ServiceType, StartMode, StartName, State, Status '.
                                        'FROM Win32_Service') as $service)
         {
             $services[] = [
-                // 'caption' => $service->Caption,
                 'name' => $service->Name,
                 'displayname' => $service->DisplayName,
-                // 'description' => $service->Description,
                 'servicetype' => $service->ServiceType,
                 'startmode' => $service->StartMode,
                 'startname' => $service->StartName,
