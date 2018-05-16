@@ -675,11 +675,29 @@ class Windows extends OS
     /**
      * getServices.
      *
-     * @return array the services
+     * @return     array  the services
+     *
+     * @link       https://msdn.microsoft.com/en-us/library/aa394418(v=vs.85).aspx
      */
     public function getServices()
     {
-        return array(); // TODO
+        # Get all services
+        $services = [];
+        foreach ($this->wmi->ExecQuery('SELECT Name, DisplayName, ServiceType, StartMode, StartName, State, Status '.
+                                       'FROM Win32_Service') as $service)
+        {
+            $services[] = [
+                'name' => $service->Name,
+                'displayname' => $service->DisplayName,
+                'servicetype' => $service->ServiceType,
+                'startmode' => $service->StartMode,
+                'startname' => $service->StartName,
+                'state' => $service->State,
+                'status' => $service->Status
+            ];
+        }
+
+        return $services;
     }
 
     /**
