@@ -566,6 +566,19 @@ echo '
         // Show them
         foreach ($info['services'] as $service => $state) {
             $state_parts = explode(' ', $state['state'], 2);
+            // set as empty if is not set
+            if(!isset($state['pid'])){
+                $state['pid'] = '';
+                if(isset($state['name'])){
+                    $state['pid'] = $state['name'];
+                }
+            }
+            if(!isset($state['threads'])){
+                $state['threads'] = '';
+            }
+            if(!isset($state['memory_usage'])){
+                $state['memory_usage'] = '';
+            }
             echo '
 				<tr>
 					<td>'.$service.'</td>
