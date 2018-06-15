@@ -555,7 +555,7 @@ class Windows extends OS
             // @Microsoft: An index would be nice here indeed.
             if (version_compare($this->windows_version,'6.1.0000')>0) {
                 $canonname = preg_replace('/[^A-Za-z0-9- ]/', '_', $net->Name);
-                $canonname2 = str_replace(['(', ')'], ['[', ']'], $cannonname);
+                $canonname2 = str_replace(['(', ')'], ['[', ']'], $canonname);
                 $isatapname = 'isatap.'.$net->GUID;
 
                 $result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname' OR Name = '$isatapname' OR Name = '$canonname2'");
