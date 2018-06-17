@@ -320,7 +320,7 @@ class Windows extends OS
 
         $volumes = array();
 
-        if ($this->windows_version > '6.1.0000') {
+        if (version_compare($this->windows_version,'6.1.0000')>0) {
             $object = $this->wmi->ExecQuery('SELECT Automount, BootVolume, Compressed, IndexingEnabled, Label, Caption, FileSystem, Capacity, FreeSpace, DriveType FROM Win32_Volume');
         } else {
             $object = $this->wmi->ExecQuery('SELECT Compressed, Name, FileSystem, Size, FreeSpace, DriveType FROM Win32_LogicalDisk');
@@ -328,7 +328,7 @@ class Windows extends OS
 
         foreach ($object as $volume) {
             $options = array();
-            if ($this->windows_version > '6.1.0000') {
+            if (version_compare($this->windows_version,'6.1.0000')>0) {
                 if ($volume->Automount) {
                     $options[] = 'automount';
                 }
@@ -342,9 +342,9 @@ class Windows extends OS
             if ($volume->Compressed) {
                 $options[] = 'compressed';
             }
-            $capacity = ($this->windows_version > '6.1.0000') ? $volume->Capacity : $volume->Size;
-            $label = ($this->windows_version > '6.1.0000') ? $volume->Label : $volume->Name;
-            $mount = ($this->windows_version > '6.1.0000') ? $volume->Caption : $label.'\\';
+            $capacity = (version_compare($this->windows_version,'6.1.0000')>0) ? $volume->Capacity : $volume->Size;
+            $label = (version_compare($this->windows_version,'6.1.0000')>0) ? $volume->Label : $volume->Name;
+            $mount = (version_compare($this->windows_version,'6.1.0000')>0) ? $volume->Caption : $label.'\\';
             $a = array(
                 'device' => false,
                 'label' => $label,
@@ -555,7 +555,7 @@ class Windows extends OS
             // @Microsoft: An index would be nice here indeed.
             if (version_compare($this->windows_version,'6.1.0000')>0) {
                 $canonname = preg_replace('/[^A-Za-z0-9- ]/', '_', $net->Name);
-                $canonname2 = str_replace(['(', ')'], ['[', ']'], $cannonname);
+                $canonname2 = str_replace(['(', ')'], ['[', ']'], $canonname);
                 $isatapname = 'isatap.'.$net->GUID;
 
                 $result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname' OR Name = '$isatapname' OR Name = '$canonname2'");
