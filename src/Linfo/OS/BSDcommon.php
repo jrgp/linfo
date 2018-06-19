@@ -27,6 +27,7 @@ namespace Linfo\OS;
 
 use Linfo\Common;
 use Linfo\Parsers\CallExt;
+use Linfo\Meta\Timer;
 use Exception;
 
 /*
