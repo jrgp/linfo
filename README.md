@@ -1,6 +1,6 @@
 # Linfo - Server stats UI/library
 
-![Travis tests](https://api.travis-ci.org/jrgp/linfo.svg)
+[![Build Status](https://travis-ci.org/jrgp/linfo.svg?branch=master)](https://travis-ci.org/jrgp/linfo)
 
 
 ### Linfo is a:
