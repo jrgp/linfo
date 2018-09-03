@@ -75,8 +75,8 @@ class OS_FreeBSDTest extends PHPUnit_Framework_TestCase
       foreach (['bytes', 'errors', 'packets'] as $key) {
         self::assertArrayHasKey($key, $nic['sent']);
         self::assertArrayHasKey($key, $nic['recieved']);
-        self::assertTrue(is_numeric($nic['sent'][$key]));
-        self::assertTrue(is_numeric($nic['recieved'][$key]));
+        self::assertInternalType('numeric', $nic['sent'][$key]);
+        self::assertInternalType('numeric', $nic['recieved'][$key]);
       }
     }
   }

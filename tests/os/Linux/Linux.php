@@ -166,8 +166,8 @@ class LinuxTest extends PHPUnit_Framework_TestCase
       foreach (['bytes', 'errors', 'packets'] as $key) {
         self::assertArrayHasKey($key, $nic['sent']);
         self::assertArrayHasKey($key, $nic['recieved']);
-        self::assertTrue(is_numeric($nic['sent'][$key]));
-        self::assertTrue(is_numeric($nic['recieved'][$key]));
+        self::assertInternalType('numeric', $nic['sent'][$key]);
+        self::assertInternalType('numeric', $nic['recieved'][$key]);
       }
     }
   }
@@ -197,7 +197,7 @@ class LinuxTest extends PHPUnit_Framework_TestCase
           self::assertArrayHasKey('size', $partition);
           self::assertArrayHasKey('number', $partition);
           self::assertInternalType('int', $partition['size']);
-          self::assertTrue(is_numeric($partition['number']));
+          self::assertInternalType('numeric', $partition['number']);
         }
       }
       self::assertInternalType('int', $drive['size']);

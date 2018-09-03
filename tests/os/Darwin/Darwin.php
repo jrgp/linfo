@@ -100,8 +100,8 @@ class OS_DarwinTest extends PHPUnit_Framework_TestCase
       foreach (['bytes', 'errors', 'packets'] as $key) {
         self::assertArrayHasKey($key, $nic['sent']);
         self::assertArrayHasKey($key, $nic['recieved']);
-        self::assertTrue(is_numeric($nic['sent'][$key]));
-        self::assertTrue(is_numeric($nic['recieved'][$key]));
+        self::assertInternalType('numeric', $nic['sent'][$key]);
+        self::assertInternalType('numeric', $nic['recieved'][$key]);
       }
     }
   }
@@ -151,10 +151,10 @@ class OS_DarwinTest extends PHPUnit_Framework_TestCase
       if (is_array($drive['partitions'])) {
         foreach ($drive['partitions'] as $partition) {
           self::assertArrayHasKey('size', $partition);
-          self::assertTrue(is_numeric($partition['size']));
+          self::assertInternalType('numeric', $partition['size']);
         }
       }
-      self::assertTrue(is_numeric($drive['size']));
+      self::assertInternalType('numeric', $drive['size']);
     }
   }
 
