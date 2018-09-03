@@ -918,7 +918,7 @@ class Linux extends Unixcommon
                 break;
             }
 
-            if ($state = 'unknown' && file_exists($path.'/carrier')) {
+            if ($state === 'unknown' && file_exists($path.'/carrier')) {
                 $carrier = Common::getContents($path.'/carrier', false);
                 if (!empty($carrier)) {
                     $state = 'up';
