@@ -397,7 +397,7 @@ class Linux extends Unixcommon
             $parts = explode('/', $path);
 
             // Attempt getting read/write stats
-            if (preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', Common::getContents(dirname(dirname($path)).'/stat'), $statMatches) !== 1) {
+            if (preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)/', Common::getContents(dirname(dirname($path)).'/stat'), $statMatches) !== 1) {
                 // Didn't get it
                 $reads = false;
                 $writes = false;
