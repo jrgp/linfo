@@ -1021,18 +1021,16 @@ class Linux extends Unixcommon
             }
 
             // Get these from the simple text files
-            switch (true) {
-                case is_file($b.'/energy_full'):
-                    $charge_full = Common::getIntFromFile($b.'/energy_full');
-                    $charge_now = Common::getIntFromFile($b.'/energy_now');
-                    break;
-                case is_file($b.'/charge_full'):
-                    $charge_full = Common::getIntFromFile($b.'/charge_full');
-                    $charge_now = Common::getIntFromFile($b.'/charge_now');
-                    break;
-                default:
-                    continue;
-                    break;
+            if (is_file($b.'/energy_full')) {
+                $charge_full = Common::getIntFromFile($b.'/energy_full');
+                $charge_now = Common::getIntFromFile($b.'/energy_now');
+            }
+            else if (is_file($b.'/charge_full')) {
+                $charge_full = Common::getIntFromFile($b.'/charge_full');
+                $charge_now = Common::getIntFromFile($b.'/charge_now');
+            }
+            else {
+                continue;
             }
 
             // Alleged percentage
@@ -1332,7 +1330,7 @@ class Linux extends Unixcommon
                     // State section
                     case 'State':
                         switch ($status_matches[$i][2]) {
-                            case 'D': // disk sleep? wtf?
+                            case 'D': // blocked on disk IO
                             case 'S':
                                 $state = 'Up (Sleeping)';
                             break;
@@ -1346,9 +1344,6 @@ class Linux extends Unixcommon
                             // stopped
                             case 'T':
                                 $state = 'Up (Stopped)';
-                            break;
-                            default:
-                                continue;
                             break;
                         }
                     break;
