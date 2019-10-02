@@ -10,13 +10,13 @@ class ErrorTest extends PHPUnit_Framework_TestCase
    */
   public function add()
   {
-      Errors::add('testing', 'testing 123');
-      Errors::add('testing', 'testing 456');
-      $this->assertCount(2, Errors::show());
+    Errors::add('testing', 'testing 123');
+    Errors::add('testing', 'testing 456');
+    $this->assertCount(2, Errors::show());
   }
 
-    public function tearDown()
-    {
-        Errors::clear();
-    }
+  public function tearDown()
+  {
+    Errors::clear();
+  }
 }

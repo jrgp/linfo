@@ -43,7 +43,10 @@ try {
     define('IN_LINFO', 'true');
     define('IN_INFO', 'true');
     if (!is_file(__DIR__.'/config.inc.php') && is_file(__DIR__.'/sample.config.inc.php')) {
-        throw new FatalException('Make changes to sample.config.inc.php then rename as config.inc.php');
+        // If we have permissions, try to just copy the sample file and avoid needing that manual step
+        if (!(is_writable(__DIR__) && @copy(__DIR__.'/sample.config.inc.php', __DIR__.'/config.inc.php'))) {
+            throw new FatalException('Make changes to sample.config.inc.php then rename as config.inc.php');
+        }
     } elseif (!is_file(__DIR__.'/config.inc.php')) {
         throw new FatalException('Config file not found.');
     }

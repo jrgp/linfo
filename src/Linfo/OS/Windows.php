@@ -558,7 +558,6 @@ class Windows extends OS
                     $return[$net->Name]['state'] = 'unknown';
                     break;
             }
-
             ++$i;
         }
 

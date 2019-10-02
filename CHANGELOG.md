@@ -1,3 +1,11 @@
+# v4.0.2 9/12/2019
+
+- Misc fixes
+
+# v4.0.1 1/30/2019
+
+- Misc fixes
+
 # v4.0.0 4/4/2018
 
 - Relicense under MIT

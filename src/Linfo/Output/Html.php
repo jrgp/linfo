@@ -147,7 +147,8 @@ class Html implements Output
 
         // Start compressed output buffering. Try to not do this if we've had errors or otherwise already outputted stuff
         if ((!function_exists('error_get_last') || !error_get_last()) && (!isset($settings['compress_content']) || $settings['compress_content'])) {
-            ob_start(function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
+            ob_end_clean();
+            ob_start(isset($settings['gzip']) && $settings['gzip'] && function_exists('ob_gzhandler') ? 'ob_gzhandler' : null);
         }
 
         // If we're allowed to change themes client-side, generate a list of custom ones to use as a white list
@@ -565,6 +566,19 @@ echo '
         // Show them
         foreach ($info['services'] as $service => $state) {
             $state_parts = explode(' ', $state['state'], 2);
+            // set as empty if is not set
+            if(!isset($state['pid'])){
+                $state['pid'] = '';
+                if(isset($state['name'])){
+                    $state['pid'] = $state['name'];
+                }
+            }
+            if(!isset($state['threads'])){
+                $state['threads'] = '';
+            }
+            if(!isset($state['memory_usage'])){
+                $state['memory_usage'] = '';
+            }
             echo '
 				<tr>
 					<td>'.$service.'</td>

@@ -11,6 +11,7 @@ $settings['dates'] = 'm/d/y h:i A (T)'; // Format for dates shown. See php.net/d
 $settings['language'] = 'en'; // Refer to the lang/ folder for supported languages
 $settings['icons'] = true; // simple icons
 $settings['theme'] = 'default'; // Theme file (layout/theme_$n.css). Look at the contents of the layout/ folder for other themes.
+$settings['gzip'] = false; // Manually gzip output. Unneeded if your web server already does it.
 
 
 $settings['allow_changing_themes'] = false; // Allow changing the theme per user in the UI?
