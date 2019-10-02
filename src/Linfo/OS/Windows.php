@@ -39,7 +39,7 @@ class Windows extends OS
     // Keep these tucked away
     protected $settings;
 
-    private $wmi, $windows_version;
+    private $wmi, $wmi2, $windows_version;
 
     /**
      * Constructor. Localizes settings.
@@ -49,7 +49,6 @@ class Windows extends OS
      */
     public function __construct($settings)
     {
-
         // Localize settings
         $this->settings = $settings;
 
@@ -60,7 +59,10 @@ class Windows extends OS
         // Get WMI instance
         $this->wmi = new COM('winmgmts:{impersonationLevel=impersonate}//./root/cimv2');
 
-        if (!is_object($this->wmi)) {
+        // Get StandardCimv2 instance
+        $this->wmi2 = new COM('winmgmts:{impersonationLevel=impersonate}//./root/StandardCimv2');
+
+        if (!is_object($this->wmi) || !is_object($this->wmi2)) {
             throw new FatalException('This needs access to WMI. Please enable DCOM in php.ini and allow the current user to access the WMI DCOM object.');
         }
     }
@@ -477,7 +479,6 @@ class Windows extends OS
      */
     public function getNet()
     {
-
         // Time?
         if (!empty($this->settings['timer'])) {
             $t = new Timer('Network Devices');
@@ -487,13 +488,14 @@ class Windows extends OS
         $i = 0;
 
         if (version_compare($this->windows_version,'6.1.0000')>0) {
-            $object = $this->wmi->ExecQuery('SELECT AdapterType, Name, NetConnectionStatus, GUID FROM Win32_NetworkAdapter WHERE PhysicalAdapter = TRUE');
+            $object = $this->wmi->ExecQuery('SELECT AdapterType, Name, NetConnectionStatus, GUID, Description FROM Win32_NetworkAdapter WHERE PhysicalAdapter = TRUE');
         } else {
-            $object = $this->wmi->ExecQuery('SELECT AdapterType, Name, NetConnectionStatus FROM Win32_NetworkAdapter WHERE NetConnectionStatus != NULL');
+            $object = $this->wmi->ExecQuery('SELECT AdapterType, Name, NetConnectionStatus, Description FROM Win32_NetworkAdapter WHERE NetConnectionStatus != NULL');
         }
 
-        foreach ($object as $net) {
-            // Save and get info for each
+        foreach ($object as $net)
+        {
+            // Initialize array with empty values
             $return[$net->Name] = array(
                 'recieved' => array(
                     'bytes' => 0,
@@ -505,9 +507,13 @@ class Windows extends OS
                     'errors' => 0,
                     'packets' => 0,
                 ),
-                'state' => 0,
+                'state' => 'n/a',
                 'type' => $net->AdapterType,
+                'gateway' => '',
+                'ipv4' => '',
+                'mac' => '',
             );
+
             switch ($net->NetConnectionStatus) {
                 case 0:
                     $return[$net->Name]['state'] = 'down';
@@ -552,30 +558,67 @@ class Windows extends OS
                     $return[$net->Name]['state'] = 'unknown';
                     break;
             }
-            // @Microsoft: An index would be nice here indeed.
-            if (version_compare($this->windows_version,'6.1.0000')>0) {
-                $canonname = preg_replace('/[^A-Za-z0-9- ]/', '_', $net->Name);
-                $canonname2 = str_replace(['(', ')'], ['[', ']'], $canonname);
-                $isatapname = 'isatap.'.$net->GUID;
 
-                $result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname' OR Name = '$isatapname' OR Name = '$canonname2'");
-            } else {
-                $canonname = preg_replace('/[^A-Za-z0-9- ]/', '_', $net->Name);
-                $result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname'");
-            }
-            foreach ($result as $netspeed) {
-                $return[$net->Name]['recieved'] = array(
-                    'bytes' => (int) $netspeed->BytesReceivedPersec,
-                    'errors' => (int) $netspeed->PacketsReceivedErrors,
-                    'packets' => (int) $netspeed->PacketsReceivedPersec,
-                );
-                $return[$net->Name]['sent'] = array(
-                    'bytes' => (int) $netspeed->BytesSentPersec,
-                    'errors' => 0,
-                    'packets' => (int) $netspeed->PacketsSentPersec,
-                );
-            }
             ++$i;
+        }
+
+        //
+        // Network Sent/Received Statistics
+        //
+        $wmi = $this->wmi->ExecQuery("SELECT * FROM Win32_PerfRawData_Tcpip_NetworkInterface");
+        foreach ($wmi as $interface) {
+            // Modify name a little
+            $name = \str_replace(['[', ']'],['(', ')'],$interface->Name);
+
+            // Skip non-existing adapters names
+            if ( !\array_key_exists($interface->Name,$return) && 
+                 !\array_key_exists($name,$return) ) continue;
+
+            $return[$name]['recieved'] = array(
+                'bytes' => (int) $interface->BytesReceivedPerSec,
+                'errors' => (int) $interface->PacketsReceivedErrors,
+                'packets' => (int) $interface->PacketsReceivedPerSec,
+            );
+
+            $return[$name]['sent'] = array(
+                'bytes' => (int) $interface->BytesSentPerSec,
+                'errors' => (int) $interface->PacketsOutboundErrors,
+                'packets' => (int) $interface->PacketsSentPerSec,
+            );
+        }
+
+        //
+        // Fill in the IP, MAC and default gateway adresses for the network adapters
+        //
+        $wmi = $this->wmi->ExecQuery('SELECT * FROM Win32_NetworkAdapterConfiguration');
+        foreach ($wmi as $adapter) {
+
+            // Fill in possible MAC Address
+            if (\array_key_exists($adapter->Description,$return)) {
+                $return[$adapter->Description]['mac'] = $adapter->MACAddress;  
+            }
+
+            // Get the IPv4 address (1st only)
+            $ipv4 = '';
+            if ($adapter->IPAddress ) {
+                foreach ($adapter->IPAddress as $k => $v) {
+                    if (\array_key_exists($adapter->Description,$return)) {
+                        $return[$adapter->Description]['ipv4'] = $v;    
+                    }        
+                    break; // only get the 1st IP from the list
+                }    
+            }
+
+            // Get the Gateway IP Address
+            $gateway = '';
+            if ($adapter->DefaultIPGateway ) {
+                foreach ($adapter->DefaultIPGateway as $k => $v) {
+                    if (\array_key_exists($adapter->Description,$return)) {
+                        $return[$adapter->Description]['gateway'] = $v;
+                    }            
+                    break; // only get the 1st from the list
+                }    
+            }
         }
 
         return $return;
