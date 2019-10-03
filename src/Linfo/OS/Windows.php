@@ -39,7 +39,7 @@ class Windows extends OS
     // Keep these tucked away
     protected $settings;
 
-    private $wmi, $wmi2, $windows_version;
+    private $wmi, $windows_version;
 
     /**
      * Constructor. Localizes settings.
@@ -52,17 +52,14 @@ class Windows extends OS
         // Localize settings
         $this->settings = $settings;
 
-        if (!class_exists('COM')) {
+        if (!\class_exists('COM')) {
             throw new FatalException('You need to install the COM extension for linfo to work on Windows: http://php.net/manual/en/book.com.php');
         }
 
         // Get WMI instance
         $this->wmi = new COM('winmgmts:{impersonationLevel=impersonate}//./root/cimv2');
 
-        // Get StandardCimv2 instance
-        $this->wmi2 = new COM('winmgmts:{impersonationLevel=impersonate}//./root/StandardCimv2');
-
-        if (!is_object($this->wmi) || !is_object($this->wmi2)) {
+        if (!is_object($this->wmi)) {
             throw new FatalException('This needs access to WMI. Please enable DCOM in php.ini and allow the current user to access the WMI DCOM object.');
         }
     }
@@ -235,17 +232,17 @@ class Windows extends OS
         }
 
         $booted = array(
-            'year' => substr($booted_str, 0, 4),
-            'month' => substr($booted_str, 4, 2),
-            'day' => substr($booted_str, 6, 2),
-            'hour' => substr($booted_str, 8, 2),
-            'minute' => substr($booted_str, 10, 2),
-            'second' => substr($booted_str, 12, 2),
+            'year' => \substr($booted_str, 0, 4),
+            'month' => \substr($booted_str, 4, 2),
+            'day' => \substr($booted_str, 6, 2),
+            'hour' => \substr($booted_str, 8, 2),
+            'minute' => \substr($booted_str, 10, 2),
+            'second' => \substr($booted_str, 12, 2),
         );
-        $booted_ts = mktime($booted['hour'], $booted['minute'], $booted['second'], $booted['month'], $booted['day'], $booted['year']);
+        $booted_ts = \mktime($booted['hour'], $booted['minute'], $booted['second'], $booted['month'], $booted['day'], $booted['year']);
 
         return array(
-            'text' => Common::secondsConvert(time() - $booted_ts),
+            'text' => Common::secondsConvert(\time() - $booted_ts),
             'bootedTimestamp' => $booted_ts,
         );
     }
@@ -274,19 +271,19 @@ class Windows extends OS
         }
 
         foreach ($this->wmi->ExecQuery('SELECT Caption, DeviceID, Index, Size FROM Win32_DiskDrive') as $drive) {
-            $caption = explode(' ', $drive->Caption);
+            $caption = \explode(' ', $drive->Caption);
             $drives[] = array(
                 'name' => $drive->Caption,
-                'vendor' => reset($caption),
+                'vendor' => \reset($caption),
                 'device' => $drive->DeviceID,
                 'reads' => false,
                 'writes' => false,
                 'size' => $drive->Size,
-                'partitions' => array_key_exists($drive->Index, $partitions) && is_array($partitions[$drive->Index]) ? $partitions[$drive->Index] : false,
+                'partitions' => \array_key_exists($drive->Index, $partitions) && \is_array($partitions[$drive->Index]) ? $partitions[$drive->Index] : false,
             );
         }
 
-        usort($drives, array('Linfo\OS\Windows', 'compare_drives'));
+        \usort($drives, array('Linfo\OS\Windows', 'compare_drives'));
 
         return $drives;
     }
@@ -322,7 +319,7 @@ class Windows extends OS
 
         $volumes = array();
 
-        if (version_compare($this->windows_version,'6.1.0000')>0) {
+        if (\version_compare($this->windows_version,'6.1.0000')>0) {
             $object = $this->wmi->ExecQuery('SELECT Automount, BootVolume, Compressed, IndexingEnabled, Label, Caption, FileSystem, Capacity, FreeSpace, DriveType FROM Win32_Volume');
         } else {
             $object = $this->wmi->ExecQuery('SELECT Compressed, Name, FileSystem, Size, FreeSpace, DriveType FROM Win32_LogicalDisk');
@@ -330,7 +327,7 @@ class Windows extends OS
 
         foreach ($object as $volume) {
             $options = array();
-            if (version_compare($this->windows_version,'6.1.0000')>0) {
+            if (\version_compare($this->windows_version,'6.1.0000')>0) {
                 if ($volume->Automount) {
                     $options[] = 'automount';
                 }
@@ -344,9 +341,9 @@ class Windows extends OS
             if ($volume->Compressed) {
                 $options[] = 'compressed';
             }
-            $capacity = (version_compare($this->windows_version,'6.1.0000')>0) ? $volume->Capacity : $volume->Size;
-            $label = (version_compare($this->windows_version,'6.1.0000')>0) ? $volume->Label : $volume->Name;
-            $mount = (version_compare($this->windows_version,'6.1.0000')>0) ? $volume->Caption : $label.'\\';
+            $capacity = (\version_compare($this->windows_version,'6.1.0000')>0) ? $volume->Capacity : $volume->Size;
+            $label = (\version_compare($this->windows_version,'6.1.0000')>0) ? $volume->Label : $volume->Name;
+            $mount = (\version_compare($this->windows_version,'6.1.0000')>0) ? $volume->Caption : $label.'\\';
             $a = array(
                 'device' => false,
                 'label' => $label,
@@ -383,14 +380,14 @@ class Windows extends OS
             }
 
             if ($capacity != 0) {
-                $a['free_percent'] = round($volume->FreeSpace / $capacity, 2) * 100;
-                $a['used_percent'] = round(($capacity - $volume->FreeSpace) / $capacity, 2) * 100;
+                $a['free_percent'] = \round($volume->FreeSpace / $capacity, 2) * 100;
+                $a['used_percent'] = \round(($capacity - $volume->FreeSpace) / $capacity, 2) * 100;
             }
 
             $volumes[] = $a;
         }
 
-        usort($volumes, array('Linfo\OS\Windows', 'compare_mounts'));
+        \usort($volumes, array('Linfo\OS\Windows', 'compare_mounts'));
 
         return $volumes;
     }
@@ -411,16 +408,16 @@ class Windows extends OS
         $devs = array();
 
         foreach ($this->wmi->ExecQuery('SELECT DeviceID, Caption, Manufacturer FROM Win32_PnPEntity') as $pnpdev) {
-            $devId = explode('\\', $pnpdev->DeviceID);
-            $type = reset($devId);
+            $devId = \explode('\\', $pnpdev->DeviceID);
+            $type = \reset($devId);
             if (($type != 'USB' && $type != 'PCI') || (empty($pnpdev->Caption) || $pnpdev->Manufacturer[0] == '(')) {
                 continue;
             }
             $manufacturer = $pnpdev->Manufacturer;
             $caption = $pnpdev->Caption;
-            if (function_exists('iconv')) {
-                $manufacturer = iconv('Windows-1252', 'UTF-8//TRANSLIT', $manufacturer);
-                $caption = iconv('Windows-1252', 'UTF-8//TRANSLIT', $caption);
+            if (\function_exists('iconv')) {
+                $manufacturer = \iconv('Windows-1252', 'UTF-8//TRANSLIT', $manufacturer);
+                $caption = \iconv('Windows-1252', 'UTF-8//TRANSLIT', $caption);
             }
             $devs[] = array(
                 'vendor' => $manufacturer,
@@ -430,7 +427,7 @@ class Windows extends OS
         }
 
         // Sort by 1. Type, 2. Vendor
-        usort($devs, array('Linfo\OS\Windows', 'compare_devices'));
+        \usort($devs, array('Linfo\OS\Windows', 'compare_devices'));
 
         return $devs;
     }
@@ -469,7 +466,7 @@ class Windows extends OS
             $load[] = $cpu->LoadPercentage;
         }
 
-        return round(array_sum($load) / count($load), 2).'%';
+        return \round(\array_sum($load) / \count($load), 2).'%';
     }
 
     /**
@@ -487,14 +484,13 @@ class Windows extends OS
         $return = array();
         $i = 0;
 
-        if (version_compare($this->windows_version,'6.1.0000')>0) {
+        if (\version_compare($this->windows_version,'6.1.0000')>0) {
             $object = $this->wmi->ExecQuery('SELECT AdapterType, Name, NetConnectionStatus, GUID, Description FROM Win32_NetworkAdapter WHERE PhysicalAdapter = TRUE');
         } else {
             $object = $this->wmi->ExecQuery('SELECT AdapterType, Name, NetConnectionStatus, Description FROM Win32_NetworkAdapter WHERE NetConnectionStatus != NULL');
         }
 
-        foreach ($object as $net)
-        {
+        foreach ($object as $net) {
             // Initialize array with empty values
             $return[$net->Name] = array(
                 'recieved' => array(
@@ -591,7 +587,6 @@ class Windows extends OS
         //
         $wmi = $this->wmi->ExecQuery('SELECT * FROM Win32_NetworkAdapterConfiguration');
         foreach ($wmi as $adapter) {
-
             // Fill in possible MAC Address
             if (\array_key_exists($adapter->Description,$return)) {
                 $return[$adapter->Description]['mac'] = $adapter->MACAddress;  
@@ -672,7 +667,7 @@ class Windows extends OS
         foreach ($this->wmi->ExecQuery('SELECT Caption, Manufacturer FROM Win32_SoundDevice') as $card) {
             $manufacturer = $card->Manufacturer;
             $caption = $card->Caption;
-            if (function_exists('iconv')) {
+            if (\function_exists('iconv')) {
                 $manufacturer = iconv('Windows-1252', 'UTF-8//TRANSLIT', $manufacturer);
                 $caption = iconv('Windows-1252', 'UTF-8//TRANSLIT', $caption);
             }
