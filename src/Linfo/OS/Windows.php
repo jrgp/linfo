@@ -39,7 +39,7 @@ class Windows extends OS
     // Keep these tucked away
     protected $settings;
 
-    private $wmi, $wmi2, $windows_version;
+    private $wmi, $windows_version;
 
     /**
      * Constructor. Localizes settings.
@@ -59,10 +59,7 @@ class Windows extends OS
         // Get WMI instance
         $this->wmi = new COM('winmgmts:{impersonationLevel=impersonate}//./root/cimv2');
 
-        // Get StandardCimv2 instance
-        $this->wmi2 = new COM('winmgmts:{impersonationLevel=impersonate}//./root/StandardCimv2');
-
-        if (!is_object($this->wmi) || !is_object($this->wmi2)) {
+        if (!is_object($this->wmi)) {
             throw new FatalException('This needs access to WMI. Please enable DCOM in php.ini and allow the current user to access the WMI DCOM object.');
         }
     }
