@@ -1,3 +1,12 @@
+# v4.0.4 10/21/2019
+
+- version bump
+
+
+# v4.0.3 10/10/2019
+
+- Windows fixes
+
 # v4.0.2 9/12/2019
 
 - Misc fixes

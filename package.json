@@ -1,7 +1,6 @@
 {
     "name": "Linfo",
     "title": "Linfo",
-    "version": "4.0.3",
     "homepage": "https://github.com/jrgp/linfo",
     "description": "Linfo - PHP server health/stats script.",
     "author": {
