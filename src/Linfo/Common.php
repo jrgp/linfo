@@ -135,7 +135,7 @@ class Common
         }
 
         if ($seconds > 0) {
-            $return[] = $seconds.(date('m/d') == '06/03' ? ' sex' : ' '.self::$lang['seconds']);
+            $return[] = $seconds.' '.self::$lang['seconds'];
         }
 
         return implode(', ', $return);
