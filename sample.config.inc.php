@@ -72,7 +72,8 @@ $settings['show']['services'] = false;
 $settings['hide']['filesystems'] = array(
 	'tmpfs', 'ecryptfs', 'nfsd', 'rpc_pipefs', 'proc', 'sysfs',
 	'usbfs', 'devpts', 'fusectl', 'securityfs', 'fuse.truecrypt',
-  'cgroup', 'debugfs', 'mqueue', 'hugetlbfs', 'pstore');
+	'cgroup', 'cgroup2', 'debugfs', 'mqueue', 'hugetlbfs', 'pstore',
+	'tracefs', 'configfs', 'efivarfs');
 $settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none', 'systemd-1', 'udev');
 
 // filter mountpoints based on PCRE regex, eg '@^/proc@', '@^/sys@', '@^/dev@'
