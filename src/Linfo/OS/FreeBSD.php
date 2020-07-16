@@ -63,8 +63,11 @@ class FreeBSD extends BSDcommon
             'kern.boottime',
 
             // Ram stuff
-            'vm.vmtotal',
             'vm.loadavg',
+            'vm.stats.vm.v_inactive_count',
+            'vm.stats.vm.v_free_count',
+            'vm.stats.vm.v_page_count',
+
 
             // CPU related
             'hw.model',
@@ -172,25 +175,18 @@ class FreeBSD extends BSDcommon
         $return = [];
 
         // Start us off at zilch
-        $return['type'] = 'Virtual';
+        $return['type'] = 'Physical';
         $return['total'] = 0;
         $return['free'] = 0;
         $return['swapTotal'] = 0;
         $return['swapFree'] = 0;
         $return['swapInfo'] = [];
 
-        // Parse the vm.vmtotal sysctl entry
-        if (!preg_match_all('/([a-z\ ]+):\s*\(Total: (\d+)\w,? Active:? (\d+)\w\)\n/i', $this->sysctl['vm.vmtotal'], $rm, PREG_SET_ORDER)) {
-            return $return;
-        }
-
-        // Parse each entry
-        foreach ($rm as $r) {
-            if ($r[1] == 'Real Memory') {
-                $return['total'] = $r[2]  * 1024;
-                $return['free'] = ($r[2] - $r[3]) * 1024;
-            }
-        }
+        // See https://wiki.freebsd.org/Memory
+        $return['total'] = 4096 * $this->sysctl['vm.stats.vm.v_page_count'];
+        $return['free'] = 4096 * (
+            $this->sysctl['vm.stats.vm.v_inactive_count'] +
+            $this->sysctl['vm.stats.vm.v_free_count']);
 
         // Swap info
         try {
