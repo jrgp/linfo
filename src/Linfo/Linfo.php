@@ -355,6 +355,9 @@ class Linfo
             $settings['language'] = 'en';
         }
 
+        // Make sure we have show, as lots of stuff assumes it exists
+        $settings['show'] = isset($settings['show']) ? $settings['show'] : [];
+
         $this->settings = $settings;
     }
 
