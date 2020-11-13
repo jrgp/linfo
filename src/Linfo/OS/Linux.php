@@ -1404,6 +1404,11 @@ class Linux extends Unixcommon
 
         $contents_distros = array(
             array(
+                'file' => '/etc/fedora-release',
+                'regex' => '/^Fedora(?: Core)? release (?P<version>\d+) \((?P<codename>[^)]+)\)$/',
+                'distro' => 'Fedora',
+            ),
+            array(
                 'file' => '/etc/redhat-release',
                 'regex' => '/^CentOS.+release (?P<version>[\d\.]+) \((?P<codename>[^)]+)\)$/i',
                 'distro' => 'CentOS',
@@ -1436,11 +1441,6 @@ class Linux extends Unixcommon
                       'version' => $info['VERSION']
                     ) : false;
                  },
-            ),
-            array(
-                'file' => '/etc/fedora-release',
-                'regex' => '/^Fedora(?: Core)? release (?P<version>\d+) \((?P<codename>[^)]+)\)$/',
-                'distro' => 'Fedora',
             ),
             array(
                 'file' => '/etc/gentoo-release',
