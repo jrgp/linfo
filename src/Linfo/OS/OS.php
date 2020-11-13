@@ -35,6 +35,15 @@ abstract class OS
     }
 
     /**
+     * Perform optional initialization. Defined by child classes.
+     *
+     */
+    public function init()
+    {
+    }
+
+
+    /**
      * getAccessedIP
      *
      * @return string SERVER_ADDR or LOCAL_ADDR key in $_SERVER superglobal or Unknown

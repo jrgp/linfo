@@ -112,181 +112,179 @@ class Linfo
 
         // Prime parser. Do things not appropriate to do in constructor. Most OS classes
         // don't have this.
-        if ($reflector->hasMethod('init') && ($method = $reflector->getMethod('init'))) {
-            $method->invoke($this->parser);
-        }
+        $this->parser->init();
 
         // Array fields, tied to method names and default values...
-        $fields = array(
-            'OS' => array(
+        $fields = [
+            'OS' => [
                 'show' => !empty($this->settings['show']['os']),
                 'default' => '',
                 'method' => 'getOS',
-            ),
+            ],
 
-            'Kernel' => array(
+            'Kernel' => [
                 'show' => !empty($this->settings['show']['kernel']),
                 'default' => '',
                 'method' => 'getKernel',
-            ),
+            ],
 
-            'AccessedIP' => array(
+            'AccessedIP' => [
                 'show' => !isset($this->settings['show']['ip']) || !empty($this->settings['show']['ip']),
                 'default' => '',
                 'method' => 'getAccessedIP',
-            ),
+            ],
 
-            'Distro' => array(
+            'Distro' => [
                 'show' => !empty($this->settings['show']['distro']),
                 'default' => '',
                 'method' => 'getDistro',
-            ),
+            ],
 
-            'RAM' => array(
+            'RAM' => [
                 'show' => !empty($this->settings['show']['ram']),
                 'default' => [],
                 'method' => 'getRam',
-            ),
+            ],
 
-            'HD' => array(
+            'HD' => [
                 'show' => !empty($this->settings['show']['hd']),
                 'default' => [],
                 'method' => 'getHD',
-            ),
+            ],
 
-            'Mounts' => array(
+            'Mounts' => [
                 'show' => !empty($this->settings['show']['mounts']),
                 'default' => [],
                 'method' => 'getMounts',
-            ),
+            ],
 
-            'Load' => array(
+            'Load' => [
                 'show' => !empty($this->settings['show']['load']),
                 'default' => [],
                 'method' => 'getLoad',
-            ),
+            ],
 
-            'HostName' => array(
+            'HostName' => [
                 'show' => !empty($this->settings['show']['hostname']),
                 'default' => '',
                 'method' => 'getHostName',
-            ),
+            ],
 
-            'UpTime' => array(
+            'UpTime' => [
                 'show' => !empty($this->settings['show']['uptime']),
                 'default' => [],
                 'method' => 'getUpTime',
-            ),
+            ],
 
-            'CPU' => array(
+            'CPU' => [
                 'show' => !empty($this->settings['show']['cpu']),
                 'default' => [],
                 'method' => 'getCPU',
-            ),
+            ],
 
-            'Model' => array(
+            'Model' => [
                 'show' => !empty($this->settings['show']['model']),
                 'default' => [],
                 'method' => 'getModel',
-            ),
+            ],
 
-            'CPUArchitecture' => array(
+            'CPUArchitecture' => [
                 'show' => !empty($this->settings['show']['cpu']),
                 'default' => '',
                 'method' => 'getCPUArchitecture',
-            ),
+            ],
 
-            'Network Devices' => array(
+            'Network Devices' => [
                 'show' => !empty($this->settings['show']['network']),
                 'default' => [],
                 'method' => 'getNet',
-            ),
+            ],
 
-            'Devices' => array(
+            'Devices' => [
                 'show' => !empty($this->settings['show']['devices']),
                 'default' => [],
                 'method' => 'getDevs',
-            ),
+            ],
 
-            'Temps' => array(
+            'Temps' => [
                 'show' => !empty($this->settings['show']['temps']),
                 'default' => [],
                 'method' => 'getTemps',
-            ),
+            ],
 
-            'Battery' => array(
+            'Battery' => [
                 'show' => !empty($this->settings['show']['battery']),
                 'default' => [],
                 'method' => 'getBattery',
-            ),
+            ],
 
-            'Raid' => array(
+            'Raid' => [
                 'show' => !empty($this->settings['show']['raid']),
                 'default' => [],
                 'method' => 'getRAID',
-            ),
+            ],
 
-            'Wifi' => array(
+            'Wifi' => [
                 'show' => !empty($this->settings['show']['wifi']),
                 'default' => [],
                 'method' => 'getWifi',
-            ),
+            ],
 
-            'SoundCards' => array(
+            'SoundCards' => [
                 'show' => !empty($this->settings['show']['sound']),
                 'default' => [],
                 'method' => 'getSoundCards',
-            ),
+            ],
 
-            'processStats' => array(
+            'processStats' => [
                 'show' => !empty($this->settings['show']['process_stats']),
                 'default' => [],
                 'method' => 'getProcessStats',
-            ),
+            ],
 
-            'services' => array(
+            'services' => [
                 'show' => !empty($this->settings['show']['services']),
                 'default' => [],
                 'method' => 'getServices',
-            ),
+            ],
 
-            'numLoggedIn' => array(
+            'numLoggedIn' => [
                 'show' => !empty($this->settings['show']['numLoggedIn']),
                 'default' => false,
                 'method' => 'getnumLoggedIn',
-            ),
+            ],
 
-            'virtualization' => array(
+            'virtualization' => [
                 'show' => !empty($this->settings['show']['virtualization']),
                 'default' => [],
                 'method' => 'getVirtualization',
-            ),
+            ],
 
-            'cpuUsage' => array(
+            'cpuUsage' => [
                 'show' => !empty($this->settings['cpu_usage']),
                 'default' => false,
                 'method' => 'getCPUUsage',
-            ),
+            ],
 
-            'phpVersion' => array(
+            'phpVersion' => [
                 'show' => !empty($this->settings['show']['phpversion']),
                 'default' => false,
                 'method' => 'getPhpVersion',
-            ),
+            ],
 
-            'webService' => array(
+            'webService' => [
                 'show' => !empty($this->settings['show']['webservice']),
                 'default' => false,
                 'method' => 'getWebService',
-            ),
+            ],
 
             // Extra info such as which fields to not show
-            'contains' => array(
+            'contains' => [
                 'show' => true,
                 'default' => [],
                 'method' => 'getContains',
-            ),
-        );
+            ],
+        ];
 
         foreach ($fields as $key => $data) {
             if (!$data['show']) {
