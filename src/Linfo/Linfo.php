@@ -108,8 +108,6 @@ class Linfo
     // Load everything, while obeying permissions...
     public function scan()
     {
-        $reflector = new ReflectionClass($this->parser);
-
         // Prime parser. Do things not appropriate to do in constructor. Most OS classes
         // don't have this.
         $this->parser->init();
@@ -292,11 +290,10 @@ class Linfo
                 continue;
             }
 
-            try {
-                $method = $reflector->getMethod($data['method']);
-                $this->info[$key] = $method->invoke($this->parser);
-            } catch (ReflectionException $e) {
-                $this->info[$key] = $data['default'];
+            if (method_exists($this->parser, $data['method'])) {
+                $this->info[$key] = call_user_func_array(
+                    [$this->parser, $data['method']],
+                    isset($data['args']) ? $data['args'] : []);
             }
         }
 
