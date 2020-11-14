@@ -3,16 +3,18 @@
 use \Linfo\Common;
 use \Linfo\Linfo;
 
-class CommonTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class CommonTest extends TestCase
 {
   protected static $linfo;
 
-  public static function setUpBeforeClass()
+  public static function setUpBeforeClass(): void
   {
     self::$linfo = new Linfo();
   }
 
-  public static function tearDownAfterClass()
+  public static function tearDownAfterClass(): void
   {
     Common::unconfig();
   }

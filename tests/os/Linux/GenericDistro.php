@@ -3,6 +3,8 @@
 use \Linfo\Common;
 use \Linfo\Linfo;
 
+use PHPUnit\Framework\TestCase;
+
 /*
  * Validate most of the regexes/file parsing, targeting custom known real
  * Linux files taken from the wild
@@ -10,11 +12,11 @@ use \Linfo\Linfo;
  * Also, thank FUCK for var_export()
  */
 
-class LinuxGenericDistroTest extends PHPUnit_Framework_TestCase
+class LinuxGenericDistroTest extends TestCase
 {
   protected static $parser;
 
-  public static function setUpBeforeClass()
+  public static function setUpBeforeClass(): void
   {
     if (PHP_OS !== 'Linux') {
       self::markTestSkipped('Skip tests for Linux on other os');
@@ -217,7 +219,7 @@ class LinuxGenericDistroTest extends PHPUnit_Framework_TestCase
     ], self::$parser->getRAID());
   }
 
-  public static function tearDownAfterClass()
+  public static function tearDownAfterClass(): void
   {
     self::$parser = null;
     Common::unconfig();
