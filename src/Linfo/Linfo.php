@@ -353,6 +353,9 @@ class Linfo
         // Make sure we have show, as lots of stuff assumes it exists
         $settings['show'] = isset($settings['show']) ? $settings['show'] : [];
 
+        // And timer, as this is referenced in most OS methods
+        $settings['timer'] = isset($settings['timer']) ? $settings['timer'] : false;
+
         $this->settings = $settings;
     }
 
