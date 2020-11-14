@@ -1,8 +1,9 @@
 <?php
 
 use \Linfo\Meta\Timer;
+use PHPUnit\Framework\TestCase;
 
-class LinfoTimerTest extends PHPUnit_Framework_TestCase
+class LinfoTimerTest extends TestCase
 {
   /**
    * @test
@@ -16,7 +17,7 @@ class LinfoTimerTest extends PHPUnit_Framework_TestCase
     $this->assertCount(2, Timer::getResults());
   }
 
-  public function tearDown()
+  public function tearDown(): void
   {
     Timer::clear();
   }

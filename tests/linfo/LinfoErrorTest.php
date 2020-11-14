@@ -1,8 +1,9 @@
 <?php
 
 use \Linfo\Meta\Errors;
+use PHPUnit\Framework\TestCase;
 
-class ErrorTest extends PHPUnit_Framework_TestCase
+class ErrorTest extends TestCase
 {
 
   /**
@@ -15,7 +16,7 @@ class ErrorTest extends PHPUnit_Framework_TestCase
     $this->assertCount(2, Errors::show());
   }
 
-  public function tearDown()
+  public function tearDown(): void
   {
     Errors::clear();
   }
