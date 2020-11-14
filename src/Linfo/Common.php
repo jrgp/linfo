@@ -25,18 +25,20 @@
 
 namespace Linfo;
 
+use Linfo\Parsers\IO;
+
 class Common
 {
     protected static $settings = [],
         $lang = [];
 
-    // Used for unit tests
-    public static $path_prefix = false;
+    public static $io;
 
-    public static function config(Linfo $linfo)
+    public static function config(Linfo $linfo, IO $io)
     {
         self::$settings = $linfo->getSettings();
         self::$lang = $linfo->getLang();
+        self::$io = $io;
     }
 
     public static function unconfig()
@@ -144,17 +146,13 @@ class Common
     // Get a file's contents, or default to second param
     public static function getContents($file, $default = '')
     {
-        if (is_string(self::$path_prefix)) {
-            $file = self::$path_prefix.$file;
-        }
-
-        return !is_file($file) || !is_readable($file) || !($contents = @file_get_contents($file)) ? $default : trim($contents);
+        return self::$io->getContents($file, $default);
     }
 
     // Like above, but in lines instead of a big string
     public static function getLines($file)
     {
-        return !is_file($file) || !is_readable($file) || !($lines = @file($file, FILE_SKIP_EMPTY_LINES)) ? [] : $lines;
+        return self::$io->getLines($file);
     }
 
     // Make a string safe for being in an xml tag name

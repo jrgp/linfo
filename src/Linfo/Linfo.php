@@ -26,6 +26,7 @@
 namespace Linfo;
 
 use Linfo\Parsers\CallExt;
+use Linfo\Parsers\FileIO;
 use Linfo\Exceptions\FatalException;
 use Linfo\Meta\Errors;
 use ReflectionClass;
@@ -80,8 +81,11 @@ class Linfo
         $this->loadSettings($settings);
         $this->loadLanguage();
 
+        // We'll be hitting local files on disk in their usual paths
+        $io = new FileIO(false);
+
         // Some classes need our vars; config them
-        Common::config($this);
+        Common::config($this, $io);
         CallExt::config($this);
 
         // Determine OS
