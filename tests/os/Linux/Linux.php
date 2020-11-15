@@ -198,8 +198,7 @@ class LinuxTest extends TestCase
           self::assertArrayHasKey('size', $partition);
           self::assertArrayHasKey('number', $partition);
           self::assertIsInt($partition['size']);
-          self::assertIsNumeric($partition['number']);
-        }
+       }
       }
       self::assertIsInt($drive['size']);
     }
