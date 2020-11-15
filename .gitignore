@@ -9,3 +9,4 @@ node_modules
 *.sublime-workspace
 /vendor
 yarn.lock
+.phpunit.result.cache
