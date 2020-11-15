@@ -298,6 +298,8 @@ class Linfo
                 $this->info[$key] = call_user_func_array(
                     [$this->parser, $data['method']],
                     isset($data['args']) ? $data['args'] : []);
+            } else {
+                $this->info[$key] = $data['default'];
             }
         }
 
