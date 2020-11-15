@@ -1403,6 +1403,7 @@ class Linux extends Unixcommon
         // - And even also supports empty files, and just uses said file to identify the distro and ignore version
 
         $contents_distros = array(
+            // Various redhat flavors/derivs
             array(
                 'file' => '/etc/fedora-release',
                 'regex' => '/^Fedora(?: Core)? release (?P<version>\d+) \((?P<codename>[^)]+)\)$/',
@@ -1418,6 +1419,8 @@ class Linux extends Unixcommon
                 'regex' => '/^Red Hat.+release (?P<version>\S+) \((?P<codename>[^)]+)\)$/i',
                 'distro' => 'RedHat',
             ),
+
+            // Should catch most distros (Ubuntu/etc)
             array(
                 'file' => '/etc/lsb-release',
                 'closure' => function ($ini) {
@@ -1442,6 +1445,7 @@ class Linux extends Unixcommon
                     ) : false;
                  },
             ),
+
             array(
                 'file' => '/etc/gentoo-release',
                 'regex' => '/(?P<version>[\d\.]+)$/',
@@ -1482,7 +1486,7 @@ class Linux extends Unixcommon
                     'name' => $distro['distro'],
                     'version' => $info['version'].(isset($info['codename']) ? ' ('.ucfirst($info['codename']).')' : ''),
                 );
-            } elseif (isset($distro['distro'])) {
+            } elseif (isset($distro['distro']) && !isset($distro['regex'])) {
                 return array(
                     'name' => $distro['distro'],
                     'version' => $contents,
