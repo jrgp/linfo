@@ -2,6 +2,7 @@
 
 use \Linfo\Common;
 use \Linfo\Linfo;
+use \Linfo\Parsers\FileIO;
 
 use PHPUnit\Framework\TestCase;
 
@@ -22,9 +23,11 @@ class LinuxGenericDistroTest extends TestCase
       self::markTestSkipped('Skip tests for Linux on other os');
     }
 
-    Common::$path_prefix = dirname(dirname(__FILE__)) . '/../files/linux/generic_distro';
     $linfo = new Linfo();
     self::$parser = $linfo->getParser();
+
+    $path_prefix = realpath(dirname(dirname(__FILE__)) . '/../files/linux/generic_distro');
+    Common::$io = new FileIO($path_prefix);
   }
 
   /**
@@ -223,6 +226,6 @@ class LinuxGenericDistroTest extends TestCase
   {
     self::$parser = null;
     Common::unconfig();
-    Common::$path_prefix = false;
+    Common::$io = new FileIO(false);
   }
 }
