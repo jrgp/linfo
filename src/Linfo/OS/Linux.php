@@ -377,7 +377,7 @@ class Linux extends Unixcommon
         // Get partitions
         $partitions = [];
         $partitions_contents = Common::getContents('/proc/partitions');
-        if (@preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, PREG_SET_ORDER) > 0) {
+        if (@preg_match_all('/(\d+)\s+([a-z]{3}|nvme\d+n\d+)(p?\d+)$/m', $partitions_contents, $partitions_match, PREG_SET_ORDER) > 0) {
             // Go through each match
             foreach ($partitions_match as $partition) {
                 $partitions[$partition[2]][] = array(
