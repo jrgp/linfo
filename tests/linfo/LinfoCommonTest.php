@@ -33,14 +33,6 @@ class CommonTest extends TestCase
   /**
    * @test
    */
-  public function xmlStringSanitize()
-  {
-    $this->assertEquals(Common::xmlStringSanitize('te!@#$%^st'), 'te_st');
-  }
-
-  /**
-   * @test
-   */
   public function anyInArray()
   {
     $this->assertTrue(Common::anyInArray([1, 2, 3, 4, 5], [5, 6, 7]));

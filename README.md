@@ -108,7 +108,6 @@ var_dump($parser->getCPU()); // and a whole lot more
 
 ### URL arguments
 
-- ``?out=xml`` - XML output (requires SimpleXML extension)
 - ``?out=json`` - JSON output
 - ``?out=jsonp&callback=functionName`` - JSON output with a function callback. (Look here: http://www.json-p.org/ )
 - ``?out=php_array`` - PHP serialized associative array

@@ -155,12 +155,6 @@ class Common
         return self::$io->getLines($file);
     }
 
-    // Make a string safe for being in an xml tag name
-    public static function xmlStringSanitize($string)
-    {
-        return strtolower(preg_replace('/([^a-zA-Z]+)/', '_', $string));
-    }
-
     // Get a variable from a file. Include it in this function to avoid
     // clobbering the main namespace
     public static function getVarFromFile($file, $variable)

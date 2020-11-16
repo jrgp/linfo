@@ -74,10 +74,6 @@ try {
             case 'php_array':
                 $output = new \Linfo\Output\Serialized($linfo);
             break;
-
-            case 'xml':
-                $output = new \Linfo\Output\Xml($linfo);
-            break;
         }
     }
 
