@@ -57,7 +57,15 @@ class MacSystemProfiler {
       if (!preg_match('/^(\s*)([^:]+): ?([^$]+)?$/', $line, $m)) {
         continue;
       }
-      list(, $indent, $key, $value) = $m;
+
+      $indent = $m[1];
+      $key = $m[2];
+      if (isset($m[3])) {
+        $value = $m[3];
+      } else {
+        $value = null;
+      }
+
       $indent_len = strlen($indent);
       if ($value === null) {
         if ($indent_len > $lastindent) {
