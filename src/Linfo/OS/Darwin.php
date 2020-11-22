@@ -473,46 +473,18 @@ class Darwin extends BSDcommon
         // Store any we find here
         $batteries = [];
 
-        // Lines
-        $lines = explode("\n", $this->systemProfiler);
-
-        // Hunt
-        $bat = [];
-        $in_bat_field = false;
-
-        foreach ($lines as $line) {
-            if (preg_match('/^\s+Battery Information/', $line)) {
-                $in_bat_field = true;
-                continue;
-            } elseif (preg_match('/^\s+System Power Settings/', $line)) {
-                $in_bat_field = false;
-                break;
-            } elseif ($in_bat_field && preg_match('/^\s+Fully charged: ([a-zA-Z]+)/i', $line, $m)) {
-                $bat['charged'] = $m[1] == 'Yes';
-            } elseif ($in_bat_field && preg_match('/^\s+Charging: ([a-zA-Z]+)/i', $line, $m)) {
-                $bat['charging'] = $m[1] == 'Yes';
-            } elseif ($in_bat_field && preg_match('/^\s+Charge remaining \(mAh\): (\d+)/i', $line, $m)) {
-                $bat['charge_now'] = (int) $m[1];
-            } elseif ($in_bat_field && preg_match('/^\s+Full charge capacity \(mAh\): (\d+)/i', $line, $m)) {
-                $bat['charge_full'] = (int) $m[1];
-            } elseif ($in_bat_field && preg_match('/^\s+Serial Number: ([A-Z0-9]+)/i', $line, $m)) {
-                $bat['serial'] = $m[1];
-            } elseif ($in_bat_field && preg_match('/^\s+Manufacturer: (\w+)/i', $line, $m)) {
-                $bat['vendor'] = $m[1];
-            } elseif ($in_bat_field && preg_match('/^\s+Device name: (\w+)/i', $line, $m)) {
-                $bat['name'] = $m[1];
-            }
-        }
+        $percentage = $this->systemProfiler->get(['Power', 'Battery Information', 'Charge Information', 'State of Charge (%)']);
+        $device = $this->systemProfiler->get(['Power', 'Battery Information', 'Model Information', 'Device Name']);
+        $fully_charged = $this->systemProfiler->get(['Power', 'Battery Information', 'Charge Information', 'Fully Charged']);
+        $charging = $this->systemProfiler->get(['Power', 'Battery Information', 'Charge Information', 'Charging']);
 
         // If we have what we need, append
-        if (isset($bat['charge_full']) && isset($bat['charge_now']) && isset($bat['charged']) && isset($bat['charging'])) {
-            $batteries[] = array(
-                'charge_full' => $bat['charge_full'],
-                'charge_now' => $bat['charge_now'],
-                'percentage' => $bat['charge_full'] > 0 && $bat['charge_now'] > 0 ? round($bat['charge_now'] / $bat['charge_full'], 4) * 100 .'%' : '?',
-                'device' => $bat['vendor'].' - '.$bat['name'],
-                'state' => $bat['charging'] ? 'Charging' : ($bat['charged'] ? 'Fully Charged' : 'Discharging'),
-            );
+        if($percentage && $device && $fully_charged && $charging) {
+            $batteries[] = [
+                'device' => $device,
+                'percentage' => $percentage,
+                'state' => $charging == 'Yes' ? 'Charging' : ($fully_charged == 'yes' ? 'Fully Charged' : 'Discharging')
+            ];
         }
 
         // Give
