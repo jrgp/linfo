@@ -93,10 +93,15 @@ class CallExt
      * @throws Exception
      *
      * @param string $name     name of executable to call
-     * @param string $switches command arguments
+     * @param string|array $switches command arguments
      */
     public function exec($name, $switches = '')
     {
+
+        // Accept an array of switches and if so, escapeshellarg them ourselves
+        if (is_array($switches)) {
+            $switches = $this->prepareArrayArgs($switches);
+        }
 
         // Sometimes it is necessary to call a program with sudo
         $attempt_sudo = array_key_exists('sudo_apps', self::$settings) && in_array($name, self::$settings['sudo_apps']);
@@ -134,5 +139,9 @@ class CallExt
 
         // Never got it
         throw new Exception('Exec `'.$name.'\' not found');
+    }
+
+    private function prepareArrayArgs($arr){
+        return implode(' ', array_map('escapeshellarg', $arr));
     }
 }
