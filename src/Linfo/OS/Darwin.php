@@ -29,6 +29,8 @@ use Exception;
 use Linfo\Meta\Timer;
 use Linfo\Meta\Errors;
 use Linfo\Common;
+use Linfo\Parsers\MacSystemProfiler;
+use Linfo\Leveldict;
 
 /*
  * Alpha osx class
@@ -69,10 +71,13 @@ class Darwin extends BSDcommon
 
         // And get this info for when the above fails
         try {
-            $this->systemProfiler = $this->exec->exec('system_profiler', 'SPHardwareDataType SPSoftwareDataType SPPowerDataType');
+            $output = $this->exec->exec('system_profiler', 'SPHardwareDataType SPSoftwareDataType SPPowerDataType');
+            $profilerParser = new MacSystemProfiler(explode("\n", $output));
+            $this->systemProfiler = $profilerParser->parse();
         } catch (Exception $e) {
             // Meh
             Errors::add('Linfo Mac OS 10', 'Error using system_profiler');
+            $this->systemProfiler = new Leveldict;
         }
     }
 
@@ -91,13 +96,15 @@ class Darwin extends BSDcommon
     // Operating system
     public function getOS()
     {
-        return 'Darwin ('.(preg_match('/^\s+System Version: ([^\(]+)/m', $this->systemProfiler, $m) ? trim($m[1]) : 'Mac OS X').')';
+        $version = $this->systemProfiler->get(['Software', 'System Software Overview', 'System Version']);
+        return 'Darwin ('.($version ? $version  : 'Mac OS X').')';
     }
 
     // Hostname
     public function getHostname()
     {
-        return preg_match('/^\s*Computer Name:\s+(.+)\s*$/m', $this->systemProfiler, $m) ? $m[1] : php_uname('n');
+        $name = $this->systemProfiler->get(['Software', 'System Software Overview', 'Computer Name']);
+        return $name ? $name : php_uname('n');
     }
 
     // Get mounted file systems
@@ -364,26 +371,48 @@ class Darwin extends BSDcommon
             $t = new Timer('CPUs');
         }
 
-        // Was machdep mean to us? Likely on ppc macs
-        if (empty($this->sysctl['machdep.cpu.brand_string']) && preg_match('/^\s+Processor Name:\s+(.+)(?= \([\d\.]+\))/m', $this->systemProfiler, $m)) {
-            $this->sysctl['machdep.cpu.brand_string'] = $m[1];
+        $model = '';
+        $vendor = '';
+        $freq = 0;
+        $ncpu = 0;
+
+        if (!empty($this->sysctl['machdep.cpu.brand_string'])) {
+            $model = $this->sysctl['machdep.cpu.brand_string'];
+        } elseif ($profiler_model = $this->systemProfiler->get([''])) {
+            $model = $profiler_model;
+        } elseif ($profiler_model = $this->systemProfiler->get(['Hardware', 'Hardware Overview', 'Chip'])) {
+            $model = $profiler_model;
         }
 
-        if (empty($this->sysctl['machdep.cpu.vendor'])) {
-            $this->sysctl['machdep.cpu.vendor'] = false;
+        if (!empty($this->sysctl['machdep.cpu.vendor'])) {
+            $vendor = $this->sysctl['machdep.cpu.vendor'];
+        }
+
+        if (!empty($this->sysctl['hw.ncpu'])) {
+            $ncpu = $this->sysctl['hw.ncpu'];
+        } elseif ($profiler_ncpu = $this->systemProfiler->get(['Hardware', 'Hardware Overview', 'Total Number of Cores'])) {
+            if (preg_match('/^(\d+) /', $profiler_ncpu, $m)) {
+                $ncpu = (int)$m[1];
+            }
+        }
+
+        if (!empty($this->sysctl['hw.cpufrequency'])) {
+            $freq = $this->sysctl['hw.cpufrequency'] / 1000000;
         }
 
         // Store them here
         $cpus = [];
 
-        // The same one multiple times
-        for ($i = 0; $i < $this->sysctl['hw.ncpu']; ++$i) {
-            $cpus[] = array(
-                'Model' => $this->sysctl['machdep.cpu.brand_string'],
-                'MHz' => $this->sysctl['hw.cpufrequency'] / 1000000,
-                'Vendor' => $this->sysctl['machdep.cpu.vendor'],
-
-            );
+        // The same one multiple times (for now)
+        for ($i = 0; $i < $ncpu; ++$i) {
+            $cpu = [
+                'Model' => $model,
+                'Vendor' => $vendor,
+            ];
+            if ($freq) {
+                $cpu['MHz'] = $freq;
+            }
+            $cpus[] = $cpu;
         }
 
         return $cpus;
@@ -421,8 +450,9 @@ class Darwin extends BSDcommon
     // Model of mac
     public function getModel()
     {
-        if (preg_match('/^\s+Model Name:\s+(.+)/m', $this->systemProfiler, $m)) {
-            return $m[1];
+        $model = $this->systemProfiler->get(['Hardware', 'Hardware Overview', 'Model Name']);
+        if ($model) {
+            return $model;
         }
 
         if (preg_match('/^([a-zA-Z]+)/', $this->sysctl['hw.model'], $m)) {

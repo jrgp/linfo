@@ -6,7 +6,7 @@ use \Linfo\Parsers\IO;
 // in memory, without the need for them to exist on disk
 class MockedIO implements IO {
 
-    private array $files = [];
+    private $files = [];
 
     function register($path, $contents) {
         $this->files[$path] = $contents;
