@@ -431,10 +431,27 @@ class Darwin extends BSDcommon
         $return = [];
         $return['type'] = 'Physical';
         $return['total'] = $this->sysctl['hw.memsize'];
-        $return['free'] = $this->sysctl['hw.memsize'] - $this->sysctl['hw.usermem'];
         $return['swapTotal'] = 0;
         $return['swapFree'] = 0;
         $return['swapInfo'] = [];
+
+        // FIXME: this is not correct. It is an innacurate approximation stopgap as hw.usermem is now longer accurate
+        // on modern versions of macOS as it returns a negative number, possibly due to an integer overflow.
+        //
+        // Programmatically determining accurate memory usage on mac (like what Activity Monitor shows) is nearly
+        // impossible.
+        try {
+            $top_output = $this->exec->exec('top', '-l 1 -n 0');
+            if (!$top_output) {
+                throw new Exception('Broken');
+            }
+            if (preg_match('/PhysMem.+ (\d+)M unused/', $top_output, $m)) {
+                $return['free'] = $m[1] * 1024 * 1024;
+            }
+        } catch (Exception $e) {
+            // Broken
+            $return['free'] = $this->sysctl['hw.memsize'] - $this->sysctl['hw.usermem'];
+        }
 
         // Sort out swap
         if (preg_match('/total = ([\d\.]+)M\s+used = ([\d\.]+)M\s+free = ([\d\.]+)M/', $this->sysctl['vm.swapusage'], $swap_match)) {
