@@ -76,8 +76,6 @@ abstract class BSDcommon extends Unixcommon
 
         // Go through each
         foreach ($keys as $k => $v) {
-            $keys[$k] = escapeshellarg($v);
-
             // Check and see if we have any of these already. If so, use previous
             // values and don't retrive them again
             if (array_key_exists($v, $this->sysctl)) {
@@ -89,7 +87,10 @@ abstract class BSDcommon extends Unixcommon
         // Try running sysctl to get all the values together
         try {
             // Result of sysctl
-            $command = $this->exec->exec('sysctl', implode(' ', $keys));
+            $command = $this->exec->exec('sysctl', $keys);
+            if ($command === null) {
+                throw new Exception('sysctl returned empty values');
+            }
 
             // Place holder
             $current_key = false;
@@ -121,7 +122,15 @@ abstract class BSDcommon extends Unixcommon
 
                 // Try it
                 try {
-                    $results[$v] = $this->exec->exec('sysctl', $v);
+                    $value = $this->exec->exec('sysctl', $v);
+                    if ($value === null) {
+                        throw new Exception('sysctl returned empty values');
+                    }
+                    $prefix = "$v: ";
+                    if(strpos($value, $prefix) === 0) {
+                        $value = substr($value, strlen($prefix));
+                    }
+                    $results[$v] = trim($value);
                 }
 
                 // Didn't work again... just forget it and set value to empty string
