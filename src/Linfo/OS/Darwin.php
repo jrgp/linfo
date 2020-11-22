@@ -376,11 +376,11 @@ class Darwin extends BSDcommon
         $freq = 0;
         $ncpu = 0;
 
-        if (!empty($this->sysctl['machdep.cpu.brand_string'])) {
+        if($profiler_model = $this->systemProfiler->get(['Hardware', 'Hardware Overview', 'Chip'])) {
+            $model = $profiler_model;
+        } elseif (!empty($this->sysctl['machdep.cpu.brand_string'])) {
             $model = $this->sysctl['machdep.cpu.brand_string'];
         } elseif ($profiler_model = $this->systemProfiler->get([''])) {
-            $model = $profiler_model;
-        } elseif ($profiler_model = $this->systemProfiler->get(['Hardware', 'Hardware Overview', 'Chip'])) {
             $model = $profiler_model;
         }
 
