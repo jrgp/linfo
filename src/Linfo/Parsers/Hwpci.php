@@ -2,7 +2,7 @@
 
 /* Linfo
  *
- * Copyright (c) 2018 Joe Gillotti
+ * Copyright (c) 2020 Joe Gillotti
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,32 +36,17 @@ use Linfo\Common;
  */
 class Hwpci
 {
-    private $_use_json = false,
-        $_usb_file = '',
-        $_pci_file = '',
-        $_cache_file = '',
-        $_existing_cache_vals = [],
-        $_usb_entries = [],
-        $_pci_entries = [],
-        $_usb_devices = [],
-        $_pci_devices = [],
-        $_result = [],
-        $exec;
+    private $pci_file, $usb_file, $os, $enable_cache, $cache_file;
 
     /**
      * Constructor.
-     * @param $usb_file
-     * @param $pci_file
      */
-    public function __construct($usb_file, $pci_file)
+    public function __construct($usb_file, $pci_file, $os, $enable_cache = true)
     {
-
-        // Localize paths to the ids files
-        $this->_pci_file = $pci_file;
-        $this->_usb_file = $usb_file;
-
-        // Prefer json, but check for it
-        $this->_use_json = function_exists('json_encode') && function_exists('json_decode');
+        $this->pci_file = $pci_file;
+        $this->usb_file = $usb_file;
+        $this->os = $os;
+        $this->enable_cache = $enable_cache;
 
         // Allow the same web root to be used for multiple insances of linfo, across multiple machines using
         // nfs or whatever, and to have a different cache file for each
@@ -69,247 +54,255 @@ class Hwpci
             '_'.substr(md5(Common::getContents('/proc/sys/kernel/hostname')), 0, 10) : '_x';
 
         // Path to the cache file
-        $this->_cache_file = dirname(dirname(dirname(__DIR__))).'/cache/ids_cache'.$sys_id.($this->_use_json ? '.json' : '');
+        $this->cache_file = dirname(dirname(dirname(__DIR__))).'/cache/ids_cache'.$sys_id;
 
-        // Load contents of cache
-        $this->_populate_cache();
-
-        // Might need these
+        // Need to execute pciconf on bsd
         $this->exec = new CallExt();
         $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
     }
 
-    /**
-     * Run the cache file.
+    /*
+     * Parse vendor and device names out of hardware ID files. Works for USB and PCI
      */
-    private function _populate_cache()
-    {
-        if ($this->_use_json) {
-            if (is_readable($this->_cache_file) &&
-            ($loaded = @json_decode(Common::getContents($this->_cache_file, ''), true)) && is_array($loaded)) {
-                $this->_existing_cache_vals = $loaded;
-            }
-        } else {
-            if (is_readable($this->_cache_file) &&
-            ($loaded = @unserialize(Common::getContents($this->_cache_file, false))) && is_array($loaded)) {
-                $this->_existing_cache_vals = $loaded;
+    public function resolve_ids($file, $vendors, $device_keys){
+        $file = @fopen($file, 'r');
+        if (!$file){
+            return [];
+        }
+        $result = [];
+        $remaining = count($device_keys);
+        $vendor_id = null;
+        $vendor_name = null;
+        while(($line = fgets($file)) && $remaining > 0) {
+            $line = rtrim($line);
+            if($line == '')
+                continue;
+            if($line[0] == '#')
+                continue;
+            if ($line[0] != "\t") {
+                $vendor_id = substr($line, 0, 4);
+                $vendor_name = substr($line, 6);
+                // If we aren't looking for this vendor, skip parsing all of it
+                if (!isset($vendors[$vendor_id]) || !$vendor_id || !$vendor_name) {
+                    $vendor_id = null;
+                    $vendor_name = null;
+                }
+            } elseif ($line[1] != "\t" && $vendor_id != null) {
+                $device_id = substr($line, 1, 4);
+                $device_name = substr($line, 7);
+                if ($device_id && $device_name) {
+                    $device_key = $vendor_id.'-'.$device_id;
+                    if(isset($device_keys[$device_key])) {
+                        $result[$device_key] = [$vendor_name, $device_name];
+                        $remaining--;
+                    }
+                }
             }
         }
+        fclose($file);
+        return $result;
     }
 
-    /**
-     * Get the USB ids from /sys.
+    /*
+     * Get device and vendor IDs for USB devices on Linux
      */
-    private function _fetchUsbIdsLinux()
-    {
+    function get_usb_ids_linux(){
+        $devices = [];
+        $vendors = [];
         foreach ((array) @glob('/sys/bus/usb/devices/*', GLOB_NOSORT) as $path) {
+
+            // Avoid the same device artificially appearing more than once
+            if (strpos($path, ':') !== false) {
+                continue;
+            }
 
             // First try uevent
             if (is_readable($path.'/uevent') &&
                 preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', strtolower(Common::getContents($path.'/uevent')), $match)) {
-                $this->_usb_entries[str_pad($match[1], 4, '0', STR_PAD_LEFT)][str_pad($match[2], 4, '0', STR_PAD_LEFT)] = 1;
+                $vendor_id = str_pad($match[1], 4, '0', STR_PAD_LEFT);
+                $device_id = str_pad($match[2], 4, '0', STR_PAD_LEFT);
+                $device_key = $vendor_id.'-'.$device_id;
+                $vendors[$vendor_id] = true;
+                $devices[$device_key]++;
             }
 
             // And next modalias
             elseif (is_readable($path.'/modalias') &&
                 preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', Common::getContents($path.'/modalias'), $match)) {
-                $this->_usb_entries[strtolower($match[1])][strtolower($match[2])] = 1;
+                $vendor_id = strtolower($match[1]);
+                $device_id = strtolower($match[2]);
+                $device_key = $vendor_id.'-'.$device_id;
+                $vendors[$vendor_id] = true;
+                $devices[$device_key]++;
             }
         }
+        return [
+            'vendors' => $vendors,
+            'devices' => $devices,
+        ];
     }
 
-    /**
-     * Get the PCI ids from /sys.
+    /*
+     * Get device and vendor IDs for PCI devices on Linux
      */
-    private function _fetchPciIdsLinux()
-    {
+    private function get_pci_ids_linux(){
+        $vendors = [];
+        $devices = [];
         foreach ((array) @glob('/sys/bus/pci/devices/*', GLOB_NOSORT) as $path) {
 
             // See if we can use simple vendor/device files and avoid taking time with regex
             if (($f_device = Common::getContents($path.'/device', '')) && ($f_vend = Common::getContents($path.'/vendor', '')) &&
                 $f_device != '' && $f_vend != '') {
-                list(, $v_id) = explode('x', $f_vend, 2);
-                list(, $d_id) = explode('x', $f_device, 2);
-                $this->_pci_entries[$v_id][$d_id] = 1;
+                list(, $vendor_id) = explode('x', $f_vend, 2);
+                list(, $device_id) = explode('x', $f_device, 2);
+                $device_key = $vendor_id.'-'.$device_id;
+                $vendors[$vendor_id] = true;
+                $devices[$device_key]++;
             }
 
             // Try uevent nextly
             elseif (is_readable($path.'/uevent') &&
                 preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', strtolower(Common::getContents($path.'/uevent')), $match)) {
-                $this->_pci_entries[$match[1]][$match[2]] = 1;
+                list(, $vendor_id, $device_id) = $match;
+                $device_key = $vendor_id.'-'.$device_id;
+                $vendors[$vendor_id] = true;
+                $devices[$device_key]++;
             }
 
             // Now for modalias
             elseif (is_readable($path.'/modalias') &&
-                preg_match('/^pci:v0{4}([0-9A-Z]{4})d0{4}([0-9A-Z]{4})/', Common::getContents($path.'/modalias'), $match)) {
-                $this->_pci_entries[strtolower($match[1])][strtolower($match[2])] = 1;
+                preg_match('/^pci:v0{4}([0-9A-Z]{4})d0{4}([0-9A-Z]{4})/i', strtolower(Common::getContents($path.'/modalias')), $match)) {
+                list(, $vendor_id, $device_id) = $match;
+                $device_key = $vendor_id.'-'.$device_id;
+                $vendors[$vendor_id] = true;
+                $devices[$device_key]++;
             }
         }
-    }
-
-    /**
-     * Use the pci.ids file to translate the ids to names.
-     */
-    private function _fetchPciNames()
-    {
-        for ($v = false, $file = @fopen($this->_pci_file, 'r'); $file != false && $contents = fgets($file);) {
-            if (preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vend_match) == 1) {
-                $v = $vend_match;
-            } elseif (preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $dev_match) == 1) {
-                if ($v && isset($this->_pci_entries[strtolower($v[1])][strtolower($dev_match[1])])) {
-                    $this->_pci_devices[$v[1]][$dev_match[1]] = array('vendor' => rtrim($v[2]), 'device' => rtrim($dev_match[2]));
-                }
-            }
-        }
-        $file && @fclose($file);
-    }
-
-    /**
-     * Use the usb.ids file to translate the ids to names.
-     */
-    private function _fetchUsbNames()
-    {
-        for ($v = false, $file = @fopen($this->_usb_file, 'r'); $file != false && $contents = fgets($file);) {
-            if (preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vend_match) == 1) {
-                $v = $vend_match;
-            } elseif (preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $dev_match) == 1) {
-                if ($v && isset($this->_usb_entries[strtolower($v[1])][strtolower($dev_match[1])])) {
-                    $this->_usb_devices[strtolower($v[1])][$dev_match[1]] = array('vendor' => rtrim($v[2]), 'device' => rtrim($dev_match[2]));
-                }
-            }
-        }
-        $file && @fclose($file);
-    }
-
-    /**
-     * Decide if the cache file is sufficient enough to not parse the ids files.
-     */
-    private function _is_cache_worthy()
-    {
-        $pci_good = true;
-        foreach (array_keys($this->_pci_entries) as $vendor) {
-            foreach (array_keys($this->_pci_entries[$vendor]) as $dever) {
-                if (!isset($this->_existing_cache_vals['hw']['pci'][$vendor][$dever])) {
-                    $pci_good = false;
-                    break 2;
-                }
-            }
-        }
-        $usb_good = true;
-        foreach (array_keys($this->_usb_entries) as $vendor) {
-            foreach (array_keys($this->_usb_entries[$vendor]) as $dever) {
-                if (!isset($this->_existing_cache_vals['hw']['usb'][$vendor][$dever])) {
-                    $usb_good = false;
-                    break 2;
-                }
-            }
-        }
-
-        return array('pci' => $pci_good, 'usb' => $usb_good);
+        return [
+            'vendors' => $vendors,
+            'devices' => $devices,
+        ];
     }
 
     /*
-     * Write cache file with latest info
-     *
-     * @access private
+     * Get device and vendor IDs for PCI devices on FreeBSD and similar
      */
-    private function _write_cache()
-    {
-        if (is_writable(dirname(dirname(dirname(__DIR__))).'/cache')) {
-            @file_put_contents($this->_cache_file, $this->_use_json ?
-                json_encode(array(
-                    'hw' => array(
-                        'pci' => $this->_pci_devices,
-                        'usb' => $this->_usb_devices,
-                    ),
-                ))
-                : serialize(array(
-                    'hw' => array(
-                        'pci' => $this->_pci_devices,
-                        'usb' => $this->_usb_devices,
-                    ),
-            )));
-        }
-    }
-
-    /*
-     * Parse pciconf to get pci ids
-     *
-     * @access private
-     */
-    private function _fetchPciIdsPciConf()
-    {
+    private function get_pci_ids_pciconf(){
+        $vendors = [];
+        $devices = [];
         try {
             $pciconf = $this->exec->exec('pciconf', '-l');
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error using `pciconf -l` to get hardware info');
-
             return;
         }
-
         if (preg_match_all('/^.+chip=0x([a-z0-9]{4})([a-z0-9]{4})/m', $pciconf, $devs, PREG_SET_ORDER) == 0) {
             return;
         }
-
         foreach ($devs as $dev) {
-            $this->_pci_entries[$dev[2]][$dev[1]] = 1;
+            $vendor = $dev[2];
+            $device = $dev[1];
+            $device_key = $vendor_id.'-'.$device_id;
+            $vendors[$vendor_id] = true;
+            $devices[$device_key]++;
         }
+        return [
+            'vendors' => $vendors,
+            'devices' => $devices,
+        ];
+    }
+
+    /*
+     * Abstract away getting pci devices
+     */
+    private function get_pci_ids(){
+        switch ($this->os) {
+            case 'linux':
+                return $this->get_pci_ids_linux();
+            case 'freebsd':
+            case 'dragonfly':
+                return $this->get_pci_ids_pciconf();
+        }
+        return [];
+
+    }
+
+    /*
+     * Abstract away getting usb devices
+     */
+    private function get_usb_ids(){
+        switch ($this->os) {
+            case 'linux':
+                return $this->get_usb_ids_linux();
+        }
+        return [];
+    }
+
+    /*
+     * Get any USB or PCI devices present on the host system
+     */
+    private function extractdevs($type){
+        if ($type == 'PCI') {
+            $file = $this->pci_file;
+            $device_ids = $this->get_pci_ids();
+        } elseif ($type == 'USB') {
+            $file = $this->usb_file;
+            $device_ids = $this->get_usb_ids();
+        } else {
+            return [];
+        }
+        if (!count($device_ids)) {
+            return [];
+        }
+        $vendors = $device_ids['vendors'];
+        $device_keys = $device_ids['devices'];
+        $cache_fresh = false;
+        $resolved_names = [];
+        $my_cache_file = $this->cache_file . '.'.$type.'.json';
+        if ($this->enable_cache && is_readable($my_cache_file)) {
+            $cached_resolved_names = @json_decode(Common::getContents($my_cache_file), true);
+            if (is_array($cached_resolved_names) && count(array_diff_key($device_keys, $cached_resolved_names)) == 0) {
+                $cache_fresh = true;
+                $resolved_names = $cached_resolved_names;
+            }
+        }
+        if (!$cache_fresh) {
+            $resolved_names = $this->resolve_ids($file, $vendors, $device_keys);
+            if ($this->enable_cache && is_writable(dirname($my_cache_file))) {
+                $encoded = json_encode($resolved_names);
+                @file_put_contents($my_cache_file, $encoded);
+            }
+        }
+        $result = [];
+        foreach($device_keys as $key => $count) {
+            if (isset($resolved_names[$key])) {
+                list($vendor, $device) = $resolved_names[$key];
+                $result[] = ['vendor' => $vendor, 'device' => $device, 'type' => $type, 'count' => $count];
+            }
+        }
+        return $result;
     }
 
     /**
-     * Do its goddam job.
-     * @param $os
+     * Compile and return USB and PCI devices in a sorted list
      */
-    public function work($os)
-    {
-        switch ($os) {
-            case 'linux':
-                $this->_fetchPciIdsLinux();
-                $this->_fetchUsbIdsLinux();
-            break;
-            case 'freebsd':
-            case 'dragonfly':
-                $this->_fetchPciIdsPciConf();
-            break;
-            default:
-                return;
-            break;
+    public function result(){
+        $usb = $this->extractdevs('USB');
+        $pci = $this->extractdevs('PCI');
+        $all_devices = array_merge($usb, $pci);
+
+        $sort_type = [];
+        $sort_vendor = [];
+        $sort_device = [];
+
+        foreach($all_devices as $device) {
+            $sort_type[] = $device['type'];
+            $sort_vendor[] = $device['vendor'];
+            $sort_device[] = $device['device'];
         }
-        $worthiness = $this->_is_cache_worthy();
-        $save_cache = false;
-        if (!$worthiness['pci']) {
-            $save_cache = true;
-            $this->_fetchPciNames();
-        } else {
-            $this->_pci_devices = isset($this->_existing_cache_vals['hw']['pci']) ? $this->_existing_cache_vals['hw']['pci'] : [];
-        }
-        if (!$worthiness['usb']) {
-            $save_cache = true;
-            $this->_fetchUsbNames();
-        } else {
-            $this->_usb_devices = isset($this->_existing_cache_vals['hw']['usb']) ? $this->_existing_cache_vals['hw']['usb'] : [];
-        }
-        if ($save_cache) {
-            $this->_write_cache();
-        }
+
+        array_multisort($sort_type, SORT_ASC, $sort_vendor, SORT_ASC, $sort_device, SORT_ASC, $all_devices);
+
+        return $all_devices;
     }
-
-     /**
-      * Compile and return results.
-      */
-     public function result()
-     {
-         foreach (array_keys((array) $this->_pci_devices) as $v) {
-             foreach ($this->_pci_devices[$v] as $d) {
-                 $this->_result[] = array('vendor' => $d['vendor'], 'device' => $d['device'], 'type' => 'PCI');
-             }
-         }
-         foreach (array_keys((array) $this->_usb_devices) as $v) {
-             foreach ($this->_usb_devices[$v] as $d) {
-                 $this->_result[] = array('vendor' => $d['vendor'], 'device' => $d['device'], 'type' => 'USB');
-             }
-         }
-
-         return $this->_result;
-     }
 }

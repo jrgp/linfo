@@ -624,7 +624,7 @@ echo '
 				<tr>
 					<td class="center">'.$info['Devices'][$i]['type'].'</td>
 					',$show_vendor ? '<td>'.($info['Devices'][$i]['vendor'] ? $info['Devices'][$i]['vendor'] : 'Unknown').'</td>' : '','
-					<td>'.$info['Devices'][$i]['device'].'</td>
+					<td>'.$info['Devices'][$i]['device'].( $info['Devices'][$i]['count'] > 1 ? ' <span class="subtitle">(x'.$info['Devices'][$i]['count'].')</span>' : '' ).'</td>
 				</tr>';
             }
         } else {
