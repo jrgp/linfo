@@ -123,7 +123,7 @@ class Hwpci
                 $device_id = str_pad($match[2], 4, '0', STR_PAD_LEFT);
                 $device_key = $vendor_id.'-'.$device_id;
                 $vendors[$vendor_id] = true;
-                $devices[$device_key]++;
+                $devices[$device_key] = isset($devices[$device_key]) ? $devices[$device_key] + 1: 1;
             }
 
             // And next modalias
@@ -133,7 +133,7 @@ class Hwpci
                 $device_id = strtolower($match[2]);
                 $device_key = $vendor_id.'-'.$device_id;
                 $vendors[$vendor_id] = true;
-                $devices[$device_key]++;
+                $devices[$device_key] = isset($devices[$device_key]) ? $devices[$device_key] + 1: 1;
             }
         }
         return [
@@ -157,7 +157,7 @@ class Hwpci
                 list(, $device_id) = explode('x', $f_device, 2);
                 $device_key = $vendor_id.'-'.$device_id;
                 $vendors[$vendor_id] = true;
-                $devices[$device_key]++;
+                $devices[$device_key] = isset($devices[$device_key]) ? $devices[$device_key] + 1: 1;
             }
 
             // Try uevent nextly
@@ -166,7 +166,7 @@ class Hwpci
                 list(, $vendor_id, $device_id) = $match;
                 $device_key = $vendor_id.'-'.$device_id;
                 $vendors[$vendor_id] = true;
-                $devices[$device_key]++;
+                $devices[$device_key] = isset($devices[$device_key]) ? $devices[$device_key] + 1: 1;
             }
 
             // Now for modalias
@@ -175,7 +175,7 @@ class Hwpci
                 list(, $vendor_id, $device_id) = $match;
                 $device_key = $vendor_id.'-'.$device_id;
                 $vendors[$vendor_id] = true;
-                $devices[$device_key]++;
+                $devices[$device_key] = isset($devices[$device_key]) ? $devices[$device_key] + 1: 1;
             }
         }
         return [
@@ -204,7 +204,7 @@ class Hwpci
             $device = $dev[1];
             $device_key = $vendor_id.'-'.$device_id;
             $vendors[$vendor_id] = true;
-            $devices[$device_key]++;
+            $devices[$device_key] = isset($devices[$device_key]) ? $devices[$device_key] + 1: 1;
         }
         return [
             'vendors' => $vendors,

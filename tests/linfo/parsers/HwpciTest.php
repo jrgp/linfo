@@ -35,17 +35,4 @@ class HwpciTest extends TestCase
         '046d-c069' => ['Logitech, Inc.', 'M-U0007 [Corded Mouse M500]']
     ]);
   }
-
-  /**
-   * @test
-   */
-  public function assumption()
-  {
-    // python does not like this but php does not care?
-    $arr = [];
-    $arr['foo']++;
-    $arr['foo']++;
-    $this->assertEquals($arr, ['foo' => 2]);
-  }
-
 }
