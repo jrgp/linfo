@@ -1,0 +1,72 @@
+#
+#	List of truncated PCI ID's
+#
+#	Version: 2018.07.21
+#	Date:    2018-07-21 03:15:01
+#
+#	Maintained by Albert Pool, Martin Mares, and other volunteers from
+#	the PCI ID Project at http://pci-ids.ucw.cz/.
+#
+#	New data are always welcome, especially if they are accurate. If you have
+#	anything to contribute, please follow the instructions at the web site.
+#
+#	This file can be distributed under either the GNU General Public License
+#	(version 2 or higher) or the 3-clause BSD License.
+#
+
+# Vendors, devices and subsystems. Please keep sorted.
+
+# Syntax:
+# vendor  vendor_name
+#	device  device_name				<-- single tab
+#		subvendor subdevice  subsystem_name	<-- two tabs
+
+10de  NVIDIA Corporation
+	1b00  GP102 [TITAN X]
+	1b01  GP102
+	1b02  GP102 [TITAN Xp]
+	1b04  GP102
+	1b06  GP102 [GeForce GTX 1080 Ti]
+	1b07  GP102 [P102-100]
+	1b30  GP102GL [Quadro P6000]
+	1b38  GP102GL [Tesla P40]
+	1b70  GP102GL
+	1b78  GP102GL
+	1b80  GP104 [GeForce GTX 1080]
+	1b81  GP104 [GeForce GTX 1070]
+	1b82  GP104 [GeForce GTX 1070 Ti]
+	1b83  GP104 [GeForce GTX 1060 6GB]
+	1b84  GP104 [GeForce GTX 1060 3GB]
+1d6a  Aquantia Corp.
+	0001  AQC107 NBase-T/IEEE 802.3bz Ethernet Controller [AQtion]
+	07b1  AQC107 NBase-T/IEEE 802.3bz Ethernet Controller [AQtion]
+	08b1  AQC108 NBase-T/IEEE 802.3bz Ethernet Controller [AQtion]
+	11b1  AQC111 NBase-T/IEEE 802.3bz Ethernet Controller [AQtion]
+	12b1  AQC112 NBase-T/IEEE 802.3bz Ethernet Controller [AQtion]
+	87b1  AQC107 NBase-T/IEEE 802.3bz Ethernet Controller [AQtion]
+	d107  AQC107 NBase-T/IEEE 802.3bz Ethernet Controller [AQtion]
+		1043 8741  XG-C100C
+	d108  AQC108 NBase-T/IEEE 802.3bz Ethernet Controller [AQtion]
+1d6c  Atomic Rules LLC
+	1001  A5PL-E1
+	1002  A5PL-E7
+	1003  S5PEDS-AB
+	1004  KC705-K325
+	1005  ZC706-Z045
+	1006  KCU105-KU040
+	1007  XUSP3S-VU095 [Jasper]
+	1008  XUSPL4-VU065 [Mustang UltraScale]
+	1009  XUSPL4-VU3P [Mustang UltraScale+]
+	100a  A10PL4-A10GX115
+	100b  K35-2SFP
+	100c  K35-4SFP
+	100d  AR-ARKA-FX0 [Arkville 32B DPDK Data Mover]
+		1d6c 2001  DPDK-Aware Virtual Function [Arkville VF]
+	100e  AR-ARKA-FX1 [Arkville 64B DPDK Data Mover]
+		1d6c 2001  DPDK-Aware Virtual Function [Arkville VF]
+	4200  A5PL-E1-10GETI [10 GbE Ethernet Traffic Instrument]
+1d72  Xiaomi
+1d78  DERA
+1d7c  Aerotech, Inc.
+1d87  Fuzhou Rockchip Electronics Co., Ltd
+1d8f  Enyx

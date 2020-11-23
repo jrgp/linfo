@@ -414,7 +414,6 @@ class Darwin extends BSDcommon
             }
             $cpus[] = $cpu;
         }
-
         return $cpus;
     }
 

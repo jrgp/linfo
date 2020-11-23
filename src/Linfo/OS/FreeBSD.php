@@ -562,8 +562,7 @@ class FreeBSD extends BSDcommon
         }
 
         // Class that does it
-        $hw = new Hwpci(false, '/usr/share/misc/pci_vendors');
-        $hw->work('freebsd');
+        $hw = new Hwpci(false, '/usr/share/misc/pci_vendors', 'freebsd', true);
 
         return $hw->result();
     }

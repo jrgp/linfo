@@ -1,0 +1,84 @@
+#
+#	List of truncated USB ID's
+#
+#	Maintained by Stephen J. Gowdy <linux.usb.ids@gmail.com>
+#	If you have any new entries, please submit them via
+#		http://www.linux-usb.org/usb-ids.html
+#	or send entries as patches (diff -u old new) in the
+#	body of your email (a bot will attempt to deal with it).
+#	The latest version can be obtained from
+#		http://www.linux-usb.org/usb.ids
+#
+# Version: 2015.09.04
+# Date:    2015-09-04 20:34:09
+#
+
+# Vendors, devices and interfaces. Please keep sorted.
+
+# Syntax:
+# vendor  vendor_name
+#	device  device_name				<-- single tab
+#		interface  interface_name		<-- two tabs
+
+046d  Logitech, Inc.
+	0082  Acer Aspire 5672 Webcam
+	0200  WingMan Extreme Joystick
+	0203  M2452 Keyboard
+	0301  M4848 Mouse
+	0401  HP PageScan
+	0402  NEC PageScan
+	040f  Logitech/Storm PageScan
+	0430  Mic (Cordless)
+	0801  QuickCam Home
+	0802  Webcam C200
+	c068  G500 Laser Mouse
+	c069  M-U0007 [Corded Mouse M500]
+	c71d  Bluetooth wireless hub
+	c71f  diNovo Mini Wireless Keyboard
+	c720  Bluetooth wireless hub
+	ca03  MOMO Racing
+	ca04  Formula Vibration Feedback Wheel
+	cab1  Cordless Keyboard for Wii HID Receiver
+	d001  QuickCam Pro
+05ac  Apple, Inc.
+	0201  USB Keyboard [Alps or Logitech, M2452]
+	0202  Keyboard [ALPS]
+	0205  Extended Keyboard [Mitsumi]
+	0206  Extended Keyboard [Mitsumi]
+	020b  Pro Keyboard [Mitsumi, A1048/US layout]
+	020c  Extended Keyboard [Mitsumi]
+	020d  Pro Keyboard [Mitsumi, A1048/JIS layout]
+	020e  Internal Keyboard/Trackpad (ANSI)
+	020f  Internal Keyboard/Trackpad (ISO)
+	1000  Bluetooth HCI MacBookPro (HID mode)
+	1001  Keyboard Hub [ALPS]
+	1002  Extended Keyboard Hub [Mitsumi]
+	1003  Hub in Pro Keyboard [Mitsumi, A1048]
+	1006  Hub in Aluminum Keyboard
+	1008  Mini DisplayPort to Dual-Link DVI Adapter
+	9215  Studio Display 15"
+	9217  Studio Display 17"
+	9218  Cinema Display 23"
+	9219  Cinema Display 20"
+	921c  A1082 [Cinema HD Display 23"]
+	921e  Cinema Display 24"
+	9221  30" Cinema Display
+	9226  LED Cinema Display
+	9227  Thunderbolt Display
+	9232  Cinema HD Display 30"
+	ffff  Bluetooth in DFU mode - Driver
+05ad  Y.C. Cable U.S.A., Inc.
+05ae  Synopsys, Inc.
+05af  Jing-Mold Enterprise Co., Ltd
+	0806  HP SK806A Keyboard
+	0809  Wireless Keyboard and Mouse
+	0821  IDE to
+	3062  Cordless Keyboard
+	9167  KB 9151B - 678
+	9267  KB 9251B - 678 Mouse
+05b0  Fountain Technologies, Inc.
+05b1  First International Computer, Inc.
+	1389  Bluetooth Wireless Adapter
+05b4  LG Semicon Co., Ltd
+	4857  M-Any DAH-210
+	6001  HYUNDAI GDS30C6001 SSFDC / MMC I/F Controller

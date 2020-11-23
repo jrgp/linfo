@@ -327,8 +327,7 @@ class DragonFly extends BSDcommon
             $t = new Timer('Hardware Devices');
         }
 
-        $hw = new Hwpci(null, '/usr/share/misc/pci_vendors');
-        $hw->work('dragonfly');
+        $hw = new Hwpci(false, '/usr/share/misc/pci_vendors', 'dragonfly', true);
 
         return $hw->result();
     }

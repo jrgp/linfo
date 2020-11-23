@@ -746,8 +746,7 @@ class Linux extends Unixcommon
         $usb_ids || Errors::add('Linux Device Finder', 'Cannot find usb.ids; ensure usbutils is installed.');
 
         // Class that does it
-        $hw = new Hwpci($usb_ids, $pci_ids);
-        $hw->work('linux');
+        $hw = new Hwpci($usb_ids, $pci_ids, 'linux', true);
 
         return $hw->result();
     }
