@@ -619,12 +619,12 @@ echo '
 				';
         $num_devs = count($info['Devices']);
         if ($num_devs > 0) {
-            for ($i = 0; $i < $num_devs; ++$i) {
+            foreach($info['Devices'] as $device) {
                 echo '
 				<tr>
-					<td class="center">'.$info['Devices'][$i]['type'].'</td>
-					',$show_vendor ? '<td>'.($info['Devices'][$i]['vendor'] ? $info['Devices'][$i]['vendor'] : 'Unknown').'</td>' : '','
-					<td>'.$info['Devices'][$i]['device'].( $info['Devices'][$i]['count'] > 1 ? ' <span class="subtitle">(x'.$info['Devices'][$i]['count'].')</span>' : '' ).'</td>
+					<td class="center">'.$device['type'].'</td>
+					',$show_vendor ? '<td>'.($device['vendor'] ? $device['vendor'] : 'Unknown').'</td>' : '','
+					<td>'.$device['device'].(isset($device['count']) && $device['count'] > 1 ? ' <span class="subtitle">(x'.$device['count'].')</span>' : '' ).'</td>
 				</tr>';
             }
         } else {
