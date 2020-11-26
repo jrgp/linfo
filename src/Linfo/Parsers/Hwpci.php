@@ -109,12 +109,15 @@ class Hwpci
     function get_usb_ids_linux(){
         $devices = [];
         $vendors = [];
+        $speeds = [];
         foreach ((array) @glob('/sys/bus/usb/devices/*', GLOB_NOSORT) as $path) {
 
             // Avoid the same device artificially appearing more than once
             if (strpos($path, ':') !== false) {
                 continue;
             }
+
+            $device_key = '';
 
             // First try uevent
             if (is_readable($path.'/uevent') &&
@@ -134,11 +137,18 @@ class Hwpci
                 $device_key = $vendor_id.'-'.$device_id;
                 $vendors[$vendor_id] = true;
                 $devices[$device_key] = isset($devices[$device_key]) ? $devices[$device_key] + 1: 1;
+            } else {
+                // Forget it
+                continue;
             }
+
+            // Also get speed
+            $speeds[$device_key] = Common::getIntFromFile($path.'/speed');
         }
         return [
             'vendors' => $vendors,
             'devices' => $devices,
+            'speeds' => $speeds,
         ];
     }
 
@@ -181,6 +191,7 @@ class Hwpci
         return [
             'vendors' => $vendors,
             'devices' => $devices,
+            'speeds' => [],
         ];
     }
 
@@ -209,6 +220,7 @@ class Hwpci
         return [
             'vendors' => $vendors,
             'devices' => $devices,
+            'speeds' => [],
         ];
     }
 
@@ -256,6 +268,7 @@ class Hwpci
         }
         $vendors = $device_ids['vendors'];
         $device_keys = $device_ids['devices'];
+        $speeds = $device_ids['speeds'];
         $cache_fresh = false;
         $resolved_names = [];
         $my_cache_file = $this->cache_file . '.'.$type.'.json';
@@ -277,7 +290,12 @@ class Hwpci
         foreach($device_keys as $key => $count) {
             if (isset($resolved_names[$key])) {
                 list($vendor, $device) = $resolved_names[$key];
-                $result[] = ['vendor' => $vendor, 'device' => $device, 'type' => $type, 'count' => $count];
+                $result[] = [
+                    'vendor' => $vendor,
+                    'device' => $device,
+                    'type' => $type,
+                    'count' => $count,
+                    'speed' => isset($speeds[$key]) ? $speeds[$key] : null];
             }
         }
         return $result;
