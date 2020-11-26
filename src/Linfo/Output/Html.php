@@ -624,7 +624,9 @@ echo '
 				<tr>
 					<td class="center">'.$device['type'].'</td>
 					',$show_vendor ? '<td>'.($device['vendor'] ? $device['vendor'] : 'Unknown').'</td>' : '','
-					<td>'.$device['device'].(isset($device['count']) && $device['count'] > 1 ? ' <span class="subtitle">(x'.$device['count'].')</span>' : '' ).'</td>
+					<td>'.$device['device'].(isset($device['count']) && $device['count'] > 1 ? ' <span class="subtitle">(x'.$device['count'].')</span>' : '' ).'
+					'.(isset($device['speed']) ? '<span class="subtitle">('.$device['speed'].'Mb/s)</span>' : '').'
+          </td>
 				</tr>';
             }
         } else {
