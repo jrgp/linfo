@@ -78,7 +78,7 @@ class Common
     // Get a file who's contents should just be an int. Returns zero on failure.
     public static function getIntFromFile($file)
     {
-        return self::getContents($file, 0);
+        return (int) self::getContents($file, 0);
     }
 
     // Convert bytes to stuff like KB MB GB TB etc
