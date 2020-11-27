@@ -984,7 +984,7 @@ class Linux extends Unixcommon
                 // These were determined above
                 'state' => $state,
                 'type' => $type ?: 'N/A',
-                'port_speed' => $speed > 0 ? $speed : false,
+                'port_speed' => $speed > 0 ? $speed * 1000 * 1000 : false,
             );
         }
 

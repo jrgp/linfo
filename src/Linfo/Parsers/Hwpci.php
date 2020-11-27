@@ -143,7 +143,10 @@ class Hwpci
             }
 
             // Also get speed
-            $speeds[$device_key] = Common::getIntFromFile($path.'/speed');
+            $speed = Common::getIntFromFile($path.'/speed');
+            if ($speed) {
+                $speeds[$device_key] = $speed * 1000 * 1000;
+            }
         }
         return [
             'vendors' => $vendors,

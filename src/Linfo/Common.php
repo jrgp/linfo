@@ -82,7 +82,7 @@ class Common
     }
 
     // Convert bytes to stuff like KB MB GB TB etc
-    public static function byteConvert($size, $precision = 2)
+    public static function byteConvert($size, $precision = 2, $notation = null, $bits = false)
     {
 
         // Sanity check
@@ -91,12 +91,20 @@ class Common
         }
 
         // Get the notation
-        $notation = self::$settings['byte_notation'] == 1000 ? 1000 : 1024;
+        if ($notation === null) {
+            $notation = self::$settings['byte_notation'] == 1000 ? 1000 : 1024;
+        }
 
         // Fixes large disk size overflow issue
         // Found at http://www.php.net/manual/en/function.disk-free-space.php#81207
-        $types = array('B', 'KB', 'MB', 'GB', 'TB');
-        $types_i = array('B', 'KiB', 'MiB', 'GiB', 'TiB');
+        if ($bits) {
+            $types = array('b', 'Kb', 'Mb', 'Gb', 'Tb');
+            $types_i = array('b', 'Kib', 'Mib', 'Gib', 'Tib');
+        } else {
+            $types = array('B', 'KB', 'MB', 'GB', 'TB');
+            $types_i = array('B', 'KiB', 'MiB', 'GiB', 'TiB');
+        }
+
         for ($i = 0; $size >= $notation && $i < (count($types) - 1); $size /= $notation, $i++);
 
         return(round($size, $precision).' '.($notation == 1000 ? $types[$i] : $types_i[$i]));
