@@ -833,7 +833,7 @@ class Linux extends Unixcommon
                     'level' => $array[3],
                     'drives' => $drives,
                     'size' => Common::byteConvert($array[5] * 1024),
-                    'count' => (int) $array[6],
+                    'count' => $array[6],
                     'chart' => $array[7],
                 );
             }
