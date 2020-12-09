@@ -334,10 +334,10 @@ class Linux extends Unixcommon
         }
 
         // Seconds
-        list($seconds) = explode(' ', $contents, 1);
+        list($seconds,) = explode(' ', $contents);
 
         // Get it textual, as in days/minutes/hours/etc
-        $uptime = Common::secondsConvert(ceil($seconds));
+        $uptime = Common::secondsConvert(ceil((float)$seconds));
 
         // Now find out when the system was booted
         $contents = Common::getContents('/proc/stat', false);
