@@ -1409,6 +1409,11 @@ class Linux extends Unixcommon
                 'distro' => 'Fedora',
             ),
             array(
+                'file' => '/etc/oracle-release',
+                'regex' => '/^Oracle Linux Server release (?P<version>[\d\.]+)/',
+                'distro' => 'Oracle',
+            ),
+            array(
                 'file' => '/etc/redhat-release',
                 'regex' => '/^CentOS.+release (?P<version>[\d\.]+) \((?P<codename>[^)]+)\)$/i',
                 'distro' => 'CentOS',
