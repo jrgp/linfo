@@ -194,4 +194,14 @@ class Common
 
         return count(array_intersect($needles, $haystack)) > 0;
     }
+
+    // Given a string that should contain a float or a decimal, get back either
+    public static function strToInt($str)
+    {
+        if (!is_string($str))
+            return $str;
+        if (strpos($str, '.') !== false)
+            return (float) $str;
+        return (int) $str;
+    }
 }

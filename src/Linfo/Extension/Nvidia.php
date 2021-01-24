@@ -36,6 +36,7 @@ Installation:
 namespace Linfo\Extension;
 
 use Linfo\Linfo;
+use Linfo\Common;
 use Linfo\Meta\Errors;
 use Linfo\Meta\Timer;
 use Linfo\Parsers\CallExt;
@@ -109,14 +110,14 @@ class Nvidia implements Extension
             $info['Temps'][] = array(
                 'path' => '',
                 'name' => $name . ' Power',
-                'temp' => $match[2],
+                'temp' => Common::strToInt($match[2]),
                 'unit' => 'W',
             );
 
             $info['Temps'][] = array(
                 'path' => '',
                 'name' => $name . ' Temperature',
-                'temp' => $match[3],
+                'temp' => Common::strToInt($match[3]),
                 'unit' => 'C',
             );
             }

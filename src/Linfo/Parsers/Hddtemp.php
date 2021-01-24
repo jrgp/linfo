@@ -118,7 +118,7 @@ class Hddtemp
             $return[] = array(
                 'path' => $path,
                 'name' => $name,
-                'temp' => $temp,
+                'temp' => Common::strToInt($temp),
                 'unit' => strtoupper($unit),
             );
         }
@@ -151,7 +151,7 @@ class Hddtemp
             $return[] = array(
                 'path' => $dev,
                 'name' => $stat[0],
-                'temp' => $stat[1],
+                'temp' => Common::strToInt($stat[1]),
                 'unit' => strtoupper($stat[2]),
             );
         }
