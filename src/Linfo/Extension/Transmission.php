@@ -107,12 +107,13 @@ class Transmission implements Extension
             CURLOPT_URL => $url,
             CURLOPT_HEADER  => true,
             CURLOPT_RETURNTRANSFER  => true,
+            CURLOPT_TIMEOUT  => 5,
         ]);
 
         $result = curl_exec($curl);
 
         if (!$result) {
-            Errors::add('transmission extension', 'failed running curl to get token');
+            Errors::add('transmission extension', "Failed hitting $url with curl to get token");
             return;
         }
 
@@ -147,6 +148,7 @@ class Transmission implements Extension
             CURLOPT_URL => $url,
             CURLOPT_POSTFIELDS => $postdata,
             CURLOPT_HEADER  => false,
+            CURLOPT_TIMEOUT  => 5,
         ]);
 
         $result = curl_exec($curl);
@@ -154,7 +156,7 @@ class Transmission implements Extension
         curl_close($curl);
 
         if (!$result) {
-            Errors::add('transmission extension', 'failed running curl to get data');
+            Errors::add('transmission extension', "Failed hitting $url with curl to get data");
             return;
         }
 
