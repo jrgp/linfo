@@ -523,11 +523,11 @@ class Linux extends Unixcommon
             // Wacky location
             foreach ((array) @glob('/sys/class/hwmon/hwmon*/{,device/}*_input', GLOB_NOSORT | GLOB_BRACE) as $path) {
                 $initpath = rtrim($path, 'input');
-                $value = Common::getContents($path);
+                $value = Common::getIntFromFile($path);
                 $base = basename($path);
                 $labelpath = $initpath.'label';
                 $showemptyfans = isset($this->settings['temps_show0rpmfans']) ? $this->settings['temps_show0rpmfans'] : false;
-                $drivername = @basename(@readlink(dirname($path).'/driver')) ?: false;
+                $drivername = basename(@readlink(dirname($path).'/driver')) ?: false;
 
                 // Temperatures
                 if (is_file($labelpath) && strpos($base, 'temp') === 0) {

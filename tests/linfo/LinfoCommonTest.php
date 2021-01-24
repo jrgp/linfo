@@ -111,4 +111,15 @@ class CommonTest extends TestCase
     $file = LINFO_TESTDIR . '/files/lines.txt';
     $this->assertEquals($lines, Common::getLines($file));
   }
+
+  /**
+   * @test
+   */
+  public function strToInt()
+  {
+    $this->assertEquals(42, Common::strToInt("42"));
+    $this->assertIsInt(Common::strToInt("42"));
+    $this->assertEquals(4.2, Common::strToInt("4.2"));
+    $this->assertIsFloat(Common::strToInt("4.2"));
+  }
 }
