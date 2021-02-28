@@ -2,11 +2,14 @@
 
 # Joe Gillotti - 7/19/14 - MIT
 # Compile sass templates to css using http://sass-lang.com/
+
+style=compressed
+
 for file in theme_*.sass; do
-  sass --unix-newlines --style compressed --sourcemap=none $file ../${file%.sass}.css
+  sass  --style $style --no-source-map  $file ../${file%.sass}.css
 done
 
 # Compile mobile sass to css
-sass --unix-newlines --style compressed --sourcemap=none mobile.sass ../mobile.css
+sass  --style $style --no-source-map mobile.sass ../mobile.css
 # Compile icon sass to css
-sass --unix-newlines --style compressed --sourcemap=none icons.sass ../icons.css
+sass  --style $style --no-source-map icons.sass ../icons.css
