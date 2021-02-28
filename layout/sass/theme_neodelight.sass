@@ -62,11 +62,14 @@ h1
   padding: 20px 10px
 
 .subtitle
+  color: #FFDDBB
+
+#header .subtitle
   display: inline-block
   height: 21px
-  line-height: 21px
+  line-height: 18px
+  font-size: 12px
   background: url(neodelight/taglineleft.gif) no-repeat, url(neodelight/taglineright.gif) right no-repeat, url(neodelight/taglinemid.gif) repeat-x
-  color: #FFDDBB
   padding-left: 10px
   padding-right: 10px
 
@@ -117,11 +120,20 @@ table tr:nth-child(10) th
 .infoTable::before
     content: ""
     position: absolute
-    top: 28px
+    top: 35px
+    width: 6px
     left: 0
+    bottom: 6px
+    background: url("neodelight/left.gif") repeat-y
+
+.infoTable::after
+    content: ""
+    position: absolute
+    width: 6px
+    top: 35px
     right: 0
     bottom: 6px
-    background: url("neodelight/left.gif") repeat-y, url("neodelight/right.gif") right repeat-y
+    background: url("neodelight/right.gif") right repeat-y
 
 .infoTable th, .infoTable td
   background: #2B2B57
