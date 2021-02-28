@@ -1,0 +1,158 @@
+// Theme inspired by 2005 www.neodelight.com which was
+// one of my favorite websites of all time while growing up
+
+// Assets salvaged from internet archive
+// Meant to look as close to this as possible:
+//
+// http://web.archive.org/web/20050601000732/http://www.neodelight.com/index.html
+
+// This is a pretty good example of how drastically one
+// can alter a website using just CSS trickery
+
+$bodybg: #000033
+$bodycolor: #fff
+$linkcolor: #FFDDBB
+$linkhover: #FFEECC
+$thcolor: #FE900F
+$thminicolor: $thcolor
+$cellborder: #4C4B75
+$cellbg: #35345E
+$cellaltbg: #35345E
+$h2color: #fff
+$h2shadow: #2665a7 1px 1px 1px
+$h2bg: default
+$h2border: #4a8fd6
+$footcolor: #FFFFCC
+$nontdcolor: inherit
+$percfaded: inherit
+$barbg: #5c5b85
+$baraltbg: #5c5b85
+$barcolor: $bodycolor
+$barnewoutbg: inherit
+$togglercolor: #fff
+$togglerhover: #fff
+$subtitlecolor: #999
+$time: #999
+
+$statusOk: green
+$statusNormal: blue
+$statusBad: red
+$statusUnknown: purple
+
+$borderRadius: 0
+
+$tableShadow: none
+
+@import _base.sass
+
+//
+// Abstractions from _base.sass don't work for the
+// level of customization this requires
+//
+
+body, html
+  padding: 0
+  margin: 0
+
+h1
+  color: #FE900F
+
+#header
+  background: url(neodelight/menubg.gif) repeat-x bottom, url(neodelight/topbg.gif) repeat
+  padding: 20px 10px
+
+.subtitle
+  display: inline-block
+  height: 21px
+  line-height: 21px
+  background: url(neodelight/taglineleft.gif) no-repeat, url(neodelight/taglineright.gif) right no-repeat, url(neodelight/taglinemid.gif) repeat-x
+  color: #FFDDBB
+  padding-left: 10px
+  padding-right: 10px
+
+table tr:nth-child(1) th
+   color: #74FE0F
+table tr:nth-child(2) th
+   color: #96FE0F
+table tr:nth-child(3) th
+   color: #BEFE0F
+table tr:nth-child(4) th
+   color: #DAFE0F
+table tr:nth-child(5) th
+   color: #FCFE0F
+table tr:nth-child(6) th
+   color: #FEEB0F
+table tr:nth-child(7) th
+   color: #FEC30F
+table tr:nth-child(8) th
+   color: #FE900F
+table tr:nth-child(9) th
+   color: #FE4D0F
+table tr:nth-child(10) th
+   color: #FE1A0F
+
+.infoTable
+  margin-right: 10px
+  margin-left: 10px
+  margin-top: 0
+  margin-bottom: 0
+  color: #fff
+  padding-left: 5px
+  padding-right: 5px
+  padding-bottom: 5px
+  clear: both
+  box-shadow: none
+  position: relative
+  // The 7px prefix insanity is so we can position the "windowconnector" background image
+  // 7px above the rest of the background images
+  background: url(neodelight/windowconnector.gif) no-repeat center top, url("neodelight/topleft.gif") top 7px left no-repeat, url("neodelight/topright.gif") top 7px right no-repeat, url("neodelight/top.gif") top 7px center repeat-x, url("neodelight/bottomleft.gif") bottom left no-repeat, url("neodelight/bottomright.gif") bottom right no-repeat, url("neodelight/bottom.gif") bottom repeat-x
+
+.col2 + .infoTable
+  // Same as above, without the preceeeding "window connector"
+  background: url("neodelight/topleft.gif") top 7px left no-repeat, url("neodelight/topright.gif") top 7px right no-repeat, url("neodelight/top.gif") top 7px center repeat-x, url("neodelight/bottomleft.gif") bottom left no-repeat, url("neodelight/bottomright.gif") bottom right no-repeat, url("neodelight/bottom.gif") bottom repeat-x
+
+// Credit to https://stackoverflow.com/questions/3761909/css-background-position-with-repeat
+// Necessary to have the side background images repeat vertically with an offset away
+// from the top and bottom
+.infoTable::before
+    content: ""
+    position: absolute
+    top: 28px
+    left: 0
+    right: 0
+    bottom: 6px
+    background: url("neodelight/left.gif") repeat-y, url("neodelight/right.gif") right repeat-y
+
+.infoTable th, .infoTable td
+  background: #2B2B57
+
+select
+  background-color: #17051A
+  color: #FFFFCC
+
+.infoTable h2
+  margin: 0
+  padding-top: 15px
+  padding-left: 10px
+  color: #fff
+  text-shadow: #2665a7 1px 1px 1px
+  border-top: none
+  border-right: none
+  border-left: none
+  border-bottom: none
+  height: 36px
+  letter-spacing: 1px
+  box-sizing: border-box
+
+table th
+  color: #FE900F
+  font-weight: bold
+
+table th, table td
+  border-top: 1px solid #4C4B75
+  border-bottom: none
+  border-right: none
+  border-left: none
+
+.toggler
+  margin-top: 5px
