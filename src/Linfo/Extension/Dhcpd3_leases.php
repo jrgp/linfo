@@ -41,6 +41,9 @@ use Linfo\Common;
 use Linfo\Meta\Errors;
 use Linfo\Meta\Timer;
 
+use \DateTime;
+use \DateTimeZone;
+
 /**
  * Get status on dhcp3 leases.
  */
