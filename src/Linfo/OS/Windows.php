@@ -466,7 +466,7 @@ class Windows extends OS
             $load[] = $cpu->LoadPercentage;
         }
 
-        return \round(\array_sum($load) / \count($load), 2).'%';
+        return [\round(\array_sum($load) / \count($load), 2).'%'];
     }
 
     /**
