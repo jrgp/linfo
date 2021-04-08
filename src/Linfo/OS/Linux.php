@@ -959,6 +959,8 @@ class Linux extends Unixcommon
                     $type = 'Bridge';
                 } elseif (is_dir($path.'/bonding')) {
                     $type = 'Bond';
+                } elseif(($uevent_contents = @parse_ini_file($path.'/uevent')) && isset($uevent_contents['DEVTYPE'])) {
+                    $type = ucfirst($uevent_contents['DEVTYPE']);
                 }
 
                 // TODO find some way of finding out what provides the virt-specific kvm vnet devices
