@@ -127,6 +127,8 @@ class Dhcpd3_leases implements Extension
         // Get it into lines
         $lines = explode("\n", $contents);
 
+        $seen_ips = [];
+
         // Store temp entries here
         $curr = false;
 
@@ -151,6 +153,7 @@ class Dhcpd3_leases implements Extension
             // First line in entry. Save IP
             elseif (preg_match('/^lease (\d+\.\d+\.\d+\.\d+) \{$/', $line, $m)) {
                 $curr = array('ip' => $m[1]);
+                $seen_ips[$m[1]] = isset($seen_ips[$m[1]]) ? $seen_ips[$m[1]] + 1 : 1;
             }
 
             // Line with lease start
@@ -212,6 +215,16 @@ class Dhcpd3_leases implements Extension
             // [optional] Line with hostname
             elseif ($curr && preg_match('/^client\-hostname "([^"]+)";$/', $line, $m)) {
                 $curr['hostname'] = $m[1];
+            }
+        }
+
+        // Dedupe duplicates by only keeping the latest entries
+        // for IPs which appear more than once. This logic works
+        // as the leases file is kept sorted in time order ascending.
+        foreach ($this->_leases as $key => $lease) {
+            if ($seen_ips[$lease['ip']] > 1) {
+                unset($this->_leases[$key]);
+                $seen_ips[$lease['ip']]--;
             }
         }
     }
@@ -291,7 +304,7 @@ class Dhcpd3_leases implements Extension
 
         // Give it off
         return array(
-            'root_title' => 'DHCPD IP Leases',
+            'root_title' => 'DHCPD IP Leases ('.count($this->_leases).')',
             'rows' => $rows,
         );
     }
