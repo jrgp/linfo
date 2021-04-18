@@ -377,7 +377,7 @@ class Linux extends Unixcommon
         // Get partitions
         $partitions = [];
         $partitions_contents = Common::getContents('/proc/partitions');
-        if (@preg_match_all('/(\d+)\s+([a-z]{3}|nvme\d+n\d+)(p?\d+)$/m', $partitions_contents, $partitions_match, PREG_SET_ORDER) > 0) {
+        if (@preg_match_all('/(\d+)\s+([a-z]{3}|nvme\d+n\d+|[a-z]+\d+)(p?\d+)$/m', $partitions_contents, $partitions_match, PREG_SET_ORDER) > 0) {
             // Go through each match
             foreach ($partitions_match as $partition) {
                 $partitions[$partition[2]][] = array(
@@ -391,7 +391,7 @@ class Linux extends Unixcommon
         $drives = [];
 
         // Get actual drives
-        foreach ((array) @glob('/sys/block/*/device/model', GLOB_NOSORT) as $path) {
+        foreach ((array) @glob('/sys/block/*/device/uevent', GLOB_NOSORT) as $path) {
 
             // Parts of the path
             $parts = explode('/', $path);
@@ -406,9 +406,19 @@ class Linux extends Unixcommon
                 list(, $reads, $writes) = $statMatches;
             }
 
+            $type = '';
+
+            if (Common::getContents(dirname(dirname($path)).'/queue/rotational') == 0) {
+                if (Common::getContents(dirname($path).'/type') == 'SD') {
+                    $type = ' (SD)';
+                } else {
+                    $type = ' (SSD)';
+                }
+            }
+
             // Append this drive on
             $drives[] = array(
-                'name' => Common::getContents($path, 'Unknown').(Common::getContents(dirname(dirname($path)).'/queue/rotational') == 0 ? ' (SSD)' : ''),
+                'name' => Common::getContents(dirname($path).'/model', 'Unknown').$type,
                 'vendor' => Common::getContents(dirname($path).'/vendor', 'Unknown'),
                 'device' => '/dev/'.$parts[3],
                 'reads' => $reads,
