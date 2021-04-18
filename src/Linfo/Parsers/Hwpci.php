@@ -65,6 +65,9 @@ class Hwpci
      * Parse vendor and device names out of hardware ID files. Works for USB and PCI
      */
     public function resolve_ids($file, $vendors, $device_keys){
+        if ($file == '') {
+            return [];
+        }
         $file = @fopen($file, 'r');
         if (!$file){
             return [];
