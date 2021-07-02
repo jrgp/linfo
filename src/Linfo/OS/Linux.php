@@ -1604,12 +1604,19 @@ class Linux extends Unixcommon
             return array('type' => 'guest', 'method' => 'OpenVZ');
         }
 
+        $bios_vendor = Common::getContents('/sys/devices/virtual/dmi/id/bios_vendor');
+
         // Veertu guest?
-        if (Common::getContents('/sys/devices/virtual/dmi/id/bios_vendor') == 'Veertu') {
+        if ($bios_vendor == 'Veertu') {
             return array('type' => 'guest', 'method' => 'Veertu');
         }
 
-	// LXC guest?
+        // Parallels guest?
+        if (strpos($bios_vendor, 'Parallels') === 0) {
+            return array('type' => 'guest', 'method' => 'Parallels');
+        }
+
+        // LXC guest?
         if (strpos(Common::getContents('/proc/mounts'), 'lxcfs /proc/') !== false) {
             return array('type' => 'guest', 'method' => 'LXC');
         }
