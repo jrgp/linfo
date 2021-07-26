@@ -217,8 +217,8 @@ class Hwpci
             return;
         }
         foreach ($devs as $dev) {
-            $vendor = $dev[2];
-            $device = $dev[1];
+            $vendor_id = $dev[2];
+            $device_id = $dev[1];
             $device_key = $vendor_id.'-'.$device_id;
             $vendors[$vendor_id] = true;
             $devices[$device_key] = isset($devices[$device_key]) ? $devices[$device_key] + 1: 1;
