@@ -701,8 +701,8 @@ class Linux extends Unixcommon
                 $symlink = is_link($mount[1]) ? realpath($mount[1]) : false;
             }
 
-            // Optionally get mount options
-            if ($this->settings['show']['mounts_options'] && !in_array($mount[3], (array) $this->settings['hide']['fs_mount_options'])) {
+            // Optionally get mount options            
+            if (isset($this->settings['show']['mounts_options']) && $this->settings['show']['mounts_options'] && !in_array($mount[3], (array) $this->settings['hide']['fs_mount_options'])) {
                 $mount_options = explode(',', $mount[4]);
             } else {
                 $mount_options = [];
