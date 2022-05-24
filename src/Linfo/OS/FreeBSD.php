@@ -470,7 +470,7 @@ class FreeBSD extends BSDcommon
             // Save each
             $cpus[] = array(
                 'Model' => $this->sysctl['hw.model'],
-                'MHz' => (int) trim($this->sysctl['hw.clockrate']),
+                'MHz' => (int) trim($this->sysctl['hw.clockrate'] ?? "0"),
             );
         }
 
