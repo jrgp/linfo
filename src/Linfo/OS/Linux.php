@@ -689,9 +689,13 @@ class Linux extends Unixcommon
             $mount[2] = stripcslashes($mount[2]);
 
             // Get these
-            $size = @disk_total_space($mount[2]);
-            $free = @disk_free_space($mount[2]);
-            $used = $size != false && $free != false ? $size - $free : false;
+            if (is_readable($mount[2])) {
+                $size = disk_total_space($mount[2]);
+                $free = disk_free_space($mount[2]);
+                $used = $size != false && $free != false ? $size - $free : false;
+            }else{
+                $size = $free = $used = false;
+            }
 
             // If it's a symlink, find out where it really goes.
             // (using realpath instead of readlink because the former gives absolute paths)
