@@ -705,7 +705,7 @@ class Linux extends Unixcommon
                 $symlink = is_link($mount[1]) ? realpath($mount[1]) : false;
             }
 
-            // Optionally get mount options            
+            // Optionally get mount options
             if (isset($this->settings['show']['mounts_options']) && $this->settings['show']['mounts_options'] && !in_array($mount[3], (array) $this->settings['hide']['fs_mount_options'])) {
                 $mount_options = explode(',', $mount[4]);
             } else {
@@ -955,13 +955,23 @@ class Linux extends Unixcommon
             if (!$type) {
                 $type_contents = strtoupper(Common::getContents($path.'/device/modalias'));
                 list($type_match) = explode(':', $type_contents, 2);
+                $uevent_contents = @parse_ini_file($path.'/uevent');
+                $device_uevent_contents = @parse_ini_file($path.'/device/uevent');
 
-                if (in_array($type_match, array('PCI', 'USB'))) {
+                if ($uevent_contents != false && isset($uevent_contents['DEVTYPE'])) {
+                  $type = ucfirst($uevent_contents['DEVTYPE']);
+                    if (in_array($type_match, array('PCI', 'USB'))){
+                        $type .= ' ('.$type_match.')';
+                    }
+                    if ($device_uevent_contents != false && isset($device_uevent_contents['DRIVER'])) {
+                        $type .= ' ('.$device_uevent_contents['DRIVER'].')';
+                    }
+                } elseif (in_array($type_match, array('PCI', 'USB'))) {
                     $type = 'Ethernet ('.$type_match.')';
 
                     // Driver maybe?
-                    if (($uevent_contents = @parse_ini_file($path.'/device/uevent')) && isset($uevent_contents['DRIVER'])) {
-                        $type .= ' ('.$uevent_contents['DRIVER'].')';
+                    if ($device_uevent_contents != false && isset($device_uevent_contents['DRIVER'])) {
+                        $type .= ' ('.$device_uevent_contents['DRIVER'].')';
                     }
                 } elseif ($type_match == 'VIRTIO') {
                     $type = 'VirtIO';
