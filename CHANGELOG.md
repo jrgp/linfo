@@ -1,3 +1,9 @@
+# v4.0.7 6/17/2022
+
+- Add cool Neodelight theme
+- Remove uncool STB theme
+- Misc fixes
+
 # v4.0.6 1/28/2021
 
 - Fix PHP8 type error
