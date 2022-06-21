@@ -18,7 +18,7 @@
 
 /**
  * Manages all Linfo javascript
- * @author Lee Bradley (elephanthunter)
+ * @author Amelia Bradley (elephanthunter)
  *
  * Goals:
  *  - Keep the global scope squeaky clean (and, as a direct result, compression efficient)
