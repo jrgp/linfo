@@ -195,6 +195,17 @@ class Common
         return count(array_intersect($needles, $haystack)) > 0;
     }
 
+    // Easily determine if a string contains any of the snippets
+    public static function anyInString($string, $snippets)
+    {
+	foreach ($snippets as $snippet) {
+	    if (strpos($string, $snippet) !== false) {
+                 return true;
+	    }
+	}
+	return false;
+    }
+
     // Given a string that should contain a float or a decimal, get back either
     public static function strToInt($str)
     {

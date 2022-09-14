@@ -266,7 +266,7 @@ echo '
     }
 
     // Uptime
-    if (!empty($settings['show']['uptime']) && $info['UpTime']) {
+    if (!empty($settings['show']['uptime']) && $info['UpTime'] && is_array($info['UpTime'])) {
         $core[] = array($lang['uptime'],
             $info['UpTime']['text'].
                 (isset($info['UpTime']['bootedTimestamp']) && $info['UpTime']['bootedTimestamp'] ? '; booted '.date($settings['dates'], $info['UpTime']['bootedTimestamp']) : ''), );
@@ -394,7 +394,7 @@ echo '
 					<td>'.Common::byteConvert($info['RAM']['total']).'</td>
 					<td>'.Common::byteConvert($info['RAM']['total'] - $info['RAM']['free']).'</td>
 					<td>'.Common::byteConvert($info['RAM']['free']).'</td>
-					<td>'.self::generateBarChart(round(($info['RAM']['total'] - $info['RAM']['free']) * 100 / $info['RAM']['total'])).'</td>
+					<td>'.($info['RAM']['total'] > 0 ? self::generateBarChart(round(($info['RAM']['total'] - $info['RAM']['free']) * 100 / $info['RAM']['total'])) : '').'</td>
 				</tr>';
         $have_swap = (isset($info['RAM']['swapFree']) || isset($info['RAM']['swapTotal']));
         if ($have_swap && !empty($info['RAM']['swapTotal'])) {
