@@ -36,7 +36,7 @@ use Linfo\Common;
  */
 class Hwpci
 {
-    private $pci_file, $usb_file, $os, $enable_cache, $cache_file;
+    private $pci_file, $usb_file, $os, $enable_cache, $cache_file, $exec;
 
     /**
      * Constructor.
