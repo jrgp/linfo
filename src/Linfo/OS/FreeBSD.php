@@ -491,28 +491,28 @@ class FreeBSD extends BSDcommon
         $drives = [];
 
         // Must they change the format of everything with each release?!?!?!?!
-        switch ($this->version) {
+        switch (true) {
 
-            case 8.2:
+            case version_compare($this->version, '8.1') > 0:
                 $cur = false;
 
                 // Each line of dmesg boot log
                 foreach ((array) explode("\n", $this->dmesg) as $line) {
 
                     // Start of a drive entry which spans multiple lines
-                    if (preg_match('/^((?:ad|da|acd|cd)\d+) at/', $line, $m)) {
+                    if (preg_match('/^((?:ada|da|acd|cd)\d+) at/', $line, $m)) {
                         $cur = array('device' => '/dev/'.$m[1]);
                     }
 
                     // Branding of this drive
-                    elseif ($cur && preg_match('/^((?:ad|da|acd|cd)\d+): \<([^>]+)\>/', $line, $m)) {
+                    elseif ($cur && preg_match('/^((?:ada|da|acd|cd)\d+): \<([^>]+)\>/', $line, $m)) {
                         if ('/dev/'.$m[1] != $cur['device']) {
                             continue;
                         }
                         $halves = explode(' ', $m[2]);
                         if (count($halves) > 1) {
                             $cur['vendor'] = $halves[0];
-                            $cur['name'] = $halves[1];
+                            $cur['name'] = $halves[1] . " " . $halves[2] . " " . $halves[3];
                         } else {
                             $cur['vendor'] = false;
                             $cur['name'] = $m[1];
@@ -520,7 +520,7 @@ class FreeBSD extends BSDcommon
                     }
 
                     // Lastly the size; gather it and save it
-                    elseif ($cur && preg_match('/^((?:ad|da|acd|cd)\d+): (\d+)MB/', $line, $m)) {
+                    elseif ($cur && preg_match('/^((?:ada|da|acd|cd)\d+): (\d+)MB/', $line, $m)) {
                         if ('/dev/'.$m[1] != $cur['device']) {
                             $cur = false;
                             continue;
