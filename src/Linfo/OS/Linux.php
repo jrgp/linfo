@@ -957,8 +957,18 @@ class Linux extends Unixcommon
             if (!$type) {
                 $type_contents = strtoupper(Common::getContents($path.'/device/modalias'));
                 list($type_match) = explode(':', $type_contents, 2);
-                $uevent_contents = @parse_ini_file($path.'/uevent');
-                $device_uevent_contents = @parse_ini_file($path.'/device/uevent');
+		    
+		if(is_readable($path.'/uevent')){
+                    $uevent_contents = @parse_ini_file($path.'/uevent');
+                } else{
+                    $uevent_contents = false;
+                }
+
+                if(is_readable($path.'/device/uevent')){
+                    $device_uevent_contents = @parse_ini_file($path.'/device/uevent');
+                } else{
+                    $device_uevent_contents = false;
+                }
 
                 if ($uevent_contents != false && isset($uevent_contents['DEVTYPE'])) {
                   $type = ucfirst($uevent_contents['DEVTYPE']);
