@@ -1,3 +1,7 @@
+# v4.0.8 8/9/2023
+
+- Misc fixes
+
 # v4.0.7 6/17/2022
 
 - Add cool Neodelight theme
