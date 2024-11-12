@@ -536,12 +536,20 @@ class Linux extends Unixcommon
                 $value = Common::getIntFromFile($path);
                 $base = basename($path);
                 $labelpath = $initpath.'label';
+                $modelpath = dirname($path).'/device/model';
                 $showemptyfans = isset($this->settings['temps_show0rpmfans']) ? $this->settings['temps_show0rpmfans'] : false;
                 $drivername = basename(@readlink(dirname($path).'/driver')) ?: false;
 
                 // Temperatures
                 if (is_file($labelpath) && strpos($base, 'temp') === 0) {
                     $label = Common::getContents($labelpath);
+                    $value /= $value > 10000 ? 1000 : 1;
+                    $unit = 'C'; // I don't think this is ever going to be in F
+                }
+
+                // Devices (such as hard drives)
+                else if (is_file($modelpath) && strpos($base, 'temp') === 0) {
+                    $label = Common::getContents($modelpath);
                     $value /= $value > 10000 ? 1000 : 1;
                     $unit = 'C'; // I don't think this is ever going to be in F
                 }
