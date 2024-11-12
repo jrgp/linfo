@@ -70,6 +70,7 @@ $settings['show']['services'] = false;
 
 // Hide certain file systems / devices
 $settings['hide']['filesystems'] = array(
+	'overlay', 'bpf', 'nsfs',
 	'tmpfs', 'ecryptfs', 'nfsd', 'rpc_pipefs', 'proc', 'sysfs',
 	'usbfs', 'devpts', 'fusectl', 'securityfs', 'fuse.truecrypt',
 	'cgroup', 'cgroup2', 'debugfs', 'mqueue', 'hugetlbfs', 'pstore',
