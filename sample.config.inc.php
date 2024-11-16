@@ -87,7 +87,7 @@ $settings['hide']['fs_mount_options'] = array('ecryptfs');
 $settings['hide']['sg'] = true; # Linux only
 
 // Set to true to not resolve symlinks in the mountpoint device paths. Eg don't convert /dev/mapper/root to /dev/dm-0
-$settings['hide']['dont_resolve_mountpoint_symlinks'] = false; # Linux only
+$settings['hide']['dont_resolve_mountpoint_symlinks'] = true; # Linux only
 
 // Various softraids. Set to true to enable.
 // Only works if it's available on your system; otherwise does nothing
