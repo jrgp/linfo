@@ -57,7 +57,8 @@ class Dhcpd3_leases implements Extension
     private
         $_hide_mac,
         $_res,
-        $_leases = [];
+        $_leases = [],
+        $_leases_file;
 
     /**
      * localize important stuff.
