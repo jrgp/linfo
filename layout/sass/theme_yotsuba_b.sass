@@ -1,0 +1,55 @@
+// Inspired by 4chan's "Yotsuba B" theme
+
+$bodybg: #eef2ff
+$bodycolor: #000
+$linkcolor: #34345C
+$linkhover: rgb(95, 137, 172)
+$thcolor: $bodycolor
+$thminicolor: $bodycolor
+$cellborder: rgb(183, 197, 217)
+$cellbg: $bodybg
+$cellaltbg: #e0e5f6
+$h2color: #000
+$h2shadow: none
+$h2bg: $cellaltbg
+$h2border: $cellborder
+$footcolor: #444
+$nontdcolor: #666
+$percfaded: #666
+$barbg: $cellaltbg
+$baraltbg: $barbg
+$barcolor: rgb(120, 153, 34)
+$barnewoutbg: inherit
+$togglercolor: rgb(129, 162, 190)
+$togglerhover: $togglercolor
+$subtitlecolor: rgb(120, 153, 34)
+$time: #999
+
+$statusOk: green
+$statusBad: maroon
+$statusNormal: blue
+$statusUnknown: gray
+
+$borderRadius: 3px
+
+$tableShadow: none
+
+@import _base.sass
+
+//
+// Abstractions from _base.sass don't work for the
+// level of customization this requires
+//
+
+body
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAADICAIAAACmkByiAAAASUlEQVR4AcWRuQ0AIBDDzuy/HAVrMAM9slCorqAJziNgrj2qSg/cGhHnjPqDDPxOfYiebwFj+XobeLGI7p39fW1/Ib58d55Bwh3x9wRv6r75UwAAAABJRU5ErkJggg==) repeat-x top
+
+h1
+  font-family: Tahoma, sans-serif
+  color: #AF0A0F
+
+.new_bar_bg
+  border: 1px solid $bodybg
+
+.subtitle:before
+  content: ">"

@@ -204,8 +204,8 @@ class Html implements Output
   echo '
   <div id="themeChanger">Theme: <select id="themeChangerSelect">';
 
-    foreach ($allowed_themes as $theme_option)
-      echo '<option'.($theme_option == $chosen_theme ? ' selected' : '').'>'.$theme_option.'</option>';
+    foreach ($allowed_themes as $theme)
+      echo '<option'.($theme == $chosen_theme ? ' selected' : '').' value="'.$theme.'">'.implode(' ', array_map('\ucfirst', explode('_', $theme))).'</option>';
 
   echo '</select>
   </div>
