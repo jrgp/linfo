@@ -807,7 +807,7 @@ class Linux extends Unixcommon
             }
 
             // Parse
-            @preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks[^[]+\[(\d\/\d)\] \[([U\_]+)\]/mi', (string) $mdadm_contents, $match, PREG_SET_ORDER);
+            @preg_match_all('/(?P<device>\S+)\s*:\s*(?P<state>\w+)(?P<blurb>\s+\([^)]+\))?\s*raid(?P<level>\d+)\s*(?P<drives>[\w+\[\d+\] (\(\w\))?]+)\n\s+(?P<blocks>\d+) blocks[^[]+\[(?P<counts>\d\/\d)\] \[(?P<chart>[U\_]+)\]/mi', (string) $mdadm_contents, $match, PREG_SET_ORDER);
 
             // Store them here
             $mdadm_arrays = [];
@@ -819,14 +819,14 @@ class Linux extends Unixcommon
                 $drives = [];
 
                 // Parse drives
-                foreach (explode(' ', $array[4]) as $drive) {
+                foreach (explode(' ', $array['drives']) as $drive) {
 
                     // Parse?
-                    if (preg_match('/([\w\d]+)\[\d+\](\(\w\))?/', $drive, $match_drive) == 1) {
+                    if (preg_match('/(?P<device>[\w\d]+)\[\d+\](?P<state>\(\w\))?/', $drive, $match_drive) == 1) {
 
                         // Determine a status other than normal, like if it failed or is a spare
-                        if (array_key_exists(2, $match_drive)) {
-                            switch ($match_drive[2]) {
+                        if (isset($match_drive['state'])) {
+                            switch ($match_drive['state']) {
                                 case '(S)':
                                     $drive_state = 'spare';
                                 break;
@@ -848,21 +848,27 @@ class Linux extends Unixcommon
 
                         // Append this drive to the temp drives array
                         $drives[] = array(
-                            'drive' => '/dev/'.$match_drive[1],
+                            'drive' => '/dev/'.$match_drive['device'],
                             'state' => $drive_state,
                         );
                     }
                 }
 
+                $state = $array['state'];
+
+                if(isset($array['blurb'])) {
+                  $state .= $array['blurb'];
+                }
+
                 // Add record of this array to arrays list
                 $mdadm_arrays[] = array(
-                    'device' => '/dev/'.$array[1],
-                    'status' => $array[2],
-                    'level' => $array[3],
+                    'device' => '/dev/'.$array['device'],
+                    'status' => $state,
+                    'level' => $array['level'],
                     'drives' => $drives,
-                    'size' => Common::byteConvert($array[5] * 1024),
-                    'count' => $array[6],
-                    'chart' => $array[7],
+                    'size' => Common::byteConvert($array['blocks'] * 1024),
+                    'count' => $array['counts'],
+                    'chart' => $array['chart'],
                 );
             }
 
@@ -969,7 +975,7 @@ class Linux extends Unixcommon
             if (!$type) {
                 $type_contents = strtoupper(Common::getContents($path.'/device/modalias'));
                 list($type_match) = explode(':', $type_contents, 2);
-		    
+
 		if(is_readable($path.'/uevent')){
                     $uevent_contents = @parse_ini_file($path.'/uevent');
                 } else{
