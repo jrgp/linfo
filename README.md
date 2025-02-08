@@ -75,9 +75,7 @@ var_dump($parser->getCPU()); // and a whole lot more
    - more
 
 ## System requirements:
- - At least PHP 5.4
- - If you are using PHP 7.1.9 or lower, you might need to disable the opcache extension.
- - pcre extension
+ - At least PHP 8
 
 #### Windows
  - You need to have [COM enabled](http://www.php.net/manual/en/class.com.php).
