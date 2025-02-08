@@ -791,6 +791,10 @@ class Linux extends Unixcommon
         // Store it here
         $raidinfo = [];
 
+        if (!isset($this->settings['raid'])) {
+          return $raidinfo;
+        }
+
         // mdadm?
         if (array_key_exists('mdadm', (array) $this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
 
