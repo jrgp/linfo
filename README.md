@@ -82,7 +82,7 @@ var_dump($parser->getCPU()); // and a whole lot more
 
 #### Linux
  - /proc and /sys mounted and readable by PHP
- - Tested with the 2.6.x/3.x kernels
+ - Tested with the 2.6.x/3.x/4.x/5.x/6.x kernels
 
 #### FreeBSD
  - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, etc
