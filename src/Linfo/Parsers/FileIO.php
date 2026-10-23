@@ -17,7 +17,12 @@ class FileIO implements IO {
             $file = $this->path_prefix.$file;
         }
 
-        return !is_file($file) || !is_readable($file) || !($contents = @file_get_contents($file)) ? $default : trim($contents);
+        if (!is_file($file) || !is_readable($file)) {
+            return $default;
+        }
+        $contents = @file_get_contents($file);
+
+        return $contents === false || $contents === '' ? $default : trim($contents);
     }
 
     // Like above, but in lines instead of a big string

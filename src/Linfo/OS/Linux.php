@@ -46,6 +46,8 @@ class Linux extends Unixcommon
     // Keep these tucked away
     protected $settings;
 
+    protected $sysPath = '/sys';
+
     // Generally disabled as it's slowww
     protected $cpu_percent = array('overall' => false, 'cpus' => []);
 
@@ -161,9 +163,9 @@ class Linux extends Unixcommon
         $procFileSwap = '/proc/swaps';
         $procFileMem = '/proc/meminfo';
 
-        // First off, these need to exist..
-        if (!is_readable($procFileSwap) || !is_readable($procFileMem)) {
-            Errors::add('Linfo Core', '/proc/swaps and/or /proc/meminfo are not readable');
+        $memContents = Common::getContents($procFileMem, false);
+        if ($memContents === false) {
+            Errors::add('Linfo Core', '/proc/meminfo is not readable');
 
             return [];
         }
@@ -173,15 +175,39 @@ class Linux extends Unixcommon
         $swapVals = [];
 
         // Get memContents
-        @preg_match_all('/^([^:]+)\:\s+(\d+)\s*(?:k[bB])?\s*/m', Common::getContents($procFileMem), $matches, PREG_SET_ORDER);
+        preg_match_all('/^(\w+):[ \t]+(\d+)[ \t]+kB[ \t]*$/m', $memContents, $matches, PREG_SET_ORDER);
 
         // Deal with it
         foreach ((array) $matches as $memInfo) {
             $memVals[$memInfo[1]] = $memInfo[2];
         }
 
-        // Get swapContents
-        @preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)/m', Common::getContents($procFileSwap), $matches, PREG_SET_ORDER);
+        foreach (array('MemTotal', 'MemFree', 'SwapTotal', 'SwapFree') as $key) {
+            if (!isset($memVals[$key])) {
+                Errors::add('Linfo Core', 'Missing or invalid '.$key.' in /proc/meminfo');
+
+                return [];
+            }
+        }
+        if ($memVals['MemTotal'] <= 0) {
+            Errors::add('Linfo Core', 'Invalid MemTotal in /proc/meminfo');
+
+            return [];
+        }
+
+        $available = isset($memVals['MemAvailable']) ? $memVals['MemAvailable'] :
+            $memVals['MemFree'] + (isset($memVals['Cached']) ? $memVals['Cached'] : 0) +
+            (isset($memVals['Buffers']) ? $memVals['Buffers'] : 0) +
+            (isset($memVals['SReclaimable']) ? $memVals['SReclaimable'] : 0) -
+            (isset($memVals['Shmem']) ? $memVals['Shmem'] : 0);
+
+        // Swap details are optional; meminfo still supplies the aggregate.
+        $swapContents = Common::getContents($procFileSwap, false);
+        if ($swapContents === false) {
+            Errors::add('Linfo Core', '/proc/swaps is not readable');
+            $swapContents = '';
+        }
+        preg_match_all('/^(\S+)[ \t]+(\S+)[ \t]+(\d+)[ \t]+(\d+)/m', $swapContents, $matches, PREG_SET_ORDER);
         foreach ((array) $matches as $swapDevice) {
 
             // Append each swap device
@@ -195,12 +221,12 @@ class Linux extends Unixcommon
 
         // Get individual vals
         $return['type'] = 'Physical';
-        $return['total'] = @$memVals['MemTotal'] * 1024;
-        $return['free'] = @$memVals['MemFree'] * 1024 + @$memVals['Cached'] * 1024 + @$memVals['Buffers'] * 1024;
-        $return['swapTotal'] = @$memVals['SwapTotal'] * 1024;
-        $return['swapFree'] = @$memVals['SwapFree'] * 1024 + @$memVals['SwapCached'] * 1024;
-        $return['swapCached'] = @$memVals['SwapCached'] * 1024;
-        $return['swapInfo'] = @$swapVals;
+        $return['total'] = $memVals['MemTotal'] * 1024;
+        $return['free'] = max(0, min($memVals['MemTotal'], $available)) * 1024;
+        $return['swapTotal'] = $memVals['SwapTotal'] * 1024;
+        $return['swapFree'] = min($memVals['SwapTotal'], $memVals['SwapFree']) * 1024;
+        $return['swapCached'] = (isset($memVals['SwapCached']) ? $memVals['SwapCached'] : 0) * 1024;
+        $return['swapInfo'] = $swapVals;
 
         // Return it
         return $return;
@@ -529,34 +555,43 @@ class Linux extends Unixcommon
 
             // Store them here
             $hwmon_vals = [];
+            $seen = [];
 
             // Wacky location
-            foreach ((array) @glob('/sys/class/hwmon/hwmon*/{,device/}*_input', GLOB_NOSORT | GLOB_BRACE) as $path) {
-                $initpath = rtrim($path, 'input');
-                $value = Common::getIntFromFile($path);
+            foreach ((array) @glob($this->sysPath.'/class/hwmon/hwmon*/{,device/}*_input', GLOB_NOSORT | GLOB_BRACE) as $path) {
                 $base = basename($path);
-                $labelpath = $initpath.'label';
-                $modelpath = dirname($path).'/device/model';
+                if (!preg_match('/^(temp|fan|in)(\d+)_input$/', $base, $channel)) {
+                    continue;
+                }
+                $canonical = realpath($path);
+                if ($canonical === false) {
+                    Errors::add('Linfo Core', 'Cannot resolve sensor path '.$path);
+                    continue;
+                }
+                if (isset($seen[$canonical])) {
+                    continue;
+                }
+                $value = $this->readSensorValue($path);
+                if ($value === false) {
+                    continue;
+                }
+                $seen[$canonical] = true;
+                $dir = dirname($path);
+                $chipdir = basename($dir) === 'device' ? dirname($dir) : $dir;
+                $labelpath = substr($path, 0, -5).'label';
+                $label = Common::getContents($labelpath);
+                $chip = Common::getContents($chipdir.'/name') ?: Common::getContents($chipdir.'/device/name');
+                $identity = ($chip ? $chip.' / ' : '').basename($chipdir);
                 $showemptyfans = isset($this->settings['temps_show0rpmfans']) ? $this->settings['temps_show0rpmfans'] : false;
-                $drivername = basename(@readlink(dirname($path).'/driver')) ?: false;
 
                 // Temperatures
-                if (is_file($labelpath) && strpos($base, 'temp') === 0) {
-                    $label = Common::getContents($labelpath);
-                    $value /= $value > 10000 ? 1000 : 1;
-                    $unit = 'C'; // I don't think this is ever going to be in F
-                }
-
-                // Devices (such as hard drives)
-                else if (is_file($modelpath) && strpos($base, 'temp') === 0) {
-                    $label = Common::getContents($modelpath);
-                    $value /= $value > 10000 ? 1000 : 1;
-                    $unit = 'C'; // I don't think this is ever going to be in F
-                }
-
-                // Fan RPMs
-                elseif (preg_match('/^fan(\d+)_/', $base, $m)) {
-                    $label = 'fan'.$m[1];
+                if ($channel[1] === 'temp') {
+                    $label = $label ?: Common::getContents($chipdir.'/device/model');
+                    $label = $label ?: 'temp'.$channel[2];
+                    $unit = 'C';
+                    $value /= 1000;
+                } elseif ($channel[1] === 'fan') {
+                    $label = $label ?: 'fan'.$channel[2];
                     $unit = 'RPM';
 
                     if ($value == 0 && !$showemptyfans) {
@@ -565,18 +600,16 @@ class Linux extends Unixcommon
                 }
 
                 // Volts
-                elseif (preg_match('/^in(\d+)_/', $base, $m)) {
+                else {
                     $unit = 'V';
                     $value /= 1000;
-                    $label = Common::getContents($labelpath) ?: 'in'.$m[1];
-                } else {
-                    continue;
+                    $label = $label ?: 'in'.$channel[2];
                 }
 
                 // Append values
                 $hwmon_vals[] = array(
-                    'path' => '',
-                    'name' => $label.($drivername ? ' <span class="faded">('.$drivername.')</span>' : ''),
+                    'path' => $canonical,
+                    'name' => $label.' ('.$identity.')',
                     'temp' => $value,
                     'unit' => $unit,
                 );
@@ -595,7 +628,7 @@ class Linux extends Unixcommon
             $thermal_zone_vals = [];
 
             // Wacky location
-            foreach ((array) @glob('/sys/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE) as $path) {
+            foreach ((array) @glob($this->sysPath.'/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE) as $path) {
                 $labelpath = $path.'/type';
                 $valuepath = $path.'/temp';
 
@@ -605,12 +638,15 @@ class Linux extends Unixcommon
 
                 // Temperatures
                 $label = Common::getContents($labelpath);
-                $value = Common::getIntFromFile($valuepath);
-                $value /= $value > 10000 ? 1000 : 1;
+                $value = $this->readSensorValue($valuepath);
+                if ($value === false) {
+                    continue;
+                }
+                $value /= 1000;
 
                 // Append values
                 $thermal_zone_vals[] = array(
-                    'path' => '',
+                    'path' => $valuepath,
                     'name' => $label . ' ('.basename($path).')',
                     'temp' => $value,
                     'unit' => 'C', // I don't think this is ever going to be in F
@@ -624,19 +660,33 @@ class Linux extends Unixcommon
         }
 
         // Laptop backlight percentage
-        foreach ((array) @glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', GLOB_NOSORT | GLOB_BRACE) as $bl) {
+        $seenBacklights = [];
+        foreach ((array) @glob($this->sysPath.'/{devices/virtual,class}/backlight/*/max_brightness', GLOB_NOSORT | GLOB_BRACE) as $bl) {
+            $canonical = realpath($bl);
+            if ($canonical === false) {
+                Errors::add('Linfo Core', 'Cannot resolve backlight path '.$bl);
+                continue;
+            }
+            if (isset($seenBacklights[$canonical])) {
+                continue;
+            }
+            $seenBacklights[$canonical] = true;
             $dir = dirname($bl);
             if (!is_file($dir.'/actual_brightness')) {
                 continue;
             }
-            $max = Common::getIntFromFile($bl);
-            $cur = Common::getIntFromFile($dir.'/actual_brightness');
-            if ($max < 0 || $cur < 0) {
+            $max = $this->readSensorValue($bl);
+            $cur = $this->readSensorValue($dir.'/actual_brightness');
+            if ($max === false || $cur === false) {
+                continue;
+            }
+            if ($max <= 0 || $cur < 0 || $cur > $max) {
+                Errors::add('Linfo Core', 'Invalid backlight brightness at '.$dir);
                 continue;
             }
             $return[] = array(
                 'name' => 'Backlight brightness',
-                'temp' => round($cur / $max, 2) * 100,
+                'temp' => round($cur * 100 / $max, 2),
                 'unit' => '%',
                 'path' => 'N/A',
                 'bar' => true,
@@ -645,6 +695,18 @@ class Linux extends Unixcommon
 
         // Done
         return $return;
+    }
+
+    protected function readSensorValue($path)
+    {
+        $value = Common::getContents($path, false);
+        if ($value === false || !preg_match('/^-?\d+$/D', $value)) {
+            Errors::add('Linfo Core', 'Unreadable or invalid sensor value at '.$path);
+
+            return false;
+        }
+
+        return (int) $value;
     }
 
     /**
