@@ -266,13 +266,13 @@ class Utorrent implements Extension
             $rows[] = array(
                 'type' => 'values',
                 'columns' => array(
-                    ($this->hideName ? '' : $info['TORRENT_NAME'].'<br />')
-                        .'<span style="font-size: 80%; font-family: monaco, monospace, courier;">'.$info['TORRENT_HASH'].'</span>',
+                    ($this->hideName ? '' : htmlspecialchars($info['TORRENT_NAME'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'<br />')
+                        .'<span style="font-size: 80%; font-family: monaco, monospace, courier;">'.htmlspecialchars($info['TORRENT_HASH'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</span>',
                     Common::byteConvert($info['TORRENT_SIZE']),
                     Html::generateBarChart($info['TORRENT_PROGRESS'] / 10),
-                    $info['TORRENT_STATUS_MESSAGE'],
-                    $info['TORRENT_SEEDS_CONNECTED'].'/'.$info['TORRENT_SEEDS_SWARM'],
-                    $info['TORRENT_SEEDS_CONNECTED'].'/'.$info['TORRENT_PEERS_SWARM'],
+                    htmlspecialchars($info['TORRENT_STATUS_MESSAGE'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                    (int) $info['TORRENT_SEEDS_CONNECTED'].'/'.(int) $info['TORRENT_SEEDS_SWARM'],
+                    (int) $info['TORRENT_SEEDS_CONNECTED'].'/'.(int) $info['TORRENT_PEERS_SWARM'],
                     Common::byteConvert($info['TORRENT_DOWNLOADED']),
                     Common::byteConvert($info['TORRENT_UPLOADED']),
                     $info['TORRENT_RATIO'] > 0 ? (round($info['TORRENT_RATIO'] / 1000, 2) ?: '0.0') : '0.0',

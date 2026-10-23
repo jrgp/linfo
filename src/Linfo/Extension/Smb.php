@@ -199,9 +199,9 @@ class Smb implements Extension
                     $rows[] = array(
                         'type' => 'values',
                         'columns' => array(
-                            $conn['username'],
-                            $conn['group'],
-                            array(3,$conn['hostname'].($conn['hostname'] != $conn['ip'] ? ' <span class="perc">('.$conn['ip'].')</span>' : '')),
+                            htmlspecialchars($conn['username'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                            htmlspecialchars($conn['group'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                            array(3,htmlspecialchars($conn['hostname'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').($conn['hostname'] != $conn['ip'] ? ' <span class="perc">('.htmlspecialchars($conn['ip'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').')</span>' : '')),
                         ),
                     );
                 }
@@ -237,8 +237,8 @@ class Smb implements Extension
                     $rows[] = array(
                         'type' => 'values',
                         'columns' => array(
-                            $service['service'],
-                            $service['machine'],
+                            htmlspecialchars($service['service'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                            htmlspecialchars($service['machine'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                             array(3, date($this->_date_format, $service['date'])),
                         ),
                     );
@@ -302,10 +302,10 @@ class Smb implements Extension
                     $rows[] = array(
                         'type' => 'values',
                         'columns' => array(
-                            $f['uid'].($username != false ? ' ('.$username.')' : ''),
-                            $rw ? $rw : $f['rw'],
-                            $f['share'],
-                            $f['filename'],
+                            $f['uid'].($username != false ? ' ('.htmlspecialchars($username, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').')' : ''),
+                            $rw ? $rw : htmlspecialchars($f['rw'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                            htmlspecialchars($f['share'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                            htmlspecialchars($f['filename'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                             date($this->_date_format, $f['date']),
                     ), );
                 }
